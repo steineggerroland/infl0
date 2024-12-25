@@ -35,7 +35,7 @@ function toggleDetailView() {
   <div class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }"
     @click="toggleDetailView">
     <!-- Front: Short Summary -->
-    <div class="article-content rounded-xl bg-slate-800 text-white">
+    <div class="article-content rounded-xl bg-slate-800 text-white relative">
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
         <!-- Title -->
         <h1 class="text-2xl md:text-4xl font-bold mb-4">{{ article.title }}</h1>
@@ -52,10 +52,12 @@ function toggleDetailView() {
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
         </p>
       </div>
+      <!-- Flip Arrow -->
+      <FlipArrow class="action-flip-front" direction="front" />
     </div>
 
     <!-- Back: Detailed Summary -->
-    <div class="article-detail rounded-xl bg-slate-800 text-white">
+    <div class="article-detail rounded-xl bg-slate-900 text-white relative">
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
         <!-- Title -->
         <h1 class="text-2xl md:text-4xl font-bold mb-4">{{ article.title }}</h1>
@@ -72,10 +74,13 @@ function toggleDetailView() {
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
         </p>
         <p class="mb-2">
-          <NuxtLink class="text-blue-200 hover:text-blue-50" :to="article.link" :external="true" target="_blank">See
-            source</NuxtLink>
+          <NuxtLink class="text-blue-200 hover:text-blue-50" :to="article.link" :external="true" target="_blank">
+            See source
+          </NuxtLink>
         </p>
       </div>
+      <!-- Flip Arrow -->
+      <FlipArrow class="action-flip-back" direction="back" />
     </div>
   </div>
 </template>
@@ -147,5 +152,17 @@ function toggleDetailView() {
     transform: translateX(0) rotateY(0);
     transform-origin: 100% 50%;
   }
+}
+
+.action-flip-front {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.action-flip-back {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
 }
 </style>
