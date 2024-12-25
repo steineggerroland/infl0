@@ -35,17 +35,17 @@ function toggleDetailView() {
   <div class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }"
     @click="toggleDetailView">
     <!-- Front: Short Summary -->
-    <div class="article-content rounded-xl bg-slate-800 text-white relative">
+    <div class="article-content rounded-xl bg-front text-gray-100 relative shadow-lg transition-all">
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
         <!-- Title -->
-        <h1 class="text-2xl md:text-4xl font-bold mb-4">{{ article.title }}</h1>
+        <h1 class="text-3xl md:text-4xl font-bold mb-4">{{ article.title }}</h1>
         <!-- Teaser -->
-        <p class="text-lg md:text-2xl mb-6 text-gray-300">{{ article.teaser }}</p>
+        <p class="text-lg md:text-2xl mb-6 text-gray-200">{{ article.teaser }}</p>
       </div>
       <!-- Meta Information -->
       <div class="max-h-1/5 h-1/5 w-full text-xs sm:text-sm md:text-lg px-6 py-2 text-start">
-        <p class="flex items-center mb-2 text-gray-200">
-          <TypeIcon :type="article.source_type" class="me-1 md:me-3"></TypeIcon>
+        <p class="flex items-center mb-2 text-gray-300">
+          <TypeIcon :type="article.source_type" class="me-1 md:me-3 shadow-md" />
           {{ formatDate(article.publishedAt) }}
         </p>
         <p v-if="article.category" class="mb-2 text-gray-300">
@@ -57,7 +57,7 @@ function toggleDetailView() {
     </div>
 
     <!-- Back: Detailed Summary -->
-    <div class="article-detail rounded-xl bg-slate-900 text-white relative">
+    <div class="article-detail rounded-xl bg-back text-gray-200 relative shadow-inner transition-all">
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
         <!-- Title -->
         <h1 class="text-2xl md:text-4xl font-bold mb-4">{{ article.title }}</h1>
@@ -66,15 +66,15 @@ function toggleDetailView() {
       </div>
       <!-- Meta Information -->
       <div class="max-h-1/5 h-1/5 w-full text-xs sm:text-sm md:text-lg px-6 py-2 text-start">
-        <p class="flex items-center mb-2 text-gray-200">
-          <TypeIcon :type="article.source_type" class="me-1 md:me-3"></TypeIcon>
+        <p class="flex items-center mb-2 text-gray-400">
+          <TypeIcon :type="article.source_type" class="me-1 md:me-3 shadow-md" />
           {{ formatDate(article.publishedAt) }}
         </p>
-        <p v-if="article.category" class="mb-2 text-gray-300">
+        <p v-if="article.category" class="mb-2 text-gray-400">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
         </p>
         <p class="mb-2">
-          <NuxtLink class="text-blue-200 hover:text-blue-50" :to="article.link" :external="true" target="_blank">
+          <NuxtLink class="text-blue-300 hover:text-blue-200" :to="article.link" :external="true" target="_blank">
             See source
           </NuxtLink>
         </p>
@@ -84,6 +84,55 @@ function toggleDetailView() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.article-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.flip-back {
+  animation: flip-back 0.5s cubic-bezier(0.445, 0.050, 0.550, 0.950) both;
+}
+
+.flip-front {
+  animation: flip-front 0.5s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+}
+</style>
+
+<style scoped>
+/* Global gradient for the front */
+.bg-front-gradient {
+  background: linear-gradient(135deg, #1e3a8a, #0f172a);
+  /* Blue gradient */
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+/* Back: Dark and immersive */
+.bg-back {
+  background-color: #1a202c;
+  /* Dark gray slate */
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+/* SVG Icon shadow for visibility */
+TypeIcon {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+}
+
+/* Front content shadow for depth */
+.article-content {
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Back content inner shadow for depth */
+.article-detail {
+  box-shadow: inset 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+</style>
 
 <style scoped>
 /* Base container for the flipping animation */
@@ -102,8 +151,8 @@ function toggleDetailView() {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
-
 
 /* Specific setup for the back of the card */
 .article-detail {

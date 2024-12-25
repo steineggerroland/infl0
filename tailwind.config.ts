@@ -13,6 +13,10 @@ module.exports = {
       },
       opacity: {
         '69': '.69'
+      },
+      colors: {
+        front: 'var(--color-front)',
+        back: 'var(--color-back)'
       }
     }
   },
