@@ -46,7 +46,7 @@ function toggleDetailView() {
       <div class="max-h-1/5 h-1/5 w-full text-xs sm:text-sm md:text-lg px-6 py-2 text-start">
         <p class="flex items-center mb-2 text-gray-300">
           <TypeIcon :type="article.source_type" class="me-1 md:me-3 shadow-md" />
-          {{ formatDate(article.publishedAt) }}
+          <FreshnessIndicator v-if="article?.publishedAt" :publishedAt="article.publishedAt" />
         </p>
         <p v-if="article.category" class="mb-2 text-gray-300">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
@@ -68,6 +68,7 @@ function toggleDetailView() {
       <div class="max-h-1/5 h-1/5 w-full text-xs sm:text-sm md:text-lg px-6 py-2 text-start">
         <p class="flex items-center mb-2 text-gray-400">
           <TypeIcon :type="article.source_type" class="me-1 md:me-3 shadow-md" />
+          <FreshnessIndicator class="me-2" v-if="article?.publishedAt" :publishedAt="article.publishedAt" />
           {{ formatDate(article.publishedAt) }}
         </p>
         <p v-if="article.category" class="mb-2 text-gray-400">
