@@ -77,8 +77,8 @@ onMounted(() => {
         <!-- Scroll container for articles -->
         <div class="scroll-container relative h-screen w-full overflow-scroll snap-y snap-mandatory">
             <!-- Render each article using the ArticleView component -->
-            <div class="my-1 max-w-full landscape:aspect-smartphone landscape:h-[95%] portrait:h-full snap-start mx-auto"
-                style="scroll-snap-stop: always;" v-for="article in articles" :key="article.id" :ref="setItemRef">
+            <div class="my-1 max-w-full landscape:aspect-smartphone landscape:h-[95%] portrait:h-full snap-start mx-auto snap-always"
+                v-for="article in articles" :key="article.id" :ref="setItemRef">
                 <ArticleView class="article rounded-xl" :article="article" />
             </div>
         </div>
