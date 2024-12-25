@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Fetch articles from Nuxt Content
-const articles = await queryCollection('articles').order('publishedAt', 'DESC').all()
+const articles: Array<Object> = await queryCollection('articles').order('publishedAt', 'DESC').all()
 
 // Track the current article index
 const currentIndex = ref(0)
