@@ -14,7 +14,7 @@ defineProps({
         <div class="arrow-tooltip" v-if="direction === 'front'">Flip card</div>
         <div class="arrow-tooltip" v-if="direction === 'back'">Flip back</div>
         <!-- SVG Arrow -->
-        <div class="arrow-icon"></div>
+        <div :class="['arrow-icon', direction]"></div>
     </div>
 </template>
 
@@ -57,7 +57,7 @@ defineProps({
     background-size: contain;
 }
 
-.flip-arrow--front .arrow-icon {
+.arrow-icon.front {
     transform: rotateY(180deg);
 }
 
