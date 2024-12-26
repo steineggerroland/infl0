@@ -73,9 +73,9 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="bg-gray-400 text-white h-screen w-full flex justify-center items-center">
+    <div class="bg-gray-400 text-white h-dvh w-full flex justify-center items-center">
         <!-- Scroll container for articles -->
-        <div class="scroll-container relative h-screen w-full overflow-scroll snap-y snap-mandatory">
+        <div class="scroll-container relative h-dvh w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory">
             <!-- Render each article using the ArticleView component -->
             <div class="my-1 max-w-full landscape:aspect-smartphone landscape:h-[95%] portrait:h-full snap-start mx-auto snap-always"
                 v-for="article in articles" :key="article.id" :ref="setItemRef">
