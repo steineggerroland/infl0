@@ -36,6 +36,9 @@ function toggleDetailView() {
     @click="toggleDetailView">
     <!-- Front: Short Summary -->
     <div class="article-content rounded-xl bg-front text-gray-100 relative shadow-lg transition-all">
+      <!-- Eselsohr -->
+      <CornerFold position="top-right" tooltip="Click to flip" />
+
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
         <!-- Title -->
         <h1 class="text-3xl md:text-4xl font-bold mb-4">{{ article.title }}</h1>
@@ -109,14 +112,14 @@ function toggleDetailView() {
 .bg-front-gradient {
   background: linear-gradient(135deg, #1e3a8a, #0f172a);
   /* Blue gradient */
-  transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 /* Back: Dark and immersive */
 .bg-back {
   background-color: #1a202c;
   /* Dark gray slate */
-  transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 /* SVG Icon shadow for visibility */
