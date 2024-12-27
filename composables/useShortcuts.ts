@@ -1,6 +1,6 @@
 import { onMounted, onUnmounted } from 'vue'
 
-type ShortcutHandler = () => void
+type ShortcutHandler = (event: KeyboardEvent) => void
 
 interface ShortcutDefinition {
   [key: string]: ShortcutHandler
@@ -14,7 +14,7 @@ export function defineShortcuts (shortcuts: ShortcutDefinition) {
   function handleKeyPress (event: KeyboardEvent) {
     const key = event.key.toLowerCase() // Normalize the key to lowercase
     if (shortcuts[key]) {
-      shortcuts[key]() // Trigger the corresponding handler
+      shortcuts[key](event) // Trigger the corresponding handler
     }
   }
 

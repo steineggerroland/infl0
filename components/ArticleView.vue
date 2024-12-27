@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Define the props for the component
-defineProps({
+const props = defineProps({
   article: {
     type: Object as () => {
       title: string
@@ -13,6 +13,7 @@ defineProps({
     },
     required: true,
   },
+  isSelected: Boolean
 })
 
 // Import date-fns for date formatting
@@ -29,6 +30,12 @@ const isDetailView = ref(false)
 function toggleDetailView() {
   isDetailView.value = !isDetailView.value
 }
+
+
+defineShortcuts({
+  'e': () => { if (props.isSelected) toggleDetailView() },
+  'escape': () => { if (props.isSelected) { isDetailView.value = false } },
+})
 </script>
 
 <template>
