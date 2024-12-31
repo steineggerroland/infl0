@@ -39,7 +39,7 @@ defineShortcuts({
 </script>
 
 <template>
-  <div class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }"
+  <div class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }" :id="article.id"
     @click="toggleDetailView">
     <!-- Front: Short Summary -->
     <div class="article-content rounded-xl bg-front text-gray-100 relative shadow-lg transition-all">
@@ -55,10 +55,15 @@ defineShortcuts({
       <!-- Meta Information -->
       <div class="max-h-1/5 h-1/5 w-full text-xs sm:text-sm md:text-lg px-6 py-2 text-start">
         <p class="flex items-center mb-2 text-gray-300">
-          <TypeIcon :type="article.source_type" class="me-1 md:me-3 shadow-md" />
-          <FreshnessIndicator v-if="article?.publishedAt" :publishedAt="article.publishedAt" />
+          <TypeIcon :type="article.source_type" class="shadow-md" />
+          <FreshnessIndicator v-if="article?.publishedAt" class="ms-1 md:ms-3" :publishedAt="article.publishedAt" />
+          <TldIcon v-if="article?.tld" class="ms-1 md:ms-3" :tld="article?.tld" :title="article?.tld"></TldIcon>
+          <span v-else class="ms-1 md:ms-3 h-[1em] w-[1em]"></span>
+          <NameIcon v-if="article?.author" class="ms-1 md:ms-3" :name="article?.author" :title="article?.author">
+          </NameIcon>
+          <span v-else class="ms-1 md:ms-3 h-[1em] w-[1em]"></span>
         </p>
-        <p v-if="article.category" class="mb-2 text-gray-300">
+        <p v-if="article.category" class="mb-2 text-gray-400">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
         </p>
       </div>

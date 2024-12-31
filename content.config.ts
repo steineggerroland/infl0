@@ -9,6 +9,7 @@ export default defineContentConfig({
         id: z.string().describe('A unique identifier for the article'),
         title: z.string().describe('The title of the article'),
         link: z.string().url().describe('The URL of the original article'),
+        author: z.string().optional().describe('The author'),
         summary: z
           .string()
           .optional()
@@ -35,6 +36,7 @@ export default defineContentConfig({
           .array(z.string())
           .optional()
           .describe('Tone of the article (e.g., informative, engaging)'),
+        tld: z.string().optional().describe('Top level domain of article'),
         source_type: z.string().describe('The type of source (e.g., rss, html)')
       })
     })
