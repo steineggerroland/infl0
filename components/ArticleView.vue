@@ -139,11 +139,6 @@ TypeIcon {
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
 }
 
-/* Front content shadow for depth */
-.article-content {
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
-}
-
 /* Back content inner shadow for depth */
 .article-detail {
   box-shadow: inset 0px 8px 15px rgba(0, 0, 0, 0.2);
