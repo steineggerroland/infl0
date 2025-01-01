@@ -86,6 +86,13 @@ defineShortcuts({
           <FreshnessIndicator class="me-2" v-if="article?.publishedAt" :publishedAt="article.publishedAt" />
           {{ formatDate(article.publishedAt) }}
         </p>
+        <p class="text-gray-400">
+          <span v-if="article?.tld">on <span class="text-white">{{ article?.tld }}</span>&nbsp;</span><span
+            v-if="article?.author">written by <span class="text-white">{{
+              article?.author }}</span></span>
+        </p>
+        <p>
+        </p>
         <p v-if="article.category" class="mb-2 text-gray-400">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
         </p>
