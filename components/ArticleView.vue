@@ -47,10 +47,10 @@ defineShortcuts({
       <CornerFold position="top-right" tooltip="Click to flip" />
 
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
-        <!-- Title -->
-        <h1 class="text-3xl md:text-4xl font-bold mb-4">{{ article.title }}</h1>
         <!-- Teaser -->
-        <p class="text-lg md:text-2xl mb-6 text-gray-200">{{ article.teaser }}</p>
+        <p class="text-2xl md:text-4xl mb-6 text-gray-200">{{ article.teaser }}</p>
+        <!-- Title -->
+        <h1 class="ms-[30%] text-end text-md md:text-lg font-bold mb-4">{{ article.title }}</h1>
       </div>
       <!-- Meta Information -->
       <div class="max-h-1/5 h-1/5 w-full text-xs sm:text-sm md:text-lg px-6 py-2 text-start">
