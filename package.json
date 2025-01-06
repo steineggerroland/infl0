@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@nuxt/content": "^3.0.0-alpha.8",
+    "@nuxtjs/tailwindcss": "^6",
+    "daisyui": "^3",
     "date-fns": "^4.1.0",
     "nuxt": "^3.14.1592",
     "vue": "latest",
