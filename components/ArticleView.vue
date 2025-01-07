@@ -3,6 +3,7 @@
 const props = defineProps({
   article: {
     type: Object as () => {
+      id: string
       title: string
       teaser: string
       summary_long: string
@@ -31,80 +32,121 @@ function toggleDetailView() {
   isDetailView.value = !isDetailView.value
 }
 
+function toggleOriginalArticle() {
+  if (modal?.value.open) {
+    modal.value?.close()
+  } else {
+    modal.value?.showModal()
+  }
+}
+function showOriginalArticle() {
+  modal.value?.showModal()
+}
+
+const matchingPage = await queryCollection('rawArticles').path('/raw/articles/' + props.article.id.split('/').pop().replace(/(.json)$/, '')).first()
+const modal = ref()
 
 defineShortcuts({
   'e': () => { if (props.isSelected) toggleDetailView() },
   'escape': () => { if (props.isSelected) { isDetailView.value = false } },
+  'q': () => { if (props.isSelected) toggleOriginalArticle() }
 })
+
 </script>
 
 <template>
-  <div class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }" :id="article.id"
-    @click="toggleDetailView">
+  <div class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }" :id="article.id">
     <!-- Front: Short Summary -->
-    <div class="article-content rounded-xl bg-front text-gray-100 relative shadow-lg transition-all">
-      <!-- Eselsohr -->
-      <CornerFold position="top-right" tooltip="Click to flip" />
+    <div class="article-content rounded-xl bg-front text-gray-100 relative transition-all">
+      <!-- Corner fold -->
+      <CornerFold position="top-right" tooltip="Click to flip" @click="toggleDetailView" />
 
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
-        <!-- Teaser -->
-        <p class="text-2xl md:text-4xl mb-6 text-gray-200">{{ article.teaser }}</p>
         <!-- Title -->
-        <h1 class="ms-[30%] text-end text-md md:text-lg font-bold mb-4">{{ article.title }}</h1>
+        <h1 class="w-full text-end text-sm smh:text-md mdh:text-lg font-bold mb-4 tracking-tighter">{{
+          article.title }}
+        </h1>
+        <!-- Teaser -->
+        <p class="teaser flex-1 content-center text-lg smh:text-2xl mdh:text-4xl mb-6 text-gray-200 cursor-pointer"
+          @click="toggleDetailView" tabindex="0">
+          {{
+            article.teaser }}</p>
       </div>
       <!-- Meta Information -->
-      <div class="max-h-1/5 h-1/5 w-full text-xs sm:text-sm md:text-lg px-6 py-2 text-start">
-        <p class="flex items-center mb-2 text-gray-300">
-          <TypeIcon :type="article.source_type" class="shadow-md" />
-          <FreshnessIndicator v-if="article?.publishedAt" class="ms-1 md:ms-3" :publishedAt="article.publishedAt" />
-          <TldIcon v-if="article?.tld" class="ms-1 md:ms-3" :tld="article?.tld" :title="article?.tld"></TldIcon>
-          <span v-else class="ms-1 md:ms-3 h-[1em] w-[1em]"></span>
-          <NameIcon v-if="article?.author" class="ms-1 md:ms-3" :name="article?.author" :title="article?.author">
+      <div class="meta max-h-1/5 h-1/5 w-full text-xs smh:text-sm mdh:text-lg px-6 py-2 text-start">
+        <div class="flex items-center mb-2 mt-0 text-gray-300">
+          <TypeIcon :type="article.source_type" class="shadow-md tooltip" :data-tip="article.source_type" />
+          <FreshnessIndicator v-if="article.publishedAt" class="ms-1 mdh:ms-3 tooltip"
+            :data-tip="formatDate(article.publishedAt)" :publishedAt="article.publishedAt" />
+          <TldIcon v-if="article?.tld" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.tld" :tld="article.tld">
+          </TldIcon>
+          <span v-else class="ms-1 mdh:ms-3 h-[1em] w-[1em]"></span>
+          <NameIcon v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
+            :name="article.author">
           </NameIcon>
-          <span v-else class="ms-1 md:ms-3 h-[1em] w-[1em]"></span>
-        </p>
-        <p v-if="article.category" class="mb-2 text-gray-400">
+          <span v-else class="ms-1 mdh:ms-3 h-[1em] w-[1em]"></span>
+        </div>
+        <div v-if="article.category" class="mb-2 text-gray-400">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
-        </p>
+        </div>
       </div>
       <!-- Flip Arrow -->
-      <FlipArrow class="action-flip-front" direction="front" />
+      <FlipArrow class="action-flip-front" direction="front" @click="toggleDetailView" />
     </div>
 
     <!-- Back: Detailed Summary -->
     <div class="article-detail rounded-xl bg-back text-gray-200 relative shadow-inner transition-all">
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
         <!-- Title -->
-        <h1 class="text-2xl md:text-4xl font-bold mb-4">{{ article.title }}</h1>
+        <h1 class="w-full text-end text-sm smh:text-md mdh:text-lg font-bold mb-4 tracking-tighter">{{
+          article.title }}
+        </h1>
         <!-- Detailed Summary -->
-        <p class="text-lg md:text-2xl mb-6 text-gray-300">{{ article.summary_long }}</p>
+        <p class="summary flex-1 content-center text-sm smh:text-md mdh:text-lg mb-6 text-gray-300 overflow-y-auto">
+          {{ article.summary_long }}
+        </p>
+        <p class="m-0 w-full text-end text-xs mdh:text-sm">
+          <a @click.prevent="showOriginalArticle" :href="article.link" target="_blank">
+            Original article
+          </a>
+        </p>
       </div>
       <!-- Meta Information -->
-      <div class="max-h-1/5 h-1/5 w-full text-xs sm:text-sm md:text-lg px-6 py-2 text-start">
-        <p class="flex items-center mb-2 text-gray-400">
-          <TypeIcon :type="article.source_type" class="me-1 md:me-3 shadow-md" />
-          <FreshnessIndicator class="me-2" v-if="article?.publishedAt" :publishedAt="article.publishedAt" />
+      <div class="meta text-xs smh:text-sm mdh:text-lg max-h-1/5 h-1/5 w-full px-6 py-2 text-start">
+        <div class="flex items-center mb-1 mt-0 text-gray-400">
+          <TypeIcon :type="article.source_type" class="me-1 mdh:me-3 shadow-md tooltip"
+            :data-tip="article.source_type" />
           {{ formatDate(article.publishedAt) }}
-        </p>
-        <p class="text-gray-400">
-          <span v-if="article?.tld">on <span class="text-white">{{ article?.tld }}</span>&nbsp;</span><span
-            v-if="article?.author">written by <span class="text-white">{{
-              article?.author }}</span></span>
-        </p>
-        <p>
-        </p>
-        <p v-if="article.category" class="mb-2 text-gray-400">
+        </div>
+        <div class="text-gray-400 mb-1 max-w-full flex flex-nowrap">
+          <div class="me-1 mdh:me-3 tooltip" :data-tip="article?.tld">
+            <TldIcon v-if="article?.tld" :tld="article?.tld"></TldIcon>
+          </div>
+          <div v-if="article?.author" class="tooltip max-w-full" :data-tip="article?.author">
+            <div class="text-white me-1 mdh:me-3 truncate">{{ article?.author
+              }}</div>
+          </div>
+        </div>
+        <div v-if="article.category" class="mb-1 text-gray-400">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
-        </p>
-        <p class="mb-2">
-          <NuxtLink class="text-blue-300 hover:text-blue-200" :to="article.link" :external="true" target="_blank">
-            See source
-          </NuxtLink>
-        </p>
+        </div>
       </div>
       <!-- Flip Arrow -->
-      <FlipArrow class="action-flip-back" direction="back" />
+      <FlipArrow class="action-flip-back" direction="back" @click="toggleDetailView" />
     </div>
+    <dialog v-if="matchingPage" class="modal" ref="modal">
+      <div class="modal-box max-w-[100vw] w-[640px] bg-white text-black">
+        <form method="dialog" class="flex sticky top-2 right-0">
+          <button class="ms-auto btn btn-sm btn-circle btn-ghost">✕</button>
+        </form>
+        <div class="overflow-y-auto h-full font-serif md:p-2 -mt-4">
+          <ContentRenderer :value="matchingPage" />
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>Close</button>
+      </form>
+    </dialog>
   </div>
 </template>
 
@@ -150,9 +192,7 @@ TypeIcon {
 .article-detail {
   box-shadow: inset 0px 8px 15px rgba(0, 0, 0, 0.2);
 }
-</style>
 
-<style scoped>
 /* Base container for the flipping animation */
 .article-container {
   position: relative;

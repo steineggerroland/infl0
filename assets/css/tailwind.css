@@ -1,3 +1,98 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  h1 {
+    @apply text-2xl;
+  }
+  h2 {
+    @apply text-xl;
+  }
+  a {
+    color: hsl(245, 26%, 66%);
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  a:hover {
+    color: hsl(245, 25%, 90%);
+  }
+  h1 a,
+  h2 a,
+  h3 a,
+  h4 a,
+  h5 a {
+    text-decoration: inherit;
+  }
+  h1 {
+    font-weight: bold;
+    @apply text-3xl;
+    @apply space-y-4;
+    @apply mb-4;
+  }
+  h2 {
+    font-weight: semibold;
+    @apply text-2xl;
+    @apply space-y-2;
+    @apply mb-2;
+  }
+  h3 {
+    font-weight: bold;
+    @apply text-lg;
+    @apply space-y-1;
+    @apply mb-1;
+  }
+  p {
+    @apply space-y-4;
+    @apply my-4;
+  }
+  ul,
+  ol {
+    @apply space-y-4;
+  }
+  ul {
+    @apply space-y-8;
+    list-style-type: disc;
+  }
+  ul > li {
+    @apply space-y-2;
+    ::marker {
+      font-weight: bold;
+    }
+  }
+  ol {
+    @apply space-y-8;
+    list-style-type: decimal;
+  }
+  ol > li {
+    @apply space-y-2;
+    ::marker {
+      font-weight: bold;
+    }
+  }
+  strong,
+  b {
+    @apply font-bold;
+  }
+  i,
+  em {
+    @apply text-pretty;
+  }
+  blockquote {
+    border-left-width: 4px;
+    @apply rounded-md;
+    @apply space-y-1;
+    quotes: none;
+    font-style: italic;
+  }
+  code {
+    @apply space-y-1;
+    @apply rounded-md;
+    @apply font-mono;
+  }
+  pre {
+    @apply space-y-4;
+    @apply rounded-lg;
+    overflow-x: auto;
+  }
+}

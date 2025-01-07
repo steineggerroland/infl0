@@ -81,7 +81,8 @@ onMounted(() => {
             <!-- Render each article using the ArticleView component -->
             <div class="my-1 max-w-full landscape:aspect-smartphone landscape:h-[95%] portrait:h-full snap-start mx-auto snap-always"
                 v-for="(article, index) in articles" :key="article.id" :ref="setItemRef">
-                <ArticleView class="article rounded-xl" :article="article" :is-selected="index === currentIndex" />
+                <ArticleView class="article rounded-xl" v-if="article" :article="article"
+                    :is-selected="index === currentIndex" />
             </div>
         </div>
     </div>

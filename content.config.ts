@@ -2,6 +2,13 @@ import { defineContentConfig, defineCollection, z } from '@nuxt/content'
 
 export default defineContentConfig({
   collections: {
+    rawArticles: defineCollection({
+      type: 'page',
+      source: {
+        include: 'articles/**/*.md',
+        prefix: 'raw/articles/'
+      }
+    }),
     articles: defineCollection({
       type: 'data',
       source: 'articles/**/*.json',

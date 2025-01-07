@@ -12,6 +12,7 @@
   "dependencies": {
     "@nuxt/content": "^3.0.0-alpha.8",
     "@nuxtjs/tailwindcss": "^6",
+    "@tailwindcss/typography": "^0.5.15",
     "daisyui": "^3",
     "date-fns": "^4.1.0",
     "nuxt": "^3.14.1592",
