@@ -32,15 +32,21 @@ function toggleDetailView() {
   isDetailView.value = !isDetailView.value
 }
 
+// Track modal visibility
+const modalVisible = ref(false)
+
+function showOriginalArticle() {
+  modalVisible.value = true
+  modal.value?.showModal()
+}
+
 function toggleOriginalArticle() {
-  if (modal?.value.open) {
+  modalVisible.value = !modalVisible.value
+  if (modal.value?.open) {
     modal.value?.close()
   } else {
     modal.value?.showModal()
   }
-}
-function showOriginalArticle() {
-  modal.value?.showModal()
 }
 
 const matchingPage = await queryCollection('rawArticles').path('/raw/articles/' + props.article.id.split('/').pop().replace(/(.json)$/, '')).first()
@@ -106,7 +112,10 @@ defineShortcuts({
           {{ article.summary_long }}
         </p>
         <p class="m-0 w-full text-end text-xs mdh:text-sm">
-          <a @click.prevent="showOriginalArticle" :href="article.link" target="_blank">
+          <a v-if="matchingPage" @click.prevent="showOriginalArticle" :href="article.link" target="_blank">
+            Original article
+          </a>
+          <a v-else :href="article.link" target="_blank">
             Original article
           </a>
         </p>
@@ -140,7 +149,7 @@ defineShortcuts({
           <button class="ms-auto btn btn-sm btn-circle btn-ghost">✕</button>
         </form>
         <div class="overflow-y-auto h-full font-serif md:p-2 -mt-4">
-          <ContentRenderer :value="matchingPage" />
+          <ContentRenderer v-if="modalVisible" :value="matchingPage" />
         </div>
       </div>
       <form method="dialog" class="modal-backdrop">
