@@ -1,10 +1,17 @@
 <script setup lang="ts">
 // Fetch articles from Nuxt Content
-const articles: Array<Object> = await queryCollection('articles').order('publishedAt', 'DESC').all()
+const articles: Array<Object> = await queryCollection('articles').order('publishedAt', 'DESC').limit(10).all()
 
 // Track the current article index
 const currentIndex = ref(0)
 const currentArticle = computed(() => articles[currentIndex.value] || null)
+watchEffect(() => {
+    if (articles.length - 3 <= currentIndex.value) {
+        queryCollection('articles').order('publishedAt', 'DESC').skip(articles.length).limit(10).all().then((newArticles: any) => {
+            articles.push(...newArticles)
+        })
+    }
+})
 
 // Store references to all article containers
 const articleContainers = ref<HTMLElement[]>([])
