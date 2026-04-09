@@ -13,11 +13,16 @@ type TimelineArticle = {
     rawMarkdown?: string
 }
 
-const { data: timelineData } = await useAsyncData('timeline', () =>
-    $fetch<{ items: { article: TimelineArticle }[] }>('/api/timeline', {
-        query: { limit: 100 },
-    }),
-)
+async function logout() {
+    await $fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+    await navigateTo('/login')
+}
+
+const { data: timelineData } = await useFetch<{ items: { article: TimelineArticle }[] }>('/api/timeline', {
+    query: { limit: 100 },
+    credentials: 'include',
+    key: 'timeline',
+})
 
 const articles = ref<TimelineArticle[]>([])
 
@@ -119,7 +124,14 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="bg-gray-400 text-white h-dvh w-full flex justify-center items-center">
+    <div class="bg-gray-400 text-white h-dvh w-full flex justify-center items-center relative">
+        <button
+            type="button"
+            class="absolute top-3 end-3 z-20 btn btn-sm btn-ghost text-gray-800 hover:bg-gray-500/30"
+            @click="logout"
+        >
+            Log out
+        </button>
         <!-- Scroll container for articles -->
         <div class="scroll-container relative h-dvh w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory">
             <!-- Render each article using the ArticleView component -->

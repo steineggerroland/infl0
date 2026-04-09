@@ -1,6 +1,7 @@
 import type { Article, ArticleEnrichment } from '@prisma/client'
-import { getQuery } from 'h3'
+import { createError, getQuery } from 'h3'
 import { prisma } from '../utils/prisma'
+import { getSessionUserId } from '../utils/auth-session'
 
 type ArticleWithEnrichment = Article & { enrichment: ArticleEnrichment | null }
 
@@ -25,20 +26,27 @@ function mapArticle(a: ArticleWithEnrichment) {
 
 /**
  * GET /api/timeline?limit=30
- * Beta: Nutzer über BETA_SEED_EMAIL (wie prisma/seed).
+ * Requires session cookie (see POST /api/auth/login).
  */
 export default defineEventHandler(async (event) => {
   const q = getQuery(event)
   const limit = Math.min(100, Math.max(1, Number(q.limit) || 30))
 
-  const email = process.env.BETA_SEED_EMAIL ?? 'beta@localhost'
-  const user = await prisma.user.findUnique({ where: { email } })
+  const userId = await getSessionUserId(event)
+  if (!userId) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true },
+  })
   if (!user) {
-    return { user: null, items: [] }
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
   const rows = await prisma.userTimelineItem.findMany({
-    where: { userId: user.id },
+    where: { userId },
     orderBy: { insertedAt: 'desc' },
     take: limit,
     include: {

@@ -30,6 +30,7 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER:-infl0}:${POSTGRES_PASSWORD:-change_me}@postgres:5432/${POSTGRES_DB:-infl0}
+      AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:-}
       # Von n8n / Crawler für schreibende API (Artikel, Timeline-Einträge); leer = Endpoints später ablehnen
       NUXT_CRAWLER_API_KEY: ${NUXT_CRAWLER_API_KEY:-}
     depends_on:
