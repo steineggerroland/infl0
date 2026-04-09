@@ -11,10 +11,12 @@ const props = defineProps({
       publishedAt: string
       category?: string[]
       source_type: string
+      /** Wenn gesetzt (z. B. aus DB), kein Nuxt-Content-Markdown nötig */
+      rawMarkdown?: string
     },
     required: true,
   },
-  isSelected: Boolean
+  isSelected: Boolean,
 })
 
 // Import date-fns for date formatting
@@ -49,8 +51,30 @@ function toggleOriginalArticle() {
   }
 }
 
-const matchingPage = await queryCollection('rawArticles').path('/raw/articles/' + props.article.id.split('/').pop().replace(/(.json)$/, '')).first()
+const matchingPage = ref<{ _inline?: boolean } | Record<string, unknown> | null>(null)
 const modal = ref()
+
+async function loadRawArticle() {
+  const md = props.article.rawMarkdown
+  if (md != null && md !== '') {
+    matchingPage.value = { _inline: true }
+    return
+  }
+  const id =
+    props.article.id.split('/').pop()?.replace(/\.json$/u, '') ?? props.article.id
+  matchingPage.value =
+    (await queryCollection('rawArticles').path(`/raw/articles/${id}`).first()) ?? null
+}
+
+onMounted(() => {
+  loadRawArticle()
+})
+watch(
+  () => props.article.id,
+  () => {
+    loadRawArticle()
+  },
+)
 
 defineShortcuts({
   'e': () => { if (props.isSelected) toggleDetailView() },
@@ -112,7 +136,12 @@ defineShortcuts({
           {{ article.summary_long }}
         </p>
         <p class="m-0 w-full text-end text-xs mdh:text-sm">
-          <a v-if="matchingPage" @click.prevent="showOriginalArticle" :href="article.link" target="_blank">
+          <a
+            v-if="matchingPage"
+            @click.prevent="showOriginalArticle"
+            :href="article.link"
+            target="_blank"
+          >
             Original article
           </a>
           <a v-else :href="article.link" target="_blank">
@@ -148,8 +177,16 @@ defineShortcuts({
         <form method="dialog" class="flex sticky top-2 right-0">
           <button class="ms-auto btn btn-sm btn-circle btn-ghost">✕</button>
         </form>
-        <div class="overflow-y-auto h-full font-serif md:p-2 -mt-4">
-          <ContentRenderer v-if="modalVisible" :value="matchingPage" />
+        <div class="overflow-y-auto h-full font-serif md:p-2 -mt-4 max-h-[80vh]">
+          <ContentRenderer
+            v-if="modalVisible && matchingPage && !('_inline' in matchingPage && matchingPage._inline)"
+            :value="matchingPage"
+          />
+          <pre
+            v-else-if="modalVisible && article.rawMarkdown"
+            class="whitespace-pre-wrap break-words text-sm text-gray-900 font-sans"
+            >{{ article.rawMarkdown }}</pre
+          >
         </div>
       </div>
       <form method="dialog" class="modal-backdrop">

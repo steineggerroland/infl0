@@ -1,15 +1,52 @@
 <script setup lang="ts">
-// Fetch articles from Nuxt Content
-const articles: Array<Object> = await queryCollection('articles').order('publishedAt', 'DESC').limit(10).all()
+type TimelineArticle = {
+    id: string
+    title: string
+    teaser: string
+    summary_long: string
+    link: string
+    publishedAt: string
+    category?: string[]
+    source_type: string
+    tld?: string
+    author?: string
+    rawMarkdown?: string
+}
+
+const { data: timelineData } = await useAsyncData('timeline', () =>
+    $fetch<{ items: { article: TimelineArticle }[] }>('/api/timeline', {
+        query: { limit: 100 },
+    }),
+)
+
+const articles = ref<TimelineArticle[]>([])
+
+if (timelineData.value?.items?.length) {
+    articles.value = timelineData.value.items.map((i) => i.article)
+} else {
+    articles.value = (await queryCollection('articles')
+        .order('publishedAt', 'DESC')
+        .limit(10)
+        .all()) as TimelineArticle[]
+}
+
+const fromDatabase = computed(() => (timelineData.value?.items?.length ?? 0) > 0)
 
 // Track the current article index
 const currentIndex = ref(0)
-const currentArticle = computed(() => articles[currentIndex.value] || null)
+const currentArticle = computed(() => articles.value[currentIndex.value] || null)
+
 watchEffect(() => {
-    if (articles.length - 3 <= currentIndex.value) {
-        queryCollection('articles').order('publishedAt', 'DESC').skip(articles.length).limit(10).all().then((newArticles: any) => {
-            articles.push(...newArticles)
-        })
+    if (fromDatabase.value) return
+    if (articles.value.length - 3 <= currentIndex.value) {
+        queryCollection('articles')
+            .order('publishedAt', 'DESC')
+            .skip(articles.value.length)
+            .limit(10)
+            .all()
+            .then((newArticles: TimelineArticle[]) => {
+                articles.value.push(...newArticles)
+            })
     }
 })
 
