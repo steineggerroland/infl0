@@ -96,6 +96,21 @@ async function refreshAll() {
     await refreshTimeline()
 }
 
+const removingId = ref<string | null>(null)
+
+async function removeFeed(id: string) {
+    removingId.value = id
+    try {
+        await $fetch(`/api/feeds/${id}`, { method: 'DELETE', credentials: 'include' })
+        await refreshFeeds()
+        await refreshTimeline()
+    } catch {
+        /* optional: toast */
+    } finally {
+        removingId.value = null
+    }
+}
+
 // Track the current article index
 const currentIndex = ref(0)
 
@@ -169,6 +184,41 @@ onMounted(() => {
 
 <template>
     <div class="bg-gray-400 text-white h-dvh w-full flex justify-center items-center relative">
+        <details
+            v-if="fromDatabase && feedList.length > 0"
+            class="absolute top-3 start-3 z-20 max-w-[min(100vw-6rem,22rem)]"
+        >
+            <summary
+                class="btn btn-sm btn-ghost text-gray-800 hover:bg-gray-500/30 cursor-pointer list-none [&::-webkit-details-marker]:hidden"
+            >
+                Quellen
+            </summary>
+            <ul
+                class="mt-2 text-sm space-y-2 rounded-lg border border-gray-700 bg-gray-900/95 p-3 text-gray-100 max-h-[40vh] overflow-y-auto shadow-xl"
+            >
+                <li
+                    v-for="f in feedList"
+                    :key="f.id"
+                    class="flex items-start justify-between gap-3 border-b border-gray-700/80 pb-2 last:border-0 last:pb-0"
+                >
+                    <div class="min-w-0 flex-1 break-all">
+                        <div class="font-medium text-gray-200">
+                            {{ f.displayTitle || f.feedUrl }}
+                        </div>
+                        <div class="text-xs text-gray-500 mt-0.5 font-mono">{{ f.crawlKey }}</div>
+                    </div>
+                    <button
+                        type="button"
+                        class="btn btn-ghost btn-xs shrink-0 text-red-400 hover:bg-red-950/40 hover:text-red-300"
+                        :disabled="removingId === f.id"
+                        @click="removeFeed(f.id)"
+                    >
+                        {{ removingId === f.id ? '…' : 'Entfernen' }}
+                    </button>
+                </li>
+            </ul>
+        </details>
+
         <button
             type="button"
             class="absolute top-3 end-3 z-20 btn btn-sm btn-ghost text-gray-800 hover:bg-gray-500/30"
@@ -228,11 +278,25 @@ onMounted(() => {
                     liefert, erscheinen sie hier.
                 </p>
                 <ul class="text-sm space-y-2 mb-6 border border-gray-700 rounded-lg p-3 bg-gray-800/50">
-                    <li v-for="f in feedList" :key="f.id" class="break-all">
-                        <span class="font-medium text-gray-200">{{
-                            f.displayTitle || f.feedUrl
-                        }}</span>
-                        <div class="text-xs text-gray-500 mt-0.5 font-mono">{{ f.crawlKey }}</div>
+                    <li
+                        v-for="f in feedList"
+                        :key="f.id"
+                        class="flex items-start justify-between gap-3 border-b border-gray-700/60 pb-2 last:border-0 last:pb-0"
+                    >
+                        <div class="min-w-0 flex-1 break-all">
+                            <span class="font-medium text-gray-200">{{
+                                f.displayTitle || f.feedUrl
+                            }}</span>
+                            <div class="text-xs text-gray-500 mt-0.5 font-mono">{{ f.crawlKey }}</div>
+                        </div>
+                        <button
+                            type="button"
+                            class="btn btn-ghost btn-xs shrink-0 text-red-400 hover:bg-red-950/40 hover:text-red-300"
+                            :disabled="removingId === f.id"
+                            @click="removeFeed(f.id)"
+                        >
+                            {{ removingId === f.id ? '…' : 'Entfernen' }}
+                        </button>
                     </li>
                 </ul>
                 <button
