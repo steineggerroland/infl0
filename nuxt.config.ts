@@ -4,6 +4,8 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   runtimeConfig: {
     crawlerApiKey: '',
+    /** Set NUXT_REGISTRATION_INVITE_CODE; empty = registration API returns 403 */
+    registrationInviteCode: '',
   },
   devtools: { enabled: true },
   css: ['@/assets/css/tailwind.css'],

@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { SRPClientSession, SRPParameters, SRPRoutines } from 'tssrp6a'
+import { createVerifierAndSalt, SRPParameters, SRPRoutines } from 'tssrp6a'
 
 definePageMeta({
   layout: false,
 })
 
-const route = useRoute()
 const email = ref('')
+const name = ref('')
 const password = ref('')
+const inviteCode = ref('')
 const errorMsg = ref('')
 const pending = ref(false)
 
@@ -19,44 +20,28 @@ async function onSubmit() {
   const pwd = password.value
 
   try {
-    const challenge = await $fetch<{
-      challengeId: string
-      saltHex: string
-      BHex: string
-    }>('/api/auth/srp/challenge', {
-      method: 'POST',
-      body: { email: emailNorm },
-    })
-
+    const routines = new SRPRoutines(new SRPParameters())
+    const { s, v } = await createVerifierAndSalt(routines, emailNorm, pwd)
     password.value = ''
 
-    const routines = new SRPRoutines(new SRPParameters())
-    const client = new SRPClientSession(routines)
-    const clientStep1 = await client.step1(emailNorm, pwd)
-
-    const salt = BigInt(`0x${challenge.saltHex}`)
-    const B = BigInt(`0x${challenge.BHex}`)
-    const clientStep2 = await clientStep1.step2(salt, B)
-
-    const verify = await $fetch<{ M2Hex: string }>('/api/auth/srp/verify', {
+    await $fetch('/api/auth/srp/register', {
       method: 'POST',
       body: {
-        challengeId: challenge.challengeId,
-        AHex: clientStep2.A.toString(16),
-        M1Hex: clientStep2.M1.toString(16),
+        email: emailNorm,
+        name: name.value.trim() || undefined,
+        saltHex: s.toString(16),
+        verifierHex: v.toString(16),
+        inviteCode: inviteCode.value,
       },
       credentials: 'include',
     })
 
-    await clientStep2.step3(BigInt(`0x${verify.M2Hex}`))
-
-    const r = route.query.redirect
-    const target = typeof r === 'string' && r.startsWith('/') ? r : '/'
-    await navigateTo(target)
+    inviteCode.value = ''
+    await navigateTo('/')
   } catch (e: unknown) {
     const err = e as { data?: { statusMessage?: string }; statusMessage?: string }
     errorMsg.value =
-      err?.data?.statusMessage ?? err?.statusMessage ?? 'Login failed'
+      err?.data?.statusMessage ?? err?.statusMessage ?? 'Registration failed'
   } finally {
     pending.value = false
   }
@@ -66,11 +51,21 @@ async function onSubmit() {
 <template>
   <div class="min-h-dvh flex items-center justify-center bg-gray-800 text-gray-100 px-4">
     <div class="w-full max-w-sm rounded-xl bg-gray-900/80 p-8 shadow-xl border border-gray-700">
-      <h1 class="text-xl font-semibold mb-6 text-center">infl0</h1>
+      <h1 class="text-xl font-semibold mb-2 text-center">Create account</h1>
       <p class="text-xs text-gray-500 mb-4 text-center">
-        Sign-in uses SRP-6a: your password is not sent to the server (use HTTPS in production).
+        Password stays in your browser; only an SRP verifier is stored on the server.
       </p>
       <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="text-gray-400">Invite code</span>
+          <input
+            v-model="inviteCode"
+            type="password"
+            autocomplete="off"
+            required
+            class="input input-bordered w-full bg-gray-800 border-gray-600"
+          />
+        </label>
         <label class="flex flex-col gap-1 text-sm">
           <span class="text-gray-400">Email</span>
           <input
@@ -82,24 +77,33 @@ async function onSubmit() {
           />
         </label>
         <label class="flex flex-col gap-1 text-sm">
+          <span class="text-gray-400">Name (optional)</span>
+          <input
+            v-model="name"
+            type="text"
+            autocomplete="name"
+            class="input input-bordered w-full bg-gray-800 border-gray-600"
+          />
+        </label>
+        <label class="flex flex-col gap-1 text-sm">
           <span class="text-gray-400">Password</span>
           <input
             v-model="password"
             type="password"
-            autocomplete="current-password"
+            autocomplete="new-password"
             required
             class="input input-bordered w-full bg-gray-800 border-gray-600"
           />
         </label>
         <p v-if="errorMsg" class="text-sm text-red-400">{{ errorMsg }}</p>
         <button type="submit" class="btn btn-primary w-full" :disabled="pending">
-          {{ pending ? '…' : 'Sign in' }}
+          {{ pending ? '…' : 'Register' }}
         </button>
         <NuxtLink
-          to="/register"
+          to="/login"
           class="text-center text-sm text-gray-400 hover:text-gray-200 underline-offset-2 hover:underline"
         >
-          Create account
+          Already have an account? Sign in
         </NuxtLink>
       </form>
     </div>

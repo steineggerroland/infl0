@@ -1,12 +1,13 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  const isLogin = to.path === '/login'
+  const publicPaths = ['/login', '/register']
+  const isPublic = publicPaths.includes(to.path)
 
   const { data } = await useFetch<{ user: { id: string; email: string | null; name: string | null } | null }>(
     '/api/auth/me',
     { credentials: 'include', key: 'auth-me' },
   )
 
-  if (isLogin) {
+  if (isPublic) {
     if (data.value?.user) {
       return navigateTo('/')
     }
