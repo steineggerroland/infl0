@@ -1,0 +1,96 @@
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Beta: später mehrere Nutzer; aktuell ein Account.
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String?  @unique
+  name         String?
+  passwordHash String?  @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  feeds         UserFeed[]
+  timelineItems UserTimelineItem[]
+
+  @@map("users")
+}
+
+/// Pro Nutzer gepflegte Quelle; crawlKey dedupliziert beim globalen Crawl.
+model UserFeed {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  feedUrl      String   @map("feed_url")
+  crawlKey     String   @map("crawl_key")
+  displayTitle String?  @map("display_title")
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([crawlKey])
+  @@map("user_feeds")
+}
+
+/// Global gespeicherte Artikel (ein Datensatz pro inhaltlicher ID, z. B. Content-Hash / GUID).
+model Article {
+  id           String    @id
+  crawlKey     String    @map("crawl_key")
+  link         String
+  title        String
+  author       String?
+  publishedAt  DateTime? @map("published_at")
+  contentHash  String?   @map("content_hash")
+  contentMd    String?   @map("content_md") @db.Text
+  sourceType   String?   @map("source_type")
+  tld          String?
+  categories   Json?
+  fetchedAt    DateTime  @default(now()) @map("fetched_at")
+
+  enrichment    ArticleEnrichment?
+  timelineItems UserTimelineItem[]
+
+  @@index([crawlKey])
+  @@index([publishedAt])
+  @@map("articles")
+}
+
+model ArticleEnrichment {
+  id                 String   @id @default(uuid()) @db.Uuid
+  articleId          String   @unique @map("article_id")
+  teaser             String?
+  summaryLong        String?  @map("summary_long") @db.Text
+  category           String[] @default([])
+  tags               String[] @default([])
+  seriousnessRating  String?  @map("seriousness_rating")
+  lastUpdated        DateTime @default(now()) @map("last_updated")
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@map("article_enrichments")
+}
+
+/// Materialisierte Timeline: pro Nutzer Verweise auf Artikel (Fan-out bei neuen Artikeln).
+model UserTimelineItem {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  articleId  String   @map("article_id")
+  insertedAt DateTime @default(now()) @map("inserted_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId])
+  @@index([userId, insertedAt(sort: Desc)])
+  @@map("user_timeline_items")
+}

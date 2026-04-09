@@ -2,6 +2,9 @@
 export default defineNuxtConfig({
   modules: ['@nuxt/content', '@nuxtjs/tailwindcss'],
   compatibilityDate: '2024-11-01',
+  runtimeConfig: {
+    crawlerApiKey: '',
+  },
   devtools: { enabled: true },
   css: ['@/assets/css/tailwind.css'],
   postcss: {

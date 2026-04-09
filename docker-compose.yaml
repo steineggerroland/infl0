@@ -1,0 +1,40 @@
+# infl0 + Postgres (Nuxt/Nitro).
+# - App-Container: Hostname "postgres", Port 5432 (internes Netz).
+# - Prisma/npm auf dem Mac: Host 127.0.0.1 + POSTGRES_HOST_PORT (siehe .env.example).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:${POSTGRES_HOST_PORT:-5432}:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-infl0}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+      POSTGRES_DB: ${POSTGRES_DB:-infl0}
+    volumes:
+      - infl0_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '${APP_PORT:-3000}:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-infl0}:${POSTGRES_PASSWORD:-change_me}@postgres:5432/${POSTGRES_DB:-infl0}
+      # Von n8n / Crawler für schreibende API (Artikel, Timeline-Einträge); leer = Endpoints später ablehnen
+      NUXT_CRAWLER_API_KEY: ${NUXT_CRAWLER_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  infl0_pgdata:
