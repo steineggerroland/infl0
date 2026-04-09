@@ -16,7 +16,8 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:push": "prisma db push",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "srp:env": "tsx scripts/generate-srp-env.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -26,17 +27,16 @@
     "@nuxtjs/tailwindcss": "^6",
     "@prisma/client": "^6.19.0",
     "@tailwindcss/typography": "^0.5.15",
-    "bcryptjs": "^2.4.3",
     "daisyui": "^3",
     "date-fns": "^4.1.0",
     "jose": "^6.2.2",
     "nuxt": "^3.14.1592",
     "prisma": "^6.19.0",
+    "tssrp6a": "^3.0.0",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",

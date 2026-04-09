@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -6,26 +5,34 @@ const prisma = new PrismaClient()
 async function main() {
   const email = (process.env.BETA_SEED_EMAIL ?? 'beta@localhost').toLowerCase()
   const name = process.env.BETA_SEED_NAME ?? 'Beta'
-  const plain = process.env.BETA_INITIAL_PASSWORD
+  const srpSalt = process.env.BETA_SRP_SALT_HEX?.trim()
+  const srpVerifier = process.env.BETA_SRP_VERIFIER_HEX?.trim()
 
-  if (!plain) {
+  if (!srpSalt || !srpVerifier) {
     console.warn(
-      'BETA_INITIAL_PASSWORD is not set — user is created/updated without a password (login will not work until you set passwordHash).',
+      'BETA_SRP_SALT_HEX / BETA_SRP_VERIFIER_HEX missing — SRP login will not work until set.',
     )
+    console.warn('Generate locally: SRP_GEN_PASSWORD=… npx tsx scripts/generate-srp-env.ts')
   }
-
-  const passwordHash = plain ? await bcrypt.hash(plain, 12) : null
 
   await prisma.user.upsert({
     where: { email },
-    create: { email, name, passwordHash },
+    create: {
+      email,
+      name,
+      srpSalt: srpSalt ?? null,
+      srpVerifier: srpVerifier ?? null,
+      passwordHash: null,
+    },
     update: {
       name,
-      ...(passwordHash ? { passwordHash } : {}),
+      ...(srpSalt && srpVerifier
+        ? { srpSalt, srpVerifier, passwordHash: null }
+        : {}),
     },
   })
 
-  console.info(`Seed OK: user ${email}${plain ? ' (password from BETA_INITIAL_PASSWORD)' : ''}`)
+  console.info(`Seed OK: user ${email}${srpSalt && srpVerifier ? ' (SRP credentials)' : ''}`)
 }
 
 main()
