@@ -1,0 +1,36 @@
+---
+description: infl0 — npm/npx nur mit Node-Version aus .nvmrc (nvm)
+alwaysApply: true
+---
+
+# Node / npm in diesem Repo
+
+- **`.nvmrc`** legt die Node-Version fest (z. B. `22`). Ohne diese Version **`npm install`**, **`npm ci`**, **`npm update`**, **`npx`** oder andere Befehle, die `node_modules` / `package-lock.json` verändern, **nicht** ausführen — das führt zu inkonsistenten Locks und Engine-Warnungen.
+- Der Nutzer nutzt **fish** lokal; die Agent-Shell ist **bash**. nvm wird in bash über **`nvm.sh`** geladen, nicht über fish-Konfiguration.
+
+## Pflicht-Muster für Terminal-Befehle (bash)
+
+Vor jedem mutierenden npm-Befehl im **Repository-Root `infl0`**:
+
+```bash
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && cd <pfad/zum/infl0-repo> && nvm use && <npm-oder-npx>
+```
+
+Kürzer, wenn schon im infl0-Root:
+
+```bash
+./scripts/with-nvm.sh npm ci
+./scripts/with-nvm.sh npm install marked
+./scripts/with-nvm.sh npx prisma migrate dev
+```
+
+(`scripts/with-nvm.sh` muss ausführbar sein: `chmod +x scripts/with-nvm.sh`.)
+
+## Wenn nvm in der Umgebung fehlt
+
+Keine `npm install` / `npm ci` / lockfile-ändernden Befehle ausführen. Stattdessen den Nutzer bitten, lokal nach **`nvm use`** (fish: eigene Konfiguration) zu installieren.
+
+## Ausnahmen
+
+- **`node -v` / Nur-Lese-Checks** ohne Installation sind unkritisch.
+- **TopicKnowledgeCrawler** hat hier kein `.nvmrc`; diese Regel betrifft primär **infl0**.
