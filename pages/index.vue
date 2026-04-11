@@ -35,13 +35,16 @@ const timelineHasMore = ref(true)
 const timelinePending = ref(false)
 const timelineScrollEl = ref<HTMLElement | null>(null)
 
+/** SSR: leitet `Cookie` vom eingehenden Request an interne API-Calls weiter (reines `$fetch` tut das nicht). */
+const requestFetch = useRequestFetch()
+
 async function loadTimelinePage(reset: boolean) {
     if (timelinePending.value) return
     if (!reset && !timelineHasMore.value) return
     timelinePending.value = true
     try {
         const offset = reset ? 0 : articles.value.length
-        const res = await $fetch<{ items: TimelineArticle[]; hasMore: boolean }>('/api/timeline', {
+        const res = await requestFetch<{ items: TimelineArticle[]; hasMore: boolean }>('/api/timeline', {
             credentials: 'include',
             query: { limit: PAGE_SIZE, offset },
         })
