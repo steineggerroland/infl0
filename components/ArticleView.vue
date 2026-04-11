@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import DOMPurify from 'dompurify'
+import { marked } from 'marked'
+
+marked.setOptions({ gfm: true })
+
 // Define the props for the component
 const props = defineProps({
   article: {
@@ -53,6 +58,19 @@ function toggleOriginalArticle() {
 
 const matchingPage = ref<{ _inline?: boolean } | Record<string, unknown> | null>(null)
 const modal = ref()
+
+/** DB-sourced markdown: parse + sanitize (client only — DOMPurify needs DOM). */
+const renderedRawMarkdown = computed(() => {
+  const md = props.article.rawMarkdown
+  if (md == null || md.trim() === '') return ''
+  if (import.meta.server) return ''
+  try {
+    const html = marked.parse(md) as string
+    return DOMPurify.sanitize(html)
+  } catch {
+    return ''
+  }
+})
 
 async function loadRawArticle() {
   const md = props.article.rawMarkdown
@@ -181,6 +199,11 @@ defineShortcuts({
           <ContentRenderer
             v-if="modalVisible && matchingPage && !('_inline' in matchingPage && matchingPage._inline)"
             :value="matchingPage"
+          />
+          <div
+            v-else-if="modalVisible && article.rawMarkdown && renderedRawMarkdown"
+            class="article-markdown prose prose-neutral prose-sm sm:prose-base max-w-none text-gray-900 prose-headings:font-semibold prose-a:text-blue-700 prose-pre:rounded-lg prose-pre:bg-gray-100 prose-code:text-pink-900 prose-code:bg-pink-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded"
+            v-html="renderedRawMarkdown"
           />
           <pre
             v-else-if="modalVisible && article.rawMarkdown"
