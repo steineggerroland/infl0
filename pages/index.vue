@@ -27,7 +27,7 @@ async function logout() {
 }
 
 const { data: timelineData, refresh: refreshTimeline } = await useFetch<{
-    items: { article: TimelineArticle }[]
+    items: TimelineArticle[]
 }>('/api/timeline', {
     query: { limit: 100 },
     credentials: 'include',
@@ -42,24 +42,12 @@ const { data: feedsData, refresh: refreshFeeds } = await useFetch<{ feeds: UserF
     },
 )
 
-const articles = ref<TimelineArticle[]>([])
+const articles = computed(() => timelineData.value?.items ?? [])
 
-const fromDatabase = computed(() => (timelineData.value?.items?.length ?? 0) > 0)
+const fromDatabase = computed(() => articles.value.length > 0)
 const feedList = computed(() => feedsData.value?.feeds ?? [])
 const showOnboarding = computed(() => !fromDatabase.value && feedList.value.length === 0)
 const showWaiting = computed(() => !fromDatabase.value && feedList.value.length > 0)
-
-watch(
-    () => timelineData.value?.items,
-    (items) => {
-        if (items?.length) {
-            articles.value = items.map((i) => i.article)
-        } else {
-            articles.value = []
-        }
-    },
-    { immediate: true, deep: true },
-)
 
 const newFeedUrl = ref('')
 const newDisplayTitle = ref('')
@@ -171,7 +159,8 @@ onMounted(() => {
 
     const detectCurrentArticleHandler = () => {
         const currentEl = articleContainers.value.find((el) => isMoreThan50PercentVisible(el))
-        currentIndex.value = articleContainers.value.indexOf(currentEl)
+        currentIndex.value =
+            currentEl !== undefined ? articleContainers.value.indexOf(currentEl) : -1
     }
 
     scrollContainer?.addEventListener('scroll', detectCurrentArticleHandler)

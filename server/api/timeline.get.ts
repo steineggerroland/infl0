@@ -37,17 +37,17 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
-  const user = await prisma.user.findUnique({
+  const userExists = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true },
+    select: { id: true },
   })
-  if (!user) {
+  if (!userExists) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
   const rows = await prisma.userTimelineItem.findMany({
     where: { userId },
-    orderBy: { insertedAt: 'desc' },
+    orderBy: { article: { publishedAt: 'desc' } },
     take: limit,
     include: {
       article: { include: { enrichment: true } },
@@ -55,10 +55,6 @@ export default defineEventHandler(async (event) => {
   })
 
   return {
-    user: { id: user.id, email: user.email },
-    items: rows.map((row) => ({
-      insertedAt: row.insertedAt.toISOString(),
-      article: mapArticle(row.article),
-    })),
+    items: rows.map((row) => mapArticle(row.article)),
   }
 })
