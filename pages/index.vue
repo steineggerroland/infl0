@@ -26,13 +26,47 @@ async function logout() {
     await navigateTo('/login')
 }
 
-const { data: timelineData, refresh: refreshTimeline } = await useFetch<{
-    items: TimelineArticle[]
-}>('/api/timeline', {
-    query: { limit: 100 },
-    credentials: 'include',
-    key: 'timeline',
-})
+const PAGE_SIZE = 20
+/** Load next page when the user is this many pixels from the bottom (prefetch). */
+const SCROLL_PRELOAD_PX = 520
+
+const articles = ref<TimelineArticle[]>([])
+const timelineHasMore = ref(true)
+const timelinePending = ref(false)
+const timelineScrollEl = ref<HTMLElement | null>(null)
+
+async function loadTimelinePage(reset: boolean) {
+    if (timelinePending.value) return
+    if (!reset && !timelineHasMore.value) return
+    timelinePending.value = true
+    try {
+        const offset = reset ? 0 : articles.value.length
+        const res = await $fetch<{ items: TimelineArticle[]; hasMore: boolean }>('/api/timeline', {
+            credentials: 'include',
+            query: { limit: PAGE_SIZE, offset },
+        })
+        if (reset) {
+            articles.value = res.items
+        } else if (res.items.length > 0) {
+            articles.value.push(...res.items)
+        }
+        timelineHasMore.value = res.hasMore
+    } finally {
+        timelinePending.value = false
+    }
+}
+
+async function fillTimelineUntilScrollableOrDone() {
+    for (;;) {
+        const el = timelineScrollEl.value
+        if (!el || timelinePending.value || !timelineHasMore.value) return
+        if (el.scrollHeight > el.clientHeight + SCROLL_PRELOAD_PX) return
+        await loadTimelinePage(false)
+        await nextTick()
+    }
+}
+
+await loadTimelinePage(true)
 
 const { data: feedsData, refresh: refreshFeeds } = await useFetch<{ feeds: UserFeedRow[] }>(
     '/api/feeds',
@@ -41,8 +75,6 @@ const { data: feedsData, refresh: refreshFeeds } = await useFetch<{ feeds: UserF
         key: 'user-feeds',
     },
 )
-
-const articles = computed(() => timelineData.value?.items ?? [])
 
 const fromDatabase = computed(() => articles.value.length > 0)
 const feedList = computed(() => feedsData.value?.feeds ?? [])
@@ -69,7 +101,7 @@ async function addFeed() {
         newFeedUrl.value = ''
         newDisplayTitle.value = ''
         await refreshFeeds()
-        await refreshTimeline()
+        await loadTimelinePage(true)
     } catch (e: unknown) {
         const err = e as { data?: { statusMessage?: string }; statusMessage?: string }
         addError.value =
@@ -81,7 +113,7 @@ async function addFeed() {
 
 async function refreshAll() {
     await refreshFeeds()
-    await refreshTimeline()
+    await loadTimelinePage(true)
 }
 
 const removingId = ref<string | null>(null)
@@ -91,7 +123,7 @@ async function removeFeed(id: string) {
     try {
         await $fetch(`/api/feeds/${id}`, { method: 'DELETE', credentials: 'include' })
         await refreshFeeds()
-        await refreshTimeline()
+        await loadTimelinePage(true)
     } catch {
         /* optional: toast */
     } finally {
@@ -105,14 +137,39 @@ const currentIndex = ref(0)
 watch(
     () => articles.value.length,
     (len) => {
+        if (articleContainers.value.length > len) {
+            articleContainers.value.length = len
+        }
         if (currentIndex.value >= len) {
             currentIndex.value = Math.max(0, len - 1)
         }
     },
 )
 
-// Store references to all article containers
-const articleContainers = ref<HTMLElement[]>([])
+/** One slot per article index (stable after infinite scroll append). */
+const articleContainers = ref<(HTMLElement | null)[]>([])
+
+function setArticleEl(el: unknown, index: number) {
+    while (articleContainers.value.length <= index) {
+        articleContainers.value.push(null)
+    }
+    articleContainers.value[index] = el instanceof HTMLElement ? el : null
+}
+
+function onTimelineScroll() {
+    const el = timelineScrollEl.value
+    if (!el) return
+
+    if (!timelinePending.value && timelineHasMore.value) {
+        if (el.scrollTop + el.clientHeight >= el.scrollHeight - SCROLL_PRELOAD_PX) {
+            void loadTimelinePage(false)
+        }
+    }
+
+    const currentEl = articleContainers.value.find((node) => node && isMoreThan50PercentVisible(node))
+    currentIndex.value =
+        currentEl !== undefined ? articleContainers.value.indexOf(currentEl) : -1
+}
 
 function gotoNextArticle(event: KeyboardEvent) {
     event.stopPropagation()
@@ -141,12 +198,6 @@ function isMoreThan50PercentVisible(element: HTMLElement): boolean {
     return visibleHeight > rect.height / 2
 }
 
-const setItemRef = (el: unknown) => {
-    if (el instanceof HTMLElement && !articleContainers.value.includes(el)) {
-        articleContainers.value.push(el)
-    }
-}
-
 defineShortcuts({
     arrowup: gotoPreviousArticle,
     w: gotoPreviousArticle,
@@ -154,20 +205,9 @@ defineShortcuts({
     s: gotoNextArticle,
 })
 
-onMounted(() => {
-    const scrollContainer = document.querySelector('.scroll-container')
-
-    const detectCurrentArticleHandler = () => {
-        const currentEl = articleContainers.value.find((el) => isMoreThan50PercentVisible(el))
-        currentIndex.value =
-            currentEl !== undefined ? articleContainers.value.indexOf(currentEl) : -1
-    }
-
-    scrollContainer?.addEventListener('scroll', detectCurrentArticleHandler)
-
-    onUnmounted(() => {
-        scrollContainer?.removeEventListener('scroll', detectCurrentArticleHandler)
-    })
+onMounted(async () => {
+    await nextTick()
+    await fillTimelineUntilScrollableOrDone()
 })
 </script>
 
@@ -321,13 +361,15 @@ onMounted(() => {
         <!-- Timeline with articles -->
         <div
             v-else
+            ref="timelineScrollEl"
             class="scroll-container relative h-dvh w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory"
+            @scroll.passive="onTimelineScroll"
         >
             <div
                 class="my-1 max-w-full landscape:aspect-smartphone landscape:h-[95%] portrait:h-full snap-start mx-auto snap-always"
                 v-for="(article, index) in articles"
                 :key="article.id"
-                :ref="setItemRef"
+                :ref="(el) => setArticleEl(el, index)"
             >
                 <ArticleView
                     class="article rounded-xl"
@@ -335,6 +377,13 @@ onMounted(() => {
                     :article="article"
                     :is-selected="index === currentIndex"
                 />
+            </div>
+            <div
+                v-if="timelinePending && articles.length > 0 && timelineHasMore"
+                class="h-24 w-full shrink-0 flex items-center justify-center opacity-40 pointer-events-none"
+                aria-hidden="true"
+            >
+                <span class="loading loading-spinner loading-md text-gray-800" />
             </div>
         </div>
     </div>

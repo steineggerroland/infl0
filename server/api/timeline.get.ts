@@ -25,12 +25,14 @@ function mapArticle(a: ArticleWithEnrichment) {
 }
 
 /**
- * GET /api/timeline?limit=30
+ * GET /api/timeline?limit=20&offset=0
+ * Pagination: stable order by article.publishedAt desc, then article.id desc.
  * Requires session cookie (see POST /api/auth/login).
  */
 export default defineEventHandler(async (event) => {
   const q = getQuery(event)
-  const limit = Math.min(100, Math.max(1, Number(q.limit) || 30))
+  const limit = Math.min(100, Math.max(1, Number(q.limit) || 20))
+  const offset = Math.max(0, Math.min(50_000, Number(q.offset) || 0))
 
   const userId = await getSessionUserId(event)
   if (!userId) {
@@ -47,14 +49,19 @@ export default defineEventHandler(async (event) => {
 
   const rows = await prisma.userTimelineItem.findMany({
     where: { userId },
-    orderBy: { article: { publishedAt: 'desc' } },
-    take: limit,
+    orderBy: [{ article: { publishedAt: 'desc' } }, { article: { id: 'desc' } }],
+    skip: offset,
+    take: limit + 1,
     include: {
       article: { include: { enrichment: true } },
     },
   })
 
+  const hasMore = rows.length > limit
+  const page = hasMore ? rows.slice(0, limit) : rows
+
   return {
-    items: rows.map((row) => mapArticle(row.article)),
+    items: page.map((row) => mapArticle(row.article)),
+    hasMore,
   }
 })
