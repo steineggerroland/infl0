@@ -39,6 +39,8 @@ function asJson(v: unknown): Prisma.InputJsonValue | typeof Prisma.JsonNull | un
  * Article fields align with TopicKnowledgeCrawler processed JSON: id, title, link,
  * author, publishedAt, categories, content_md, source_type, tld, content_hash | hash,
  * teaser, summary_long, category, tags, seriousness_rating
+ *
+ * Related: GET /api/crawler/sources — aktive Feeds (crawlKey) für n8n/Data-Table-Sync.
  */
 export default defineEventHandler(async (event) => {
   requireCrawlerAuth(event)
