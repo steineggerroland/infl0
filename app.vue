@@ -2,7 +2,9 @@
   <div>
     <NuxtRouteAnnouncer />
     <ToastHost />
-    <NuxtPage />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>
 

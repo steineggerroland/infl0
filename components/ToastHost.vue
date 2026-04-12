@@ -10,7 +10,7 @@ function alertClass(variant: string) {
 
 <template>
   <div
-    class="toast toast-top toast-end z-[100] flex w-auto max-w-none flex-col items-end gap-2 p-4 pointer-events-none"
+    class="toast toast-top toast-end z-[600] flex w-auto max-w-none flex-col items-end gap-2 p-4 pointer-events-none"
   >
     <TransitionGroup name="toast">
       <div
