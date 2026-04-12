@@ -1,5 +1,5 @@
 import { createError, readBody } from 'h3'
-import type { Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { prisma } from '../../utils/prisma'
 import { requireCrawlerAuth } from '../../utils/crawler-auth'
 
@@ -40,7 +40,7 @@ function asJson(v: unknown): Prisma.InputJsonValue | typeof Prisma.JsonNull | un
  * author, publishedAt, categories, content_md, source_type, tld, content_hash | hash,
  * teaser, summary_long, category, tags, seriousness_rating
  *
- * Related: GET /api/crawler/sources — aktive Feeds (crawlKey) für n8n/Data-Table-Sync.
+ * Related: GET /api/crawler/sources — active feeds (crawlKey) for n8n / data-table sync.
  */
 export default defineEventHandler(async (event) => {
   requireCrawlerAuth(event)

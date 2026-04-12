@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { format } from 'date-fns'
 import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 
@@ -16,16 +17,15 @@ const props = defineProps({
       publishedAt: string
       category?: string[]
       source_type: string
-      /** Wenn gesetzt (z. B. aus DB), kein Nuxt-Content-Markdown nötig */
+      /** When set (e.g. from DB), Nuxt Content markdown file is not required */
       rawMarkdown?: string
+      tld?: string
+      author?: string
     },
     required: true,
   },
   isSelected: Boolean,
 })
-
-// Import date-fns for date formatting
-import { format } from 'date-fns'
 
 // Function to format the article's publication date
 const formatDate = (dateString: string) => {
@@ -80,8 +80,9 @@ async function loadRawArticle() {
   }
   const id =
     props.article.id.split('/').pop()?.replace(/\.json$/u, '') ?? props.article.id
+  const page = await queryCollection('rawArticles').path(`/raw/articles/${id}`).first()
   matchingPage.value =
-    (await queryCollection('rawArticles').path(`/raw/articles/${id}`).first()) ?? null
+    page == null ? null : (page as unknown as Record<string, unknown>)
 }
 
 onMounted(() => {
@@ -200,11 +201,13 @@ defineShortcuts({
             v-if="modalVisible && matchingPage && !('_inline' in matchingPage && matchingPage._inline)"
             :value="matchingPage"
           />
+          <!-- eslint-disable vue/no-v-html -- Markdown sanitized with DOMPurify -->
           <div
             v-else-if="modalVisible && article.rawMarkdown && renderedRawMarkdown"
             class="article-markdown prose prose-neutral prose-sm sm:prose-base max-w-none text-gray-900 prose-headings:font-semibold prose-a:text-blue-700 prose-pre:rounded-lg prose-pre:bg-gray-100 prose-code:text-pink-900 prose-code:bg-pink-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded"
             v-html="renderedRawMarkdown"
           />
+          <!-- eslint-enable vue/no-v-html -->
           <pre
             v-else-if="modalVisible && article.rawMarkdown"
             class="whitespace-pre-wrap break-words text-sm text-gray-900 font-sans"

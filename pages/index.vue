@@ -35,7 +35,7 @@ const timelineHasMore = ref(true)
 const timelinePending = ref(false)
 const timelineScrollEl = ref<HTMLElement | null>(null)
 
-/** SSR: leitet `Cookie` vom eingehenden Request an interne API-Calls weiter (reines `$fetch` tut das nicht). */
+/** SSR: forward `Cookie` from the incoming request to internal API calls (plain `$fetch` does not). */
 const requestFetch = useRequestFetch()
 
 async function loadTimelinePage(reset: boolean) {
@@ -108,7 +108,7 @@ async function addFeed() {
     } catch (e: unknown) {
         const err = e as { data?: { statusMessage?: string }; statusMessage?: string }
         addError.value =
-            err?.data?.statusMessage ?? err?.statusMessage ?? 'Quelle konnte nicht gespeichert werden'
+            err?.data?.statusMessage ?? err?.statusMessage ?? 'Could not save source'
     } finally {
         addPending.value = false
     }
@@ -223,7 +223,7 @@ onMounted(async () => {
             <summary
                 class="btn btn-sm btn-ghost text-gray-800 hover:bg-gray-500/30 cursor-pointer list-none [&::-webkit-details-marker]:hidden"
             >
-                Quellen
+                Sources
             </summary>
             <ul
                 class="mt-2 text-sm space-y-2 rounded-lg border border-gray-700 bg-gray-900/95 p-3 text-gray-100 max-h-[40vh] overflow-y-auto shadow-xl"
@@ -245,7 +245,7 @@ onMounted(async () => {
                         :disabled="removingId === f.id"
                         @click="removeFeed(f.id)"
                     >
-                        {{ removingId === f.id ? '…' : 'Entfernen' }}
+                        {{ removingId === f.id ? '…' : 'Remove' }}
                     </button>
                 </li>
             </ul>
@@ -265,11 +265,11 @@ onMounted(async () => {
             class="relative z-10 w-full max-w-md mx-auto px-4 py-8 text-gray-900"
         >
             <div class="rounded-xl bg-gray-900/90 text-gray-100 p-8 shadow-xl border border-gray-700">
-                <h1 class="text-xl font-semibold mb-2">Quellen hinzufügen</h1>
+                <h1 class="text-xl font-semibold mb-2">Add sources</h1>
                 <p class="text-sm text-gray-400 mb-6">
-                    Deine Timeline zeigt nur Artikel aus Quellen, die du hier einträgst. Der Crawler muss
-                    dieselbe Feed-URL (normalisiert als <span class="text-gray-500">crawlKey</span>) beim
-                    Import verwenden.
+                    Your timeline only shows articles from sources you add here. The crawler must use the
+                    same feed URL (normalized as <span class="text-gray-500">crawlKey</span>) when
+                    importing.
                 </p>
                 <form class="flex flex-col gap-4" @submit.prevent="addFeed">
                     <label class="flex flex-col gap-1 text-sm">
@@ -283,7 +283,7 @@ onMounted(async () => {
                         />
                     </label>
                     <label class="flex flex-col gap-1 text-sm">
-                        <span class="text-gray-400">Anzeigename (optional)</span>
+                        <span class="text-gray-400">Display name (optional)</span>
                         <input
                             v-model="newDisplayTitle"
                             type="text"
@@ -292,7 +292,7 @@ onMounted(async () => {
                     </label>
                     <p v-if="addError" class="text-sm text-red-400">{{ addError }}</p>
                     <button type="submit" class="btn btn-primary w-full" :disabled="addPending">
-                        {{ addPending ? '…' : 'Quelle speichern' }}
+                        {{ addPending ? '…' : 'Save source' }}
                     </button>
                 </form>
             </div>
@@ -304,10 +304,10 @@ onMounted(async () => {
             class="relative z-10 w-full max-w-lg mx-auto px-4 py-8 text-gray-900"
         >
             <div class="rounded-xl bg-gray-900/90 text-gray-100 p-8 shadow-xl border border-gray-700">
-                <h1 class="text-xl font-semibold mb-2">Timeline wird vorbereitet</h1>
+                <h1 class="text-xl font-semibold mb-2">Preparing your timeline</h1>
                 <p class="text-sm text-gray-400 mb-4">
-                    Sobald der Crawler Artikel mit passendem <code class="text-gray-500">crawlKey</code>
-                    liefert, erscheinen sie hier.
+                    Once the crawler delivers articles with a matching <code class="text-gray-500">crawlKey</code>,
+                    they will appear here.
                 </p>
                 <ul class="text-sm space-y-2 mb-6 border border-gray-700 rounded-lg p-3 bg-gray-800/50">
                     <li
@@ -327,7 +327,7 @@ onMounted(async () => {
                             :disabled="removingId === f.id"
                             @click="removeFeed(f.id)"
                         >
-                            {{ removingId === f.id ? '…' : 'Entfernen' }}
+                            {{ removingId === f.id ? '…' : 'Remove' }}
                         </button>
                     </li>
                 </ul>
@@ -336,9 +336,9 @@ onMounted(async () => {
                     class="btn btn-outline btn-sm border-gray-600 mb-6"
                     @click="refreshAll"
                 >
-                    Timeline aktualisieren
+                    Refresh timeline
                 </button>
-                <h2 class="text-sm font-medium text-gray-300 mb-2">Weitere Quelle</h2>
+                <h2 class="text-sm font-medium text-gray-300 mb-2">Add another source</h2>
                 <form class="flex flex-col gap-3" @submit.prevent="addFeed">
                     <input
                         v-model="newFeedUrl"
@@ -350,12 +350,12 @@ onMounted(async () => {
                     <input
                         v-model="newDisplayTitle"
                         type="text"
-                        placeholder="Anzeigename (optional)"
+                        placeholder="Display name (optional)"
                         class="input input-bordered input-sm w-full bg-gray-800 border-gray-600"
                     />
                     <p v-if="addError" class="text-sm text-red-400">{{ addError }}</p>
                     <button type="submit" class="btn btn-primary btn-sm w-full" :disabled="addPending">
-                        {{ addPending ? '…' : 'Hinzufügen' }}
+                        {{ addPending ? '…' : 'Add' }}
                     </button>
                 </form>
             </div>

@@ -1,6 +1,6 @@
 import { createError, readBody } from 'h3'
 import { prisma } from '../../../utils/prisma'
-import { bigintToHex, srpServerStep1, storeSrpChallenge } from '../../../utils/srp'
+import { srpServerStep1, storeSrpChallenge } from '../../../utils/srp'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event).catch(() => null)

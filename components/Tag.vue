@@ -1,7 +1,8 @@
 <script setup lang="ts">
-// Define the props for the component
+defineOptions({ name: 'ArticleTag' })
+
 defineProps({
-    tag: String
+  tag: String,
 })
 </script>
 <template>

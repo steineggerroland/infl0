@@ -1,5 +1,5 @@
 /**
- * Normalisiert eine Feed-URL zu einem stabilen crawlKey (muss mit dem Crawler übereinstimmen).
+ * Normalize a feed URL to a stable crawlKey (must match the crawler).
  */
 export function normalizeFeedUrl(input: string): string {
   const trimmed = input.trim()

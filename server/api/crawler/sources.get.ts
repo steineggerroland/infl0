@@ -5,8 +5,8 @@ import { requireCrawlerAuth } from '../../utils/crawler-auth'
  * GET /api/crawler/sources
  * Header: X-Crawler-Key or Authorization: Bearer <NUXT_CRAWLER_API_KEY>
  *
- * Liefert alle **aktiven** Nutzer-Feeds, pro `crawlKey` dedupliziert (ein Eintrag pro Quelle),
- * damit n8n die Data Table `crawl_sources` aus infl0 befüllen kann.
+ * Returns all **active** user feeds, deduplicated by `crawlKey` (one row per source)
+ * so n8n can fill the `crawl_sources` data table from infl0.
  */
 export default defineEventHandler(async (event) => {
   requireCrawlerAuth(event)

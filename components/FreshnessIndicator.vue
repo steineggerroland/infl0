@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { isToday, isYesterday, isThisWeek, formatDistanceToNow, parseISO } from 'date-fns'
+import { isToday, isYesterday, isThisWeek, formatDistanceToNow } from 'date-fns'
 
-// Props: Datum des Artikels
+// Props: article publication date
 const props = defineProps({
     publishedAt: {
         type: String,
@@ -9,7 +9,7 @@ const props = defineProps({
     },
 })
 
-// Berechnung des Aktualitätsindikators
+// Freshness label and color from publication date
 const freshness = computed(() => {
     try {
         const date = new Date(props.publishedAt)
@@ -26,9 +26,8 @@ const freshness = computed(() => {
                 : { label: 'Older', color: 'text-gray-400' }
         }
     } catch {
-        console.error(typeof props.publishedAt);
-
-        return ''
+        console.error(typeof props.publishedAt)
+        return { label: '—', color: 'text-gray-400' }
     }
 })
 </script>

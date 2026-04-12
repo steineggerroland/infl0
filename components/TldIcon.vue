@@ -1,11 +1,20 @@
 <script setup lang="ts">
 const props = defineProps({
-    tld: String
+  tld: {
+    type: String,
+    required: true,
+  },
 })
 const shortHand = computed(() => {
-    const domain: String = props.tld.split('.')[0]
-    return domain.split('-').map(word => word.slice(0, 1)).join('').concat(domain.slice(1, 2)).slice(0, 2).toUpperCase().replace(/S[S|A]/g, 'SZ')
-
+  const domain: string = props.tld.split('.')[0]
+  return domain
+    .split('-')
+    .map((word) => word.slice(0, 1))
+    .join('')
+    .concat(domain.slice(1, 2))
+    .slice(0, 2)
+    .toUpperCase()
+    .replace(/S[S|A]/g, 'SZ')
 })
 </script>
 

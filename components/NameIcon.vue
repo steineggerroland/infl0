@@ -3,7 +3,7 @@ const props = defineProps({
     name: String
 })
 const shortHand = computed(() => {
-    const name = props.name.replaceAll(/([^a-zA-Z0-9])/g, ' ')
+    const name = (props.name ?? '').replaceAll(/([^a-zA-Z0-9])/g, ' ')
     return name.split(' ').map(word => word.slice(0, 1)).join('').concat(name.slice(1, 2)).slice(0, 2).toUpperCase().replace(/S[S|A]/g, 'SZ').replace(/[A|H]H/g, 'H0')
 })
 </script>
