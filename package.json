@@ -17,6 +17,7 @@
     "db:studio": "prisma studio",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
+    "devData": "tsx scripts/dev-data.ts",
     "srp:env": "tsx scripts/generate-srp-env.ts"
   },
   "prisma": {

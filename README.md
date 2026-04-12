@@ -38,6 +38,17 @@ yarn dev
 bun run dev
 ```
 
+## Lokale Testdaten (DB)
+
+Nach Migration und gesetzter `DATABASE_URL`:
+
+```bash
+nvm use
+npm run devData
+```
+
+Legt `dev@localhost` an (Passwort: `dev`), zwei Beispiel-Feeds und drei Artikel inkl. Enrichment und Timeline. In `production` nur mit `ALLOW_DEV_DATA=1` (nicht empfohlen).
+
 ## Production
 
 Build the application for production:
