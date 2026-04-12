@@ -3,6 +3,7 @@ import { de, enUS } from 'date-fns/locale'
 import { format } from 'date-fns'
 import DOMPurify from 'dompurify'
 import { marked } from 'marked'
+import type { ArticleEngagementSegment } from '~/utils/article-engagement'
 
 const { t, locale } = useI18n()
 const dateLocale = computed(() => (locale.value === 'de' ? de : enUS))
@@ -88,14 +89,73 @@ async function loadRawArticle() {
     page == null ? null : (page as unknown as Record<string, unknown>)
 }
 
-onMounted(() => {
-  loadRawArticle()
-})
 watch(
   () => props.article.id,
   () => {
     loadRawArticle()
   },
+)
+
+const engagement = useEngagementTrackingPrefs()
+
+let dwellStartMs: number | null = null
+let dwellSegment: ArticleEngagementSegment | null = null
+
+function resolveEngagementSegment(): ArticleEngagementSegment | null {
+  if (!engagement.loaded.value || !engagement.enabled.value) return null
+  if (!props.isSelected) return null
+  if (import.meta.server) return null
+  if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return null
+  if (modalVisible.value) return 'body'
+  if (isDetailView.value) return 'summary'
+  return 'teaser'
+}
+
+function flushEngagementDwell() {
+  if (dwellStartMs == null || dwellSegment == null) return
+  const ms = performance.now() - dwellStartMs
+  const seg = dwellSegment
+  dwellStartMs = null
+  dwellSegment = null
+  void engagement.reportDwell(props.article.id, seg, ms)
+}
+
+function syncEngagementDwell() {
+  const next = resolveEngagementSegment()
+  if (next === dwellSegment && dwellStartMs != null) return
+  flushEngagementDwell()
+  if (next != null) {
+    dwellSegment = next
+    dwellStartMs = performance.now()
+  }
+}
+
+function onVisibilityForEngagement() {
+  syncEngagementDwell()
+}
+
+onMounted(async () => {
+  loadRawArticle()
+  await engagement.ensureLoaded()
+  if (import.meta.client) {
+    document.addEventListener('visibilitychange', onVisibilityForEngagement)
+    syncEngagementDwell()
+  }
+})
+
+onBeforeUnmount(() => {
+  if (import.meta.client) {
+    document.removeEventListener('visibilitychange', onVisibilityForEngagement)
+  }
+  flushEngagementDwell()
+})
+
+watch(
+  [isDetailView, modalVisible, () => props.isSelected, engagement.enabled, engagement.loaded],
+  () => {
+    syncEngagementDwell()
+  },
+  { flush: 'post' },
 )
 
 defineShortcuts({

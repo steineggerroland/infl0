@@ -15,8 +15,15 @@
     "timeline": "Timeline",
     "feeds": "Feed-Verwaltung",
     "timelineScore": "Timeline-Score",
+    "privacy": "Datenschutz & Daten",
     "language": "Sprache",
     "logOut": "Abmelden"
+  },
+  "settingsPrivacy": {
+    "title": "Datenschutz & Personalisierungsdaten",
+    "intro": "Standardmäßig aus (Opt-in). Wenn du es einschaltest, erfassen wir, wie lange du jeden Teil eines Artikels siehst. Jede Fokusphase wird gesendet, wenn du wechselst (anderer Bereich, anderer Artikel oder ausgeblendeter Tab). Im Browser wird nichts aufsummiert.",
+    "trackingLabel": "Lesezeit erfassen (Teaser, Zusammenfassung, Volltext)",
+    "trackingHint": "Wenn aktiv, protokollieren wir jede Betrachtung auf dem Server für Personalisierung. Ab etwa 2 Sekunden Gesamtdauer am Artikel wird er in deiner Timeline als gelesen markiert. Du kannst das jederzeit abschalten; dann werden keine neuen Ereignisse mehr gesendet."
   },
   "settingsTimeline": {
     "title": "Gewichtung Timeline-Score",

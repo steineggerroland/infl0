@@ -15,8 +15,15 @@
     "timeline": "Timeline",
     "feeds": "Feed management",
     "timelineScore": "Timeline score",
+    "privacy": "Privacy & data",
     "language": "Language",
     "logOut": "Log out"
+  },
+  "settingsPrivacy": {
+    "title": "Privacy & personalization data",
+    "intro": "Off by default (opt-in). When enabled, we record how long you view each part of an article. Each focus period is sent when you switch away (other section, another article, or hidden tab). Nothing is accumulated in the browser.",
+    "trackingLabel": "Record reading time (teaser, summary, full text)",
+    "trackingHint": "When on, we log each viewing session on the server for personalization. If total time on an article reaches about 2 seconds, it is marked as read on your timeline. Turn off anytime; the app stops sending new events."
   },
   "settingsTimeline": {
     "title": "Timeline score weights",
