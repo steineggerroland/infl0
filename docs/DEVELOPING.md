@@ -42,6 +42,11 @@ Without a suitable Node version, ESLint plugins or `postinstall` can fail (e.g. 
 
 [`@nuxt/eslint`](https://eslint.nuxt.com/) generates a project-specific **flat config** (ESLint 9). Add rules or ignores in **`eslint.config.mjs`** via `withNuxt(...)`.
 
+## Docker / Compose
+
+- **`npm ci` in the Dockerfile** needs a `package-lock.json` committed from a compatible **npm** version. The image runs **`npm install -g npm@11`** so `npm ci` matches lockfiles produced by npm 11 locally; do not run `npm install` before `npm ci` in the Dockerfile (that does not repair an out-of-sync lock and hides the real fix).
+- If Compose warns **`The "z" variable is not set`**, a value (often `POSTGRES_PASSWORD`) likely contains **`$z`** (or similar). Use a password without `$`, URL-encode it in a single `DATABASE_URL` in `.env`, or adjust Compose per [variable interpolation](https://docs.docker.com/compose/environment-variables/variable-interpolation/).
+
 ## Dependencies and security
 
 - After changing dependencies, run **`npm audit`**; use **`npm audit fix`** to apply compatible upgrades (keeps `package-lock.json` consistent).

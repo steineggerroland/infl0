@@ -29,6 +29,8 @@ services:
       - '${APP_PORT:-3000}:3000'
     environment:
       NODE_ENV: production
+      # If POSTGRES_PASSWORD contains `$`, Compose treats `$x` as a variable (e.g. WARN "z" for `$z`).
+      # Fix: use a password without `$`, or set DATABASE_URL in .env to the full URL and reference only that here.
       DATABASE_URL: postgres://${POSTGRES_USER:-infl0}:${POSTGRES_PASSWORD:-change_me}@postgres:5432/${POSTGRES_DB:-infl0}
       AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:-}
       NUXT_REGISTRATION_INVITE_CODE: ${NUXT_REGISTRATION_INVITE_CODE:-}
