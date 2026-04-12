@@ -26,6 +26,23 @@ async function logout() {
     await navigateTo('/login')
 }
 
+function parseFetchError(e: unknown): { statusCode?: number; message: string } {
+    const err = e as {
+        statusCode?: number
+        status?: number
+        statusMessage?: string
+        message?: string
+        data?: { statusMessage?: string }
+    }
+    const statusCode = err?.statusCode ?? err?.status
+    const message =
+        (typeof err?.data?.statusMessage === 'string' && err.data.statusMessage) ||
+        (typeof err?.statusMessage === 'string' && err.statusMessage) ||
+        (typeof err?.message === 'string' && err.message) ||
+        ''
+    return { statusCode, message }
+}
+
 const PAGE_SIZE = 20
 /** Load next page when the user is this many pixels from the bottom (prefetch). */
 const SCROLL_PRELOAD_PX = 520
@@ -34,6 +51,7 @@ const articles = ref<TimelineArticle[]>([])
 const timelineHasMore = ref(true)
 const timelinePending = ref(false)
 const timelineScrollEl = ref<HTMLElement | null>(null)
+const timelineError = ref('')
 
 /** SSR: forward `Cookie` from the incoming request to internal API calls (plain `$fetch` does not). */
 const requestFetch = useRequestFetch()
@@ -48,15 +66,30 @@ async function loadTimelinePage(reset: boolean) {
             credentials: 'include',
             query: { limit: PAGE_SIZE, offset },
         })
+        timelineError.value = ''
         if (reset) {
             articles.value = res.items
         } else if (res.items.length > 0) {
             articles.value.push(...res.items)
         }
         timelineHasMore.value = res.hasMore
+    } catch (e: unknown) {
+        const { statusCode, message } = parseFetchError(e)
+        if (statusCode === 401) {
+            await navigateTo('/login')
+            return
+        }
+        timelineError.value = message.trim() || 'Could not load timeline'
     } finally {
         timelinePending.value = false
     }
+}
+
+async function retryTimeline() {
+    timelineError.value = ''
+    await loadTimelinePage(true)
+    await nextTick()
+    await fillTimelineUntilScrollableOrDone()
 }
 
 async function fillTimelineUntilScrollableOrDone() {
@@ -71,16 +104,23 @@ async function fillTimelineUntilScrollableOrDone() {
 
 await loadTimelinePage(true)
 
-const { data: feedsData, refresh: refreshFeeds } = await useFetch<{ feeds: UserFeedRow[] }>(
-    '/api/feeds',
-    {
-        credentials: 'include',
-        key: 'user-feeds',
-    },
-)
+const {
+    data: feedsData,
+    refresh: refreshFeeds,
+    error: feedsFetchError,
+} = await useFetch<{ feeds: UserFeedRow[] }>('/api/feeds', {
+    credentials: 'include',
+    key: 'user-feeds',
+})
 
 const fromDatabase = computed(() => articles.value.length > 0)
 const feedList = computed(() => feedsData.value?.feeds ?? [])
+
+const feedsErrorText = computed(() => {
+    const e = feedsFetchError.value
+    if (!e) return ''
+    return parseFetchError(e).message.trim() || 'Could not load sources'
+})
 const showOnboarding = computed(() => !fromDatabase.value && feedList.value.length === 0)
 const showWaiting = computed(() => !fromDatabase.value && feedList.value.length > 0)
 
@@ -88,6 +128,7 @@ const newFeedUrl = ref('')
 const newDisplayTitle = ref('')
 const addError = ref('')
 const addPending = ref(false)
+const removeFeedError = ref('')
 
 async function addFeed() {
     addError.value = ''
@@ -106,29 +147,42 @@ async function addFeed() {
         await refreshFeeds()
         await loadTimelinePage(true)
     } catch (e: unknown) {
-        const err = e as { data?: { statusMessage?: string }; statusMessage?: string }
-        addError.value =
-            err?.data?.statusMessage ?? err?.statusMessage ?? 'Could not save source'
+        const { statusCode, message } = parseFetchError(e)
+        if (statusCode === 401) {
+            await navigateTo('/login')
+            return
+        }
+        addError.value = message.trim() || 'Could not save source'
     } finally {
         addPending.value = false
     }
 }
 
 async function refreshAll() {
+    timelineError.value = ''
+    removeFeedError.value = ''
     await refreshFeeds()
     await loadTimelinePage(true)
+    await nextTick()
+    await fillTimelineUntilScrollableOrDone()
 }
 
 const removingId = ref<string | null>(null)
 
 async function removeFeed(id: string) {
     removingId.value = id
+    removeFeedError.value = ''
     try {
         await $fetch(`/api/feeds/${id}`, { method: 'DELETE', credentials: 'include' })
         await refreshFeeds()
         await loadTimelinePage(true)
-    } catch {
-        /* optional: toast */
+    } catch (e: unknown) {
+        const { statusCode, message } = parseFetchError(e)
+        if (statusCode === 401) {
+            await navigateTo('/login')
+            return
+        }
+        removeFeedError.value = message.trim() || 'Could not remove source'
     } finally {
         removingId.value = null
     }
@@ -259,6 +313,35 @@ onMounted(async () => {
             Log out
         </button>
 
+        <div
+            v-if="feedsErrorText || timelineError || removeFeedError"
+            class="absolute top-14 left-1/2 z-30 w-[min(100%-1.5rem,28rem)] -translate-x-1/2 space-y-2 rounded-lg border border-amber-700/80 bg-amber-950/95 px-3 py-2 text-sm text-amber-100 shadow-lg"
+            role="alert"
+            aria-live="polite"
+        >
+            <div v-if="feedsErrorText" class="flex flex-wrap items-center justify-between gap-2">
+                <span>{{ feedsErrorText }}</span>
+                <button
+                    type="button"
+                    class="btn btn-ghost btn-xs shrink-0 text-amber-200 hover:bg-amber-900/50"
+                    @click="refreshFeeds()"
+                >
+                    Retry
+                </button>
+            </div>
+            <div v-if="timelineError" class="flex flex-wrap items-center justify-between gap-2">
+                <span>{{ timelineError }}</span>
+                <button
+                    type="button"
+                    class="btn btn-ghost btn-xs shrink-0 text-amber-200 hover:bg-amber-900/50"
+                    @click="retryTimeline"
+                >
+                    Retry
+                </button>
+            </div>
+            <p v-if="removeFeedError" class="text-red-200">{{ removeFeedError }}</p>
+        </div>
+
         <!-- Onboarding: no timeline, no feeds -->
         <div
             v-if="showOnboarding"
@@ -273,7 +356,7 @@ onMounted(async () => {
                 </p>
                 <form class="flex flex-col gap-4" @submit.prevent="addFeed">
                     <label class="flex flex-col gap-1 text-sm">
-                        <span class="text-gray-400">Feed-URL</span>
+                        <span class="text-gray-400">Feed URL</span>
                         <input
                             v-model="newFeedUrl"
                             type="url"
