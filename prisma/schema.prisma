@@ -23,9 +23,12 @@ model User {
   updatedAt    DateTime @updatedAt @map("updated_at")
   /// JSON: { v, weights, contentLengthPreference } — timeline ranking sliders (see utils/timeline-score-factors).
   timelineScorePrefs Json? @map("timeline_score_prefs")
+  /// When false, the app does not record article engagement (dwell) events.
+  engagementTrackingEnabled Boolean @default(false) @map("engagement_tracking_enabled")
 
-  feeds         UserFeed[]
-  timelineItems UserTimelineItem[]
+  feeds                UserFeed[]
+  timelineItems        UserTimelineItem[]
+  articleEngagementEvents ArticleEngagementEvent[]
 
   @@map("users")
 }
@@ -63,8 +66,9 @@ model Article {
   categories   Json?
   fetchedAt    DateTime  @default(now()) @map("fetched_at")
 
-  enrichment    ArticleEnrichment?
-  timelineItems UserTimelineItem[]
+  enrichment              ArticleEnrichment?
+  timelineItems           UserTimelineItem[]
+  articleEngagementEvents ArticleEngagementEvent[]
 
   @@index([crawlKey])
   @@index([publishedAt])
@@ -92,8 +96,11 @@ model UserTimelineItem {
   userId     String    @map("user_id") @db.Uuid
   articleId  String    @map("article_id")
   insertedAt DateTime  @default(now()) @map("inserted_at")
-  rankScore  Float?    @map("rank_score")
-  scoredAt   DateTime? @map("scored_at")
+  rankScore       Float?    @map("rank_score")
+  scoredAt        DateTime? @map("scored_at")
+  /// Sum of logged dwell seconds (teaser + summary + body); used with events for “read” at ≥2s.
+  engagedSeconds  Float     @default(0) @map("engaged_seconds")
+  readAt          DateTime? @map("read_at")
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
@@ -102,4 +109,21 @@ model UserTimelineItem {
   @@index([userId, insertedAt(sort: Desc)])
   @@index([userId, rankScore(sort: Desc)])
   @@map("user_timeline_items")
+}
+
+/// One row per focus session (sent when the user leaves a segment: teaser, summary, or full body).
+model ArticleEngagementEvent {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  articleId   String   @map("article_id")
+  segment     String   @db.VarChar(16)
+  durationSec Float    @map("duration_sec")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([userId, articleId])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("article_engagement_events")
 }
