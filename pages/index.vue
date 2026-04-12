@@ -14,6 +14,7 @@ type TimelineArticle = {
     fetchedAt?: string
     /** When the item entered this user’s timeline (ISO) */
     insertedAt?: string
+    readAt?: string | null
     category?: string[]
     tags?: string[]
     source_type: string
@@ -36,10 +37,18 @@ const PAGE_SIZE = 20
 /** Load next page when the user is this many pixels from the bottom (prefetch). */
 const SCROLL_PRELOAD_PX = 520
 
+const SHOW_READ_STORAGE_KEY = 'infl0.timeline.showRead'
+
+const showReadArticles = ref(false)
+if (import.meta.client) {
+    showReadArticles.value = localStorage.getItem(SHOW_READ_STORAGE_KEY) === '1'
+}
+
 const articles = ref<TimelineArticle[]>([])
 const timelineHasMore = ref(true)
 const timelinePending = ref(false)
 const timelineScrollEl = ref<HTMLElement | null>(null)
+const timelineStats = ref({ total: 0, unread: 0 })
 
 /** SSR: forward `Cookie` from the incoming request to internal API calls (plain `$fetch` does not). */
 const requestFetch = useRequestFetch()
@@ -50,10 +59,21 @@ async function loadTimelinePage(reset: boolean) {
     timelinePending.value = true
     try {
         const offset = reset ? 0 : articles.value.length
-        const res = await requestFetch<{ items: TimelineArticle[]; hasMore: boolean }>('/api/timeline', {
+        const res = await requestFetch<{
+            items: TimelineArticle[]
+            hasMore: boolean
+            stats: { total: number; unread: number }
+        }>('/api/timeline', {
             credentials: 'include',
-            query: { limit: PAGE_SIZE, offset },
+            query: {
+                limit: PAGE_SIZE,
+                offset,
+                ...(showReadArticles.value ? { showRead: '1' } : {}),
+            },
         })
+        if (res.stats) {
+            timelineStats.value = res.stats
+        }
         if (reset) {
             articles.value = res.items
         } else if (res.items.length > 0) {
@@ -103,6 +123,16 @@ async function fillTimelineUntilScrollableOrDone() {
     }
 }
 
+watch(showReadArticles, (v) => {
+    if (import.meta.client) {
+        localStorage.setItem(SHOW_READ_STORAGE_KEY, v ? '1' : '0')
+    }
+    void loadTimelinePage(true).then(async () => {
+        await nextTick()
+        await fillTimelineUntilScrollableOrDone()
+    })
+})
+
 await loadTimelinePage(true)
 
 const {
@@ -137,10 +167,23 @@ watch(
     { flush: 'post', immediate: true },
 )
 
-const fromDatabase = computed(() => articles.value.length > 0)
 const feedList = computed(() => feedsData.value?.feeds ?? [])
+const fromDatabase = computed(() => timelineStats.value.total > 0)
 const showOnboarding = computed(() => !fromDatabase.value && feedList.value.length === 0)
 const showWaiting = computed(() => !fromDatabase.value && feedList.value.length > 0)
+const showAllReadEmpty = computed(
+    () =>
+        fromDatabase.value &&
+        timelineStats.value.unread === 0 &&
+        !showReadArticles.value,
+)
+const showTimelineChrome = computed(
+    () =>
+        fromDatabase.value &&
+        !showOnboarding.value &&
+        !showWaiting.value &&
+        !showAllReadEmpty.value,
+)
 
 async function refreshAll() {
     await refreshFeeds()
@@ -288,6 +331,22 @@ onMounted(async () => {
         </div>
 
         <div
+            v-else-if="showAllReadEmpty"
+            class="relative z-10 w-full max-w-lg mx-auto px-4 py-8 text-gray-900"
+        >
+            <div class="rounded-xl bg-gray-900/90 text-gray-100 p-8 shadow-xl border border-gray-700 text-center">
+                <h1 class="text-xl font-semibold mb-2">{{ $t('index.allReadTitle') }}</h1>
+                <p class="text-sm text-gray-400 mb-6">
+                    {{ $t('index.allReadBody') }}
+                </p>
+                <label class="flex cursor-pointer items-center justify-center gap-3 text-sm text-gray-200">
+                    <span>{{ $t('index.showReadLabel') }}</span>
+                    <input v-model="showReadArticles" type="checkbox" class="toggle toggle-primary" >
+                </label>
+            </div>
+        </div>
+
+        <div
             v-else
             ref="timelineScrollEl"
             class="scroll-container relative h-dvh w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory"
@@ -314,6 +373,20 @@ onMounted(async () => {
                 <span class="loading loading-spinner loading-md text-gray-800" />
             </div>
         </div>
+
+        <Teleport to="body">
+            <div
+                v-if="showTimelineChrome"
+                class="pointer-events-none fixed start-3 top-14 z-[400] max-w-[min(20rem,calc(100vw-6rem))]"
+            >
+                <label
+                    class="pointer-events-auto flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-gray-600 bg-gray-950/95 px-3 py-2 text-xs text-gray-200 shadow-lg ring-1 ring-black/40"
+                >
+                    <span class="leading-snug">{{ $t('index.showReadLabel') }}</span>
+                    <input v-model="showReadArticles" type="checkbox" class="toggle toggle-primary toggle-sm shrink-0" >
+                </label>
+            </div>
+        </Teleport>
     </div>
 </template>
 

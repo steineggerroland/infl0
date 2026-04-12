@@ -88,7 +88,10 @@
     "errorSources": "Could not load sources",
     "emptyNoFeedsTitle": "No sources yet",
     "emptyNoFeedsBody": "Add RSS or Atom feeds so your timeline can show articles. Imports must use the same feed URL you saved here so items match your subscription.",
-    "emptyNoFeedsCta": "Add feeds"
+    "emptyNoFeedsCta": "Add feeds",
+    "allReadTitle": "You're all caught up",
+    "allReadBody": "Every article on your timeline is marked as read. Turn on the switch below to show read articles again.",
+    "showReadLabel": "Show read articles"
   },
   "feeds": {
     "title": "Feeds",

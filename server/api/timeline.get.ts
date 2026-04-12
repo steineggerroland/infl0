@@ -25,23 +25,38 @@ function mapArticle(a: ArticleWithEnrichment) {
   }
 }
 
-function mapTimelineItem(row: { insertedAt: Date; article: ArticleWithEnrichment }) {
+function mapTimelineItem(row: {
+  insertedAt: Date
+  readAt: Date | null
+  article: ArticleWithEnrichment
+}) {
   return {
     ...mapArticle(row.article),
     insertedAt: row.insertedAt.toISOString(),
+    readAt: row.readAt?.toISOString() ?? null,
   }
 }
 
+function queryShowRead(q: Record<string, unknown>): boolean {
+  const v = q.showRead
+  if (v === true || v === 1) return true
+  if (typeof v === 'string') {
+    const s = v.toLowerCase()
+    return s === '1' || s === 'true' || s === 'yes'
+  }
+  return false
+}
+
 /**
- * GET /api/timeline?limit=20&offset=0
- * Pagination: when any row has rank_score, order by rank_score desc (nulls last),
- * then publishedAt / id; otherwise by publishedAt desc (until first score recompute).
- * Requires session cookie (see POST /api/auth/login).
+ * GET /api/timeline?limit=20&offset=0&showRead=1
+ * By default, rows with read_at set are omitted. Pass showRead=1 to include them.
+ * stats.total / stats.unread help the client show empty states when everything is read.
  */
 export default defineEventHandler(async (event) => {
   const q = getQuery(event)
   const limit = Math.min(100, Math.max(1, Number(q.limit) || 20))
   const offset = Math.max(0, Math.min(50_000, Number(q.offset) || 0))
+  const showRead = queryShowRead(q as Record<string, unknown>)
 
   const userId = await getSessionUserId(event)
   if (!userId) {
@@ -56,10 +71,18 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
-  const anyScored = await prisma.userTimelineItem.findFirst({
-    where: { userId, rankScore: { not: null } },
-    select: { id: true },
-  })
+  const listWhere: Prisma.UserTimelineItemWhereInput = showRead
+    ? { userId }
+    : { userId, readAt: null }
+
+  const [totalCount, unreadCount, anyScored] = await Promise.all([
+    prisma.userTimelineItem.count({ where: { userId } }),
+    prisma.userTimelineItem.count({ where: { userId, readAt: null } }),
+    prisma.userTimelineItem.findFirst({
+      where: { ...listWhere, rankScore: { not: null } },
+      select: { id: true },
+    }),
+  ])
 
   const orderBy: Prisma.UserTimelineItemOrderByWithRelationInput[] = anyScored
     ? [
@@ -70,7 +93,7 @@ export default defineEventHandler(async (event) => {
     : [{ article: { publishedAt: 'desc' } }, { article: { id: 'desc' } }]
 
   const rows = await prisma.userTimelineItem.findMany({
-    where: { userId },
+    where: listWhere,
     orderBy,
     skip: offset,
     take: limit + 1,
@@ -85,5 +108,6 @@ export default defineEventHandler(async (event) => {
   return {
     items: page.map((row) => mapTimelineItem(row)),
     hasMore,
+    stats: { total: totalCount, unread: unreadCount },
   }
 })

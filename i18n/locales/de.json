@@ -88,7 +88,10 @@
     "errorSources": "Quellen konnten nicht geladen werden",
     "emptyNoFeedsTitle": "Noch keine Quellen",
     "emptyNoFeedsBody": "Füge RSS- oder Atom-Feeds hinzu, damit die Timeline Artikel anzeigen kann. Beim Import muss dieselbe Feed-URL wie hier gespeichert verwendet werden, damit Einträge zu deinem Abo passen.",
-    "emptyNoFeedsCta": "Feeds hinzufügen"
+    "emptyNoFeedsCta": "Feeds hinzufügen",
+    "allReadTitle": "Alles gelesen",
+    "allReadBody": "Alle Artikel in deiner Timeline sind als gelesen markiert. Schalte den Schalter ein, um gelesene Artikel wieder anzuzeigen.",
+    "showReadLabel": "Gelesene anzeigen"
   },
   "feeds": {
     "title": "Feeds",
