@@ -14,18 +14,73 @@
     "open": "Menu",
     "timeline": "Timeline",
     "feeds": "Feed management",
+    "timelineScore": "Timeline score",
     "language": "Language",
     "logOut": "Log out"
   },
+  "settingsTimeline": {
+    "title": "Timeline score weights",
+    "intro": "Each factor is normalized to 0–1 per article. The score is the sum of factor × (weight ÷ 100). Missing data counts as 0. Content length uses a separate slider (shorter ↔ longer); at 0 it adds nothing. Preferences are saved to your account (shortly after you stop moving a slider); a local copy speeds up loading.",
+    "formulaTitle": "Formula (preview)",
+    "formulaHint": "Only factors with weight > 0 appear. The real ranking job will use the same names.",
+    "reset": "Reset defaults",
+    "groups": {
+      "time": "Time",
+      "content": "Content",
+      "mix": "Mixing (coming soon)",
+      "feedback": "Feedback (coming soon)"
+    },
+    "contentLengthPreference": {
+      "label": "Length bias (title + teaser + summary)",
+      "hint": "Left: shorter texts score higher (min(1, cap/len)). Right: longer score higher (min(1, len/cap)). Center 0: no effect. Strength scales with distance from center.",
+      "preferShorter": "Shorter",
+      "neutral": "Neutral",
+      "preferLonger": "Longer"
+    },
+    "factors": {
+      "published_recency": {
+        "label": "Publication freshness",
+        "hint": "1 = just published, decays by half-life (~72 h)."
+      },
+      "inserted_recency": {
+        "label": "New on your timeline",
+        "hint": "1 = just added to you; uses insertedAt from the server."
+      },
+      "content_length": {
+        "label": "Content length (weight)",
+        "hint": "How much the length bias below affects the score. Set to 0 to ignore length entirely."
+      },
+      "crawl_diversity": {
+        "label": "Source mix bonus",
+        "hint": "Placeholder 0 until iterative spacing between feeds is implemented."
+      },
+      "category_diversity": {
+        "label": "Category mix bonus",
+        "hint": "Placeholder 0 until category repetition penalty exists."
+      },
+      "tag_diversity": {
+        "label": "Tag mix bonus",
+        "hint": "Placeholder 0 until tag repetition penalty exists."
+      },
+      "engagement_positive": {
+        "label": "Positive engagement",
+        "hint": "Placeholder 0 (likes / dwell on similar items)."
+      },
+      "engagement_negative": {
+        "label": "Negative engagement",
+        "hint": "Placeholder 0 (dismiss / skip signals)."
+      }
+    }
+  },
   "index": {
     "preparingTitle": "Preparing your timeline",
-    "preparingBody": "Once the crawler delivers articles with a matching crawlKey, they will appear here.",
+    "preparingBody": "Once the crawler delivers articles for one of your feeds, they will appear here.",
     "refreshTimeline": "Refresh timeline",
     "manageFeeds": "Manage feeds",
     "errorTimeline": "Could not load timeline",
     "errorSources": "Could not load sources",
     "emptyNoFeedsTitle": "No sources yet",
-    "emptyNoFeedsBody": "Add RSS or Atom feeds so your timeline can show articles. The crawler must use the same feed URL (normalized as crawlKey) when importing.",
+    "emptyNoFeedsBody": "Add RSS or Atom feeds so your timeline can show articles. Imports must use the same feed URL you saved here so items match your subscription.",
     "emptyNoFeedsCta": "Add feeds"
   },
   "feeds": {

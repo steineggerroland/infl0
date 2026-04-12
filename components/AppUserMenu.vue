@@ -39,6 +39,11 @@ const linkClass =
                     {{ t('menu.feeds') }}
                 </NuxtLink>
             </li>
+            <li v-if="route.path !== '/settings/timeline-score'">
+                <NuxtLink to="/settings/timeline-score" :class="linkClass" @click="closeMenu">
+                    {{ t('menu.timelineScore') }}
+                </NuxtLink>
+            </li>
             <li class="px-3 pb-1 pt-3">
                 <span
                     class="text-[0.65rem] font-semibold uppercase tracking-wider text-gray-400"

@@ -6,7 +6,6 @@ definePageMeta({
 type UserFeedRow = {
     id: string
     feedUrl: string
-    crawlKey: string
     displayTitle: string | null
     createdAt: string
 }
@@ -153,7 +152,12 @@ async function removeFeed(id: string) {
                             <div class="font-medium text-gray-200">
                                 {{ f.displayTitle || f.feedUrl }}
                             </div>
-                            <div class="text-xs text-gray-500 mt-0.5 font-mono">{{ f.crawlKey }}</div>
+                            <div
+                                v-if="f.displayTitle"
+                                class="mt-0.5 text-xs text-gray-500 break-all font-mono"
+                            >
+                                {{ f.feedUrl }}
+                            </div>
                         </div>
                         <button
                             type="button"

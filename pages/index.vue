@@ -10,7 +10,12 @@ type TimelineArticle = {
     summary_long: string
     link: string
     publishedAt: string
+    /** Crawler fetch time (ISO); for score normalization */
+    fetchedAt?: string
+    /** When the item entered this user’s timeline (ISO) */
+    insertedAt?: string
     category?: string[]
+    tags?: string[]
     source_type: string
     tld?: string
     author?: string
@@ -20,7 +25,6 @@ type TimelineArticle = {
 type UserFeedRow = {
     id: string
     feedUrl: string
-    crawlKey: string
     displayTitle: string | null
     createdAt: string
 }
@@ -259,7 +263,12 @@ onMounted(async () => {
                             <span class="font-medium text-gray-200">{{
                                 f.displayTitle || f.feedUrl
                             }}</span>
-                            <div class="text-xs text-gray-500 mt-0.5 font-mono">{{ f.crawlKey }}</div>
+                            <div
+                                v-if="f.displayTitle"
+                                class="mt-0.5 text-xs text-gray-500 break-all font-mono"
+                            >
+                                {{ f.feedUrl }}
+                            </div>
                         </div>
                     </li>
                 </ul>

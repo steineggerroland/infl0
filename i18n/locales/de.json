@@ -14,18 +14,73 @@
     "open": "Menü",
     "timeline": "Timeline",
     "feeds": "Feed-Verwaltung",
+    "timelineScore": "Timeline-Score",
     "language": "Sprache",
     "logOut": "Abmelden"
   },
+  "settingsTimeline": {
+    "title": "Gewichtung Timeline-Score",
+    "intro": "Jeder Faktor wird pro Artikel auf 0–1 normalisiert. Der Score ist die Summe aus Faktor × (Gewicht ÷ 100). Fehlende Daten zählen als 0. Für Textlänge gibt es einen eigenen Regler (kürzer ↔ länger); in der Mitte (0) entfällt der Einfluss. Die Einstellungen werden in deinem Konto gespeichert (kurz nach dem Loslassen der Regler); lokal liegt zusätzlich eine Kopie für schnelleres Laden.",
+    "formulaTitle": "Formel (Vorschau)",
+    "formulaHint": "Nur Faktoren mit Gewicht > 0 erscheinen. Der spätere Ranking-Job nutzt dieselben Namen.",
+    "reset": "Standard wiederherstellen",
+    "groups": {
+      "time": "Zeit",
+      "content": "Inhalt",
+      "mix": "Mischung (folgt)",
+      "feedback": "Feedback (folgt)"
+    },
+    "contentLengthPreference": {
+      "label": "Längen-Bias (Titel + Teaser + Zusammenfassung)",
+      "hint": "Links: kürzere Texte stärker (min(1, cap/len)). Rechts: längere stärker (min(1, len/cap)). Mitte 0: kein Effekt. Je weiter vom Zentrum, desto stärker die Kurve.",
+      "preferShorter": "Kürzer",
+      "neutral": "Neutral",
+      "preferLonger": "Länger"
+    },
+    "factors": {
+      "published_recency": {
+        "label": "Aktualität Veröffentlichung",
+        "hint": "1 = frisch veröffentlicht, Abklingen mit Halbwertszeit (~72 h)."
+      },
+      "inserted_recency": {
+        "label": "Neu in deiner Timeline",
+        "hint": "1 = gerade für dich eingetragen; nutzt insertedAt vom Server."
+      },
+      "content_length": {
+        "label": "Textlänge (Gewicht)",
+        "hint": "Wie stark der Längen-Bias unten in den Score einfließt. 0 = Länge ignorieren."
+      },
+      "crawl_diversity": {
+        "label": "Quellen-Mix-Bonus",
+        "hint": "Platzhalter 0 bis iteratives Spacing zwischen Feeds existiert."
+      },
+      "category_diversity": {
+        "label": "Kategorie-Mix-Bonus",
+        "hint": "Platzhalter 0 bis Wiederholungs-Malus für Kategorien existiert."
+      },
+      "tag_diversity": {
+        "label": "Tag-Mix-Bonus",
+        "hint": "Platzhalter 0 bis Wiederholungs-Malus für Tags existiert."
+      },
+      "engagement_positive": {
+        "label": "Positives Engagement",
+        "hint": "Platzhalter 0 (Likes / Verweildauer auf Ähnlichem)."
+      },
+      "engagement_negative": {
+        "label": "Negatives Engagement",
+        "hint": "Platzhalter 0 (Wegklicken / Skip-Signale)."
+      }
+    }
+  },
   "index": {
     "preparingTitle": "Timeline wird vorbereitet",
-    "preparingBody": "Sobald der Crawler Artikel mit passendem crawlKey liefert, erscheinen sie hier.",
+    "preparingBody": "Sobald der Crawler Artikel für einen deiner Feeds liefert, erscheinen sie hier.",
     "refreshTimeline": "Timeline aktualisieren",
     "manageFeeds": "Feeds verwalten",
     "errorTimeline": "Timeline konnte nicht geladen werden",
     "errorSources": "Quellen konnten nicht geladen werden",
     "emptyNoFeedsTitle": "Noch keine Quellen",
-    "emptyNoFeedsBody": "Füge RSS- oder Atom-Feeds hinzu, damit die Timeline Artikel anzeigen kann. Der Crawler muss dieselbe Feed-URL (normalisiert als crawlKey) beim Import verwenden.",
+    "emptyNoFeedsBody": "Füge RSS- oder Atom-Feeds hinzu, damit die Timeline Artikel anzeigen kann. Beim Import muss dieselbe Feed-URL wie hier gespeichert verwendet werden, damit Einträge zu deinem Abo passen.",
     "emptyNoFeedsCta": "Feeds hinzufügen"
   },
   "feeds": {
