@@ -1,6 +1,6 @@
 # infl0 + Postgres (Nuxt/Nitro).
-# - App-Container: Hostname "postgres", Port 5432 (internes Netz).
-# - Prisma/npm auf dem Mac: Host 127.0.0.1 + POSTGRES_HOST_PORT (siehe .env.example).
+# - App container: hostname "postgres", port 5432 (internal network).
+# - Prisma/npm on the host: 127.0.0.1 + POSTGRES_HOST_PORT (see .env.example).
 
 services:
   postgres:
@@ -32,7 +32,7 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER:-infl0}:${POSTGRES_PASSWORD:-change_me}@postgres:5432/${POSTGRES_DB:-infl0}
       AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:-}
       NUXT_REGISTRATION_INVITE_CODE: ${NUXT_REGISTRATION_INVITE_CODE:-}
-      # Von n8n / Crawler für schreibende API (Artikel, Timeline-Einträge); leer = Endpoints später ablehnen
+      # n8n / crawler write API (articles, timeline rows); empty = endpoints may reject requests
       NUXT_CRAWLER_API_KEY: ${NUXT_CRAWLER_API_KEY:-}
     depends_on:
       postgres:

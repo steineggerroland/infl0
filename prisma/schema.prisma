@@ -9,12 +9,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// Beta: später mehrere Nutzer; aktuell ein Account.
+/// Beta: multiple users later; single account for now.
 model User {
   id           String   @id @default(uuid()) @db.Uuid
   email        String?  @unique
   name         String?
-  /// Legacy bcrypt; Login nutzt SRP (srpSalt + srpVerifier).
+  /// Legacy bcrypt; login uses SRP (srpSalt + srpVerifier).
   passwordHash String?  @map("password_hash")
   /// Hex-encodiert (ohne 0x), siehe scripts/generate-srp-env.ts
   srpSalt      String?  @map("srp_salt")
@@ -28,7 +28,7 @@ model User {
   @@map("users")
 }
 
-/// Pro Nutzer gepflegte Quelle; crawlKey dedupliziert beim globalen Crawl.
+/// Per-user feed; crawlKey deduplicates in the global crawl.
 model UserFeed {
   id           String   @id @default(uuid()) @db.Uuid
   userId       String   @map("user_id") @db.Uuid
@@ -46,7 +46,7 @@ model UserFeed {
   @@map("user_feeds")
 }
 
-/// Global gespeicherte Artikel (ein Datensatz pro inhaltlicher ID, z. B. Content-Hash / GUID).
+/// Globally stored articles (one row per content id, e.g. content hash / GUID).
 model Article {
   id           String    @id
   crawlKey     String    @map("crawl_key")
@@ -84,7 +84,7 @@ model ArticleEnrichment {
   @@map("article_enrichments")
 }
 
-/// Materialisierte Timeline: pro Nutzer Verweise auf Artikel (Fan-out bei neuen Artikeln).
+/// Materialized timeline: per-user links to articles (fan-out on new articles).
 model UserTimelineItem {
   id         String   @id @default(uuid()) @db.Uuid
   userId     String   @map("user_id") @db.Uuid

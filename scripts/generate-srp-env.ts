@@ -1,7 +1,7 @@
 /**
- * Lokal ausführen (Passwort landet nur in dieser Shell, nicht auf dem Server):
+ * Run locally (password stays in this shell only, not on the server):
  *   SRP_GEN_PASSWORD='your-secret' npx tsx scripts/generate-srp-env.ts [email]
- * Ausgabe: BETA_SRP_SALT_HEX und BETA_SRP_VERIFIER_HEX für .env → danach npm run db:seed
+ * Prints BETA_SRP_SALT_HEX and BETA_SRP_VERIFIER_HEX for .env, then run npm run db:seed.
  */
 import { createVerifierAndSalt, SRPParameters, SRPRoutines } from 'tssrp6a'
 

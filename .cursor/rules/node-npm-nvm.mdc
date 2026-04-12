@@ -1,22 +1,22 @@
 ---
-description: infl0 — npm/npx nur mit Node-Version aus .nvmrc (nvm)
+description: infl0 — run npm/npx only with the Node version from .nvmrc (nvm)
 alwaysApply: true
 ---
 
-# Node / npm in diesem Repo
+# Node / npm in this repo
 
-- **`.nvmrc`** legt die Node-Version fest (z. B. `22`). Ohne diese Version **`npm install`**, **`npm ci`**, **`npm update`**, **`npx`** oder andere Befehle, die `node_modules` / `package-lock.json` verändern, **nicht** ausführen — das führt zu inkonsistenten Locks und Engine-Warnungen.
-- Der Nutzer nutzt **fish** lokal; die Agent-Shell ist **bash**. nvm wird in bash über **`nvm.sh`** geladen, nicht über fish-Konfiguration.
+- **`.nvmrc`** pins the Node version (e.g. `24`). Do **not** run **`npm install`**, **`npm ci`**, **`npm update`**, **`npx`**, or other commands that change `node_modules` / `package-lock.json` without that version — you get inconsistent locks and engine warnings.
+- The user runs **fish** locally; the agent shell is **bash**. Load nvm in bash via **`nvm.sh`**, not fish config.
 
-## Pflicht-Muster für Terminal-Befehle (bash)
+## Required pattern for terminal commands (bash)
 
-Vor jedem mutierenden npm-Befehl im **Repository-Root `infl0`**:
+Before any mutating npm command from the **`infl0` repo root**:
 
 ```bash
-export NVM_DIR="${NVM_DIR:-$HOME/.nvm}" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && cd <pfad/zum/infl0-repo> && nvm use && <npm-oder-npx>
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && cd /path/to/infl0 && nvm use && <npm-or-npx>
 ```
 
-Kürzer, wenn schon im infl0-Root:
+Shorter when already at the infl0 root:
 
 ```bash
 ./scripts/with-nvm.sh npm ci
@@ -24,13 +24,13 @@ Kürzer, wenn schon im infl0-Root:
 ./scripts/with-nvm.sh npx prisma migrate dev
 ```
 
-(`scripts/with-nvm.sh` muss ausführbar sein: `chmod +x scripts/with-nvm.sh`.)
+(`scripts/with-nvm.sh` must be executable: `chmod +x scripts/with-nvm.sh`.)
 
-## Wenn nvm in der Umgebung fehlt
+## If nvm is missing in the environment
 
-Keine `npm install` / `npm ci` / lockfile-ändernden Befehle ausführen. Stattdessen den Nutzer bitten, lokal nach **`nvm use`** (fish: eigene Konfiguration) zu installieren.
+Do not run `npm install` / `npm ci` / lockfile-changing commands. Ask the user to install locally after **`nvm use`** (fish: their own setup).
 
-## Ausnahmen
+## Exceptions
 
-- **`node -v` / Nur-Lese-Checks** ohne Installation sind unkritisch.
-- **TopicKnowledgeCrawler** hat hier kein `.nvmrc`; diese Regel betrifft primär **infl0**.
+- **`node -v` / read-only checks** without install are fine.
+- **TopicKnowledgeCrawler** has no `.nvmrc` here; this rule applies mainly to **infl0**.
