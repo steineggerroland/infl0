@@ -2,6 +2,7 @@ import { createError, readBody } from 'h3'
 import { prisma } from '../utils/prisma'
 import { getSessionUserId } from '../utils/auth-session'
 import { normalizeFeedUrl } from '../utils/feed-url'
+import { recomputeTimelineScoresForUser } from '../utils/recompute-timeline-scores'
 
 export default defineEventHandler(async (event) => {
   const userId = await getSessionUserId(event)
@@ -48,6 +49,8 @@ export default defineEventHandler(async (event) => {
       createdAt: true,
     },
   })
+
+  await recomputeTimelineScoresForUser(prisma, userId)
 
   return {
     feed: {

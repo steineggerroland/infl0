@@ -18,6 +18,7 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "devData": "tsx scripts/dev-data.ts",
+    "recomputeTimelineScores": "tsx scripts/recompute-timeline-scores.ts",
     "srp:env": "tsx scripts/generate-srp-env.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

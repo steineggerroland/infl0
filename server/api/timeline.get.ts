@@ -1,4 +1,4 @@
-import type { Article, ArticleEnrichment } from '@prisma/client'
+import type { Article, ArticleEnrichment, Prisma } from '@prisma/client'
 import { createError, getQuery } from 'h3'
 import { prisma } from '../utils/prisma'
 import { getSessionUserId } from '../utils/auth-session'
@@ -14,6 +14,7 @@ function mapArticle(a: ArticleWithEnrichment) {
     link: a.link,
     author: a.author ?? '',
     publishedAt: (a.publishedAt ?? a.fetchedAt).toISOString(),
+    fetchedAt: a.fetchedAt.toISOString(),
     source_type: a.sourceType ?? 'unknown',
     tld: a.tld ?? '',
     teaser: e?.teaser ?? '',
@@ -24,9 +25,17 @@ function mapArticle(a: ArticleWithEnrichment) {
   }
 }
 
+function mapTimelineItem(row: { insertedAt: Date; article: ArticleWithEnrichment }) {
+  return {
+    ...mapArticle(row.article),
+    insertedAt: row.insertedAt.toISOString(),
+  }
+}
+
 /**
  * GET /api/timeline?limit=20&offset=0
- * Pagination: stable order by article.publishedAt desc, then article.id desc.
+ * Pagination: when any row has rank_score, order by rank_score desc (nulls last),
+ * then publishedAt / id; otherwise by publishedAt desc (until first score recompute).
  * Requires session cookie (see POST /api/auth/login).
  */
 export default defineEventHandler(async (event) => {
@@ -47,9 +56,22 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
+  const anyScored = await prisma.userTimelineItem.findFirst({
+    where: { userId, rankScore: { not: null } },
+    select: { id: true },
+  })
+
+  const orderBy: Prisma.UserTimelineItemOrderByWithRelationInput[] = anyScored
+    ? [
+        { rankScore: { sort: 'desc', nulls: 'last' } },
+        { article: { publishedAt: 'desc' } },
+        { article: { id: 'desc' } },
+      ]
+    : [{ article: { publishedAt: 'desc' } }, { article: { id: 'desc' } }]
+
   const rows = await prisma.userTimelineItem.findMany({
     where: { userId },
-    orderBy: [{ article: { publishedAt: 'desc' } }, { article: { id: 'desc' } }],
+    orderBy,
     skip: offset,
     take: limit + 1,
     include: {
@@ -61,7 +83,7 @@ export default defineEventHandler(async (event) => {
   const page = hasMore ? rows.slice(0, limit) : rows
 
   return {
-    items: page.map((row) => mapArticle(row.article)),
+    items: page.map((row) => mapTimelineItem(row)),
     hasMore,
   }
 })
