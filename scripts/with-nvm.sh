@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Run a command with Node from .nvmrc (nvm in bash/zsh).
+# CI uses the same version via actions/setup-node + node-version-file: '.nvmrc'.
+# If `nvm use` fails, run `nvm install` once from the repo root, then retry.
 # Usage (from repo root): ./scripts/with-nvm.sh npm ci
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
