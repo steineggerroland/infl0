@@ -1,20 +1,20 @@
 <script setup lang="ts">
-// Props for determining direction and tooltip text
-defineProps({
-    direction: {
-        type: String as () => 'front' | 'back',
-        required: true,
-    },
-})
+const { t } = useI18n()
+
+const props = defineProps<{
+  direction: 'front' | 'back'
+}>()
+
+const tooltip = computed(() =>
+  props.direction === 'front' ? t('article.flipCard') : t('article.flipBack'),
+)
 </script>
 
 <template>
     <div class="flip-arrow">
-        <!-- Tooltip -->
-        <div class="arrow-tooltip" v-if="direction === 'front'">Flip card</div>
-        <div class="arrow-tooltip" v-if="direction === 'back'">Flip back</div>
+        <div class="arrow-tooltip">{{ tooltip }}</div>
         <!-- SVG Arrow -->
-        <div :class="['arrow-icon', direction]"></div>
+        <div :class="['arrow-icon', direction]"/>
     </div>
 </template>
 

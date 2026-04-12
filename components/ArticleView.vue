@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { de, enUS } from 'date-fns/locale'
 import { format } from 'date-fns'
 import DOMPurify from 'dompurify'
 import { marked } from 'marked'
+
+const { t, locale } = useI18n()
+const dateLocale = computed(() => (locale.value === 'de' ? de : enUS))
 
 marked.setOptions({ gfm: true })
 
@@ -27,9 +31,8 @@ const props = defineProps({
   isSelected: Boolean,
 })
 
-// Function to format the article's publication date
-const formatDate = (dateString: string) => {
-  return format(new Date(dateString), 'MMMM dd, yyyy')
+function formatDate(dateString: string) {
+  return format(new Date(dateString), 'PPP', { locale: dateLocale.value })
 }
 
 // State for toggling the detail view
@@ -104,11 +107,11 @@ defineShortcuts({
 </script>
 
 <template>
-  <div class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }" :id="article.id">
+  <div :id="article.id" class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }">
     <!-- Front: Short Summary -->
     <div class="article-content rounded-xl bg-front text-gray-100 relative transition-all">
       <!-- Corner fold -->
-      <CornerFold position="top-right" tooltip="Click to flip" @click="toggleDetailView" />
+      <CornerFold position="top-right" :tooltip="t('article.cornerFold')" @click="toggleDetailView" />
 
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
         <!-- Title -->
@@ -116,8 +119,9 @@ defineShortcuts({
           article.title }}
         </h1>
         <!-- Teaser -->
-        <p class="teaser flex-1 content-center text-lg smh:text-2xl mdh:text-4xl mb-6 text-gray-200 cursor-pointer"
-          @click="toggleDetailView" tabindex="0">
+        <p
+class="teaser flex-1 content-center text-lg smh:text-2xl mdh:text-4xl mb-6 text-gray-200 cursor-pointer"
+          tabindex="0" @click="toggleDetailView">
           {{
             article.teaser }}</p>
       </div>
@@ -125,15 +129,15 @@ defineShortcuts({
       <div class="meta max-h-1/5 h-1/5 w-full text-xs smh:text-sm mdh:text-lg px-6 py-2 text-start">
         <div class="flex items-center mb-2 mt-0 text-gray-300">
           <TypeIcon :type="article.source_type" class="shadow-md tooltip" :data-tip="article.source_type" />
-          <FreshnessIndicator v-if="article.publishedAt" class="ms-1 mdh:ms-3 tooltip"
-            :data-tip="formatDate(article.publishedAt)" :publishedAt="article.publishedAt" />
-          <TldIcon v-if="article?.tld" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.tld" :tld="article.tld">
-          </TldIcon>
-          <span v-else class="ms-1 mdh:ms-3 h-[1em] w-[1em]"></span>
-          <NameIcon v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
-            :name="article.author">
-          </NameIcon>
-          <span v-else class="ms-1 mdh:ms-3 h-[1em] w-[1em]"></span>
+          <FreshnessIndicator
+v-if="article.publishedAt" class="ms-1 mdh:ms-3 tooltip"
+            :data-tip="formatDate(article.publishedAt)" :published-at="article.publishedAt" />
+          <TldIcon v-if="article?.tld" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.tld" :tld="article.tld"/>
+          <span v-else class="ms-1 mdh:ms-3 h-[1em] w-[1em]"/>
+          <NameIcon
+v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
+            :name="article.author"/>
+          <span v-else class="ms-1 mdh:ms-3 h-[1em] w-[1em]"/>
         </div>
         <div v-if="article.category" class="mb-2 text-gray-400">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
@@ -157,27 +161,28 @@ defineShortcuts({
         <p class="m-0 w-full text-end text-xs mdh:text-sm">
           <a
             v-if="matchingPage"
-            @click.prevent="showOriginalArticle"
             :href="article.link"
             target="_blank"
+            @click.prevent="showOriginalArticle"
           >
-            Original article
+            {{ t('article.originalArticle') }}
           </a>
           <a v-else :href="article.link" target="_blank">
-            Original article
+            {{ t('article.originalArticle') }}
           </a>
         </p>
       </div>
       <!-- Meta Information -->
       <div class="meta text-xs smh:text-sm mdh:text-lg max-h-1/5 h-1/5 w-full px-6 py-2 text-start">
         <div class="flex items-center mb-1 mt-0 text-gray-400">
-          <TypeIcon :type="article.source_type" class="me-1 mdh:me-3 shadow-md tooltip"
+          <TypeIcon
+:type="article.source_type" class="me-1 mdh:me-3 shadow-md tooltip"
             :data-tip="article.source_type" />
           {{ formatDate(article.publishedAt) }}
         </div>
         <div class="text-gray-400 mb-1 max-w-full flex flex-nowrap">
           <div class="me-1 mdh:me-3 tooltip" :data-tip="article?.tld">
-            <TldIcon v-if="article?.tld" :tld="article?.tld"></TldIcon>
+            <TldIcon v-if="article?.tld" :tld="article?.tld"/>
           </div>
           <div v-if="article?.author" class="tooltip max-w-full" :data-tip="article?.author">
             <div class="text-white me-1 mdh:me-3 truncate">{{ article?.author
@@ -191,7 +196,7 @@ defineShortcuts({
       <!-- Flip Arrow -->
       <FlipArrow class="action-flip-back" direction="back" @click="toggleDetailView" />
     </div>
-    <dialog v-if="matchingPage" class="modal" ref="modal">
+    <dialog v-if="matchingPage" ref="modal" class="modal">
       <div class="modal-box max-w-[100vw] w-[640px] bg-white text-black">
         <form method="dialog" class="flex sticky top-2 right-0">
           <button class="ms-auto btn btn-sm btn-circle btn-ghost">✕</button>
@@ -215,8 +220,8 @@ defineShortcuts({
           >
         </div>
       </div>
-      <form method="dialog" class="modal-backdrop">
-        <button>Close</button>
+        <form method="dialog" class="modal-backdrop">
+        <button>{{ t('article.closeModal') }}</button>
       </form>
     </dialog>
   </div>

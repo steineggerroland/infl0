@@ -14,7 +14,7 @@ defineProps({
 
 <template>
     <div :class="['corner-fold', position]" :title="tooltip">
-        <div class="fold"></div>
+        <div class="fold"/>
     </div>
 </template>
 

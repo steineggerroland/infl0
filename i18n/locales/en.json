@@ -1,0 +1,70 @@
+{
+  "common": {
+    "retry": "Retry",
+    "dismiss": "Dismiss",
+    "loading": "…",
+    "close": "Close"
+  },
+  "locale": {
+    "label": "Language",
+    "en": "English",
+    "de": "German"
+  },
+  "index": {
+    "sources": "Sources",
+    "logOut": "Log out",
+    "addSourcesTitle": "Add sources",
+    "addSourcesBody": "Your timeline only shows articles from sources you add here. The crawler must use the same feed URL (normalized as crawlKey) when importing.",
+    "feedUrl": "Feed URL",
+    "feedUrlPlaceholder": "https://…",
+    "displayNameOptional": "Display name (optional)",
+    "saveSource": "Save source",
+    "preparingTitle": "Preparing your timeline",
+    "preparingBody": "Once the crawler delivers articles with a matching crawlKey, they will appear here.",
+    "refreshTimeline": "Refresh timeline",
+    "addAnotherSource": "Add another source",
+    "add": "Add",
+    "remove": "Remove",
+    "errorTimeline": "Could not load timeline",
+    "errorSources": "Could not load sources",
+    "errorSaveSource": "Could not save source",
+    "errorRemoveSource": "Could not remove source",
+    "toastSourceSaved": "Source saved",
+    "toastSourceRemoved": "Source removed"
+  },
+  "login": {
+    "title": "infl0",
+    "srpHint": "Sign-in uses SRP-6a: your password is not sent to the server (use HTTPS in production).",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "createAccount": "Create account",
+    "failed": "Login failed"
+  },
+  "register": {
+    "title": "Create account",
+    "hint": "Password stays in your browser; only an SRP verifier is stored on the server.",
+    "inviteCode": "Invite code",
+    "email": "Email",
+    "nameOptional": "Name (optional)",
+    "password": "Password",
+    "submit": "Register",
+    "signInLink": "Already have an account? Sign in",
+    "failed": "Registration failed"
+  },
+  "freshness": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This week",
+    "lastWeek": "Last week",
+    "older": "Older",
+    "unknown": "—"
+  },
+  "article": {
+    "cornerFold": "Click to flip",
+    "flipCard": "Flip card",
+    "flipBack": "Flip back",
+    "originalArticle": "Original article",
+    "closeModal": "Close"
+  }
+}

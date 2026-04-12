@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { isToday, isYesterday, isThisWeek, formatDistanceToNow } from 'date-fns'
+import { differenceInCalendarDays, isToday, isYesterday, isThisWeek } from 'date-fns'
 
-// Props: article publication date
+const { t } = useI18n()
+
 const props = defineProps({
     publishedAt: {
         type: String,
@@ -9,25 +10,29 @@ const props = defineProps({
     },
 })
 
-// Freshness label and color from publication date
 const freshness = computed(() => {
     try {
         const date = new Date(props.publishedAt)
-        if (isToday(date)) {
-            return { label: 'Today', color: 'text-green-500' }
-        } else if (isYesterday(date)) {
-            return { label: 'Yesterday', color: 'text-green-400' }
-        } else if (isThisWeek(date)) {
-            return { label: 'This Week', color: 'text-blue-400' }
-        } else {
-            const weeksAgo = formatDistanceToNow(date, { addSuffix: false })
-            return weeksAgo.includes('week')
-                ? { label: 'Last Week', color: 'text-gray-300' }
-                : { label: 'Older', color: 'text-gray-400' }
+        if (Number.isNaN(date.getTime())) {
+            return { label: t('freshness.unknown'), color: 'text-gray-400' }
         }
+        if (isToday(date)) {
+            return { label: t('freshness.today'), color: 'text-green-500' }
+        }
+        if (isYesterday(date)) {
+            return { label: t('freshness.yesterday'), color: 'text-green-400' }
+        }
+        if (isThisWeek(date)) {
+            return { label: t('freshness.thisWeek'), color: 'text-blue-400' }
+        }
+        const daysAgo = differenceInCalendarDays(new Date(), date)
+        if (daysAgo >= 7 && daysAgo < 14) {
+            return { label: t('freshness.lastWeek'), color: 'text-gray-300' }
+        }
+        return { label: t('freshness.older'), color: 'text-gray-400' }
     } catch {
         console.error(typeof props.publishedAt)
-        return { label: '—', color: 'text-gray-400' }
+        return { label: t('freshness.unknown'), color: 'text-gray-400' }
     }
 })
 </script>

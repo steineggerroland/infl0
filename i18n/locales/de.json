@@ -1,0 +1,70 @@
+{
+  "common": {
+    "retry": "Erneut versuchen",
+    "dismiss": "Schließen",
+    "loading": "…",
+    "close": "Schließen"
+  },
+  "locale": {
+    "label": "Sprache",
+    "en": "Englisch",
+    "de": "Deutsch"
+  },
+  "index": {
+    "sources": "Quellen",
+    "logOut": "Abmelden",
+    "addSourcesTitle": "Quellen hinzufügen",
+    "addSourcesBody": "Deine Timeline zeigt nur Artikel aus Quellen, die du hier einträgst. Der Crawler muss dieselbe Feed-URL (normalisiert als crawlKey) beim Import verwenden.",
+    "feedUrl": "Feed-URL",
+    "feedUrlPlaceholder": "https://…",
+    "displayNameOptional": "Anzeigename (optional)",
+    "saveSource": "Quelle speichern",
+    "preparingTitle": "Timeline wird vorbereitet",
+    "preparingBody": "Sobald der Crawler Artikel mit passendem crawlKey liefert, erscheinen sie hier.",
+    "refreshTimeline": "Timeline aktualisieren",
+    "addAnotherSource": "Weitere Quelle",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "errorTimeline": "Timeline konnte nicht geladen werden",
+    "errorSources": "Quellen konnten nicht geladen werden",
+    "errorSaveSource": "Quelle konnte nicht gespeichert werden",
+    "errorRemoveSource": "Quelle konnte nicht entfernt werden",
+    "toastSourceSaved": "Quelle gespeichert",
+    "toastSourceRemoved": "Quelle entfernt"
+  },
+  "login": {
+    "title": "infl0",
+    "srpHint": "Anmeldung mit SRP-6a: Dein Passwort wird nicht an den Server gesendet (in Produktion HTTPS verwenden).",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "signIn": "Anmelden",
+    "createAccount": "Konto erstellen",
+    "failed": "Anmeldung fehlgeschlagen"
+  },
+  "register": {
+    "title": "Konto erstellen",
+    "hint": "Das Passwort bleibt im Browser; auf dem Server wird nur ein SRP-Verifier gespeichert.",
+    "inviteCode": "Einladungscode",
+    "email": "E-Mail",
+    "nameOptional": "Name (optional)",
+    "password": "Passwort",
+    "submit": "Registrieren",
+    "signInLink": "Schon ein Konto? Anmelden",
+    "failed": "Registrierung fehlgeschlagen"
+  },
+  "freshness": {
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "thisWeek": "Diese Woche",
+    "lastWeek": "Letzte Woche",
+    "older": "Älter",
+    "unknown": "—"
+  },
+  "article": {
+    "cornerFold": "Zum Umdrehen klicken",
+    "flipCard": "Karte umdrehen",
+    "flipBack": "Zurückdrehen",
+    "originalArticle": "Originalartikel",
+    "closeModal": "Schließen"
+  }
+}

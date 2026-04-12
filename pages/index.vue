@@ -21,26 +21,12 @@ type UserFeedRow = {
     createdAt: string
 }
 
+const { t } = useI18n()
+const toast = useToast()
+
 async function logout() {
     await $fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
     await navigateTo('/login')
-}
-
-function parseFetchError(e: unknown): { statusCode?: number; message: string } {
-    const err = e as {
-        statusCode?: number
-        status?: number
-        statusMessage?: string
-        message?: string
-        data?: { statusMessage?: string }
-    }
-    const statusCode = err?.statusCode ?? err?.status
-    const message =
-        (typeof err?.data?.statusMessage === 'string' && err.data.statusMessage) ||
-        (typeof err?.statusMessage === 'string' && err.statusMessage) ||
-        (typeof err?.message === 'string' && err.message) ||
-        ''
-    return { statusCode, message }
 }
 
 const PAGE_SIZE = 20
@@ -51,7 +37,6 @@ const articles = ref<TimelineArticle[]>([])
 const timelineHasMore = ref(true)
 const timelinePending = ref(false)
 const timelineScrollEl = ref<HTMLElement | null>(null)
-const timelineError = ref('')
 
 /** SSR: forward `Cookie` from the incoming request to internal API calls (plain `$fetch` does not). */
 const requestFetch = useRequestFetch()
@@ -66,7 +51,6 @@ async function loadTimelinePage(reset: boolean) {
             credentials: 'include',
             query: { limit: PAGE_SIZE, offset },
         })
-        timelineError.value = ''
         if (reset) {
             articles.value = res.items
         } else if (res.items.length > 0) {
@@ -79,14 +63,28 @@ async function loadTimelinePage(reset: boolean) {
             await navigateTo('/login')
             return
         }
-        timelineError.value = message.trim() || 'Could not load timeline'
+        const text = message.trim() || t('index.errorTimeline')
+        if (import.meta.client) {
+            toast.push({
+                message: text,
+                variant: 'error',
+                durationMs: 0,
+                actions: [
+                    {
+                        label: t('common.retry'),
+                        onClick: () => {
+                            void retryTimeline()
+                        },
+                    },
+                ],
+            })
+        }
     } finally {
         timelinePending.value = false
     }
 }
 
 async function retryTimeline() {
-    timelineError.value = ''
     await loadTimelinePage(true)
     await nextTick()
     await fillTimelineUntilScrollableOrDone()
@@ -113,14 +111,31 @@ const {
     key: 'user-feeds',
 })
 
+watch(
+    feedsFetchError,
+    (err) => {
+        if (!import.meta.client || !err) return
+        const { message } = parseFetchError(err)
+        const text = message.trim() || t('index.errorSources')
+        toast.push({
+            message: text,
+            variant: 'error',
+            durationMs: 0,
+            actions: [
+                {
+                    label: t('common.retry'),
+                    onClick: () => {
+                        void refreshFeeds()
+                    },
+                },
+            ],
+        })
+    },
+    { flush: 'post', immediate: true },
+)
+
 const fromDatabase = computed(() => articles.value.length > 0)
 const feedList = computed(() => feedsData.value?.feeds ?? [])
-
-const feedsErrorText = computed(() => {
-    const e = feedsFetchError.value
-    if (!e) return ''
-    return parseFetchError(e).message.trim() || 'Could not load sources'
-})
 const showOnboarding = computed(() => !fromDatabase.value && feedList.value.length === 0)
 const showWaiting = computed(() => !fromDatabase.value && feedList.value.length > 0)
 
@@ -128,7 +143,6 @@ const newFeedUrl = ref('')
 const newDisplayTitle = ref('')
 const addError = ref('')
 const addPending = ref(false)
-const removeFeedError = ref('')
 
 async function addFeed() {
     addError.value = ''
@@ -146,21 +160,22 @@ async function addFeed() {
         newDisplayTitle.value = ''
         await refreshFeeds()
         await loadTimelinePage(true)
+        toast.push({ message: t('index.toastSourceSaved'), variant: 'success' })
     } catch (e: unknown) {
         const { statusCode, message } = parseFetchError(e)
         if (statusCode === 401) {
             await navigateTo('/login')
             return
         }
-        addError.value = message.trim() || 'Could not save source'
+        addError.value = message.trim() || t('index.errorSaveSource')
+        toast.push({ message: addError.value, variant: 'error', durationMs: 8000 })
     } finally {
         addPending.value = false
     }
 }
 
 async function refreshAll() {
-    timelineError.value = ''
-    removeFeedError.value = ''
+    addError.value = ''
     await refreshFeeds()
     await loadTimelinePage(true)
     await nextTick()
@@ -171,24 +186,24 @@ const removingId = ref<string | null>(null)
 
 async function removeFeed(id: string) {
     removingId.value = id
-    removeFeedError.value = ''
     try {
         await $fetch(`/api/feeds/${id}`, { method: 'DELETE', credentials: 'include' })
         await refreshFeeds()
         await loadTimelinePage(true)
+        toast.push({ message: t('index.toastSourceRemoved'), variant: 'success' })
     } catch (e: unknown) {
         const { statusCode, message } = parseFetchError(e)
         if (statusCode === 401) {
             await navigateTo('/login')
             return
         }
-        removeFeedError.value = message.trim() || 'Could not remove source'
+        const text = message.trim() || t('index.errorRemoveSource')
+        toast.push({ message: text, variant: 'error', durationMs: 8000 })
     } finally {
         removingId.value = null
     }
 }
 
-// Track the current article index
 const currentIndex = ref(0)
 
 watch(
@@ -203,7 +218,6 @@ watch(
     },
 )
 
-/** One slot per article index (stable after infinite scroll append). */
 const articleContainers = ref<(HTMLElement | null)[]>([])
 
 function setArticleEl(el: unknown, index: number) {
@@ -270,6 +284,10 @@ onMounted(async () => {
 
 <template>
     <div class="bg-gray-400 text-white h-dvh w-full flex justify-center items-center relative">
+        <div class="absolute bottom-3 end-3 z-20">
+            <LocaleSwitcher />
+        </div>
+
         <details
             v-if="fromDatabase && feedList.length > 0"
             class="absolute top-3 start-3 z-20 max-w-[min(100vw-6rem,22rem)]"
@@ -277,7 +295,7 @@ onMounted(async () => {
             <summary
                 class="btn btn-sm btn-ghost text-gray-800 hover:bg-gray-500/30 cursor-pointer list-none [&::-webkit-details-marker]:hidden"
             >
-                Sources
+                {{ $t('index.sources') }}
             </summary>
             <ul
                 class="mt-2 text-sm space-y-2 rounded-lg border border-gray-700 bg-gray-900/95 p-3 text-gray-100 max-h-[40vh] overflow-y-auto shadow-xl"
@@ -299,7 +317,7 @@ onMounted(async () => {
                         :disabled="removingId === f.id"
                         @click="removeFeed(f.id)"
                     >
-                        {{ removingId === f.id ? '…' : 'Remove' }}
+                        {{ removingId === f.id ? $t('common.loading') : $t('index.remove') }}
                     </button>
                 </li>
             </ul>
@@ -310,87 +328,53 @@ onMounted(async () => {
             class="absolute top-3 end-3 z-20 btn btn-sm btn-ghost text-gray-800 hover:bg-gray-500/30"
             @click="logout"
         >
-            Log out
+            {{ $t('index.logOut') }}
         </button>
 
-        <div
-            v-if="feedsErrorText || timelineError || removeFeedError"
-            class="absolute top-14 left-1/2 z-30 w-[min(100%-1.5rem,28rem)] -translate-x-1/2 space-y-2 rounded-lg border border-amber-700/80 bg-amber-950/95 px-3 py-2 text-sm text-amber-100 shadow-lg"
-            role="alert"
-            aria-live="polite"
-        >
-            <div v-if="feedsErrorText" class="flex flex-wrap items-center justify-between gap-2">
-                <span>{{ feedsErrorText }}</span>
-                <button
-                    type="button"
-                    class="btn btn-ghost btn-xs shrink-0 text-amber-200 hover:bg-amber-900/50"
-                    @click="refreshFeeds()"
-                >
-                    Retry
-                </button>
-            </div>
-            <div v-if="timelineError" class="flex flex-wrap items-center justify-between gap-2">
-                <span>{{ timelineError }}</span>
-                <button
-                    type="button"
-                    class="btn btn-ghost btn-xs shrink-0 text-amber-200 hover:bg-amber-900/50"
-                    @click="retryTimeline"
-                >
-                    Retry
-                </button>
-            </div>
-            <p v-if="removeFeedError" class="text-red-200">{{ removeFeedError }}</p>
-        </div>
-
-        <!-- Onboarding: no timeline, no feeds -->
         <div
             v-if="showOnboarding"
             class="relative z-10 w-full max-w-md mx-auto px-4 py-8 text-gray-900"
         >
             <div class="rounded-xl bg-gray-900/90 text-gray-100 p-8 shadow-xl border border-gray-700">
-                <h1 class="text-xl font-semibold mb-2">Add sources</h1>
+                <h1 class="text-xl font-semibold mb-2">{{ $t('index.addSourcesTitle') }}</h1>
                 <p class="text-sm text-gray-400 mb-6">
-                    Your timeline only shows articles from sources you add here. The crawler must use the
-                    same feed URL (normalized as <span class="text-gray-500">crawlKey</span>) when
-                    importing.
+                    {{ $t('index.addSourcesBody') }}
                 </p>
                 <form class="flex flex-col gap-4" @submit.prevent="addFeed">
                     <label class="flex flex-col gap-1 text-sm">
-                        <span class="text-gray-400">Feed URL</span>
+                        <span class="text-gray-400">{{ $t('index.feedUrl') }}</span>
                         <input
                             v-model="newFeedUrl"
                             type="url"
                             required
-                            placeholder="https://…"
+                            :placeholder="$t('index.feedUrlPlaceholder')"
                             class="input input-bordered w-full bg-gray-800 border-gray-600"
-                        />
+                        >
                     </label>
                     <label class="flex flex-col gap-1 text-sm">
-                        <span class="text-gray-400">Display name (optional)</span>
+                        <span class="text-gray-400">{{ $t('index.displayNameOptional') }}</span>
                         <input
                             v-model="newDisplayTitle"
                             type="text"
                             class="input input-bordered w-full bg-gray-800 border-gray-600"
-                        />
+                        >
                     </label>
                     <p v-if="addError" class="text-sm text-red-400">{{ addError }}</p>
                     <button type="submit" class="btn btn-primary w-full" :disabled="addPending">
-                        {{ addPending ? '…' : 'Save source' }}
+                        {{ addPending ? $t('common.loading') : $t('index.saveSource') }}
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- Waiting: feeds exist, timeline still empty -->
         <div
             v-else-if="showWaiting"
             class="relative z-10 w-full max-w-lg mx-auto px-4 py-8 text-gray-900"
         >
             <div class="rounded-xl bg-gray-900/90 text-gray-100 p-8 shadow-xl border border-gray-700">
-                <h1 class="text-xl font-semibold mb-2">Preparing your timeline</h1>
+                <h1 class="text-xl font-semibold mb-2">{{ $t('index.preparingTitle') }}</h1>
                 <p class="text-sm text-gray-400 mb-4">
-                    Once the crawler delivers articles with a matching <code class="text-gray-500">crawlKey</code>,
-                    they will appear here.
+                    {{ $t('index.preparingBody') }}
                 </p>
                 <ul class="text-sm space-y-2 mb-6 border border-gray-700 rounded-lg p-3 bg-gray-800/50">
                     <li
@@ -410,7 +394,7 @@ onMounted(async () => {
                             :disabled="removingId === f.id"
                             @click="removeFeed(f.id)"
                         >
-                            {{ removingId === f.id ? '…' : 'Remove' }}
+                            {{ removingId === f.id ? $t('common.loading') : $t('index.remove') }}
                         </button>
                     </li>
                 </ul>
@@ -419,32 +403,31 @@ onMounted(async () => {
                     class="btn btn-outline btn-sm border-gray-600 mb-6"
                     @click="refreshAll"
                 >
-                    Refresh timeline
+                    {{ $t('index.refreshTimeline') }}
                 </button>
-                <h2 class="text-sm font-medium text-gray-300 mb-2">Add another source</h2>
+                <h2 class="text-sm font-medium text-gray-300 mb-2">{{ $t('index.addAnotherSource') }}</h2>
                 <form class="flex flex-col gap-3" @submit.prevent="addFeed">
                     <input
                         v-model="newFeedUrl"
                         type="url"
                         required
-                        placeholder="https://…"
+                        :placeholder="$t('index.feedUrlPlaceholder')"
                         class="input input-bordered input-sm w-full bg-gray-800 border-gray-600"
-                    />
+                    >
                     <input
                         v-model="newDisplayTitle"
                         type="text"
-                        placeholder="Display name (optional)"
+                        :placeholder="$t('index.displayNameOptional')"
                         class="input input-bordered input-sm w-full bg-gray-800 border-gray-600"
-                    />
+                    >
                     <p v-if="addError" class="text-sm text-red-400">{{ addError }}</p>
                     <button type="submit" class="btn btn-primary btn-sm w-full" :disabled="addPending">
-                        {{ addPending ? '…' : 'Add' }}
+                        {{ addPending ? $t('common.loading') : $t('index.add') }}
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- Timeline with articles -->
         <div
             v-else
             ref="timelineScrollEl"
@@ -452,14 +435,14 @@ onMounted(async () => {
             @scroll.passive="onTimelineScroll"
         >
             <div
-                class="my-1 max-w-full landscape:aspect-smartphone landscape:h-[95%] portrait:h-full snap-start mx-auto snap-always"
                 v-for="(article, index) in articles"
                 :key="article.id"
                 :ref="(el) => setArticleEl(el, index)"
+                class="my-1 max-w-full landscape:aspect-smartphone landscape:h-[95%] portrait:h-full snap-start mx-auto snap-always"
             >
                 <ArticleView
-                    class="article rounded-xl"
                     v-if="article"
+                    class="article rounded-xl"
                     :article="article"
                     :is-selected="index === currentIndex"
                 />
