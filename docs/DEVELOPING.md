@@ -41,3 +41,8 @@ Without a suitable Node version, ESLint plugins or `postinstall` can fail (e.g. 
 ## Nuxt ESLint module
 
 [`@nuxt/eslint`](https://eslint.nuxt.com/) generates a project-specific **flat config** (ESLint 9). Add rules or ignores in **`eslint.config.mjs`** via `withNuxt(...)`.
+
+## Dependencies and security
+
+- After changing dependencies, run **`npm audit`**; use **`npm audit fix`** to apply compatible upgrades (keeps `package-lock.json` consistent).
+- **Nuxt Content** uses **`content.experimental.sqliteConnector: 'native'`** (Node 22.5+) so `nuxt prepare` does not prompt for `better-sqlite3` — better for CI and Docker without native addon builds.
