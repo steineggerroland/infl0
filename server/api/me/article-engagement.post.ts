@@ -4,6 +4,8 @@ import {
   ARTICLE_READ_ENGAGED_SECONDS_THRESHOLD,
   isArticleEngagementSegment,
 } from '../../../utils/article-engagement'
+import { applicationEventBus } from '../../domain/events/application-events'
+import { ensureEngagementProjectorRegistered } from '../../domain/engagement/engagement-projector'
 import { getSessionUserId } from '../../utils/auth-session'
 import { prisma } from '../../utils/prisma'
 
@@ -18,6 +20,7 @@ type Body = {
  * Records one dwell session when the user leaves a segment (teaser / summary / body).
  */
 export default defineEventHandler(async (event) => {
+  ensureEngagementProjectorRegistered()
   const userId = await getSessionUserId(event)
   if (!userId) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
@@ -94,6 +97,15 @@ export default defineEventHandler(async (event) => {
       },
     }),
   ])
+
+  await applicationEventBus.emit({
+    type: 'engagement.article.logged',
+    userId,
+    articleId,
+    segment,
+    durationSec: capped,
+    occurredAt: new Date(),
+  })
 
   return {
     ok: true,
