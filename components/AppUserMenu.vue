@@ -49,6 +49,11 @@ const linkClass =
                     {{ t('menu.privacy') }}
                 </NuxtLink>
             </li>
+            <li v-if="route.path !== '/settings/personalization'">
+                <NuxtLink to="/settings/personalization" :class="linkClass" @click="closeMenu">
+                    {{ t('menu.personalization') }}
+                </NuxtLink>
+            </li>
             <li class="px-3 pb-1 pt-3">
                 <span
                     class="text-[0.65rem] font-semibold uppercase tracking-wider text-gray-400"

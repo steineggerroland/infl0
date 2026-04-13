@@ -27,6 +27,7 @@ Without a suitable Node version, ESLint plugins or `postinstall` can fail (e.g. 
 | `npm run test:watch` | Vitest watch mode |
 | `npm run verify` | Lint + tests + typecheck (recommended before push; matches CI) |
 | `npm run typecheck` | Nuxt / TypeScript check |
+| `npm run backfillEngagementAggregates` | Rebuild engagement aggregate tables from raw events (manual/heavy) |
 
 **Note:** `eslint.config.mjs` imports `./.nuxt/eslint.config.mjs`. That file is created by **`nuxt prepare`** (runs on `npm install` as `postinstall`). Without a prior `npm install`, `npm run lint` fails — that is expected.
 

@@ -16,8 +16,53 @@
     "feeds": "Feed-Verwaltung",
     "timelineScore": "Timeline-Score",
     "privacy": "Datenschutz & Daten",
+    "personalization": "Personalisierung",
     "language": "Sprache",
     "logOut": "Abmelden"
+  },
+  "settingsPersonalization": {
+    "title": "Warum diese Artikel oben stehen",
+    "intro": "Hier siehst du in einfacher Sprache, warum deine Timeline so sortiert ist. Klappe einen Artikel auf und sieh, was ihn hoch- oder runterzieht.",
+    "generatedAt": "Stand",
+    "algorithmTitle": "So sortiert die Timeline aktuell",
+    "algorithmBody": "Jeder Artikel bekommt Punkte aus mehreren Signalen. Neuere Artikel und dein Leseverhalten können den Wert erhöhen oder senken. Feeds, Kategorien und Schlagwörter werden mit festen Anteilen gemischt, damit kein Bereich alles dominiert.",
+    "priorLabel": "Startwert für neue Themen",
+    "blendLabel": "So werden die Anteile gemischt",
+    "timelineHeading": "Deine Timeline (Vorschau)",
+    "feedsPieTitle": "Feeds — Anteil der geglätteten Scores",
+    "categoriesPieTitle": "Kategorien — Anteil der geglätteten Scores",
+    "tagsPieTitle": "Tags — Anteil der geglätteten Scores",
+    "pieOther": "Sonstige",
+    "rankStored": "Aktuell gespeicherter Wert",
+    "rankLive": "Jetzt neu berechnet",
+    "factorsHeading": "Timeline-Faktoren",
+    "colFactor": "Faktor",
+    "colNormalized": "Signal 0–1",
+    "colWeight": "Gewicht",
+    "colContribution": "Beitrag zum Score",
+    "engagementHeading": "Details zu deinem Leseverhalten",
+    "engagementIntro": "Diese Werte fassen zusammen, was du bei ähnlichen Inhalten eher länger liest oder eher überspringst.",
+    "feedSignal": "Feed",
+    "categoriesSignal": "Kategorien",
+    "tagsSignal": "Schlagwörter",
+    "categoryAvg": "Durchschnittliche Tendenz der Kategorien:",
+    "tagAvg": "Durchschnittliche Tendenz der Schlagwörter:",
+    "categoryWeighted": "Einfluss der Kategorien auf die Sortierung:",
+    "tagWeighted": "Einfluss der Schlagwörter auf die Sortierung:",
+    "rankDelta": "Änderung",
+    "colNormalizedSimple": "Stärke",
+    "colWeightSimple": "Wichtigkeit",
+    "colContributionSimple": "Einfluss",
+    "sourceLabel": "Feed:",
+    "feedbackLabel": "Hilfreich / nicht hilfreich Klicks:",
+    "feedbackShort": "Klicks",
+    "scoreLabel": "Tendenz aus dem Lesen:",
+    "weightedLabel": "Einfluss nach Wichtigkeit:",
+    "finalInterestUp": "Finales positives Engagement:",
+    "finalInterestDown": "Finales negativesD Engagement:",
+    "blendSources": "Feeds",
+    "blendCategories": "Kategorien",
+    "blendTags": "Schlagwörter"
   },
   "settingsPrivacy": {
     "title": "Datenschutz & Personalisierungsdaten",
@@ -58,7 +103,7 @@
         "hint": "Wie stark der Längen-Bias unten in den Score einfließt. 0 = Länge ignorieren."
       },
       "crawl_diversity": {
-        "label": "Quellen-Mix-Bonus",
+        "label": "Feed-Mix-Bonus",
         "hint": "Platzhalter 0 bis iteratives Spacing zwischen Feeds existiert."
       },
       "category_diversity": {
@@ -75,7 +120,7 @@
       },
       "engagement_negative": {
         "label": "Negatives Engagement",
-        "hint": "Platzhalter 0 (Wegklicken / Skip-Signale)."
+        "hint": "Senkt den Sortierungs-Score, wenn dieses Signal stark ist; die Wichtigkeit bestimmt, wie viel abgezogen wird."
       }
     }
   },
@@ -85,8 +130,8 @@
     "refreshTimeline": "Timeline aktualisieren",
     "manageFeeds": "Feeds verwalten",
     "errorTimeline": "Timeline konnte nicht geladen werden",
-    "errorSources": "Quellen konnten nicht geladen werden",
-    "emptyNoFeedsTitle": "Noch keine Quellen",
+    "errorSources": "Feeds konnten nicht geladen werden",
+    "emptyNoFeedsTitle": "Noch keine Feeds",
     "emptyNoFeedsBody": "Füge RSS- oder Atom-Feeds hinzu, damit die Timeline Artikel anzeigen kann. Beim Import muss dieselbe Feed-URL wie hier gespeichert verwendet werden, damit Einträge zu deinem Abo passen.",
     "emptyNoFeedsCta": "Feeds hinzufügen",
     "allReadTitle": "Alles gelesen",
