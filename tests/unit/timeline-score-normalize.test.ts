@@ -99,4 +99,20 @@ describe('computeWeightedScore', () => {
     const s = computeWeightedScore(features, w)
     expect(s).toBeCloseTo(features.published_recency, 5)
   })
+
+  it('subtracts engagement_negative weighted term', () => {
+    const w = defaultTimelineScoreWeights()
+    for (const id of Object.keys(w) as TimelineScoreFactorId[]) {
+      w[id] = 0
+    }
+    w.published_recency = 100
+    w.engagement_negative = 100
+    const features = {
+      ...computeNormalizedFeatures({ title: 'Hello' }, Date.now(), 0),
+      published_recency: 0.5,
+      engagement_negative: 0.2,
+    }
+    const s = computeWeightedScore(features, w)
+    expect(s).toBeCloseTo(0.5 - 0.2, 5)
+  })
 })

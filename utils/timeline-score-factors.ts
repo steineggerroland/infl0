@@ -1,5 +1,6 @@
 /**
  * Timeline score: weighted sum of normalized features (each in [0, 1]).
+ * `engagement_negative` is applied as a subtraction (penalty).
  * Missing inputs yield feature value 0 (see normalization helpers).
  */
 

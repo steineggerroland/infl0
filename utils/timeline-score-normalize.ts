@@ -116,7 +116,10 @@ function clamp01(x: number | null | undefined): number {
   return Math.min(1, Math.max(0, x))
 }
 
-/** score = Σ feature_i * (weight_i / 100) — weights 0…100 */
+/**
+ * score = Σ feature_i * (weight_i / 100) — weights 0…100
+ * `engagement_negative` is subtracted (penalty), not added.
+ */
 export function computeWeightedScore(
   features: NormalizedTimelineFeatures,
   weights: Record<TimelineScoreFactorId, number>,
@@ -125,7 +128,9 @@ export function computeWeightedScore(
   for (const id of Object.keys(features) as TimelineScoreFactorId[]) {
     const w = weights[id]
     if (w == null || w <= 0) continue
-    s += features[id] * (w / 100)
+    const term = features[id] * (w / 100)
+    if (id === 'engagement_negative') s -= term
+    else s += term
   }
   return s
 }
