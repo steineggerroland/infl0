@@ -43,21 +43,25 @@ function toggleDetailView() {
   isDetailView.value = !isDetailView.value
 }
 
-// Track modal visibility
+// Track modal visibility. Keep it in sync with native <dialog> close paths
+// (Escape, backdrop, form[method=dialog]) via onDialogClose.
 const modalVisible = ref(false)
 
 function showOriginalArticle() {
-  modalVisible.value = true
   modal.value?.showModal()
+  modalVisible.value = true
 }
 
 function toggleOriginalArticle() {
-  modalVisible.value = !modalVisible.value
   if (modal.value?.open) {
-    modal.value?.close()
+    modal.value.close()
   } else {
-    modal.value?.showModal()
+    showOriginalArticle()
   }
+}
+
+function onDialogClose() {
+  modalVisible.value = false
 }
 
 const matchingPage = ref<{ _inline?: boolean } | Record<string, unknown> | null>(null)
@@ -158,10 +162,20 @@ watch(
   { flush: 'post' },
 )
 
+useModalStackRegistration(modalVisible)
+
+const { anyOpen: anyModalOpen } = useModalStack()
+
+defineShortcuts(
+  {
+    'e': () => { if (props.isSelected) toggleDetailView() },
+    'escape': () => { if (props.isSelected) { isDetailView.value = false } },
+  },
+  { when: () => !anyModalOpen.value },
+)
+
 defineShortcuts({
-  'e': () => { if (props.isSelected) toggleDetailView() },
-  'escape': () => { if (props.isSelected) { isDetailView.value = false } },
-  'q': () => { if (props.isSelected) toggleOriginalArticle() }
+  'q': () => { if (props.isSelected) toggleOriginalArticle() },
 })
 
 </script>
@@ -256,12 +270,18 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
       <!-- Flip Arrow -->
       <FlipArrow class="action-flip-back" direction="back" @click="toggleDetailView" />
     </div>
-    <dialog v-if="matchingPage" ref="modal" class="modal">
+    <dialog
+      v-if="matchingPage"
+      ref="modal"
+      class="modal"
+      @close="onDialogClose"
+      @cancel="onDialogClose"
+    >
       <div class="modal-box max-w-[100vw] w-[640px] bg-white text-black">
-        <form method="dialog" class="flex sticky top-2 right-0">
-          <button class="ms-auto btn btn-sm btn-circle btn-ghost">✕</button>
+        <form method="dialog" class="mb-2 flex justify-end">
+          <button class="btn btn-sm btn-circle btn-ghost">✕</button>
         </form>
-        <div class="overflow-y-auto h-full font-serif md:p-2 -mt-4 max-h-[80vh]">
+        <div class="overflow-y-auto h-full max-h-[80vh] font-serif md:p-2">
           <ContentRenderer
             v-if="modalVisible && matchingPage && !('_inline' in matchingPage && matchingPage._inline)"
             :value="matchingPage"
@@ -279,8 +299,11 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             >{{ article.rawMarkdown }}</pre
           >
         </div>
+        <p class="mt-3 text-xs text-gray-500 select-none">
+          {{ t('article.modalKeyboardHint') }}
+        </p>
       </div>
-        <form method="dialog" class="modal-backdrop">
+      <form method="dialog" class="modal-backdrop">
         <button>{{ t('article.closeModal') }}</button>
       </form>
     </dialog>

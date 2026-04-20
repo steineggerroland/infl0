@@ -208,7 +208,8 @@
     "flipCard": "Karte umdrehen",
     "flipBack": "Zurückdrehen",
     "originalArticle": "Originalartikel",
-    "closeModal": "Schließen"
+    "closeModal": "Schließen",
+    "modalKeyboardHint": "Esc schließt · w/s navigieren nach dem Schließen"
   },
   "help": {
     "title": "Hilfe & häufige Fragen",
@@ -245,7 +246,7 @@
       "shortcuts": {
         "title": "Welche Tastenkürzel gibt es?",
         "simple": "Du kannst mit den Pfeiltasten oder W/S zwischen Artikeln wechseln. E öffnet die ausführliche Ansicht, Q öffnet den Originalartikel, Escape schließt die Detailansicht. R blendet gelesene Artikel ein oder aus.",
-        "details": "Die Kürzel sind in der Timeline aktiv, wenn kein Eingabefeld fokussiert ist. Wir arbeiten daran, eine sichtbare Übersicht direkt in der App anzuzeigen."
+        "details": "Die Kürzel sind in der Timeline aktiv, wenn kein Eingabefeld fokussiert ist und keine gleichzeitige Taste (Strg, Cmd oder Alt) gedrückt wird. Wenn ein Originalartikel oder ein Info-Fenster geöffnet ist, pausieren W/S, Pfeiltasten und R – damit der Hintergrund nicht wechselt, während du liest. Escape schließt das geöffnete Fenster. Wir arbeiten daran, eine sichtbare Übersicht direkt in der App anzuzeigen."
       }
     }
   }

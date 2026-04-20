@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { defineShortcuts } from '~/composables/useShortcuts'
+import { useModalStackRegistration } from '~/composables/useModalStack'
+
 /**
  * Accessible, self-contained popover for short explanations in context.
  *
@@ -6,6 +9,13 @@
  * - Use for *short* plain-language explanations next to a control.
  * - Pair with a link to the full help entry for users who want more.
  * - Keep the trigger's accessible name descriptive (avoid "info", "?").
+ *
+ * The `Escape` dismissal is routed through `defineShortcuts` so the
+ * popover obeys the same modifier-key invariant as the rest of the app
+ * (chords like `Cmd+Escape` are the browser/OS's business, not ours).
+ * While the popover is open it registers with `useModalStack` so
+ * background shortcuts – timeline `w`/`s` navigation in particular –
+ * stay silent and do not mutate content behind the overlay.
  */
 
 const props = defineProps<{
@@ -50,25 +60,34 @@ function onDocumentClick(event: MouseEvent) {
     }
 }
 
-function onKeydown(event: KeyboardEvent) {
-    if (!open.value) return
-    if (event.key === 'Escape') {
-        event.preventDefault()
-        void close(true)
-    }
-}
-
 // `onMounted` / `onBeforeUnmount` only run on the client, so no SSR guard
 // is needed. This also lets the component be mounted directly in Vitest.
 onMounted(() => {
     document.addEventListener('click', onDocumentClick, { capture: true })
-    document.addEventListener('keydown', onKeydown)
 })
 
 onBeforeUnmount(() => {
     document.removeEventListener('click', onDocumentClick, { capture: true })
-    document.removeEventListener('keydown', onKeydown)
 })
+
+defineShortcuts(
+    {
+        escape: (event) => {
+            event.preventDefault()
+            void close(true)
+        },
+    },
+    {
+        // Only active while the popover is open; otherwise `Escape`
+        // presses belong to whoever owns the current surface.
+        when: () => open.value,
+        // A dismissal key must still work when the focus is inside an
+        // `<input>` or `<textarea>` within the popover content.
+        skipEditableTarget: true,
+    },
+)
+
+useModalStackRegistration(open)
 
 const alignClass = computed(() => {
     switch (props.align) {

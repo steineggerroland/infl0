@@ -209,7 +209,54 @@ regress any of it.
 - Global shortcuts (`w/s/e/q`, arrow keys) must not fire while a form
   control has focus. When adding new shortcuts, document them in
   `help.items.shortcuts` and show them in a future on-screen cheat sheet.
-- Dialogs and popovers close on `Escape` and return focus to the trigger.
+- Shortcuts are registered with `defineShortcuts` from
+  `composables/useShortcuts.ts`. The composable enforces three
+  invariants for every call site:
+  1. **No firing while an editable control has focus** (`<input>`,
+     `<textarea>`, `<select>`, `[contenteditable]`). Dismissal keys
+     inside popovers/modals opt out via `skipEditableTarget: true` –
+     never use that flag for anything else.
+  2. **No firing on modifier chords** (`Ctrl`, `Meta`, `Alt`). A
+     shortcut is only a shortcut when the key is pressed on its own;
+     chords belong to the browser or OS (e.g. `Cmd+R` must stay
+     "reload page", not "toggle show-read").
+  3. **Scope with `when: () => boolean`** for shortcuts that must
+     yield to a higher surface. Most callers should pair this with
+     `useModalStack().anyOpen` so pressing `w`/`s` while a full-text
+     article or an `InfoPopover` is open does **not** silently
+     change the content behind the overlay.
+  Raw `document.addEventListener('keydown', …)` for app-facing keys
+  is not allowed – always go through `defineShortcuts` so the
+  contract above is impossible to forget.
+- Dialogs and popovers close on `Escape` and return focus to the
+  trigger. Any surface that feels dialog-like (a `<dialog>`, an
+  `InfoPopover`, any future bottom sheet, …) must register itself
+  with `useModalStack()` while it is open. The stack is the single
+  source of truth for "is any dismissable overlay on screen?" and
+  every background shortcut that could be disruptive while reading
+  should gate on it via `when: () => !anyOpen.value`.
+- **Native `<dialog>` close paths must sync back into your `isOpen`
+  ref.** `HTMLDialogElement` has three dismiss routes the browser
+  handles internally and does **not** run through your Vue script:
+  `Escape`, backdrop click, and any `<button>` inside a
+  `<form method="dialog">` (the ✕ we render at the top of the
+  article modal uses this). All three dispatch a `close` event
+  (preceded by `cancel` for the `Escape` path). If you do not bind
+  `@close` / `@cancel` on the `<dialog>` to clear the reactive
+  `isOpen` you passed into `useModalStackRegistration`, the stack
+  stays pumped up forever and every background shortcut stays
+  muted – a silent trap that only surfaces on the user's next
+  reload. The reviewer-flagged bug fixed in Sprint 6.1. Shape:
+
+  ```vue
+  <dialog ref="dlg" @close="onDialogClose" @cancel="onDialogClose">…</dialog>
+  ```
+
+  with `onDialogClose` as the single writer that sets
+  `isOpen.value = false`. Programmatic `.close()` calls must not
+  also mutate `isOpen` directly – let the event handler stay the
+  only place that clears it. Pinned end-to-end by
+  `tests/component/modal-stack-dialog-sync.test.ts`.
 
 ### Screen reader
 

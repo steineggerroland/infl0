@@ -244,16 +244,25 @@ function isMoreThan50PercentVisible(element: HTMLElement): boolean {
     return visibleHeight > rect.height / 2
 }
 
-defineShortcuts({
-    arrowup: gotoPreviousArticle,
-    w: gotoPreviousArticle,
-    arrowdown: gotoNextArticle,
-    s: gotoNextArticle,
-    r: (event) => {
-        event.preventDefault()
-        toggleShowRead()
+// Timeline navigation and the global `r` toggle must yield to any open
+// modal-like surface (full-text article, InfoPopover). Without this
+// guard the background article silently changed while a modal was on
+// screen, so the content no longer matched what the user was reading.
+const { anyOpen: anyModalOpen } = useModalStack()
+
+defineShortcuts(
+    {
+        arrowup: gotoPreviousArticle,
+        w: gotoPreviousArticle,
+        arrowdown: gotoNextArticle,
+        s: gotoNextArticle,
+        r: (event) => {
+            event.preventDefault()
+            toggleShowRead()
+        },
     },
-})
+    { when: () => !anyModalOpen.value },
+)
 
 onMounted(async () => {
     await nextTick()

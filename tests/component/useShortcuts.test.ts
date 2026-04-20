@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { defineShortcuts } from '../../composables/useShortcuts'
 
@@ -118,6 +118,125 @@ describe('defineShortcuts editable-target guard', () => {
         // Shift is a pure casing modifier, not a chord. The user is still
         // "just pressing r" from a keyboard-shortcut perspective.
         expect(handler).toHaveBeenCalledOnce()
+        wrapper.unmount()
+    })
+})
+
+// `when` lets a caller scope a shortcut group to a piece of reactive state
+// (e.g. "only when no modal is open"). The callback is evaluated on every
+// keypress so the scope can follow changing UI state without re-registering
+// listeners. This is the core mechanism that stops the timeline `w`/`s`
+// navigation from fighting a full-text article modal for focus.
+describe('defineShortcuts when-scope', () => {
+    afterEach(() => {
+        document.body.innerHTML = ''
+    })
+
+    function mountWithScope(onKey: () => void, active: { value: boolean }) {
+        const Harness = defineComponent({
+            setup() {
+                defineShortcuts({ w: onKey }, { when: () => active.value })
+            },
+            render() {
+                return h('div')
+            },
+        })
+        return mount(Harness, { attachTo: document.body })
+    }
+
+    it('suppresses the handler while the scope predicate returns false', () => {
+        const handler = vi.fn()
+        const active = ref(false)
+        const wrapper = mountWithScope(handler, active)
+
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'w', bubbles: true }),
+        )
+
+        expect(handler).not.toHaveBeenCalled()
+        wrapper.unmount()
+    })
+
+    it('fires the handler while the scope predicate returns true', () => {
+        const handler = vi.fn()
+        const active = ref(true)
+        const wrapper = mountWithScope(handler, active)
+
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'w', bubbles: true }),
+        )
+
+        expect(handler).toHaveBeenCalledOnce()
+        wrapper.unmount()
+    })
+
+    it('re-evaluates the scope predicate between keypresses', () => {
+        const handler = vi.fn()
+        const active = ref(true)
+        const wrapper = mountWithScope(handler, active)
+
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'w', bubbles: true }),
+        )
+        active.value = false
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'w', bubbles: true }),
+        )
+        active.value = true
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'w', bubbles: true }),
+        )
+
+        expect(handler).toHaveBeenCalledTimes(2)
+        wrapper.unmount()
+    })
+})
+
+// `skipEditableTarget` is the narrow escape hatch used by dismissal
+// shortcuts inside popovers/modals: an `Escape` must always close the
+// surrounding dialog even when a form control inside it holds focus.
+// The hatch is deliberately *not* available per-key — a caller that
+// needs it takes responsibility for the whole group.
+describe('defineShortcuts skipEditableTarget', () => {
+    afterEach(() => {
+        document.body.innerHTML = ''
+    })
+
+    function mountWithSkip(onKey: (event: KeyboardEvent) => void) {
+        const Harness = defineComponent({
+            setup() {
+                defineShortcuts({ escape: onKey }, { skipEditableTarget: true })
+            },
+            render() {
+                return h('div')
+            },
+        })
+        return mount(Harness, { attachTo: document.body })
+    }
+
+    it('fires inside an <input> when the group opts in', () => {
+        const handler = vi.fn()
+        const wrapper = mountWithSkip(handler)
+
+        const input = document.createElement('input')
+        document.body.appendChild(input)
+        input.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+        )
+
+        expect(handler).toHaveBeenCalledOnce()
+        wrapper.unmount()
+    })
+
+    it('still blocks modifier chords even with skipEditableTarget', () => {
+        const handler = vi.fn()
+        const wrapper = mountWithSkip(handler)
+
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'Escape', metaKey: true, bubbles: true }),
+        )
+
+        expect(handler).not.toHaveBeenCalled()
         wrapper.unmount()
     })
 })

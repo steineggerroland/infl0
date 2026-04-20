@@ -208,7 +208,8 @@
     "flipCard": "Flip card",
     "flipBack": "Flip back",
     "originalArticle": "Original article",
-    "closeModal": "Close"
+    "closeModal": "Close",
+    "modalKeyboardHint": "Esc closes · use w/s after closing to navigate"
   },
   "help": {
     "title": "Help & frequently asked questions",
@@ -245,7 +246,7 @@
       "shortcuts": {
         "title": "Are there any keyboard shortcuts?",
         "simple": "Use the arrow keys or W/S to move between articles. E opens the detailed view, Q opens the original article, Escape closes the detail view. R shows or hides articles you have already read.",
-        "details": "Shortcuts are active in the timeline as long as no input field is focused. We plan to show a visible cheat sheet directly inside the app."
+        "details": "Shortcuts are active in the timeline as long as no input field is focused and no modifier key (Ctrl, Cmd, Alt) is held down. While an original article or info popover is open, W/S, the arrow keys and R pause – the background will not change while you are reading. Escape closes the open surface. We plan to show a visible cheat sheet directly inside the app."
       }
     }
   }

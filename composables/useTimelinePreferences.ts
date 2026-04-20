@@ -3,6 +3,7 @@ import {
     parseStoredShowRead,
     serializeShowRead,
 } from '~/utils/timeline-preferences'
+import { getCurrentInstance, onMounted } from 'vue'
 
 /**
  * User preferences that change how the timeline is rendered.
@@ -10,10 +11,17 @@ import {
  * Shared across the timeline page and the app-level menu so both the
  * main view and the "View" section in `AppUserMenu` stay in sync. The
  * value is persisted to `localStorage` so the preference survives
- * reloads (SSR-safe: hydration happens once on the client).
+ * reloads.
  *
  * The pure read/write helpers live in `utils/timeline-preferences.ts`
  * and are unit-tested there; this composable is the thin Nuxt wrapper.
+ *
+ * Hydration note: reading `localStorage` is intentionally deferred until
+ * `onMounted` (when called inside a component) to keep the first client
+ * render identical to SSR markup. Reading storage during setup can flip
+ * branches before hydration finishes and causes Vue mismatch warnings on
+ * reload (`Cmd+R`) if the stored preference differs from the server
+ * default. Tests and non-component calls hydrate immediately.
  *
  * Lifecycle note: persistence is implemented with a writable `computed`
  * setter, **not** with `watch()`. A `watch()` inside a composable
@@ -33,7 +41,8 @@ export function useTimelinePreferences() {
     // + happy-dom, and pure Node).
     const isClient = typeof window !== 'undefined'
 
-    if (isClient && !hydrated.value) {
+    function hydrateFromStorage(): void {
+        if (!isClient || hydrated.value) return
         hydrated.value = true
         try {
             const stored = parseStoredShowRead(
@@ -44,6 +53,17 @@ export function useTimelinePreferences() {
             // Private mode or a host without `localStorage` — fall back to
             // the in-memory default silently.
         }
+    }
+
+    // Inside components, defer to `onMounted` to avoid SSR/client branch
+    // drift during hydration. In tests or pure calls (no current instance),
+    // hydrate immediately so callers still observe persisted state.
+    if (getCurrentInstance()) {
+        onMounted(() => {
+            hydrateFromStorage()
+        })
+    } else {
+        hydrateFromStorage()
     }
 
     function persist(value: boolean): void {

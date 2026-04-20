@@ -62,37 +62,6 @@ wichtigsten Sprachthemen adressiert):
   - Abgrenzungstest: Route-Middleware `runAuthMiddleware` wird für
     `/api/…`-Pfade **nicht** aufgerufen (bzw. kurz vorher abgelehnt).
 
-### 3. Keydown-Listener außerhalb `defineShortcuts` als Invariante festigen
-
-- **Hintergrund:** Der globale Guard gegen Modifier-Chords (`Ctrl`,
-  `Meta`, `Alt`) und fokussierte Eingabefelder wirkt nur für
-  Tastenkürzel, die durch `defineShortcuts` registriert werden.
-  Eigene `document.addEventListener('keydown', …)`-Stellen umgehen
-  ihn und können die gleiche Fehlerklasse zurückbringen (z. B.
-  `Cmd+R` löst App-Logik statt Page-Reload aus).
-- **Bekannte Bypass-Stelle:** `components/InfoPopover.vue` hört
-  global auf `Escape`, um das Popover zu schließen. Als
-  Dismiss-Konvention (ARIA) ist das vertretbar, aber nicht
-  dokumentiert und nicht getestet gegen Modifier-Kombinationen.
-- **Zielbild (eine Option wählen):**
-  1. `defineShortcuts` um einen Scope-/Bedingungs-Parameter
-     erweitern (z. B. `when: () => open.value`) und InfoPopover
-     darauf umstellen. Dann gilt der zentrale Guard automatisch.
-  2. Ausnahme belassen, aber in `docs/CONTENT_AND_A11Y.md`
-     kodifizieren: „Neuer roher `addEventListener('keydown')`
-     braucht einen Kommentar mit Begründung plus Test gegen
-     Modifier-Chords." Optional eigene ESLint-Regel.
-- **Akzeptanzkriterien:**
-  - Beim Hinzufügen einer neuen Keyboard-Interaktion fällt einem
-    Reviewer sofort auf, ob sie durch `defineShortcuts` geht oder
-    nicht.
-  - Für jede Bypass-Stelle existiert ein Test, der `Cmd+<Key>`
-    bzw. `Ctrl+<Key>` und Eingabefeld-Fokus abdeckt.
-- **Tests (geplant):** Komponententest für InfoPopover, der
-  bestätigt, dass `Cmd+Escape` das Popover **nicht** schließt und
-  ein `<input>` darin mit `Escape` weiter das Popover schließen
-  darf (Standard-Dismiss-Verhalten).
-
 ### 4. Echte Integrationstests für `help.vue`
 
 Der aktuelle Guard (`tests/unit/help-page-auth-coupling.test.ts`) ist
@@ -246,6 +215,66 @@ Commits, deutsches oder englisches Imperativ) und in
   `help-main`-ID abgelegt und nutzt jetzt die gemeinsame `main`-ID.
   Regel in `docs/CONTENT_AND_A11Y.md` kodifiziert; Durchsetzung
   bis zum Playwright-Smoke per Review.
+- **Sprint 6.1 — `<dialog>`-Close-Sync.**
+  - Externes Review nach Sprint 6 hat einen State-Desync-Bug
+    aufgedeckt: `<dialog>` hat drei native Schließpfade
+    (`Escape`, Backdrop, `<form method="dialog">`-Button), die
+    das Script überspringen. `modalVisible` blieb damit nach
+    einem User-Dismiss auf `true`, `useModalStack().anyOpen`
+    ebenfalls, und die Hintergrund-Shortcuts (`w/s`, Pfeile,
+    `r`, `e`) blieben stumm, obwohl das Modal zu war. Besonders
+    unangenehm, weil die UI den Esc-Pfad explizit bewirbt
+    (`article.modalKeyboardHint`).
+  - Fix in `components/ArticleView.vue`: `@close` und `@cancel`
+    an das `<dialog>`-Element gebunden, Handler `onDialogClose`
+    ist jetzt der alleinige Schreiber auf `modalVisible = false`.
+    Programmatische `.close()`-Aufrufe mutieren `modalVisible`
+    nicht mehr selbst, damit es nur einen Pfad gibt.
+    `resolveEngagementSegment()` zieht sich dadurch automatisch
+    von `body` zurück (der Watcher auf `modalVisible` feuert
+    jetzt auch im Native-Close-Fall).
+  - Neue Behavioural-Regression
+    `tests/component/modal-stack-dialog-sync.test.ts`: Harness
+    mit derselben Verdrahtung wie ArticleView (Stack-
+    Registrierung + `@close`/`@cancel` auf `<dialog>`); prüft
+    Open-/Programm-Close-/Native-Close- und Cancel-Pfade sowie
+    das Reopen-nach-Dismiss, damit kein stale State bleibt.
+  - Regel in `docs/CONTENT_AND_A11Y.md` ergänzt: jede
+    `<dialog>`-Surface im Modal-Stack muss `@close`/`@cancel`
+    zurücksynchronisieren; programmatisches Mutieren der
+    `isOpen`-Ref ist verboten.
+
+- **Sprint 6 — Modal-Stack & Shortcut-Scoping (vormals §3).**
+  - Fachlicher Bug: Öffnen des Volltexts zu einem Artikel und
+    anschließendes `w`/`s` ließen den Hintergrund-Artikel
+    wechseln – der Volltext im Modal passte danach nicht mehr
+    zum Hintergrund.
+  - Lösung: `defineShortcuts` hat jetzt ein `when: () => boolean`
+    und ein `skipEditableTarget: boolean`. Der neue Composable
+    `useModalStack()` (plus `useModalStackRegistration(isOpen)`)
+    ist die zentrale „irgendein Overlay offen?"-Wahrheit. Die
+    Timeline-Shortcuts (`w/s/↑/↓/r`) und die Card-Flip-Keys
+    (`e`, `Escape` zum Zurückdrehen) gaten auf
+    `!anyModalOpen.value` — der Modal-eigene `q`-Toggle bleibt
+    ausgenommen. `<dialog>` im `ArticleView` und `InfoPopover`
+    registrieren sich beim Öffnen/Schließen im Stack.
+  - Bypass-Stelle geräumt: `InfoPopover.vue` hört nicht mehr
+    direkt auf `keydown`, sondern ruft `defineShortcuts` mit
+    `{ when: () => open.value, skipEditableTarget: true }`. Der
+    Modifier-Chord-Guard greift damit auch für Popover-Escape
+    (kein `Cmd+Escape`-Missbrauch mehr).
+  - UX-Signal: Oben im Volltext-Modal steht ein dezenter
+    Tastatur-Hinweis („Esc schließt · w/s navigieren nach dem
+    Schließen") — Nutzer:innen mit ADHS/Autismus müssen nicht
+    raten, warum ihre gewohnten Keys hier pausieren. Hilfetext
+    `help.items.shortcuts.details` nachgezogen.
+  - Abgesichert durch `tests/component/useShortcuts.test.ts`
+    (neue Suites für `when`-Scope und `skipEditableTarget`),
+    `tests/component/useModalStack.test.ts` (Counter- und
+    Registrierungs-Verhalten inkl. Auto-Release bei Unmount)
+    und `tests/component/InfoPopover.test.ts` (Cmd+Escape
+    schließt nicht; `<input>` im Popover + Escape schließt doch).
+
 - **Sprint 2.2 — Shortcut-Hygiene in `defineShortcuts`.**
   - Shortcuts feuern nicht mehr, wenn der Fokus in `<input>`,
     `<textarea>`, `<select>` oder einem `contenteditable` liegt —
