@@ -70,25 +70,6 @@ statisch. Sobald `@nuxt/test-utils/runtime` o. ä. eingezogen ist:
   - Assertion: keine Fetch-Anfrage an `/api/auth/me` geht raus.
   - Assertion: Back-Link-`href` ist `/`.
 
-### 4.1 Playwright-Smoke für A11y-Layout-Invarianten
-
-- **Hintergrund:** Wir hatten ein halbes Dutzend Unit-Tests, die per
-  Source-Regex auf `.vue`-Dateien geprüft haben, ob eine Seite einen
-  Skip-Link, ein `<main id="main">`, einen fokus-sichtbaren Outline
-  o. Ä. rendert. Die waren schwer zu lesen, brachen bei jedem
-  kosmetischen Refactor, und haben dennoch echte Regressionen (z. B.
-  der Baseline-Versatz des Dreieck-Glyphs) nicht entdeckt. Sie sind
-  jetzt entfernt.
-- **Zielbild:** Ein kleiner Playwright-/axe-Smoke-Lauf gegen die
-  Startseiten (`/`, `/help`, `/login`, `/settings`), der prüft:
-  - genau ein `<main>` pro Seite, Skip-Link vorhanden und fokussiert
-    sichtbar,
-  - Tab-Fokus zeigt einen sichtbaren Ring (via `outline`-Computed-
-    Style auf fokussiertem Element),
-  - axe findet keine kritischen Verstöße.
-- Bis das existiert, lebt die Leitplanke in `docs/CONTENT_AND_A11Y.md`
-  (Struktur, Fokus, Farbe) und wird per Review durchgesetzt.
-
 ## Doku & Prozess
 
 ### 5. Testing-Philosophie
@@ -105,7 +86,7 @@ statisch. Sobald `@nuxt/test-utils/runtime` o. ä. eingezogen ist:
   Kommentar, *warum* sie Konvention und nicht Verhalten prüfen.
 - **Für UI-/A11y-Invarianten:** auf Komponenten-Mount-Tests (`@vue/
   test-utils` + `happy-dom`) oder einen Playwright-/axe-Smoke setzen
-  (siehe 4.1). Nicht per Regex auf `.vue`-Source suchen.
+  (siehe Sprint 7 in „Erledigt“). Nicht per Regex auf `.vue`-Source suchen.
 - Quelle der Diskussion: Review-Runde nach Sprint 5. Vorher
   existierten u. a. `index-page-show-read`, `app-user-menu-show-
   read`, `personalization-color-redundancy`, `landmarks-and-skip-
@@ -243,6 +224,22 @@ Commits, deutsches oder englisches Imperativ) und in
     `<dialog>`-Surface im Modal-Stack muss `@close`/`@cancel`
     zurücksynchronisieren; programmatisches Mutieren der
     `isOpen`-Ref ist verboten.
+- **Sprint 7 — Playwright/axe Smoke für A11y-Layout-Invarianten.**
+  - Browser-Smoke eingeführt: `tests/e2e/a11y-layout-smoke.spec.ts`
+    prüft für `/`, `/help`, `/login` die Struktur-/Fokus-Invarianten:
+    genau ein `<main id="main">`, Skip-Link-Fokusfluss (`Tab` →
+    Skip-Link → `Enter` fokussiert `<main>`), sichtbarer Focus-Ring
+    und keine `critical`/`serious` axe-Verstöße.
+  - Tooling ergänzt: `playwright.config.ts`, npm-Script `test:e2e`,
+    Dependencies `@playwright/test`, `@axe-core/playwright`,
+    `start-server-and-test`.
+  - Laufzeit-Setup: `test:e2e` baut zuerst (`npm run build`) und
+    startet dann Nitro aus `.output/server/index.mjs` auf
+    `127.0.0.1:4275`. `start-server-and-test` wartet auf
+    `http://127.0.0.1:4275/help` (öffentliche 200-Route; `/` allein
+    würde ausgeloggt nach `/login` redirecten und `wait-on` nie 200
+    sehen), bevor Playwright ausgeführt wird. So vermeiden
+    wir den früheren `EMFILE`-Watcher-Fehler aus `nuxt dev`.
 
 - **Sprint 6 — Modal-Stack & Shortcut-Scoping (vormals §3).**
   - Fachlicher Bug: Öffnen des Volltexts zu einem Artikel und

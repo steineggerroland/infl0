@@ -177,10 +177,12 @@ regress any of it.
     top-level `<main>` (double landmarks confuse assistive tech).
   - Pages with `definePageMeta({ layout: false })` (e.g. `help.vue`,
     `login.vue`, `register.vue`) provide both themselves.
-  - There is currently **no automated check** for this contract –
-    it is enforced by review. An automated Playwright / axe smoke
-    is tracked in `docs/ROADMAP.md` §4.1. Until then, landmark and
-    skip-link changes deserve explicit reviewer attention.
+  - Browser-level smoke coverage exists in
+    `tests/e2e/a11y-layout-smoke.spec.ts` (Playwright + axe):
+    one `<main id="main">`, skip-link focus flow, and baseline
+    focus visibility on `/`, `/help`, `/login`.
+  - Keep reviewer attention anyway: the smoke is intentionally
+    coarse and catches regressions, not every visual nuance.
 - Lists are `<ul>/<ol>`, not stacks of `<div>`s.
 - Interactive elements are `<button>` or `<a>`, never a `<div>` with
   `@click`. The `tabindex` attribute is only for managing focus order on
@@ -197,9 +199,9 @@ regress any of it.
   specificity stays at (0,0,0) and any component-level style still
   wins without `!important`. A minimal smoke test
   (`tests/unit/focus-visible-baseline.test.ts`) checks that the rule
-  still exists at all; the *visual quality* of the ring is not
-  automated yet and is covered by review until the Playwright / axe
-  smoke from `docs/ROADMAP.md` §4.1 lands.
+  still exists at all. Browser-level smoke in
+  `tests/e2e/a11y-layout-smoke.spec.ts` verifies keyboard focus on
+  real pages; detailed visual quality is still reviewer territory.
   - Don't turn off the baseline ring on a new component "because the
     design mockup doesn't show one". If a ring clashes with the
     design, change the colour via a Tailwind `focus-visible:outline-*`
