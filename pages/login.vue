@@ -66,10 +66,23 @@ async function onSubmit() {
 
 <template>
   <div class="min-h-dvh flex flex-col items-center justify-center bg-gray-800 text-gray-100 px-4">
+    <!--
+      Skip link + <main> landmark. Matches the contract enforced by
+      `tests/unit/landmarks-and-skip-link.test.ts`. On a single-form
+      page the user benefit is small (one locale switcher to skip past),
+      but consistency with the rest of the app matters more than
+      saving those bytes.
+    -->
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[999] focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:text-gray-900 focus:shadow"
+    >
+      {{ $t('common.skipToMain') }}
+    </a>
     <div class="mb-4 w-full max-w-sm flex justify-end">
       <LocaleSwitcher />
     </div>
-    <div class="w-full max-w-sm rounded-xl bg-gray-900/80 p-8 shadow-xl border border-gray-700">
+    <main id="main" tabindex="-1" class="w-full max-w-sm rounded-xl bg-gray-900/80 p-8 shadow-xl border border-gray-700 outline-none">
       <h1 class="text-xl font-semibold mb-1 text-center">{{ $t('login.title') }}</h1>
       <p class="mb-5 text-center text-sm text-gray-400">{{ $t('login.tagline') }}</p>
       <div class="mb-4 flex justify-center">
@@ -107,6 +120,6 @@ async function onSubmit() {
           {{ $t('login.createAccount') }}
         </NuxtLink>
       </form>
-    </div>
+    </main>
   </div>
 </template>

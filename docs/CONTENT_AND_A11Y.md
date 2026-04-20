@@ -165,7 +165,21 @@ regress any of it.
 ### Structure & semantics
 
 - Every page has exactly one `<h1>`; heading levels do not skip.
-- Primary content lives in a `<main>` landmark; navigation in `<nav>`.
+- Primary content lives in a `<main id="main" tabindex="-1">` landmark;
+  navigation in `<nav>`. The `tabindex="-1"` is not about tab order – it
+  exists so the skip link can move keyboard / screen-reader focus into
+  the content (without it, browsers only scroll).
+- Every page carries a visible-on-focus **skip link** as the first
+  element in the tab order. The link targets `#main` and is labelled
+  with the shared i18n key `common.skipToMain` (never hard-coded).
+  - Pages that use `layouts/app.vue` inherit both the landmark and the
+    skip link from the layout – they must **not** render their own
+    top-level `<main>` (double landmarks confuse assistive tech).
+  - Pages with `definePageMeta({ layout: false })` (e.g. `help.vue`,
+    `login.vue`, `register.vue`) provide both themselves.
+  - The contract is enforced by
+    `tests/unit/landmarks-and-skip-link.test.ts` – if you change the
+    landmark / skip-link structure, update the test.
 - Lists are `<ul>/<ol>`, not stacks of `<div>`s.
 - Interactive elements are `<button>` or `<a>`, never a `<div>` with
   `@click`. The `tabindex` attribute is only for managing focus order on

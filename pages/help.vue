@@ -60,7 +60,7 @@ onMounted(() => {
 <template>
     <div class="min-h-dvh bg-gray-100 text-gray-900">
         <a
-            href="#help-main"
+            href="#main"
             class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[999] focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:text-gray-900 focus:shadow"
         >
             {{ t('common.skipToMain') }}
@@ -79,7 +79,7 @@ onMounted(() => {
             </div>
         </header>
 
-        <main id="help-main" class="mx-auto w-full max-w-3xl px-4 pb-16 pt-8">
+        <main id="main" tabindex="-1" class="mx-auto w-full max-w-3xl px-4 pb-16 pt-8 outline-none">
             <h1 class="text-2xl font-semibold">{{ t('help.title') }}</h1>
             <p class="mt-2 text-sm text-gray-700">{{ t('help.intro') }}</p>
 

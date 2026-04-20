@@ -23,9 +23,10 @@ wichtigsten Sprachthemen adressiert):
   Timeline-Chips).
 - Reduced-motion-Unterstützung: keine dauerhaften Animationen ohne
   `prefers-reduced-motion`-Fallback.
-- Landmark-Struktur (`<header>`, `<nav>`, `<main>`, `<footer>`)
-  konsistent über alle Seiten prüfen.
-- Skip-Link `#main` auch auf der App-Timeline (nicht nur auf `/help`).
+- `<header>` / `<nav>` / `<footer>` (ergänzend zu `<main>`)
+  konsistent über alle Seiten prüfen (aktuell uneinheitlich – z. B.
+  kein `<nav>` in `AppUserMenu`, Überschrift-`<header>` auf Settings-
+  Seiten nur innerhalb der Karte statt oben auf der Seite).
 
 ## Architektur
 
@@ -148,6 +149,14 @@ Commits, deutsches oder englisches Imperativ) und in
   - `pages/index.vue`-Regression kompakter: ein einziger
     „kein `<Teleport>`"-Guard mit ausführlichem *Warum*-Kommentar,
     statt mehrerer Punktchecks auf die konkrete Alt-Implementierung.
+- **Sprint 3 — Skip-Link + `<main>`-Landmark app-weit.** Einheitlicher
+  Skip-Link (`common.skipToMain` → `#main`) plus
+  `<main id="main" tabindex="-1">` auf jeder Seite. `layouts/app.vue`
+  stellt beides zentral bereit; layoutlose Seiten (`help`, `login`,
+  `register`) tragen eigene Kopien. `help.vue` hat die historische
+  `help-main`-ID abgelegt und nutzt jetzt die gemeinsame `main`-ID.
+  Regel in `docs/CONTENT_AND_A11Y.md` kodifiziert und durch
+  `tests/unit/landmarks-and-skip-link.test.ts` abgesichert.
 - **Sprint 2.2 — Shortcut-Hygiene in `defineShortcuts`.**
   - Shortcuts feuern nicht mehr, wenn der Fokus in `<input>`,
     `<textarea>`, `<select>` oder einem `contenteditable` liegt —
