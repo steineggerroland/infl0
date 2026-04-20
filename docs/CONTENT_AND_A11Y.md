@@ -188,7 +188,20 @@ regress any of it.
 ### Keyboard
 
 - Every action reachable by mouse is reachable by keyboard.
-- Visible focus on every interactive element (`focus-visible` ring).
+- Visible focus on every interactive element. A **single baseline
+  rule** in `assets/css/tailwind.css` gives every `<a>`, `<button>`,
+  `<summary>`, form control and `[role="button|switch|menuitem|…"]` a
+  `focus-visible` ring using `outline: 2px solid currentColor` +
+  `outline-offset: 2px`. The rule lives inside `:where(...)` so its
+  specificity stays at (0,0,0) and any component-level style still
+  wins without `!important`. Pinned by
+  `tests/unit/focus-visible-baseline.test.ts`.
+  - Don't turn off the baseline ring on a new component "because the
+    design mockup doesn't show one". If a ring clashes with the
+    design, change the colour via a Tailwind `focus-visible:outline-*`
+    class on the component; never drop the ring entirely.
+  - Programmatic focus targets (`tabindex="-1"`, e.g. our `<main>`)
+    are excluded from the baseline – they're not controls.
 - Global shortcuts (`w/s/e/q`, arrow keys) must not fire while a form
   control has focus. When adding new shortcuts, document them in
   `help.items.shortcuts` and show them in a future on-screen cheat sheet.

@@ -3,6 +3,47 @@
 @tailwind utilities;
 
 @layer base {
+  /*
+   * Baseline keyboard-focus indicator.
+   *
+   * Every interactive surface must expose a visible focus ring. Doing
+   * this per component drifts as soon as a new button or `[role]` is
+   * added, so we handle it once here:
+   *   - `:where(...)` keeps the whole rule at specificity (0,0,0) so
+   *     any component-level override (Tailwind `focus-visible:outline-*`,
+   *     DaisyUI, etc.) still wins without `!important`.
+   *   - `outline: 2px solid currentColor` adapts to the surface. Text
+   *     must already meet WCAG 4.5:1 against the background, so the
+   *     ring inherits the same contrast for free on both dark forms
+   *     and the light help page.
+   *   - `outline-offset: 2px` lifts the ring off coloured buttons
+   *     where it would otherwise blend with the background fill.
+   *   - `[tabindex]:not([tabindex="-1"])` keeps purely programmatic
+   *     focus targets (our `<main id="main" tabindex="-1">`) out of
+   *     the rule; they already opt out via their own `outline-none`.
+   *
+   * Pinned by `tests/unit/focus-visible-baseline.test.ts`.
+   */
+  :where(
+    a,
+    button,
+    summary,
+    input,
+    select,
+    textarea,
+    [tabindex]:not([tabindex="-1"]),
+    [role="button"],
+    [role="switch"],
+    [role="menuitem"],
+    [role="tab"],
+    [role="link"],
+    [role="checkbox"],
+    [role="radio"]
+  ):focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
   h1 {
     @apply text-2xl;
   }

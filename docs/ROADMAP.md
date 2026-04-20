@@ -18,9 +18,6 @@ Noch offen aus der ursprünglichen Auditrunde (Sprint 1 hat nur die
 wichtigsten Sprachthemen adressiert):
 
 - Farb­abhängige Zustände im Timeline-Score prüfen (kein „nur Farbe").
-- Fokus-Ringe auf **allen** interaktiven Elementen sichtbar und
-  konsistent (aktuell uneinheitlich, v. a. in Einstellungen und
-  Timeline-Chips).
 - Reduced-motion-Unterstützung: keine dauerhaften Animationen ohne
   `prefers-reduced-motion`-Fallback.
 - `<header>` / `<nav>` / `<footer>` (ergänzend zu `<main>`)
@@ -149,6 +146,14 @@ Commits, deutsches oder englisches Imperativ) und in
   - `pages/index.vue`-Regression kompakter: ein einziger
     „kein `<Teleport>`"-Guard mit ausführlichem *Warum*-Kommentar,
     statt mehrerer Punktchecks auf die konkrete Alt-Implementierung.
+- **Sprint 4 — Einheitliche Fokus-Ringe.** Globaler `:where(...)
+  :focus-visible`-Layer in `assets/css/tailwind.css`: jedes `<a>`,
+  `<button>`, `<summary>`, Formular­feld und `[role="button|switch|
+  menuitem|…"]` bekommt automatisch einen `outline: 2px solid
+  currentColor` mit `outline-offset: 2px`. Spezifität null, damit
+  Komponenten-Overrides ohne `!important` gewinnen. Regel in
+  `docs/CONTENT_AND_A11Y.md` dokumentiert, abgesichert durch
+  `tests/unit/focus-visible-baseline.test.ts`.
 - **Sprint 3 — Skip-Link + `<main>`-Landmark app-weit.** Einheitlicher
   Skip-Link (`common.skipToMain` → `#main`) plus
   `<main id="main" tabindex="-1">` auf jeder Seite. `layouts/app.vue`
