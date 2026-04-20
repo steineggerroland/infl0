@@ -1,5 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  app: {
+    head: {
+      title: 'infl0',
+    },
+  },
   modules: ['@nuxt/eslint', '@nuxtjs/i18n', '@nuxt/content', '@nuxtjs/tailwindcss'],
   compatibilityDate: '2024-11-01',
   i18n: {
@@ -13,7 +18,10 @@ export default defineNuxtConfig({
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'i18n_locale',
-      redirectOn: 'root',
+      // With `strategy: 'no_prefix'`, `redirectOn: 'root'` does not apply (see
+      // module docs). Use `no prefix` so browser locale matches composer
+      // locale on `/login` etc., not only after visiting `/`.
+      redirectOn: 'no prefix',
     },
   },
   /** Node 22.5+ built-in SQLite — avoids better-sqlite3 prompt and native builds (CI/Docker). */
