@@ -54,11 +54,14 @@
     "@nuxt/eslint": "^1.15.0",
     "@types/dompurify": "^3.2.0",
     "@types/node": "^22.15.0",
+    "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.39.0",
+    "happy-dom": "^20.9.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.19",
     "tsx": "^4.19.3",
+    "unplugin-auto-import": "^21.0.0",
     "vitest": "^3.2.0"
   }
 }

@@ -5,7 +5,9 @@
     "loading": "…",
     "close": "Schließen",
     "learnMore": "Mehr erfahren",
-    "openHelp": "Zum Hilfebereich"
+    "openHelp": "Zum Hilfebereich",
+    "back": "Zurück",
+    "skipToMain": "Zum Hauptinhalt springen"
   },
   "locale": {
     "label": "Sprache",

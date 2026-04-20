@@ -1,16 +1,23 @@
 <script setup lang="ts">
 /**
  * Plain-language help centre. Driven by the `help.*` keys in i18n so new
- * entries can be added without touching this component. Reachable without an
- * account so the security badges on the login / register screens can link to
- * it. See docs/CONTENT_AND_A11Y.md for the editorial guidelines.
+ * entries can be added without touching this component. Reachable without
+ * an account so the security badges on the login / registration screens
+ * can link to it.
+ *
+ * This page intentionally has no knowledge of the auth state. The
+ * back-link is a simple, neutral link to the timeline (`/`); if the user
+ * is not signed in, the global auth middleware forwards them to `/login`
+ * from there. See docs/CONTENT_AND_A11Y.md for the editorial guidelines.
  */
 
 definePageMeta({
     layout: false,
+    auth: 'public',
 })
 
 const { tm, rt, t } = useI18n()
+const route = useRoute()
 
 type HelpItem = {
     id: string
@@ -37,34 +44,6 @@ const items = computed<HelpItem[]>(() => {
     })
 })
 
-const route = useRoute()
-
-const authState = useState<{ checked: boolean; signedIn: boolean }>(
-    'help.authState',
-    () => ({ checked: false, signedIn: false }),
-)
-
-onMounted(async () => {
-    if (authState.value.checked) return
-    try {
-        const res = await $fetch<{ user: { id: string } | null }>('/api/auth/me', {
-            credentials: 'include',
-        })
-        authState.value = { checked: true, signedIn: Boolean(res?.user) }
-    } catch {
-        authState.value = { checked: true, signedIn: false }
-    }
-})
-
-const backHref = computed(() => (authState.value.signedIn ? '/' : '/login'))
-const backLabel = computed(() =>
-    authState.value.signedIn ? t('help.backToApp') : t('register.signInLink'),
-)
-
-function anchorFor(id: string): string {
-    return id
-}
-
 onMounted(() => {
     const hash = route.hash?.replace('#', '')
     if (!hash) return
@@ -84,16 +63,17 @@ onMounted(() => {
             href="#help-main"
             class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[999] focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:text-gray-900 focus:shadow"
         >
-            {{ t('help.title') }}
+            {{ t('common.skipToMain') }}
         </a>
         <header class="border-b border-gray-200 bg-white">
             <div class="mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-4 py-3">
                 <NuxtLink
-                    :to="backHref"
+                    to="/"
                     class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                    data-testid="help-back-link"
                 >
                     <span aria-hidden="true">←</span>
-                    {{ backLabel }}
+                    {{ t('common.back') }}
                 </NuxtLink>
                 <LocaleSwitcher />
             </div>
@@ -107,7 +87,7 @@ onMounted(() => {
                 <ul class="space-y-1 text-sm">
                     <li v-for="item in items" :key="`toc-${item.id}`">
                         <a
-                            :href="`#${anchorFor(item.id)}`"
+                            :href="`#${item.id}`"
                             class="block rounded px-2 py-1 text-gray-800 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                         >
                             {{ item.title }}
@@ -119,7 +99,7 @@ onMounted(() => {
             <ol class="mt-8 space-y-6">
                 <li
                     v-for="item in items"
-                    :id="anchorFor(item.id)"
+                    :id="item.id"
                     :key="item.id"
                     class="scroll-mt-24 rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
                 >

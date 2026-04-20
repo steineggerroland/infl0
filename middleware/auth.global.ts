@@ -1,25 +1,26 @@
+import { runAuthMiddleware } from '~/utils/auth-middleware'
+
+/**
+ * Global route-level auth guard.
+ *
+ * Each page declares its auth requirement via `definePageMeta({ auth })`;
+ * this middleware is a thin adapter that wires Nuxt specifics (fetch,
+ * navigation) to the framework-agnostic core in `utils/auth-middleware.ts`.
+ * All actual decision logic lives there so it can be unit-tested without
+ * Nuxt — see `tests/unit/auth-decision.test.ts` and
+ * `tests/unit/auth-middleware.test.ts`.
+ */
 export default defineNuxtRouteMiddleware(async (to) => {
-  // Auth entry points: redirect away when already signed in.
-  const authEntryPaths = ['/login', '/register']
-  // Pages reachable without an account (auth entries + help centre, which is
-  // linked from the password badges on the login / register screens).
-  const publicPaths = [...authEntryPaths, '/help']
-  const isAuthEntry = authEntryPaths.includes(to.path)
-  const isPublic = publicPaths.includes(to.path)
-
-  const { data } = await useFetch<{ user: { id: string; email: string | null; name: string | null } | null }>(
-    '/api/auth/me',
-    { credentials: 'include', key: 'auth-me' },
-  )
-
-  if (isAuthEntry && data.value?.user) {
-    return navigateTo('/')
-  }
-
-  if (isPublic) return
-
-  if (!data.value?.user) {
-    const redirect = encodeURIComponent(to.fullPath)
-    return navigateTo(`/login?redirect=${redirect}`)
-  }
+    return runAuthMiddleware(
+        { path: to.path, fullPath: to.fullPath, meta: to.meta as { auth?: 'public' | 'entry' | 'required' } },
+        {
+            fetchUser: async () => {
+                const { data } = await useFetch<{
+                    user: { id: string; email: string | null; name: string | null } | null
+                }>('/api/auth/me', { credentials: 'include', key: 'auth-me' })
+                return data.value?.user ?? null
+            },
+            navigate: (target) => navigateTo(target),
+        },
+    )
 })

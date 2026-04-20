@@ -58,14 +58,14 @@ function onKeydown(event: KeyboardEvent) {
     }
 }
 
+// `onMounted` / `onBeforeUnmount` only run on the client, so no SSR guard
+// is needed. This also lets the component be mounted directly in Vitest.
 onMounted(() => {
-    if (!import.meta.client) return
     document.addEventListener('click', onDocumentClick, { capture: true })
     document.addEventListener('keydown', onKeydown)
 })
 
 onBeforeUnmount(() => {
-    if (!import.meta.client) return
     document.removeEventListener('click', onDocumentClick, { capture: true })
     document.removeEventListener('keydown', onKeydown)
 })

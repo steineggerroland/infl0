@@ -3,6 +3,7 @@ import { createVerifierAndSalt, SRPParameters, SRPRoutines } from 'tssrp6a'
 
 definePageMeta({
   layout: false,
+  auth: 'entry',
 })
 
 const { t } = useI18n()

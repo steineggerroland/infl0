@@ -54,6 +54,46 @@ early and the dev server will fail to boot.
 - [ ] Are German and English versions in sync (tone, length, terminology)?
 - [ ] Is there at most one exclamation mark per screen? (Usually zero.)
 
+## Page auth mode (`definePageMeta({ auth })`)
+
+Every page declares how the global auth middleware should treat it. This
+keeps "which routes are public?" a property of the page itself rather
+than an allowlist in the middleware, which is easy to forget when new
+pages are added.
+
+| Mode                 | Use for                                         | Middleware behaviour                                    |
+|----------------------|-------------------------------------------------|---------------------------------------------------------|
+| `'public'`           | Pages independent of the account (`/help`)      | **No** call to `/api/auth/me`; always allowed.          |
+| `'entry'`            | `/login`, `/register`                           | Calls `/api/auth/me`; signed-in users → `/`.            |
+| `'required'` (default) | Everything else (timeline, settings, feeds…) | Calls `/api/auth/me`; signed-out users → `/login?redirect=…`. |
+
+Declare it near the top of the page's `<script setup>`:
+
+```vue
+<script setup lang="ts">
+definePageMeta({
+  auth: 'public', // or 'entry' | 'required'
+})
+</script>
+```
+
+Rules of thumb:
+
+- A "public" page must not import `useAuth…`, call `/api/auth/me`, or
+  otherwise react to the sign-in state. If it needs to, it is not
+  actually public — use `'required'` or `'entry'`.
+- Never rely on an allowlist inside `middleware/auth.global.ts`. The
+  middleware intentionally only reads `to.meta.auth` and delegates to the
+  pure resolver in `utils/auth-decision.ts`.
+- Back links on public pages stay neutral (`/`, labelled "Back"). Do not
+  branch the target on the sign-in state; the middleware handles the
+  redirect from `/` when needed.
+
+Regression tests live in `tests/unit/auth-decision.test.ts`,
+`tests/unit/auth-middleware.test.ts`, and
+`tests/unit/help-page-auth-coupling.test.ts`. When touching the
+middleware or adding a new `auth` mode, extend them first (TDD).
+
 ## Help centre (`/help`)
 
 The help centre is data-driven via i18n. Do not fork the page markup to add

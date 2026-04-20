@@ -1,44 +1,30 @@
-# Nuxt Minimal Starter
+# infl0
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A Nuxt app that turns RSS/Atom feeds into a personal, re-rankable
+timeline. Built with Nuxt, Prisma, and vue-i18n; authenticated with SRP so
+passwords never leave the device.
 
-## Setup
+> Looking for how to develop on this project? See
+> [`docs/DEVELOPING.md`](docs/DEVELOPING.md). Writing UI copy or reviewing
+> accessibility? See [`docs/CONTENT_AND_A11Y.md`](docs/CONTENT_AND_A11Y.md).
 
-Make sure to install dependencies:
+## Quick start
 
-```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+This repo pins its Node version via `.nvmrc`. Always select it before
+running `npm` commands so lockfile and engine match CI.
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+nvm install    # once, if the pinned version is missing
+nvm use
+npm ci         # install exactly what the lockfile says
+npm run dev    # http://localhost:3000
 ```
 
-## Local seed data (DB)
+If you use `fish` (as this repo's maintainer does), run the wrapper
+`./scripts/with-nvm.sh` from a bash-compatible shell instead of invoking
+`nvm` directly.
+
+## Local seed data
 
 After migrations and with `DATABASE_URL` set:
 
@@ -47,48 +33,27 @@ nvm use
 npm run devData
 ```
 
-Creates `dev@localhost` (password: `dev`), two sample feeds, and three articles with enrichment and timeline rows. In `production` only with `ALLOW_DEV_DATA=1` (not recommended).
+Creates `dev@localhost` (password: `dev`), two sample feeds, and three
+articles with enrichment and timeline rows. In `production` this only
+runs with `ALLOW_DEV_DATA=1` (not recommended).
 
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
+## Production build
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+nvm use
+npm run build       # builds .output/
+npm run preview     # serves the production build locally
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+See the [Nuxt deployment docs](https://nuxt.com/docs/getting-started/deployment)
+for hosting options.
 
 ## Contributor guides
 
-- [`docs/DEVELOPING.md`](docs/DEVELOPING.md) — lint, tests, CI, Node setup.
+- [`docs/DEVELOPING.md`](docs/DEVELOPING.md) — lint, tests, CI, Node setup,
+  troubleshooting the dev server.
 - [`docs/CONTENT_AND_A11Y.md`](docs/CONTENT_AND_A11Y.md) — plain-language
-  and accessibility rules for all user-facing copy and UI. Read this before
-  editing `i18n/locales/*.json`, `pages/help.vue`, or any user-facing
-  component.
+  and accessibility rules for all user-facing copy and UI. Read this
+  before editing `i18n/locales/*.json`, `pages/help.vue`, or any
+  user-facing component. Also covers **page auth modes** (`public`,
+  `entry`, `required`).
