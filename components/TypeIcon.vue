@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Define the props for the component
-defineProps({
-    type: String
-})
+defineProps<{
+    type: string
+}>()
 </script>
 <template>
     <span
