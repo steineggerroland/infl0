@@ -47,7 +47,7 @@ describe('/api/auth/me', () => {
       id: 'u1',
       email: 'u@example.com',
       name: 'U',
-    })
+    } as never)
 
     await expect(handler({} as never)).resolves.toEqual({
       user: {

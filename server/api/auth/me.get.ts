@@ -1,22 +1,8 @@
 import { createError, defineEventHandler } from 'h3'
-import { prisma } from '../../utils/prisma'
-import { getSessionUserId } from '../../utils/auth-session'
+import { getAuthUserForEvent } from '../../utils/auth-user-from-event'
 
 export default defineEventHandler(async (event) => {
-  const userId = await getSessionUserId(event)
-  if (!userId) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized',
-      data: { message: 'Authentication required' },
-    })
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true, email: true, name: true },
-  })
-
+  const user = await getAuthUserForEvent(event)
   if (!user) {
     throw createError({
       statusCode: 401,
