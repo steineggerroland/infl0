@@ -54,6 +54,11 @@ const linkClass =
                     {{ t('menu.personalization') }}
                 </NuxtLink>
             </li>
+            <li v-if="route.path !== '/help'">
+                <NuxtLink to="/help" :class="linkClass" @click="closeMenu">
+                    {{ t('menu.help') }}
+                </NuxtLink>
+            </li>
             <li class="px-3 pb-1 pt-3">
                 <span
                     class="text-[0.65rem] font-semibold uppercase tracking-wider text-gray-400"

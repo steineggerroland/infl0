@@ -55,10 +55,11 @@ async function onSubmit() {
       <LocaleSwitcher />
     </div>
     <div class="w-full max-w-sm rounded-xl bg-gray-900/80 p-8 shadow-xl border border-gray-700">
-      <h1 class="text-xl font-semibold mb-2 text-center">{{ $t('register.title') }}</h1>
-      <p class="text-xs text-gray-500 mb-4 text-center">
-        {{ $t('register.hint') }}
-      </p>
+      <h1 class="text-xl font-semibold mb-1 text-center">{{ $t('register.title') }}</h1>
+      <p class="mb-5 text-center text-sm text-gray-400">{{ $t('register.tagline') }}</p>
+      <div class="mb-4 flex justify-center">
+        <SecurityBadge align="center" />
+      </div>
       <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
         <label class="flex flex-col gap-1 text-sm">
           <span class="text-gray-400">{{ $t('register.inviteCode') }}</span>

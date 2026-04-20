@@ -31,6 +31,36 @@ Without a suitable Node version, ESLint plugins or `postinstall` can fail (e.g. 
 
 **Note:** `eslint.config.mjs` imports `./.nuxt/eslint.config.mjs`. That file is created by **`nuxt prepare`** (runs on `npm install` as `postinstall`). Without a prior `npm install`, `npm run lint` fails — that is expected.
 
+## Resetting the dev server
+
+If you delete `.nuxt/` to troubleshoot a stale cache, always regenerate
+Nuxt's virtual modules before starting the dev server:
+
+```bash
+./scripts/with-nvm.sh npm run postinstall   # runs `nuxt prepare`
+./scripts/with-nvm.sh npm run dev
+```
+
+Starting `nuxt dev` directly after `rm -rf .nuxt` can surface spurious
+`Failed to resolve import "#app-manifest"` errors because Vite begins
+pre-transforming Nuxt internals before the virtual module is registered.
+
+## User-facing copy and accessibility
+
+Anything that reaches the user (UI strings, help centre entries, error
+messages) follows the house style in
+[`CONTENT_AND_A11Y.md`](./CONTENT_AND_A11Y.md). In short:
+
+- Plain language in the main UI; technical details under
+  `help.items.*` in `i18n/locales/{de,en}.json`.
+- Security / privacy features use `SecurityBadge` and link to a matching
+  entry in `/help`.
+- Keyboard, screen reader and colour-contrast baseline per the reviewer
+  checklist in that document.
+
+Read it before changing `i18n/locales/*.json`, `pages/help.vue`, or any
+user-facing component.
+
 ## Habits for healthier code
 
 1. **Before commit:** `npm run verify` (or at least `lint` + `test`).

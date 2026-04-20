@@ -3,7 +3,9 @@
     "retry": "Retry",
     "dismiss": "Dismiss",
     "loading": "…",
-    "close": "Close"
+    "close": "Close",
+    "learnMore": "Learn more",
+    "openHelp": "Open help"
   },
   "locale": {
     "label": "Language",
@@ -13,29 +15,38 @@
   "menu": {
     "open": "Menu",
     "timeline": "Timeline",
-    "feeds": "Feed management",
-    "timelineScore": "Timeline score",
-    "privacy": "Privacy & data",
-    "personalization": "Personalization",
+    "feeds": "Manage sources",
+    "timelineScore": "Adjust sorting",
+    "privacy": "Privacy",
+    "personalization": "Why at the top?",
+    "help": "Help",
     "language": "Language",
     "logOut": "Log out"
   },
+  "security": {
+    "passwordBadge": {
+      "label": "Password protection",
+      "short": "Your password never leaves this device.",
+      "details": "When you sign in, your device computes a mathematical proof locally. Only that proof is sent to the server — never your actual password.",
+      "readMore": "How we protect your password"
+    }
+  },
   "settingsPersonalization": {
-    "title": "Why these articles appear first",
+    "title": "Why at the top?",
     "intro": "This view explains your current timeline order in plain language. Open an article to see what pushed it up or down.",
     "generatedAt": "Snapshot",
-    "algorithmTitle": "How ranking works right now",
-    "algorithmBody": "Each article gets points from multiple signals. Newer articles and your reading behavior can raise or lower the result. Sources, categories and tags are merged with fixed shares so one area does not dominate.",
+    "algorithmTitle": "How your timeline is being sorted right now",
+    "algorithmBody": "Each article gets points from multiple signals. Newer articles and your reading behavior can raise or lower the result. Sources, categories and tags are balanced so one area does not dominate.",
     "priorLabel": "Starting point for new topics",
     "blendLabel": "How shares are mixed",
     "timelineHeading": "Your timeline (preview)",
-    "feedsPieTitle": "Feeds — share of smoothed scores",
-    "categoriesPieTitle": "Categories — share of smoothed scores",
-    "tagsPieTitle": "Tags — share of smoothed scores",
+    "feedsPieTitle": "Sources — share of the ranking",
+    "categoriesPieTitle": "Categories — share of the ranking",
+    "tagsPieTitle": "Tags — share of the ranking",
     "pieOther": "Other",
     "rankStored": "Current saved value",
     "rankLive": "Recalculated now",
-    "factorsHeading": "Timeline factors",
+    "factorsHeading": "Ranking factors",
     "colFactor": "Factor",
     "colNormalized": "Signal 0–1",
     "colWeight": "Weight",
@@ -53,111 +64,111 @@
     "colNormalizedSimple": "Strength",
     "colWeightSimple": "Importance",
     "colContributionSimple": "Impact",
-    "sourceLabel": "Source key:",
+    "sourceLabel": "Source:",
     "feedbackLabel": "Helpful / not helpful clicks:",
     "feedbackShort": "Clicks",
     "scoreLabel": "Tendency from reading:",
     "weightedLabel": "Impact after importance:",
-    "finalInterestUp": "Final \"interest\" input:",
-    "finalInterestDown": "Final \"dislike\" input:",
+    "finalInterestUp": "Final interest score:",
+    "finalInterestDown": "Final disinterest score:",
     "blendSources": "Sources",
     "blendCategories": "Categories",
     "blendTags": "Tags"
   },
   "settingsPrivacy": {
-    "title": "Privacy & personalization data",
-    "intro": "Off by default (opt-in). When enabled, we record how long you view each part of an article. Each focus period is sent when you switch away (other section, another article, or hidden tab). Nothing is accumulated in the browser.",
-    "trackingLabel": "Record reading time (teaser, summary, full text)",
-    "trackingHint": "When on, we log each viewing session on the server for personalization. If total time on an article reaches about 2 seconds, it is marked as read on your timeline. Turn off anytime; the app stops sending new events."
+    "title": "Privacy",
+    "intro": "Off by default. You decide whether we may use your reading behavior to improve the sorting. You can turn it off again anytime — no new data will be stored after that.",
+    "trackingLabel": "Use my reading behavior to improve sorting",
+    "trackingHint": "When on, we note how long you look at the headline, teaser or longer text of each article. Articles you look at for about two seconds or more are counted as read."
   },
   "settingsTimeline": {
-    "title": "Timeline score weights",
-    "intro": "Each factor is normalized to 0–1 per article. The score is the sum of factor × (weight ÷ 100). Missing data counts as 0. Content length uses a separate slider (shorter ↔ longer); at 0 it adds nothing. Preferences are saved to your account (shortly after you stop moving a slider); a local copy speeds up loading.",
-    "formulaTitle": "Formula (preview)",
-    "formulaHint": "Only factors with weight > 0 appear. The real ranking job will use the same names.",
-    "reset": "Reset defaults",
+    "title": "Adjust sorting",
+    "intro": "Use the sliders to decide how strongly each signal influences your timeline. All the way to the left means the signal is ignored; further right means more influence. Changes are saved to your account.",
+    "formulaTitle": "For the curious: formula",
+    "formulaHint": "Only signals with influence greater than 0 appear here. The same signals are used to sort your timeline.",
+    "reset": "Reset to defaults",
     "groups": {
-      "time": "Time",
+      "time": "How recent",
       "content": "Content",
-      "mix": "Mixing (coming soon)",
-      "feedback": "Feedback (coming soon)"
+      "mix": "Variety (coming soon)",
+      "feedback": "Your feedback (coming soon)"
     },
     "contentLengthPreference": {
-      "label": "Length bias (title + teaser + summary)",
-      "hint": "Left: shorter texts score higher (min(1, cap/len)). Right: longer score higher (min(1, len/cap)). Center 0: no effect. Strength scales with distance from center.",
+      "label": "Do you prefer short or long articles?",
+      "hint": "Left: short articles are preferred. Right: longer articles are preferred. Center: no preference.",
       "preferShorter": "Shorter",
-      "neutral": "Neutral",
+      "neutral": "Either",
       "preferLonger": "Longer"
     },
     "factors": {
       "published_recency": {
-        "label": "Publication freshness",
-        "hint": "1 = just published, decays by half-life (~72 h)."
+        "label": "How recently the article was published",
+        "hint": "The newer the article, the higher the value. After about three days the effect is halved."
       },
       "inserted_recency": {
-        "label": "New on your timeline",
-        "hint": "1 = just added to you; uses insertedAt from the server."
+        "label": "How new it is on your timeline",
+        "hint": "The later it appeared on your timeline, the higher the value."
       },
       "content_length": {
-        "label": "Content length (weight)",
-        "hint": "How much the length bias below affects the score. Set to 0 to ignore length entirely."
+        "label": "Take article length into account",
+        "hint": "How strongly your preference for short or long articles is used. All the way to the left: length is ignored."
       },
       "crawl_diversity": {
-        "label": "Source mix bonus",
-        "hint": "Placeholder 0 until iterative spacing between feeds is implemented."
+        "label": "Variety across sources",
+        "hint": "Coming soon: ensures more variety between sources."
       },
       "category_diversity": {
-        "label": "Category mix bonus",
-        "hint": "Placeholder 0 until category repetition penalty exists."
+        "label": "Variety across categories",
+        "hint": "Coming soon: prevents too many similar topics in a row."
       },
       "tag_diversity": {
-        "label": "Tag mix bonus",
-        "hint": "Placeholder 0 until tag repetition penalty exists."
+        "label": "Variety across tags",
+        "hint": "Coming soon: prevents tags from repeating too often."
       },
       "engagement_positive": {
-        "label": "Positive engagement",
-        "hint": "Placeholder 0 (likes / dwell on similar items)."
+        "label": "What you enjoy reading",
+        "hint": "Coming soon: prefers topics you spend more time with."
       },
       "engagement_negative": {
-        "label": "Negative engagement",
-        "hint": "Reduces the ranking score when this signal is strong; importance sets how much is subtracted."
+        "label": "What you tend to skip",
+        "hint": "Pushes articles down if you often skip similar content. Importance sets how much is subtracted."
       }
     }
   },
   "index": {
     "preparingTitle": "Preparing your timeline",
-    "preparingBody": "Once the crawler delivers articles for one of your feeds, they will appear here.",
+    "preparingBody": "As soon as one of your sources has articles, they will show up here.",
     "refreshTimeline": "Refresh timeline",
-    "manageFeeds": "Manage feeds",
+    "manageFeeds": "Manage sources",
     "errorTimeline": "Could not load timeline",
     "errorSources": "Could not load sources",
     "emptyNoFeedsTitle": "No sources yet",
-    "emptyNoFeedsBody": "Add RSS or Atom feeds so your timeline can show articles. Imports must use the same feed URL you saved here so items match your subscription.",
-    "emptyNoFeedsCta": "Add feeds",
+    "emptyNoFeedsBody": "Add news or blog sources so your timeline can show articles.",
+    "emptyNoFeedsCta": "Add sources",
     "allReadTitle": "You're all caught up",
     "allReadBody": "Every article on your timeline is marked as read. Turn on the switch below to show read articles again.",
     "showReadLabel": "Show read articles"
   },
   "feeds": {
-    "title": "Feeds",
-    "intro": "Add or remove sources. Your timeline only shows articles from feeds listed here.",
-    "addSection": "Add a feed",
-    "listSection": "Your feeds",
-    "emptyList": "No feeds saved yet. Add one above.",
-    "feedUrl": "Feed URL",
+    "title": "Sources",
+    "intro": "Add or remove news or blog sources. Your timeline only shows articles from sources you listed here.",
+    "addSection": "Add a source",
+    "listSection": "Your sources",
+    "emptyList": "No sources saved yet. Add one above.",
+    "feedUrl": "Source address",
     "feedUrlPlaceholder": "https://…",
     "displayNameOptional": "Display name (optional)",
-    "saveSource": "Save feed",
+    "saveSource": "Save source",
     "remove": "Remove",
-    "errorSources": "Could not load feeds",
-    "errorSaveSource": "Could not save feed",
-    "errorRemoveSource": "Could not remove feed",
-    "toastSourceSaved": "Feed saved",
-    "toastSourceRemoved": "Feed removed"
+    "errorSources": "Could not load sources",
+    "errorSaveSource": "Could not save source",
+    "errorRemoveSource": "Could not remove source",
+    "toastSourceSaved": "Source saved",
+    "toastSourceRemoved": "Source removed"
   },
   "login": {
     "title": "infl0",
-    "srpHint": "Sign-in uses SRP-6a: your password is not sent to the server (use HTTPS in production).",
+    "tagline": "Your calm news timeline",
     "email": "Email",
     "password": "Password",
     "signIn": "Sign in",
@@ -166,7 +177,7 @@
   },
   "register": {
     "title": "Create account",
-    "hint": "Password stays in your browser; only an SRP verifier is stored on the server.",
+    "tagline": "New here? Get started in under a minute.",
     "inviteCode": "Invite code",
     "email": "Email",
     "nameOptional": "Name (optional)",
@@ -189,5 +200,44 @@
     "flipBack": "Flip back",
     "originalArticle": "Original article",
     "closeModal": "Close"
+  },
+  "help": {
+    "title": "Help & frequently asked questions",
+    "intro": "Short answers in plain language. Expand the details if you'd like to know more.",
+    "simpleHeading": "In plain language",
+    "detailsHeading": "Details for the curious",
+    "backToApp": "Back to timeline",
+    "items": {
+      "passwordSafety": {
+        "title": "How is my password protected?",
+        "simple": "Your password never leaves this device. When you sign in, your device computes a mathematical proof and sends only that proof to the server. Even we cannot see your password.",
+        "details": "We use the SRP-6a protocol (Secure Remote Password). When you register, your device derives a so-called verifier from your password; only that verifier is stored. When you sign in, your device and the server exchange numbers that let both sides confirm you know your password — without ever transmitting it. In production, the app should additionally be served over HTTPS to encrypt the traffic."
+      },
+      "whatWeStore": {
+        "title": "What does infl0 store about me?",
+        "simple": "Only the essentials: your email, an optional name, your sources and which articles you've seen. Reading behavior for the ranking is stored only if you explicitly turn it on.",
+        "details": "By default, reading-behavior tracking is off (opt-in). When you turn it on, short focus periods (headline, teaser, summary) are recorded to improve your timeline order. You can switch it off anytime in “Privacy” — no new events will be sent after that."
+      },
+      "howRanking": {
+        "title": "How is my timeline sorted?",
+        "simple": "Every article gets points. Things like how recent it is and how well it matches your interests matter. You can adjust the weights yourself under “Adjust sorting”.",
+        "details": "Each signal is normalized to a value between 0 and 1 per article. The score is the sum of signal × (weight ÷ 100). Missing data counts as 0. There is a separate slider for article length (shorter ↔ longer). Under “Why at the top?” you can see which signals contributed the most to each article."
+      },
+      "privacyChoices": {
+        "title": "Can I disable personalization?",
+        "simple": "Yes. Under “Privacy” you can turn off reading-behavior tracking at any time. Your saved settings and sources stay intact.",
+        "details": "When you disable tracking, no new events are sent to the server. Previously computed weightings remain for now. If you want to delete your account entirely, please contact the operators of this instance."
+      },
+      "feedsBasics": {
+        "title": "What are sources?",
+        "simple": "Sources are news or blog sites that infl0 collects new articles from. You can add or remove them under “Manage sources”.",
+        "details": "Technically, these are usually RSS or Atom feeds. If you're not sure whether a site offers one, look for a link labeled “RSS”, “Feed” or “Atom”. The timeline only shows articles from sources you listed here."
+      },
+      "shortcuts": {
+        "title": "Are there any keyboard shortcuts?",
+        "simple": "Use the arrow keys or W/S to move between articles. E opens the detailed view, Q opens the original article, Escape closes the detail view.",
+        "details": "Shortcuts are active in the timeline as long as no input field is focused. We plan to show a visible cheat sheet directly inside the app."
+      }
+    }
   }
 }

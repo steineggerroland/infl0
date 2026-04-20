@@ -3,7 +3,9 @@
     "retry": "Erneut versuchen",
     "dismiss": "Schließen",
     "loading": "…",
-    "close": "Schließen"
+    "close": "Schließen",
+    "learnMore": "Mehr erfahren",
+    "openHelp": "Zum Hilfebereich"
   },
   "locale": {
     "label": "Sprache",
@@ -13,36 +15,45 @@
   "menu": {
     "open": "Menü",
     "timeline": "Timeline",
-    "feeds": "Feed-Verwaltung",
-    "timelineScore": "Timeline-Score",
-    "privacy": "Datenschutz & Daten",
-    "personalization": "Personalisierung",
+    "feeds": "Quellen verwalten",
+    "timelineScore": "Sortierung anpassen",
+    "privacy": "Privatsphäre",
+    "personalization": "Warum oben?",
+    "help": "Hilfe",
     "language": "Sprache",
     "logOut": "Abmelden"
   },
+  "security": {
+    "passwordBadge": {
+      "label": "Passwort-Schutz",
+      "short": "Dein Passwort verlässt dieses Gerät nicht.",
+      "details": "Beim Anmelden wird auf deinem Gerät ein mathematischer Nachweis berechnet. Nur dieser Nachweis geht an den Server – dein eigentliches Passwort nie.",
+      "readMore": "So schützen wir dein Passwort"
+    }
+  },
   "settingsPersonalization": {
-    "title": "Warum diese Artikel oben stehen",
-    "intro": "Hier siehst du in einfacher Sprache, warum deine Timeline so sortiert ist. Klappe einen Artikel auf und sieh, was ihn hoch- oder runterzieht.",
+    "title": "Warum oben?",
+    "intro": "Hier siehst du in einfacher Sprache, warum deine Timeline so sortiert ist. Öffne einen Artikel und sieh, was ihn hoch- oder runterzieht.",
     "generatedAt": "Stand",
-    "algorithmTitle": "So sortiert die Timeline aktuell",
-    "algorithmBody": "Jeder Artikel bekommt Punkte aus mehreren Signalen. Neuere Artikel und dein Leseverhalten können den Wert erhöhen oder senken. Feeds, Kategorien und Schlagwörter werden mit festen Anteilen gemischt, damit kein Bereich alles dominiert.",
+    "algorithmTitle": "So wird deine Timeline gerade sortiert",
+    "algorithmBody": "Jeder Artikel bekommt Punkte aus mehreren Signalen. Neuere Artikel und dein Leseverhalten können den Wert erhöhen oder senken. Quellen, Kategorien und Schlagwörter werden zusammen gewichtet, damit kein Bereich alles dominiert.",
     "priorLabel": "Startwert für neue Themen",
     "blendLabel": "So werden die Anteile gemischt",
     "timelineHeading": "Deine Timeline (Vorschau)",
-    "feedsPieTitle": "Feeds — Anteil der geglätteten Scores",
-    "categoriesPieTitle": "Kategorien — Anteil der geglätteten Scores",
-    "tagsPieTitle": "Tags — Anteil der geglätteten Scores",
+    "feedsPieTitle": "Quellen – Anteil an der Sortierung",
+    "categoriesPieTitle": "Kategorien – Anteil an der Sortierung",
+    "tagsPieTitle": "Schlagwörter – Anteil an der Sortierung",
     "pieOther": "Sonstige",
     "rankStored": "Aktuell gespeicherter Wert",
     "rankLive": "Jetzt neu berechnet",
-    "factorsHeading": "Timeline-Faktoren",
+    "factorsHeading": "Einflussfaktoren",
     "colFactor": "Faktor",
     "colNormalized": "Signal 0–1",
     "colWeight": "Gewicht",
     "colContribution": "Beitrag zum Score",
     "engagementHeading": "Details zu deinem Leseverhalten",
     "engagementIntro": "Diese Werte fassen zusammen, was du bei ähnlichen Inhalten eher länger liest oder eher überspringst.",
-    "feedSignal": "Feed",
+    "feedSignal": "Quelle",
     "categoriesSignal": "Kategorien",
     "tagsSignal": "Schlagwörter",
     "categoryAvg": "Durchschnittliche Tendenz der Kategorien:",
@@ -53,111 +64,111 @@
     "colNormalizedSimple": "Stärke",
     "colWeightSimple": "Wichtigkeit",
     "colContributionSimple": "Einfluss",
-    "sourceLabel": "Feed:",
+    "sourceLabel": "Quelle:",
     "feedbackLabel": "Hilfreich / nicht hilfreich Klicks:",
     "feedbackShort": "Klicks",
     "scoreLabel": "Tendenz aus dem Lesen:",
     "weightedLabel": "Einfluss nach Wichtigkeit:",
-    "finalInterestUp": "Finales positives Engagement:",
-    "finalInterestDown": "Finales negativesD Engagement:",
-    "blendSources": "Feeds",
+    "finalInterestUp": "Endwert Interesse:",
+    "finalInterestDown": "Endwert Desinteresse:",
+    "blendSources": "Quellen",
     "blendCategories": "Kategorien",
     "blendTags": "Schlagwörter"
   },
   "settingsPrivacy": {
-    "title": "Datenschutz & Personalisierungsdaten",
-    "intro": "Standardmäßig aus (Opt-in). Wenn du es einschaltest, erfassen wir, wie lange du jeden Teil eines Artikels siehst. Jede Fokusphase wird gesendet, wenn du wechselst (anderer Bereich, anderer Artikel oder ausgeblendeter Tab). Im Browser wird nichts aufsummiert.",
-    "trackingLabel": "Lesezeit erfassen (Teaser, Zusammenfassung, Volltext)",
-    "trackingHint": "Wenn aktiv, protokollieren wir jede Betrachtung auf dem Server für Personalisierung. Ab etwa 2 Sekunden Gesamtdauer am Artikel wird er in deiner Timeline als gelesen markiert. Du kannst das jederzeit abschalten; dann werden keine neuen Ereignisse mehr gesendet."
+    "title": "Privatsphäre",
+    "intro": "Standardmäßig aus. Du entscheidest, ob wir dein Leseverhalten für die Sortierung nutzen dürfen. Du kannst jederzeit wieder abschalten – dann werden keine neuen Daten mehr gespeichert.",
+    "trackingLabel": "Leseverhalten für bessere Sortierung nutzen",
+    "trackingHint": "Wenn aktiv, merken wir uns, wie lange du Überschrift, Teaser oder den längeren Text ansiehst. Artikel, die du rund zwei Sekunden oder länger betrachtest, gelten als gelesen."
   },
   "settingsTimeline": {
-    "title": "Gewichtung Timeline-Score",
-    "intro": "Jeder Faktor wird pro Artikel auf 0–1 normalisiert. Der Score ist die Summe aus Faktor × (Gewicht ÷ 100). Fehlende Daten zählen als 0. Für Textlänge gibt es einen eigenen Regler (kürzer ↔ länger); in der Mitte (0) entfällt der Einfluss. Die Einstellungen werden in deinem Konto gespeichert (kurz nach dem Loslassen der Regler); lokal liegt zusätzlich eine Kopie für schnelleres Laden.",
-    "formulaTitle": "Formel (Vorschau)",
-    "formulaHint": "Nur Faktoren mit Gewicht > 0 erscheinen. Der spätere Ranking-Job nutzt dieselben Namen.",
+    "title": "Sortierung anpassen",
+    "intro": "Mit den Reglern entscheidest du, wie stark jedes Signal in die Sortierung deiner Timeline einfließt. Ganz links zählt das Signal nicht mit, weiter rechts umso mehr. Änderungen werden in deinem Konto gespeichert.",
+    "formulaTitle": "Für Interessierte: Formel",
+    "formulaHint": "Nur Signale mit Einfluss größer als 0 erscheinen. Sie werden später genauso zur Sortierung benutzt.",
     "reset": "Standard wiederherstellen",
     "groups": {
-      "time": "Zeit",
+      "time": "Wie aktuell",
       "content": "Inhalt",
       "mix": "Mischung (folgt)",
-      "feedback": "Feedback (folgt)"
+      "feedback": "Dein Feedback (folgt)"
     },
     "contentLengthPreference": {
-      "label": "Längen-Bias (Titel + Teaser + Zusammenfassung)",
-      "hint": "Links: kürzere Texte stärker (min(1, cap/len)). Rechts: längere stärker (min(1, len/cap)). Mitte 0: kein Effekt. Je weiter vom Zentrum, desto stärker die Kurve.",
+      "label": "Lieber kurze oder lange Artikel?",
+      "hint": "Links: kurze Artikel werden bevorzugt. Rechts: längere Artikel werden bevorzugt. In der Mitte: keine Vorliebe.",
       "preferShorter": "Kürzer",
-      "neutral": "Neutral",
+      "neutral": "Egal",
       "preferLonger": "Länger"
     },
     "factors": {
       "published_recency": {
-        "label": "Aktualität Veröffentlichung",
-        "hint": "1 = frisch veröffentlicht, Abklingen mit Halbwertszeit (~72 h)."
+        "label": "Wie frisch der Artikel veröffentlicht wurde",
+        "hint": "Je neuer die Veröffentlichung, desto höher der Wert. Nach rund drei Tagen halbiert sich der Effekt."
       },
       "inserted_recency": {
-        "label": "Neu in deiner Timeline",
-        "hint": "1 = gerade für dich eingetragen; nutzt insertedAt vom Server."
+        "label": "Wie neu in deiner Timeline",
+        "hint": "Je später der Artikel in deine Timeline gekommen ist, desto höher der Wert."
       },
       "content_length": {
-        "label": "Textlänge (Gewicht)",
-        "hint": "Wie stark der Längen-Bias unten in den Score einfließt. 0 = Länge ignorieren."
+        "label": "Artikellänge beachten",
+        "hint": "Wie stark deine Vorliebe für kurze oder lange Artikel unten berücksichtigt wird. Ganz links: Länge wird ignoriert."
       },
       "crawl_diversity": {
-        "label": "Feed-Mix-Bonus",
-        "hint": "Platzhalter 0 bis iteratives Spacing zwischen Feeds existiert."
+        "label": "Abwechslung bei Quellen",
+        "hint": "Folgt: sorgt für mehr Abwechslung zwischen Quellen."
       },
       "category_diversity": {
-        "label": "Kategorie-Mix-Bonus",
-        "hint": "Platzhalter 0 bis Wiederholungs-Malus für Kategorien existiert."
+        "label": "Abwechslung bei Kategorien",
+        "hint": "Folgt: verhindert, dass zu viele ähnliche Themen hintereinander stehen."
       },
       "tag_diversity": {
-        "label": "Tag-Mix-Bonus",
-        "hint": "Platzhalter 0 bis Wiederholungs-Malus für Tags existiert."
+        "label": "Abwechslung bei Schlagwörtern",
+        "hint": "Folgt: verhindert, dass sich Schlagwörter zu stark wiederholen."
       },
       "engagement_positive": {
-        "label": "Positives Engagement",
-        "hint": "Platzhalter 0 (Likes / Verweildauer auf Ähnlichem)."
+        "label": "Was du gern liest",
+        "hint": "Folgt: bevorzugt Themen, mit denen du dich länger beschäftigst."
       },
       "engagement_negative": {
-        "label": "Negatives Engagement",
-        "hint": "Senkt den Sortierungs-Score, wenn dieses Signal stark ist; die Wichtigkeit bestimmt, wie viel abgezogen wird."
+        "label": "Was du lieber überspringst",
+        "hint": "Zieht Artikel nach unten, wenn du ähnliche Inhalte häufig wegklickst. Die Stärke bestimmt, wie viel abgezogen wird."
       }
     }
   },
   "index": {
-    "preparingTitle": "Timeline wird vorbereitet",
-    "preparingBody": "Sobald der Crawler Artikel für einen deiner Feeds liefert, erscheinen sie hier.",
+    "preparingTitle": "Deine Timeline wird vorbereitet",
+    "preparingBody": "Sobald für eine deiner Quellen Artikel gefunden wurden, tauchen sie hier auf.",
     "refreshTimeline": "Timeline aktualisieren",
-    "manageFeeds": "Feeds verwalten",
+    "manageFeeds": "Quellen verwalten",
     "errorTimeline": "Timeline konnte nicht geladen werden",
-    "errorSources": "Feeds konnten nicht geladen werden",
-    "emptyNoFeedsTitle": "Noch keine Feeds",
-    "emptyNoFeedsBody": "Füge RSS- oder Atom-Feeds hinzu, damit die Timeline Artikel anzeigen kann. Beim Import muss dieselbe Feed-URL wie hier gespeichert verwendet werden, damit Einträge zu deinem Abo passen.",
-    "emptyNoFeedsCta": "Feeds hinzufügen",
+    "errorSources": "Quellen konnten nicht geladen werden",
+    "emptyNoFeedsTitle": "Noch keine Quellen",
+    "emptyNoFeedsBody": "Füge Nachrichten- oder Blogquellen hinzu, damit deine Timeline Artikel anzeigen kann.",
+    "emptyNoFeedsCta": "Quellen hinzufügen",
     "allReadTitle": "Alles gelesen",
     "allReadBody": "Alle Artikel in deiner Timeline sind als gelesen markiert. Schalte den Schalter ein, um gelesene Artikel wieder anzuzeigen.",
     "showReadLabel": "Gelesene anzeigen"
   },
   "feeds": {
-    "title": "Feeds",
-    "intro": "Feeds hinzufügen oder entfernen. Die Timeline zeigt nur Artikel aus den hier eingetragenen Quellen.",
-    "addSection": "Feed hinzufügen",
-    "listSection": "Deine Feeds",
-    "emptyList": "Noch keine Feeds gespeichert. Oben einen hinzufügen.",
-    "feedUrl": "Feed-URL",
+    "title": "Quellen",
+    "intro": "Füge Nachrichten- oder Blogquellen hinzu oder entferne sie. Deine Timeline zeigt nur Artikel aus den hier eingetragenen Quellen.",
+    "addSection": "Quelle hinzufügen",
+    "listSection": "Deine Quellen",
+    "emptyList": "Noch keine Quelle gespeichert. Oben kannst du eine hinzufügen.",
+    "feedUrl": "Adresse der Quelle",
     "feedUrlPlaceholder": "https://…",
     "displayNameOptional": "Anzeigename (optional)",
-    "saveSource": "Feed speichern",
+    "saveSource": "Quelle speichern",
     "remove": "Entfernen",
-    "errorSources": "Feeds konnten nicht geladen werden",
-    "errorSaveSource": "Feed konnte nicht gespeichert werden",
-    "errorRemoveSource": "Feed konnte nicht entfernt werden",
-    "toastSourceSaved": "Feed gespeichert",
-    "toastSourceRemoved": "Feed entfernt"
+    "errorSources": "Quellen konnten nicht geladen werden",
+    "errorSaveSource": "Quelle konnte nicht gespeichert werden",
+    "errorRemoveSource": "Quelle konnte nicht entfernt werden",
+    "toastSourceSaved": "Quelle gespeichert",
+    "toastSourceRemoved": "Quelle entfernt"
   },
   "login": {
     "title": "infl0",
-    "srpHint": "Anmeldung mit SRP-6a: Dein Passwort wird nicht an den Server gesendet (in Produktion HTTPS verwenden).",
+    "tagline": "Deine ruhige Nachrichten-Timeline",
     "email": "E-Mail",
     "password": "Passwort",
     "signIn": "Anmelden",
@@ -166,7 +177,7 @@
   },
   "register": {
     "title": "Konto erstellen",
-    "hint": "Das Passwort bleibt im Browser; auf dem Server wird nur ein SRP-Verifier gespeichert.",
+    "tagline": "Neu hier? Leg los in weniger als einer Minute.",
     "inviteCode": "Einladungscode",
     "email": "E-Mail",
     "nameOptional": "Name (optional)",
@@ -189,5 +200,44 @@
     "flipBack": "Zurückdrehen",
     "originalArticle": "Originalartikel",
     "closeModal": "Schließen"
+  },
+  "help": {
+    "title": "Hilfe & häufige Fragen",
+    "intro": "Hier findest du kurze Antworten in einfacher Sprache. Wenn du mehr wissen willst, klappe die Details aus.",
+    "simpleHeading": "Kurz erklärt",
+    "detailsHeading": "Details für Interessierte",
+    "backToApp": "Zurück zur Timeline",
+    "items": {
+      "passwordSafety": {
+        "title": "Wie ist mein Passwort geschützt?",
+        "simple": "Dein Passwort verlässt dieses Gerät nicht. Beim Anmelden berechnet dein Gerät einen mathematischen Nachweis und schickt nur diesen an den Server. Selbst wir können dein Passwort nicht sehen.",
+        "details": "Wir nutzen das Verfahren SRP-6a (Secure Remote Password). Beim Registrieren berechnet dein Gerät aus deinem Passwort einen sogenannten Verifier – nur dieser wird gespeichert. Beim Anmelden tauscht dein Gerät mit dem Server Zahlenwerte aus, durch die beide Seiten prüfen können, dass du dein Passwort kennst – ohne dass es jemals übertragen wird. In der öffentlichen Nutzung sollte die Anwendung zusätzlich über HTTPS laufen, damit der Datenverkehr verschlüsselt ist."
+      },
+      "whatWeStore": {
+        "title": "Welche Daten speichert infl0 über mich?",
+        "simple": "Nur das Nötigste: deine E-Mail, optional ein Name, deine Quellen und welche Artikel du gesehen hast. Leseverhalten für die Sortierung wird nur gespeichert, wenn du es ausdrücklich einschaltest.",
+        "details": "Standardmäßig ist die Erfassung von Leseverhalten ausgeschaltet (Opt-in). Wenn du sie einschaltest, werden kurze Fokusphasen (Überschrift, Teaser, Zusammenfassung) gespeichert, um deine Timeline besser zu sortieren. Du kannst die Erfassung jederzeit unter \"Privatsphäre\" abschalten – dann werden keine neuen Daten mehr gesendet."
+      },
+      "howRanking": {
+        "title": "Wie wird meine Timeline sortiert?",
+        "simple": "Jeder Artikel bekommt Punkte. Wichtig sind unter anderem: wie neu er ist und wie sehr er zu deinen Interessen passt. Du kannst die Gewichtung selbst anpassen unter \"Sortierung anpassen\".",
+        "details": "Jedes Signal wird pro Artikel auf einen Wert zwischen 0 und 1 gebracht. Die Punktzahl ist die Summe aus Signal × (Gewicht ÷ 100). Fehlende Daten zählen als 0. Für die Artikellänge gibt es einen eigenen Regler (kürzer ↔ länger). Unter \"Warum oben?\" siehst du pro Artikel, welche Signale besonders beigetragen haben."
+      },
+      "privacyChoices": {
+        "title": "Kann ich die Personalisierung wieder abschalten?",
+        "simple": "Ja. Unter \"Privatsphäre\" kannst du die Erfassung deines Leseverhaltens jederzeit ausschalten. Deine bereits gespeicherten Einstellungen und Quellen bleiben dann erhalten.",
+        "details": "Beim Abschalten werden keine neuen Ereignisse mehr an den Server gesendet. Bereits berechnete Gewichtungen bleiben zunächst bestehen. Wenn du dein Konto vollständig löschen möchtest, wende dich bitte an die Betreiber:innen der Instanz."
+      },
+      "feedsBasics": {
+        "title": "Was sind Quellen?",
+        "simple": "Quellen sind Nachrichten- oder Blog-Seiten, aus denen infl0 neue Artikel sammelt. Du kannst sie unter \"Quellen verwalten\" hinzufügen oder entfernen.",
+        "details": "Technisch handelt es sich meist um RSS- oder Atom-Feeds. Wenn du nicht sicher bist, ob eine Seite eine solche Quelle anbietet, suche auf ihr nach einem Link wie \"RSS\", \"Feed\" oder \"Atom\". Die Timeline zeigt nur Artikel aus Quellen, die du hier eingetragen hast."
+      },
+      "shortcuts": {
+        "title": "Welche Tastenkürzel gibt es?",
+        "simple": "Du kannst mit den Pfeiltasten oder W/S zwischen Artikeln wechseln. E öffnet die ausführliche Ansicht, Q öffnet den Originalartikel, Escape schließt die Detailansicht.",
+        "details": "Die Kürzel sind in der Timeline aktiv, wenn kein Eingabefeld fokussiert ist. Wir arbeiten daran, eine sichtbare Übersicht direkt in der App anzuzeigen."
+      }
+    }
   }
 }

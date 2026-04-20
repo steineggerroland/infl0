@@ -84,3 +84,11 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## Contributor guides
+
+- [`docs/DEVELOPING.md`](docs/DEVELOPING.md) — lint, tests, CI, Node setup.
+- [`docs/CONTENT_AND_A11Y.md`](docs/CONTENT_AND_A11Y.md) — plain-language
+  and accessibility rules for all user-facing copy and UI. Read this before
+  editing `i18n/locales/*.json`, `pages/help.vue`, or any user-facing
+  component.
