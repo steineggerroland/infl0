@@ -31,6 +31,14 @@ export async function runAuthMiddleware<TNav>(
     to: AuthRouteLike,
     { fetchUser, navigate }: AuthMiddlewareDeps<TNav>,
 ): Promise<TNav | undefined> {
+    // API paths are server concerns and must never be driven by the
+    // SPA auth middleware. If a browser manually opens `/api/...`,
+    // the request should resolve as an API response (JSON + status),
+    // not trigger page-level auth redirects.
+    if (to.path.startsWith('/api/')) {
+        return undefined
+    }
+
     const mode = to.meta.auth
     // First pass without a user so we can detect the "public" short-circuit
     // and skip the auth lookup entirely.

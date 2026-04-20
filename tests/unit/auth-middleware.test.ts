@@ -13,6 +13,18 @@ function makeRoute(path: string, mode?: AuthMode, fullPath = path): RouteLike {
 }
 
 describe('runAuthMiddleware', () => {
+  it('never fetches the user for /api paths', async () => {
+    const fetchUser = vi.fn().mockRejectedValue(new Error('must not be called for /api'))
+    const navigate = vi.fn()
+
+    await expect(
+      runAuthMiddleware(makeRoute('/api/not-existing'), { fetchUser, navigate }),
+    ).resolves.toBeUndefined()
+
+    expect(fetchUser).not.toHaveBeenCalled()
+    expect(navigate).not.toHaveBeenCalled()
+  })
+
   it('never fetches the user for a public route', async () => {
     const fetchUser = vi.fn()
     const navigate = vi.fn()
