@@ -12,36 +12,7 @@ nicht, sondern verschieben ihn in den Abschnitt „Erledigt".
 
 ## Usability & Accessibility
 
-### 1. Timeline-Schalter „Gelesene anzeigen" überdeckt Inhalte
-
-- **Symptom:** Der Toggle „Gelesene anzeigen" in der Timeline liegt als
-  schwebendes Element über dem Feed und verdeckt bei bestimmten
-  Scrollpositionen Überschriften und Kurztexte der dahinter liegenden
-  Einträge.
-- **Warum das schlecht ist:** Reine Nutzer:innen mit hohem
-  Textverständnisbedarf (ADHS, Autismus, Screen-Magnifier) verlieren
-  den Kontext; es ist nicht klar, ob ein Eintrag gerade vollständig
-  gelesen werden kann.
-- **Mögliche Richtung** (vor Umsetzung diskutieren):
-  - Den Schalter in eine kompakte, immer sichtbare Timeline-Kopfzeile
-    integrieren (statisches Layout statt Overlay).
-  - Alternativ: Bei aktivem Schalter die Timeline-Liste so einrücken,
-    dass kein Inhalt dahinter liegt.
-  - Für kleine Viewports zusätzlich prüfen, ob der Schalter ins
-    „Einstellungen"-Panel wandern kann und in der Timeline nur ein
-    Zustandsindikator bleibt.
-- **Akzeptanzkriterien:**
-  - Kein Beitragstext wird vom Schalter visuell überdeckt
-    (WCAG 2.2 · 1.4.10 Reflow, 1.4.13 Content on Hover).
-  - Tastatur- und Screen-Reader-Reihenfolge ändert sich nicht.
-  - Zustand „Gelesene sichtbar / ausgeblendet" ist auch ohne Farbe
-    erkennbar (Text oder Icon).
-- **Tests (geplant):**
-  - Komponenten-Test: Schalter ist im normalen Flow, nicht absolut
-    positioniert über Content.
-  - Visuelle/Regressions-Dokumentation in `docs/CONTENT_AND_A11Y.md`.
-
-### 2. Weitere bekannte A11y-Lücken aus der Erst-Analyse
+### 1. Weitere bekannte A11y-Lücken aus der Erst-Analyse
 
 Noch offen aus der ursprünglichen Auditrunde (Sprint 1 hat nur die
 wichtigsten Sprachthemen adressiert):
@@ -58,7 +29,7 @@ wichtigsten Sprachthemen adressiert):
 
 ## Architektur
 
-### 3. `/api/*` darf nie an die Nuxt-SPA weitergereicht werden
+### 2. `/api/*` darf nie an die Nuxt-SPA weitergereicht werden
 
 - **Symptom:** Ein Aufruf einer nicht existierenden `/api/...`-Route
   (oder einer, für die der Benutzer nicht eingeloggt ist) zeigt aktuell
@@ -94,7 +65,7 @@ wichtigsten Sprachthemen adressiert):
   - Abgrenzungstest: Route-Middleware `runAuthMiddleware` wird für
     `/api/…`-Pfade **nicht** aufgerufen (bzw. kurz vorher abgelehnt).
 
-### 4. Echte Integrationstests für `help.vue`
+### 3. Echte Integrationstests für `help.vue`
 
 Der aktuelle Guard (`tests/unit/help-page-auth-coupling.test.ts`) ist
 statisch. Sobald `@nuxt/test-utils/runtime` o. ä. eingezogen ist:
@@ -104,13 +75,13 @@ statisch. Sobald `@nuxt/test-utils/runtime` o. ä. eingezogen ist:
 
 ## Doku & Prozess
 
-### 5. Commit-/Branch-Konvention explizit machen
+### 4. Commit-/Branch-Konvention explizit machen
 
 Aktuell gemischte Stile in `git log`. Festlegen (z. B. Conventional
 Commits, deutsches oder englisches Imperativ) und in
 `docs/DEVELOPING.md` dokumentieren.
 
-### 6. Roadmap-Pflege
+### 5. Roadmap-Pflege
 
 - Jeder neue Sprint zieht relevante Punkte aus diesem Dokument.
 - Wenn wir im Review oder Gespräch eine neue Idee haben, landet sie
@@ -128,3 +99,21 @@ Commits, deutsches oder englisches Imperativ) und in
   pure `resolveAuthDecision`, `runAuthMiddleware`, Regressions-Tests
   inkl. erstem Komponenten-Test (`InfoPopover`). README auf
   Projekt-Konventionen getrimmt.
+- **Sprint 2 — Timeline-Toggle „Gelesene anzeigen".** Schwebendes
+  Overlay entfernt, Toggle in `AppUserMenu` unter einer neuen
+  Sektion „Ansicht" verschoben, gemeinsamer Zustand via
+  `useTimelinePreferences` (pure Helper + Nuxt-Wrapper mit
+  `localStorage`-Hydration). Tastenkürzel `r` zum Umschalten; im
+  Hilfe-Eintrag `shortcuts` dokumentiert. Regressions-Tests in
+  `index.vue` und `AppUserMenu.vue` sowie Composable-Test in
+  happy-dom.
+- **Sprint 2.1 — Robustheit aus externem Review (Teil 1).**
+  - `useTimelinePreferences` persistiert jetzt über einen
+    writable `computed`-Setter statt eines `watch()`. Dadurch
+    überlebt die Persistenz Mount/Unmount/Remount (vorher: Watcher
+    starb mit dem ersten Component-Scope, `hydrated`-Flag
+    verhinderte Neu-Registrierung). Regressionstest in
+    `tests/component/useTimelinePreferences.test.ts`.
+  - `pages/index.vue`-Regression kompakter: ein einziger
+    „kein `<Teleport>`"-Guard mit ausführlichem *Warum*-Kommentar,
+    statt mehrerer Punktchecks auf die konkrete Alt-Implementierung.

@@ -37,12 +37,9 @@ const PAGE_SIZE = 20
 /** Load next page when the user is this many pixels from the bottom (prefetch). */
 const SCROLL_PRELOAD_PX = 520
 
-const SHOW_READ_STORAGE_KEY = 'infl0.timeline.showRead'
-
-const showReadArticles = ref(false)
-if (import.meta.client) {
-    showReadArticles.value = localStorage.getItem(SHOW_READ_STORAGE_KEY) === '1'
-}
+// Shared across timeline + `AppUserMenu`; persistence is handled by the
+// composable, so this page only reacts to changes to refetch.
+const { showRead, toggleShowRead } = useTimelinePreferences()
 
 const articles = ref<TimelineArticle[]>([])
 const timelineHasMore = ref(true)
@@ -68,7 +65,7 @@ async function loadTimelinePage(reset: boolean) {
             query: {
                 limit: PAGE_SIZE,
                 offset,
-                ...(showReadArticles.value ? { showRead: '1' } : {}),
+                ...(showRead.value ? { showRead: '1' } : {}),
             },
         })
         if (res.stats) {
@@ -123,10 +120,7 @@ async function fillTimelineUntilScrollableOrDone() {
     }
 }
 
-watch(showReadArticles, (v) => {
-    if (import.meta.client) {
-        localStorage.setItem(SHOW_READ_STORAGE_KEY, v ? '1' : '0')
-    }
+watch(showRead, () => {
     void loadTimelinePage(true).then(async () => {
         await nextTick()
         await fillTimelineUntilScrollableOrDone()
@@ -175,14 +169,7 @@ const showAllReadEmpty = computed(
     () =>
         fromDatabase.value &&
         timelineStats.value.unread === 0 &&
-        !showReadArticles.value,
-)
-const showTimelineChrome = computed(
-    () =>
-        fromDatabase.value &&
-        !showOnboarding.value &&
-        !showWaiting.value &&
-        !showAllReadEmpty.value,
+        !showRead.value,
 )
 
 async function refreshAll() {
@@ -262,6 +249,10 @@ defineShortcuts({
     w: gotoPreviousArticle,
     arrowdown: gotoNextArticle,
     s: gotoNextArticle,
+    r: (event) => {
+        event.preventDefault()
+        toggleShowRead()
+    },
 })
 
 onMounted(async () => {
@@ -341,7 +332,7 @@ onMounted(async () => {
                 </p>
                 <label class="flex cursor-pointer items-center justify-center gap-3 text-sm text-gray-200">
                     <span>{{ $t('index.showReadLabel') }}</span>
-                    <input v-model="showReadArticles" type="checkbox" class="toggle toggle-primary" >
+                    <input v-model="showRead" type="checkbox" role="switch" class="toggle toggle-primary" >
                 </label>
             </div>
         </div>
@@ -374,19 +365,6 @@ onMounted(async () => {
             </div>
         </div>
 
-        <Teleport to="body">
-            <div
-                v-if="showTimelineChrome"
-                class="pointer-events-none fixed start-3 top-14 z-[400] max-w-[min(20rem,calc(100vw-6rem))]"
-            >
-                <label
-                    class="pointer-events-auto flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-gray-600 bg-gray-950/95 px-3 py-2 text-xs text-gray-200 shadow-lg ring-1 ring-black/40"
-                >
-                    <span class="leading-snug">{{ $t('index.showReadLabel') }}</span>
-                    <input v-model="showReadArticles" type="checkbox" class="toggle toggle-primary toggle-sm shrink-0" >
-                </label>
-            </div>
-        </Teleport>
     </div>
 </template>
 

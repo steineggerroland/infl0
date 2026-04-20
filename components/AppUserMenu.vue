@@ -2,6 +2,7 @@
 const { t } = useI18n()
 const route = useRoute()
 const { logout } = useAuthLogout()
+const { showRead } = useTimelinePreferences()
 
 const menuRoot = ref<HTMLDetailsElement | null>(null)
 
@@ -59,7 +60,27 @@ const linkClass =
                     {{ t('menu.help') }}
                 </NuxtLink>
             </li>
-            <li class="px-3 pb-1 pt-3">
+            <li class="mt-1 border-t border-gray-700 px-3 pb-1 pt-3">
+                <span
+                    class="text-[0.65rem] font-semibold uppercase tracking-wider text-gray-400"
+                >{{ t('menu.view') }}</span>
+            </li>
+            <li class="px-1">
+                <label
+                    class="flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-100 hover:bg-gray-800 hover:text-white"
+                    data-testid="menu-show-read-toggle"
+                >
+                    <span class="leading-snug">{{ t('index.showReadLabel') }}</span>
+                    <input
+                        v-model="showRead"
+                        type="checkbox"
+                        role="switch"
+                        class="toggle toggle-primary toggle-sm shrink-0"
+                        :aria-label="t('index.showReadLabel')"
+                    >
+                </label>
+            </li>
+            <li class="mt-1 border-t border-gray-700 px-3 pb-1 pt-3">
                 <span
                     class="text-[0.65rem] font-semibold uppercase tracking-wider text-gray-400"
                 >{{ t('menu.language') }}</span>

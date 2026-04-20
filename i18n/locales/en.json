@@ -22,6 +22,7 @@
     "privacy": "Privacy",
     "personalization": "Why at the top?",
     "help": "Help",
+    "view": "View",
     "language": "Language",
     "logOut": "Log out"
   },
@@ -237,7 +238,7 @@
       },
       "shortcuts": {
         "title": "Are there any keyboard shortcuts?",
-        "simple": "Use the arrow keys or W/S to move between articles. E opens the detailed view, Q opens the original article, Escape closes the detail view.",
+        "simple": "Use the arrow keys or W/S to move between articles. E opens the detailed view, Q opens the original article, Escape closes the detail view. R shows or hides articles you have already read.",
         "details": "Shortcuts are active in the timeline as long as no input field is focused. We plan to show a visible cheat sheet directly inside the app."
       }
     }
