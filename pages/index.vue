@@ -80,7 +80,12 @@ async function loadTimelinePage(reset: boolean) {
     } catch (e: unknown) {
         const { statusCode, message } = parseFetchError(e)
         if (statusCode === 401) {
-            await navigateTo('/login')
+            // SSR: auth middleware should already redirect signed-out users away from `/`.
+            // Calling `navigateTo` from setup after an `await` can leave the renderer
+            // without a Nuxt instance and surface 500 "instance unavailable".
+            if (import.meta.client) {
+                await navigateTo('/login')
+            }
             return
         }
         const text = message.trim() || t('index.errorTimeline')
@@ -129,17 +134,25 @@ watch(showRead, () => {
 
 await loadTimelinePage(true)
 
-const {
-    data: feedsData,
-    refresh: refreshFeeds,
-    error: feedsFetchError,
-} = await useFetch<{ feeds: UserFeedRow[] }>('/api/feeds', {
-    credentials: 'include',
-    key: 'user-feeds',
-})
+const feedsData = ref<{ feeds: UserFeedRow[] } | null>(null)
+const feedsError = ref<unknown>(null)
+
+async function refreshFeeds() {
+    feedsError.value = null
+    try {
+        feedsData.value = await requestFetch<{ feeds: UserFeedRow[] }>('/api/feeds', {
+            credentials: 'include',
+        })
+    } catch (e) {
+        feedsError.value = e
+        feedsData.value = { feeds: [] }
+    }
+}
+
+await refreshFeeds()
 
 watch(
-    feedsFetchError,
+    feedsError,
     (err) => {
         if (!import.meta.client || !err) return
         const { message } = parseFetchError(err)
