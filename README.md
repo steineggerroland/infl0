@@ -57,3 +57,6 @@ for hosting options.
   before editing `i18n/locales/*.json`, `pages/help.vue`, or any
   user-facing component. Also covers **page auth modes** (`public`,
   `entry`, `required`).
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) — planned but not-yet-shipped
+  changes. Check here before starting work, and add new ideas here
+  instead of jumping straight into code.
