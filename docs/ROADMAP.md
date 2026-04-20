@@ -17,7 +17,6 @@ nicht, sondern verschieben ihn in den Abschnitt „Erledigt".
 Noch offen aus der ursprünglichen Auditrunde (Sprint 1 hat nur die
 wichtigsten Sprachthemen adressiert):
 
-- Farb­abhängige Zustände im Timeline-Score prüfen (kein „nur Farbe").
 - Reduced-motion-Unterstützung: keine dauerhaften Animationen ohne
   `prefers-reduced-motion`-Fallback.
 - `<header>` / `<nav>` / `<footer>` (ergänzend zu `<main>`)
@@ -102,15 +101,56 @@ statisch. Sobald `@nuxt/test-utils/runtime` o. ä. eingezogen ist:
   - Assertion: keine Fetch-Anfrage an `/api/auth/me` geht raus.
   - Assertion: Back-Link-`href` ist `/`.
 
+### 4.1 Playwright-Smoke für A11y-Layout-Invarianten
+
+- **Hintergrund:** Wir hatten ein halbes Dutzend Unit-Tests, die per
+  Source-Regex auf `.vue`-Dateien geprüft haben, ob eine Seite einen
+  Skip-Link, ein `<main id="main">`, einen fokus-sichtbaren Outline
+  o. Ä. rendert. Die waren schwer zu lesen, brachen bei jedem
+  kosmetischen Refactor, und haben dennoch echte Regressionen (z. B.
+  der Baseline-Versatz des Dreieck-Glyphs) nicht entdeckt. Sie sind
+  jetzt entfernt.
+- **Zielbild:** Ein kleiner Playwright-/axe-Smoke-Lauf gegen die
+  Startseiten (`/`, `/help`, `/login`, `/settings`), der prüft:
+  - genau ein `<main>` pro Seite, Skip-Link vorhanden und fokussiert
+    sichtbar,
+  - Tab-Fokus zeigt einen sichtbaren Ring (via `outline`-Computed-
+    Style auf fokussiertem Element),
+  - axe findet keine kritischen Verstöße.
+- Bis das existiert, lebt die Leitplanke in `docs/CONTENT_AND_A11Y.md`
+  (Struktur, Fokus, Farbe) und wird per Review durchgesetzt.
+
 ## Doku & Prozess
 
-### 5. Commit-/Branch-Konvention explizit machen
+### 5. Testing-Philosophie
+
+- **Grundsatz:** Tests prüfen *Verhalten*, nicht Implementierungs-
+  interna. Source-Regex-Regressionsguards sind brüchig — sie
+  scheitern bei harmlosen Refactors und übersehen echte Bugs, weil
+  sie das Markup statisch matchen statt die App zu rendern.
+- **Wann ein statischer/Regex-Test trotzdem OK ist:** wenn er eine
+  *Architektur-Konvention* durchsetzt, die man nicht über Verhalten
+  ausdrücken kann (z. B. „`help.vue` importiert nichts aus
+  `~/server/auth`" — das ist eine Grenzziehung, kein Rendering).
+  Solche Tests bleiben kurz, haben einen sprechenden Namen und einen
+  Kommentar, *warum* sie Konvention und nicht Verhalten prüfen.
+- **Für UI-/A11y-Invarianten:** auf Komponenten-Mount-Tests (`@vue/
+  test-utils` + `happy-dom`) oder einen Playwright-/axe-Smoke setzen
+  (siehe 4.1). Nicht per Regex auf `.vue`-Source suchen.
+- Quelle der Diskussion: Review-Runde nach Sprint 5. Vorher
+  existierten u. a. `index-page-show-read`, `app-user-menu-show-
+  read`, `personalization-color-redundancy`, `landmarks-and-skip-
+  link` als reine Source-Regex-Guards — diese sind entfernt; die
+  zugrunde liegenden Eigenschaften werden jetzt durch Composable-/
+  Pure-Function-Tests, Doku und Review abgesichert.
+
+### 6. Commit-/Branch-Konvention explizit machen
 
 Aktuell gemischte Stile in `git log`. Festlegen (z. B. Conventional
 Commits, deutsches oder englisches Imperativ) und in
 `docs/DEVELOPING.md` dokumentieren.
 
-### 6. Roadmap-Pflege
+### 7. Roadmap-Pflege
 
 - Jeder neue Sprint zieht relevante Punkte aus diesem Dokument.
 - Wenn wir im Review oder Gespräch eine neue Idee haben, landet sie
@@ -146,22 +186,66 @@ Commits, deutsches oder englisches Imperativ) und in
   - `pages/index.vue`-Regression kompakter: ein einziger
     „kein `<Teleport>`"-Guard mit ausführlichem *Warum*-Kommentar,
     statt mehrerer Punktchecks auf die konkrete Alt-Implementierung.
+- **Sprint 5 — Farb-unabhängige Score-Richtungen.** In
+  `pages/settings/personalization.vue` wurden Delta- und
+  Contribution-Zahlen bisher nur per `text-emerald-300` / `text-
+  amber-300` unterschieden – ein klassischer WCAG-1.4.1-Fall für
+  Rot-Grün-Schwäche. Neue pure Helfer `scoreDirection` /
+  `scoreGlyph` (`utils/score-indicator.ts`) liefern eine
+  farb-unabhängige Richtung plus ein Form-Glyph (▲/▼/·/—). Die
+  Seite rendert jetzt signiertes Zahlenformat (`fmtSigned`),
+  Glyph (`aria-hidden`) und übersetztes `sr-only`-Label – Farbe
+  ist die vierte, rein dekorative Ebene. Abgesichert durch
+  `tests/unit/score-indicator.test.ts` (Helfer: Direction-
+  Mapping + „vier verschiedene, nicht-leere Glyphen"). Der
+  konkrete Glyph wird bewusst **nicht** gepinnt — ein
+  Designwechsel soll nicht jedes Mal den Test brechen.
+- **Sprint 5.1 — Glyph-Baseline-Fix, `<ScoreDelta>` & Test-
+  Entschlackung.**
+  - Baseline-Versatz des Dreieck-Glyphs in der Personalization-
+    Seite behoben: Glyph + Zahl rendern als plain inline spans,
+    nicht mehr in `inline-flex items-center`. Triangles und
+    Ziffern haben unterschiedlich hohe Inline-Boxen; Flex-Zentrierung
+    hat den Glyph sichtbar nach oben versetzt.
+  - Render-Muster in `components/ScoreDelta.vue` extrahiert
+    (signed number + aria-hidden Glyph + `sr-only`-Label). Die
+    Personalization-Seite ruft es an den beiden vorherigen
+    Stellen auf. Damit wandert die WCAG-Absicherung der
+    redundanten Richtungs-Cues aus Source-Regex in echte
+    Component-Mount-Tests (`tests/component/ScoreDelta.test.ts`):
+    Verhalten statt Template-Strings.
+  - Source-Regex-Regressionsguards zusammengestrichen (siehe
+    Testing-Philosophie in Abschnitt 5): entfernt wurden
+    `tests/unit/index-page-show-read.test.ts`,
+    `tests/unit/app-user-menu-show-read.test.ts`,
+    `tests/unit/personalization-color-redundancy.test.ts`
+    (ersetzt durch den Mount-Test auf `ScoreDelta`),
+    `tests/unit/landmarks-and-skip-link.test.ts` (wandert nach
+    4.1 in einen Playwright-Smoke; bis dahin Review).
+    `tests/unit/focus-visible-baseline.test.ts` auf einen
+    Ein-Zeilen-Smoke reduziert; die Doku wurde angepasst, damit
+    sie nicht mehr mehr verspricht, als der Test prüft.
+    `tests/unit/score-indicator.test.ts` prüft nur noch
+    Eigenschaften, nicht mehr die konkreten Unicode-Glyphen.
 - **Sprint 4 — Einheitliche Fokus-Ringe.** Globaler `:where(...)
   :focus-visible`-Layer in `assets/css/tailwind.css`: jedes `<a>`,
   `<button>`, `<summary>`, Formular­feld und `[role="button|switch|
   menuitem|…"]` bekommt automatisch einen `outline: 2px solid
   currentColor` mit `outline-offset: 2px`. Spezifität null, damit
   Komponenten-Overrides ohne `!important` gewinnen. Regel in
-  `docs/CONTENT_AND_A11Y.md` dokumentiert, abgesichert durch
-  `tests/unit/focus-visible-baseline.test.ts`.
+  `docs/CONTENT_AND_A11Y.md` dokumentiert; ein schlanker Smoke-
+  Test in `tests/unit/focus-visible-baseline.test.ts` stellt nur
+  sicher, dass die Regel überhaupt noch existiert — die visuelle
+  Qualität verantwortet Review und (perspektivisch) der
+  Playwright-Smoke aus 4.1.
 - **Sprint 3 — Skip-Link + `<main>`-Landmark app-weit.** Einheitlicher
   Skip-Link (`common.skipToMain` → `#main`) plus
   `<main id="main" tabindex="-1">` auf jeder Seite. `layouts/app.vue`
   stellt beides zentral bereit; layoutlose Seiten (`help`, `login`,
   `register`) tragen eigene Kopien. `help.vue` hat die historische
   `help-main`-ID abgelegt und nutzt jetzt die gemeinsame `main`-ID.
-  Regel in `docs/CONTENT_AND_A11Y.md` kodifiziert und durch
-  `tests/unit/landmarks-and-skip-link.test.ts` abgesichert.
+  Regel in `docs/CONTENT_AND_A11Y.md` kodifiziert; Durchsetzung
+  bis zum Playwright-Smoke per Review.
 - **Sprint 2.2 — Shortcut-Hygiene in `defineShortcuts`.**
   - Shortcuts feuern nicht mehr, wenn der Fokus in `<input>`,
     `<textarea>`, `<select>` oder einem `contenteditable` liegt —

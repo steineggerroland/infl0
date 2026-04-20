@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { parseFetchError } from '~/utils/parse-fetch-error'
+import { scoreDirection } from '~/utils/score-indicator'
 
 definePageMeta({
   layout: 'app',
@@ -57,26 +58,33 @@ function fmt(n: number, digits = 3) {
   return n.toFixed(digits)
 }
 
-function fmtSigned(n: number, digits = 4) {
-  if (!Number.isFinite(n)) return '—'
-  const sign = n > 0 ? '+' : ''
-  return `${sign}${n.toFixed(digits)}`
-}
-
 function rankDelta(row: { rankScore: number | null; rankScoreFromFactors: number }) {
   if (row.rankScore == null) return null
   return row.rankScoreFromFactors - row.rankScore
 }
 
+// Colour is one of three redundant signals for score deltas; the
+// other two are the signed number itself (`+0.0123` / `-0.0456`)
+// and the shape-based glyph rendered in the template (▲/▼/·/—).
+// See `utils/score-indicator.ts` and
+// `docs/CONTENT_AND_A11Y.md` (Colour & contrast).
 function deltaClass(delta: number | null) {
-  if (delta == null) return 'text-gray-400'
-  if (Math.abs(delta) < 0.0001) return 'text-gray-300'
-  return delta > 0 ? 'text-emerald-300/95' : 'text-amber-300/95'
+  const dir = scoreDirection(delta)
+  if (dir === 'positive') return 'text-emerald-300/95'
+  if (dir === 'negative') return 'text-amber-300/95'
+  if (dir === 'neutral') return 'text-gray-300'
+  return 'text-gray-400'
 }
 
 function contributionClass(contribution: number) {
-  if (!Number.isFinite(contribution) || Math.abs(contribution) < 1e-9) return 'text-gray-400'
-  return contribution < 0 ? 'text-amber-300/90' : 'text-emerald-300/90'
+  const dir = scoreDirection(contribution)
+  if (dir === 'positive') return 'text-emerald-300/90'
+  if (dir === 'negative') return 'text-amber-300/90'
+  return 'text-gray-400'
+}
+
+function directionLabel(value: number | null | undefined) {
+  return t(`settingsPersonalization.directions.${scoreDirection(value)}`)
 }
 </script>
 
@@ -186,8 +194,21 @@ function contributionClass(contribution: number) {
                     <h3 class="mb-1 text-xs font-semibold uppercase text-gray-500">
                       {{ $t('settingsPersonalization.rankDelta') }}
                     </h3>
-                    <p class="font-mono text-lg" :class="deltaClass(rankDelta(row))">
-                      {{ fmtSigned(rankDelta(row) ?? Number.NaN, 4) }}
+                    <!--
+                      `<ScoreDelta>` renders the three redundant
+                      cues (signed number, aria-hidden glyph,
+                      sr-only direction label) so colour stays a
+                      purely decorative fourth layer. Colour is
+                      applied via `deltaClass` on this `<p>`.
+                    -->
+                    <p
+                      class="font-mono text-lg tabular-nums"
+                      :class="deltaClass(rankDelta(row))"
+                    >
+                      <ScoreDelta
+                        :value="rankDelta(row)"
+                        :sr-label="directionLabel(rankDelta(row))"
+                      />
                     </p>
                   </div>
                 </div>
@@ -211,7 +232,10 @@ function contributionClass(contribution: number) {
                         <td class="text-end font-mono">{{ fmt(f.normalized, 4) }}</td>
                         <td class="text-end font-mono">{{ f.weight }}</td>
                         <td class="text-end font-mono" :class="contributionClass(f.contribution)">
-                          {{ fmt(f.contribution, 4) }}
+                          <ScoreDelta
+                            :value="f.contribution"
+                            :sr-label="directionLabel(f.contribution)"
+                          />
                         </td>
                       </tr>
                     </tbody>

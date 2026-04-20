@@ -177,9 +177,10 @@ regress any of it.
     top-level `<main>` (double landmarks confuse assistive tech).
   - Pages with `definePageMeta({ layout: false })` (e.g. `help.vue`,
     `login.vue`, `register.vue`) provide both themselves.
-  - The contract is enforced by
-    `tests/unit/landmarks-and-skip-link.test.ts` – if you change the
-    landmark / skip-link structure, update the test.
+  - There is currently **no automated check** for this contract –
+    it is enforced by review. An automated Playwright / axe smoke
+    is tracked in `docs/ROADMAP.md` §4.1. Until then, landmark and
+    skip-link changes deserve explicit reviewer attention.
 - Lists are `<ul>/<ol>`, not stacks of `<div>`s.
 - Interactive elements are `<button>` or `<a>`, never a `<div>` with
   `@click`. The `tabindex` attribute is only for managing focus order on
@@ -194,8 +195,11 @@ regress any of it.
   `focus-visible` ring using `outline: 2px solid currentColor` +
   `outline-offset: 2px`. The rule lives inside `:where(...)` so its
   specificity stays at (0,0,0) and any component-level style still
-  wins without `!important`. Pinned by
-  `tests/unit/focus-visible-baseline.test.ts`.
+  wins without `!important`. A minimal smoke test
+  (`tests/unit/focus-visible-baseline.test.ts`) checks that the rule
+  still exists at all; the *visual quality* of the ring is not
+  automated yet and is covered by review until the Playwright / axe
+  smoke from `docs/ROADMAP.md` §4.1 lands.
   - Don't turn off the baseline ring on a new component "because the
     design mockup doesn't show one". If a ring clashes with the
     design, change the colour via a Tailwind `focus-visible:outline-*`
@@ -225,6 +229,27 @@ regress any of it.
   Check with the browser devtools contrast picker before shipping.
 - Never use red/green alone to carry meaning. Use red **and** a minus sign
   **and** a downward arrow.
+- For numeric score directions (deltas, contributions, any
+  increase/decrease indicator) use the shared `<ScoreDelta>`
+  component (`components/ScoreDelta.vue`). It owns the three
+  redundant cues in one place: the signed number, the shape-based
+  glyph (hidden from assistive tech), and the translated
+  `sr-only` direction label passed in by the caller. Colour stays
+  at the call site via a `:class` on the enclosing element so the
+  same component can be themed per page. Behavioural coverage
+  lives in `tests/component/ScoreDelta.test.ts` – that is the
+  single source of truth for "all three cues really render".
+- Direction tokens and their glyph mapping come from
+  `utils/score-indicator.ts` (`scoreDirection` / `scoreGlyph`).
+  The concrete glyphs (currently ▲ / ▼ / · / —) are a product
+  decision, not an API contract; tests pin properties (four
+  distinct non-empty glyphs), not specific Unicode codepoints.
+- Render glyph and number as **plain inline spans** (what
+  `ScoreDelta` does), never `inline-flex items-center`. Triangles
+  and digits have different intrinsic inline-box heights, and
+  `items-center` will push them off each other's baseline –
+  looks like a subtle layout bug to sighted users and confuses
+  cognitive-load users who expect digits and indicator to line up.
 - Light text on mid-grey backgrounds (`text-gray-500` on `bg-gray-400`) is
   almost always too low — push one shade further.
 

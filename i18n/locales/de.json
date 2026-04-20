@@ -76,7 +76,13 @@
     "finalInterestDown": "Endwert Desinteresse:",
     "blendSources": "Quellen",
     "blendCategories": "Kategorien",
-    "blendTags": "Schlagwörter"
+    "blendTags": "Schlagwörter",
+    "directions": {
+      "positive": "Erhöht den Wert",
+      "negative": "Verringert den Wert",
+      "neutral": "Keine Änderung",
+      "unknown": "Unbekannt"
+    }
   },
   "settingsPrivacy": {
     "title": "Privatsphäre",

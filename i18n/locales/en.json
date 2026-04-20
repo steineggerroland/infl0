@@ -76,7 +76,13 @@
     "finalInterestDown": "Final disinterest score:",
     "blendSources": "Sources",
     "blendCategories": "Categories",
-    "blendTags": "Tags"
+    "blendTags": "Tags",
+    "directions": {
+      "positive": "Increases the score",
+      "negative": "Decreases the score",
+      "neutral": "No change",
+      "unknown": "Unknown"
+    }
   },
   "settingsPrivacy": {
     "title": "Privacy",
