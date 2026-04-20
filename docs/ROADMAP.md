@@ -65,7 +65,38 @@ wichtigsten Sprachthemen adressiert):
   - Abgrenzungstest: Route-Middleware `runAuthMiddleware` wird für
     `/api/…`-Pfade **nicht** aufgerufen (bzw. kurz vorher abgelehnt).
 
-### 3. Echte Integrationstests für `help.vue`
+### 3. Keydown-Listener außerhalb `defineShortcuts` als Invariante festigen
+
+- **Hintergrund:** Der globale Guard gegen Modifier-Chords (`Ctrl`,
+  `Meta`, `Alt`) und fokussierte Eingabefelder wirkt nur für
+  Tastenkürzel, die durch `defineShortcuts` registriert werden.
+  Eigene `document.addEventListener('keydown', …)`-Stellen umgehen
+  ihn und können die gleiche Fehlerklasse zurückbringen (z. B.
+  `Cmd+R` löst App-Logik statt Page-Reload aus).
+- **Bekannte Bypass-Stelle:** `components/InfoPopover.vue` hört
+  global auf `Escape`, um das Popover zu schließen. Als
+  Dismiss-Konvention (ARIA) ist das vertretbar, aber nicht
+  dokumentiert und nicht getestet gegen Modifier-Kombinationen.
+- **Zielbild (eine Option wählen):**
+  1. `defineShortcuts` um einen Scope-/Bedingungs-Parameter
+     erweitern (z. B. `when: () => open.value`) und InfoPopover
+     darauf umstellen. Dann gilt der zentrale Guard automatisch.
+  2. Ausnahme belassen, aber in `docs/CONTENT_AND_A11Y.md`
+     kodifizieren: „Neuer roher `addEventListener('keydown')`
+     braucht einen Kommentar mit Begründung plus Test gegen
+     Modifier-Chords." Optional eigene ESLint-Regel.
+- **Akzeptanzkriterien:**
+  - Beim Hinzufügen einer neuen Keyboard-Interaktion fällt einem
+    Reviewer sofort auf, ob sie durch `defineShortcuts` geht oder
+    nicht.
+  - Für jede Bypass-Stelle existiert ein Test, der `Cmd+<Key>`
+    bzw. `Ctrl+<Key>` und Eingabefeld-Fokus abdeckt.
+- **Tests (geplant):** Komponententest für InfoPopover, der
+  bestätigt, dass `Cmd+Escape` das Popover **nicht** schließt und
+  ein `<input>` darin mit `Escape` weiter das Popover schließen
+  darf (Standard-Dismiss-Verhalten).
+
+### 4. Echte Integrationstests für `help.vue`
 
 Der aktuelle Guard (`tests/unit/help-page-auth-coupling.test.ts`) ist
 statisch. Sobald `@nuxt/test-utils/runtime` o. ä. eingezogen ist:
@@ -75,13 +106,13 @@ statisch. Sobald `@nuxt/test-utils/runtime` o. ä. eingezogen ist:
 
 ## Doku & Prozess
 
-### 4. Commit-/Branch-Konvention explizit machen
+### 5. Commit-/Branch-Konvention explizit machen
 
 Aktuell gemischte Stile in `git log`. Festlegen (z. B. Conventional
 Commits, deutsches oder englisches Imperativ) und in
 `docs/DEVELOPING.md` dokumentieren.
 
-### 5. Roadmap-Pflege
+### 6. Roadmap-Pflege
 
 - Jeder neue Sprint zieht relevante Punkte aus diesem Dokument.
 - Wenn wir im Review oder Gespräch eine neue Idee haben, landet sie
