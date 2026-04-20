@@ -117,3 +117,15 @@ Commits, deutsches oder englisches Imperativ) und in
   - `pages/index.vue`-Regression kompakter: ein einziger
     „kein `<Teleport>`"-Guard mit ausführlichem *Warum*-Kommentar,
     statt mehrerer Punktchecks auf die konkrete Alt-Implementierung.
+- **Sprint 2.2 — Shortcut-Hygiene in `defineShortcuts`.**
+  - Shortcuts feuern nicht mehr, wenn der Fokus in `<input>`,
+    `<textarea>`, `<select>` oder einem `contenteditable` liegt —
+    stimmt endlich mit der Zusage im Hilfe-Eintrag überein. Pure
+    Helper in `utils/editable-target.ts` mit eigenen Unit-Tests.
+  - Shortcuts feuern nicht mehr, wenn `Ctrl`, `Meta` oder `Alt`
+    gehalten werden. Ursache des konkreten Bugs: `Cmd+R` (Seite
+    neuladen) hat zusätzlich den `r`-Shortcut ausgelöst und
+    `showRead` bei jedem Reload geflippt. `Shift` bleibt erlaubt
+    (Casing-Modifier, kein Chord).
+  - Abgesichert durch Mount-/Dispatch-Tests in
+    `tests/component/useShortcuts.test.ts`.
