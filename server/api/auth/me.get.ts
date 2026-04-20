@@ -1,10 +1,15 @@
+import { createError, defineEventHandler } from 'h3'
 import { prisma } from '../../utils/prisma'
 import { getSessionUserId } from '../../utils/auth-session'
 
 export default defineEventHandler(async (event) => {
   const userId = await getSessionUserId(event)
   if (!userId) {
-    return { user: null }
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Unauthorized',
+      data: { message: 'Authentication required' },
+    })
   }
 
   const user = await prisma.user.findUnique({
@@ -13,7 +18,11 @@ export default defineEventHandler(async (event) => {
   })
 
   if (!user) {
-    return { user: null }
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Unauthorized',
+      data: { message: 'Authentication required' },
+    })
   }
 
   return { user }
