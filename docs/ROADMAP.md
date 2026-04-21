@@ -371,6 +371,7 @@ Gute Kandidaten für die ersten Pakete:
 | Dokument | Zweck |
 |----------|-------|
 | [`CHANGELOG.md`](./CHANGELOG.md) | Gelieferte Änderungen, Fixes, Breaking |
+| [`RELEASING.md`](./RELEASING.md) | GitHub CI, Tag, GitHub Release |
 | [`planned/README.md`](./planned/README.md) | Umsetzungspakete mit Scope und Akzeptanzkriterien |
 | [`DEVELOPING.md`](./DEVELOPING.md) | Setup, Tests, lokale Entwicklung |
 | [`CONTENT_AND_A11Y.md`](./CONTENT_AND_A11Y.md) | Ton, Inhalt, A11y-Verträge |

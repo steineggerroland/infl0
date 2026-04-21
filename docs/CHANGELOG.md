@@ -11,7 +11,20 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
-Nothing yet on this branch after the last consolidation pass.
+*(Noch keine Einträge nach v0.1.0.)*
+
+---
+
+## [0.1.0] — 2026-04-22
+
+Erster **getaggter** Release zur Orientierung für Betreiber und
+Integratoren. Umfasst den Stand der App mit persönlicher RSS-Timeline,
+SRP-Auth, Prisma, Nuxt 3, Playwright-A11y-Smoke, JSON-Konventionen für
+`/api/*`, sowie die dokumentierte Barrierefreiheits-Baseline (Landmarks,
+Fokus, reduzierte Bewegung).
+
+Detaillierte Vorarbeit vor diesem Tag bleibt im Abschnitt
+**Archive — 2026-04-21** nachvollziehbar.
 
 ---
 

@@ -20,6 +20,9 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Prisma client
+        run: npx prisma generate
+
       - name: Prepare Nuxt (generates .nuxt/eslint.config.mjs)
         run: npx nuxt prepare
 

@@ -63,3 +63,4 @@ for hosting options.
   operators (features, fixes, **breaking** changes when they occur).
 - [`docs/planned/`](docs/planned/) — **feature packages** for implementation
   (scope, acceptance criteria); see [`docs/planned/README.md`](docs/planned/README.md).
+- [`docs/RELEASING.md`](docs/RELEASING.md) — **CI on GitHub** and how to **tag a release**.
