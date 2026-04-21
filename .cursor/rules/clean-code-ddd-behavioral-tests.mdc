@@ -1,0 +1,72 @@
+---
+description: infl0 — Clean Code + DDD + behavior-first testing (avoid brittle technical tests)
+alwaysApply: true
+---
+
+# infl0: Clean Code, DDD, behavior-first tests
+
+## Clean Code defaults
+
+- Prefer **small, named units** over long functions.
+- **Name for intent** (domain language), not mechanics.
+- Keep **side effects at the edges** (I/O, UI, framework hooks). Keep core logic **pure** where possible.
+- Prefer **explicit data flow** over hidden coupling (globals, implicit singletons, “magic” imports).
+- Errors: return **meaningful, typed outcomes** or throw **domain-relevant errors**; never swallow.
+
+## Domain-Driven Design (DDD) principles (lightweight)
+
+- Use a **Ubiquitous Language**:
+  - mirror the terms used in UI, docs, and product discussions in code (`Engagement`, `TimelineScore`, `Source`, …).
+- Separate concerns:
+  - **Domain logic**: pure functions / services with deterministic behavior.
+  - **Application layer**: orchestration (use cases), mapping, validation.
+  - **Infrastructure**: DB, HTTP, Nuxt/Nitro specifics, adapters.
+- Prefer **domain types** and small value objects over “stringly typed” plumbing.
+
+## Testing philosophy: behavior first
+
+### Primary goal
+
+Write tests that protect **user-visible behavior** and **domain invariants**, not the current implementation.
+
+### Preferred test pyramid (in this repo)
+
+- **Unit tests (fast)**: pure domain helpers and decision logic (no Nuxt required).
+- **Component tests**: UI behavior of isolated components (user interactions, aria, focus).
+- **E2E tests (Playwright)**: a few critical flows and A11y smoke checks.
+
+### What to avoid (brittle “technical” tests)
+
+- Avoid tests that assert:
+  - exact HTML structure / Tailwind class lists,
+  - presence of specific CSS selectors,
+  - scanning `.vue` source strings,
+  - implementation details like internal watchers, composable wiring, or private calls.
+
+If a test would fail on a harmless refactor that preserves behavior, it is likely too technical.
+
+### When technical/architectural tests ARE allowed (and useful)
+
+Use “technical” tests **only** to enforce **architecture and design constraints** that cannot be expressed as behavior, e.g.:
+
+- A boundary rule: “`/api/**` must never be handled by SPA auth middleware.”
+- A coupling rule: “Help page must not fetch `/api/auth/me`.”
+- A performance / safety invariant: “No SSR deadlock from re-entering Nuxt router context.”
+
+When writing such tests:
+
+- Keep them **minimal and explicit** about the constraint.
+- Prefer checking **observable effects** (status codes, headers, JSON shape) over source regex.
+- If you must check code structure, include a short “why this must be structural” note.
+
+## Playwright guidance (especially for A11y/motion)
+
+- Prefer **behavioral checks** over “CSS presence”:
+  - e.g. emulate `prefers-reduced-motion` and assert **computed styles** for the actual surface (`dialog::backdrop`), or assert absence of timed motion.
+- Tests should follow the **user path** (keyboard navigation, focus movement, dialog open/close), not internal implementation.
+
+## PR ergonomics
+
+- Keep changes **cohesive** (domain logic + its tests in the same PR/commit group).
+- Update docs when changing a stated project rule (e.g. A11y contracts).
+
