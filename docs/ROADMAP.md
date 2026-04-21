@@ -27,39 +27,25 @@ wichtigsten Sprachthemen adressiert):
 
 ### 2. `/api/*` darf nie an die Nuxt-SPA weitergereicht werden
 
-- **Symptom:** Ein Aufruf einer nicht existierenden `/api/...`-Route
-  (oder einer, für die der Benutzer nicht eingeloggt ist) zeigt aktuell
-  die Login-Seite, weil die globale Auth-Middleware auf die Seite
-  wirkt. Für API-Clients ist das falsch: sie erwarten JSON und einen
-  HTTP-Statuscode, keinen HTML-Redirect.
-- **Warum das schlecht ist:**
-  - Verletzt die Erwartung „`/api/*` ist immer ein strukturierter
-    API-Endpunkt".
-  - Erschwert Debugging (curl bekommt HTML).
-  - Koppelt serverseitige Middleware an clientseitige Routen.
-- **Zielbild:**
-  - Eine **Server-Middleware** für `/api/**` (Nitro
-    `server/middleware/api-*.ts`), die:
-    - Nicht existierende API-Pfade direkt mit `404` + JSON
-      beantwortet (`{ statusCode: 404, message: 'Not found' }`).
-    - Bei fehlendem Auth-Cookie mit `401` + JSON antwortet
-      (statt auf `/login` umzuleiten).
-    - CORS / Content-Type konsistent auf `application/json` setzt.
-  - Die Route-Middleware `auth.global.ts` rührt **ausschließlich**
-    SPA-Seiten an – nie `/api/*`.
-- **Akzeptanzkriterien:**
-  - `curl -i http://localhost:3000/api/not-existing` → `404`,
-    Content-Type `application/json`.
-  - `curl -i http://localhost:3000/api/auth/me` ohne Session →
-    `401`, JSON-Body.
-  - `GET /api/...` führt unter keinen Umständen zur Login-Seite.
-  - Bestehende Endpunkte verhalten sich unverändert.
-- **Tests (geplant):**
-  - Nitro-Integrationstests (`@nuxt/test-utils/e2e` oder manuell per
-    `supertest`) für `/api/unknown`, `/api/auth/me` ohne Session, und
-    einen geschützten Endpunkt mit Session.
-  - Abgrenzungstest: Route-Middleware `runAuthMiddleware` wird für
-    `/api/…`-Pfade **nicht** aufgerufen (bzw. kurz vorher abgelehnt).
+**Bereits umgesetzt (Stand Code):**
+
+- SPA: `utils/auth-middleware.ts` / `middleware/auth.global.ts` — keine
+  Auth-Redirects für Pfade unter `/api/*`.
+- Unbekannte Routen: `server/api/[...path].ts` → `404` + JSON; Unit-Test
+  in `tests/unit/api-catchall.test.ts`.
+- Ohne Session: `server/api/auth/me.get.ts` → `401` via `createError`;
+  Tests in `tests/unit/api-auth-me.test.ts`.
+- Nitro: `server/middleware/00-api-json-content-type.ts` setzt für
+  `/api/**` standardmäßig `Content-Type: application/json; charset=utf-8`.
+
+**Noch offen / optional:**
+
+- **CORS** explizit dokumentieren oder zentral setzen, falls wir
+  Browser-Clients von anderen Origins unterstützen.
+- **Nitro- oder E2E-Checks** (curl/Playwright) gegen einen laufenden
+  Server, die `Content-Type` + Status für `/api/not-existing` und
+  `/api/auth/me` ohne Cookie festnageln (über die bestehenden Unit-Tests
+  hinaus).
 
 ### 4. Echte Integrationstests für `help.vue`
 
@@ -268,6 +254,12 @@ Commits, deutsches oder englisches Imperativ) und in
     `SettingsPageFooter.vue` setzt `data-testid="settings-page-footer"`.
   - `pages/feeds.vue` nutzt `AppFooterShortcuts` (`data-testid="feeds-page-footer"`).
   - Authed Playwright: `settings-smoke.spec.ts` prüft `/feeds`-Footer.
+
+- **Sprint 7.4 — `/api/*` JSON-Baseline (Nitro-Middleware).**
+  - `server/middleware/00-api-json-content-type.ts`: für `/api/**`
+    `Content-Type: application/json; charset=utf-8` als Default.
+  - ROADMAP §2 auf „größtenteils erledigt“ gekürzt; CORS / Server-E2E
+    bleiben optional.
 
 - **Sprint 6 — Modal-Stack & Shortcut-Scoping (vormals §3).**
   - Fachlicher Bug: Öffnen des Volltexts zu einem Artikel und
