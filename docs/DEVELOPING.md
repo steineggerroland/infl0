@@ -91,6 +91,14 @@ user-facing component.
 - **`npm ci` in the Dockerfile** needs a `package-lock.json` committed from a compatible **npm** version. The image runs **`npm install -g npm@11`** so `npm ci` matches lockfiles produced by npm 11 locally; do not run `npm install` before `npm ci` in the Dockerfile (that does not repair an out-of-sync lock and hides the real fix).
 - If Compose warns **`The "z" variable is not set`**, a value (often `POSTGRES_PASSWORD`) likely contains **`$z`** (or similar). Use a password without `$`, URL-encode it in a single `DATABASE_URL` in `.env`, or adjust Compose per [variable interpolation](https://docs.docker.com/compose/environment-variables/variable-interpolation/).
 
+## Documentation map
+
+| Doc | Role |
+|-----|------|
+| [`ROADMAP.md`](./ROADMAP.md) | Vision, idea backlog, technical follow-ups |
+| [`CHANGELOG.md`](./CHANGELOG.md) | Shipped work (features, fixes, breaking changes) |
+| [`planned/README.md`](./planned/README.md) | Feature packages for implementation planning |
+
 ## Dependencies and security
 
 - After changing dependencies, run **`npm audit`**; use **`npm audit fix`** to apply compatible upgrades (keeps `package-lock.json` consistent).

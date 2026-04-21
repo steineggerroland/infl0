@@ -255,7 +255,7 @@ regress any of it.
   `isOpen` you passed into `useModalStackRegistration`, the stack
   stays pumped up forever and every background shortcut stays
   muted – a silent trap that only surfaces on the user's next
-  reload. The reviewer-flagged bug fixed in Sprint 6.1. Shape:
+  reload. (See `docs/CHANGELOG.md` — modal stack / dialog sync.) Shape:
 
   ```vue
   <dialog ref="dlg" @close="onDialogClose" @cancel="onDialogClose">…</dialog>

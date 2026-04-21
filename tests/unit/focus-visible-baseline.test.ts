@@ -13,7 +13,8 @@ import { describe, expect, it } from 'vitest'
  * only invariant worth failing CI over is "we did not accidentally
  * remove the keyboard focus indicator while editing CSS". The
  * actual visual quality of the ring is verified manually / via
- * axe + Playwright smoke tests (see `docs/ROADMAP.md`).
+ * Behavioural / visual checks: Playwright + axe in `tests/e2e/a11y-layout-smoke.spec.ts`;
+ * shipped A11y history in `docs/CHANGELOG.md`; follow-ups in `docs/ROADMAP.md`.
  */
 
 const css = readFileSync(

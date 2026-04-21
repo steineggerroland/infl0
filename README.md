@@ -57,6 +57,9 @@ for hosting options.
   before editing `i18n/locales/*.json`, `pages/help.vue`, or any
   user-facing component. Also covers **page auth modes** (`public`,
   `entry`, `required`).
-- [`docs/ROADMAP.md`](docs/ROADMAP.md) — planned but not-yet-shipped
-  changes. Check here before starting work, and add new ideas here
-  instead of jumping straight into code.
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) — product vision, **idea backlog**,
+  and technical follow-ups. Add new ideas here first.
+- [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — **shipped** changes for
+  operators (features, fixes, **breaking** changes when they occur).
+- [`docs/planned/`](docs/planned/) — **feature packages** for implementation
+  (scope, acceptance criteria); see [`docs/planned/README.md`](docs/planned/README.md).
