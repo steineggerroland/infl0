@@ -65,4 +65,10 @@ defineProps({
     width: 100%;
     height: 100%;
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .fold {
+        transition: none;
+    }
+}
 </style>

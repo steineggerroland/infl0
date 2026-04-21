@@ -183,6 +183,12 @@ regress any of it.
     focus visibility on `/`, `/help`, `/login`.
   - Keep reviewer attention anyway: the smoke is intentionally
     coarse and catches regressions, not every visual nuance.
+  - Long-form app pages under `layouts/app.vue` (e.g. `pages/settings/*`)
+    should expose a page-level `<header>` with the `<h1>` and, where it
+    helps landmark navigation, a **document-level** `<footer>` (implicit
+    `contentinfo`) with a small `<nav>` of neutral shortcuts. Do **not**
+    nest that `<footer>` inside `<main>` — use a `Teleport` to `body` (see
+    `components/SettingsPageFooter.vue`).
 - Lists are `<ul>/<ol>`, not stacks of `<div>`s.
 - Interactive elements are `<button>` or `<a>`, never a `<div>` with
   `@click`. The `tabindex` attribute is only for managing focus order on
@@ -306,6 +312,11 @@ regress any of it.
 
 - Respect `prefers-reduced-motion`. Any animation longer than ~150 ms needs
   a reduced-motion fallback (typically a cross-fade or no animation).
+- **Where it is implemented:** article card flip (`ArticleView.vue`: instant
+  face swap, no 3D keyframes), flip hint pulse (`FlipArrow.vue`), toast
+  enter/leave (`ToastHost.vue`), corner-fold hover (`CornerFold.vue`),
+  fulltext `<dialog class="modal">` including native `::backdrop` (global
+  rule in `assets/css/tailwind.css` plus matching rules in `ArticleView.vue`).
 - Scroll-snap should be `proximity`, not `mandatory`, unless we are certain
   users can still free-scroll.
 - Avoid auto-playing video, parallax, or background motion.

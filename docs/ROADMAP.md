@@ -17,12 +17,11 @@ nicht, sondern verschieben ihn in den Abschnitt „Erledigt".
 Noch offen aus der ursprünglichen Auditrunde (Sprint 1 hat nur die
 wichtigsten Sprachthemen adressiert):
 
-- Reduced-motion-Unterstützung: keine dauerhaften Animationen ohne
-  `prefers-reduced-motion`-Fallback.
-- `<header>` / `<nav>` / `<footer>` (ergänzend zu `<main>`)
-  konsistent über alle Seiten prüfen (aktuell uneinheitlich – z. B.
-  kein `<nav>` in `AppUserMenu`, Überschrift-`<header>` auf Settings-
-  Seiten nur innerhalb der Karte statt oben auf der Seite).
+- `<header>` / `<nav>` / `<footer>` (ergänzend zu `<main>`) auf weiteren
+  Seiten prüfen (teilweise erledigt: `layouts/app.vue` + `AppUserMenu`;
+  `pages/settings/*` mit Seiten-`<header>` und gemeinsamem
+  `SettingsPageFooter` am Seitenende). Offen z. B. ähnliche Landmarks für
+  `pages/feeds.vue` und neue Layout-Seiten.
 
 ## Architektur
 
@@ -240,6 +239,29 @@ Commits, deutsches oder englisches Imperativ) und in
     würde ausgeloggt nach `/login` redirecten und `wait-on` nie 200
     sehen), bevor Playwright ausgeführt wird. So vermeiden
     wir den früheren `EMFILE`-Watcher-Fehler aus `nuxt dev`.
+
+- **Sprint 7.1 — Reduced motion + App-Chrome-Landmarks.**
+  - `prefers-reduced-motion: reduce`: Kartenflip per sofortiger
+    Flächenumschaltung statt 3D-Keyframes (`ArticleView.vue`), kein
+    Dauer-Puls (`FlipArrow.vue`), Toasts ohne Slide (`ToastHost.vue`),
+    Falt-Ecke ohne Transition (`CornerFold.vue`). Kurz dokumentiert
+    unter „Motion & sensory load“ in `docs/CONTENT_AND_A11Y.md`.
+  - `layouts/app.vue`: schwebendes Menü in `<header>` (per Teleport an
+    `body`). `AppUserMenu.vue`: Panel in `<nav aria-label>`, Strings
+    `menu.navLandmark` in `i18n/locales/{de,en}.json`.
+
+- **Sprint 7.2 — Settings: Footer-Landmark + Kurznavigation.**
+  - Gemeinsame Komponente `components/SettingsPageFooter.vue`: `<footer>`
+    mit `<nav aria-label>` (`settingsCommon.footerNav`) und Links zu `/`
+    sowie `/help`; per **`Teleport` zu `body`** (plus `ClientOnly`), damit
+    der Footer **nicht** innerhalb von `<main>` liegt und als Seiten-
+    **`contentinfo`**-Landmark zählen kann.
+  - `pages/settings/personalization.vue` (Breite `container-max="4xl"`),
+    `privacy.vue`, `timeline-score.vue`.
+  - Komponententest `tests/component/SettingsPageFooter.test.ts`
+    (Teleport vs. `<main>`).
+  - `docs/CONTENT_AND_A11Y.md` (Struktur-Baseline) und offener Punkt §1
+    in diesem Dokument angepasst.
 
 - **Sprint 6 — Modal-Stack & Shortcut-Scoping (vormals §3).**
   - Fachlicher Bug: Öffnen des Volltexts zu einem Artikel und

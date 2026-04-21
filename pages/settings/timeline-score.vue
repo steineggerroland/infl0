@@ -121,6 +121,8 @@ function factorHint(id: string) {
           {{ $t('settingsTimeline.reset') }}
         </button>
       </div>
+
+      <SettingsPageFooter />
     </div>
   </div>
 </template>

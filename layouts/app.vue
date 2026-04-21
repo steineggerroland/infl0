@@ -22,15 +22,12 @@ const { t } = useI18n()
         <!--
           `<main id="main" tabindex="-1">` is the single primary
           landmark for every page that opts into this layout. The
-          `tabindex="-1"` is not about the tab order – it exists so the
-          skip link above actually moves screen-reader / keyboard focus
-          here; without it, browsers only scroll. The regression test
-          in `tests/unit/landmarks-and-skip-link.test.ts` locks this
-          down.
+          `tabindex="-1"` is not about tab order; it ensures the skip
+          link above can move keyboard/screen-reader focus to `main`
+          instead of only scrolling.
 
-          Pages that use this layout must therefore NOT render their
-          own top-level `<main>` (double landmarks confuse assistive
-          tech); the same test also forbids that.
+          This contract is verified by Playwright in
+          `tests/e2e/a11y-layout-smoke.spec.ts`.
         -->
         <main id="main" tabindex="-1" class="outline-none">
             <slot />
@@ -41,11 +38,11 @@ const { t } = useI18n()
           Teleport keeps the control in viewport stacking order.
         -->
         <Teleport to="body">
-            <div class="pointer-events-none fixed end-3 top-3 z-[500] flex justify-end">
+            <header class="pointer-events-none fixed end-3 top-3 z-[500] flex justify-end">
                 <div class="pointer-events-auto">
                     <AppUserMenu />
                 </div>
-            </div>
+            </header>
         </Teleport>
     </div>
 </template>

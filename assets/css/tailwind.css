@@ -137,3 +137,15 @@
     overflow-x: auto;
   }
 }
+
+/*
+ * DaisyUI `<dialog class="modal">` animates the native `::backdrop` in some
+ * themes. Scoped SFC styles may not ship on routes that never mount the
+ * dialog component, so this lives in global CSS and is covered by e2e.
+ */
+@media (prefers-reduced-motion: reduce) {
+  dialog.modal::backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
+}

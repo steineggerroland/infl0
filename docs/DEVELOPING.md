@@ -27,7 +27,20 @@ Without a suitable Node version, ESLint plugins or `postinstall` can fail (e.g. 
 | `npm run test:watch` | Vitest watch mode |
 | `npm run verify` | Lint + tests + typecheck (recommended before push; matches CI) |
 | `npm run typecheck` | Nuxt / TypeScript check |
+| `npm run test:e2e` | Production build + Nitro on `127.0.0.1:4275` + Playwright (`dotenv-cli`: `.env` then `.env.e2e`, **no `--override`**) — duplicate keys keep **`.env`**; committed Playwright values in **`.env.e2e`** apply only for keys **not** set in **`.env`** |
 | `npm run backfillEngagementAggregates` | Rebuild engagement aggregate tables from raw events (manual/heavy) |
+
+### Playwright / E2E auth (`dev@localhost`)
+
+End-to-end tests use a **committed** `.env.e2e` with `DATABASE_URL`, `AUTH_JWT_SECRET`, SRP salt/verifier for **`dev@localhost`**, and `E2E_LOGIN_PASSWORD` (matches the verifier; default password string is documented in `.env.e2e`).
+
+1. Start Postgres (e.g. Docker Compose from `.env.example`) and ensure `DATABASE_URL` in `.env.e2e` matches.
+2. Apply schema and seed: `npx prisma migrate deploy` (or `db:push` in dev), then seed with **`DEV_SRP_*`** from **`.env.e2e`** merged in (e.g. **`dotenv -e .env -e .env.e2e -- npx prisma db seed`** — same merge as E2E: `.env` wins on conflicts, `.env.e2e` fills missing keys). Plain **`npx prisma db seed`** only loads **`.env`**, so you miss **`DEV_*`** unless they are copied into **`.env`**.
+3. Run **`npm run test:e2e`**. `dotenv-cli` injects env for `nuxt build`, the Nitro server, and Playwright (same merge as **`tests/e2e/load-e2e-env.ts`**). The Playwright project **`setup`** runs **`tests/e2e/auth.setup.ts`**, performs SRP login, and writes **`tests/e2e/.auth/dev.json`** (gitignored). Only **`chromium-authed`** depends on **`setup`**; the **`chromium`** project (public smokes) does not, so it does not require Postgres or a seeded `dev@localhost` when you run **`playwright test --project chromium`**.
+
+To rotate the dev password: `SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp-env.ts dev@localhost` (prints `DEV_SRP_*`), update `.env.e2e` and `E2E_LOGIN_PASSWORD`, then re-seed.
+
+**E2E troubleshooting:** If **`auth.setup.ts`** fails with **Prisma “credentials … are not valid”**, Nitro’s **`DATABASE_URL`** (from **`.env`** if set there — it wins over **`.env.e2e`**) does not match your running Postgres. Align **`.env`** (or remove `DATABASE_URL` there so **`.env.e2e`** applies), then **`npx prisma migrate deploy`** and merge-seed as in step 2.
 
 **Note:** `eslint.config.mjs` imports `./.nuxt/eslint.config.mjs`. That file is created by **`nuxt prepare`** (runs on `npm install` as `postinstall`). Without a prior `npm install`, `npm run lint` fails — that is expected.
 

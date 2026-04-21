@@ -25,7 +25,7 @@
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "npm run build && start-server-and-test \"NITRO_HOST=127.0.0.1 NITRO_PORT=4275 node .output/server/index.mjs\" http://127.0.0.1:4275/help \"playwright test\"",
+    "test:e2e": "dotenv -e .env -e .env.e2e -- sh -c 'npm run build && npx start-server-and-test \"NITRO_HOST=127.0.0.1 NITRO_PORT=4275 node .output/server/index.mjs\" http://127.0.0.1:4275/help \"playwright test\"'",
     "verify": "npm run lint && npm run test && npm run typecheck",
     "typecheck": "nuxi typecheck"
   },
@@ -59,6 +59,8 @@
     "@types/node": "^22.15.0",
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.20",
+    "dotenv": "^16.6.1",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9.39.0",
     "happy-dom": "^20.9.0",
     "postcss": "^8.4.49",

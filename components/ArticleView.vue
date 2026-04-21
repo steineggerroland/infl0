@@ -432,4 +432,65 @@ TypeIcon {
   bottom: 1rem;
   left: 1rem;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .modal,
+  .modal-box,
+  .modal-backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* Native top layer; DaisyUI often styles `::backdrop` separately from `.modal`. */
+  dialog.modal::backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .modal-box {
+    transform: none !important;
+  }
+
+  .article-container {
+    perspective: none;
+    transform-style: flat;
+    animation: none !important;
+  }
+
+  .article-container.flip-back,
+  .article-container.flip-front {
+    animation: none !important;
+  }
+
+  .article-content,
+  .article-detail {
+    transition: none !important;
+  }
+
+  .article-container.flip-front .article-detail {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: none;
+  }
+
+  .article-container.flip-front .article-content {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .article-container.flip-back .article-content {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .article-container.flip-back .article-detail {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+}
 </style>

@@ -86,4 +86,14 @@ const tooltip = computed(() =>
         transform: scale(1);
     }
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .flip-arrow {
+        animation: none;
+    }
+
+    .arrow-tooltip {
+        transition: none;
+    }
+}
 </style>

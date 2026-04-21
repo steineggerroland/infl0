@@ -363,6 +363,8 @@ function directionLabel(value: number | null | undefined) {
           />
         </div>
       </div>
+
+      <SettingsPageFooter container-max="4xl" />
     </div>
   </div>
 </template>

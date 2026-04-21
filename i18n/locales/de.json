@@ -15,6 +15,7 @@
     "de": "Deutsch"
   },
   "menu": {
+    "navLandmark": "App-Navigation",
     "open": "Menü",
     "timeline": "Timeline",
     "feeds": "Quellen verwalten",
@@ -33,6 +34,9 @@
       "details": "Beim Anmelden wird auf deinem Gerät ein mathematischer Nachweis berechnet. Nur dieser Nachweis geht an den Server – dein eigentliches Passwort nie.",
       "readMore": "So schützen wir dein Passwort"
     }
+  },
+  "settingsCommon": {
+    "footerNav": "Kurznavigation"
   },
   "settingsPersonalization": {
     "title": "Warum oben?",

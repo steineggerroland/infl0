@@ -27,39 +27,45 @@ const linkClass =
         >
             <span class="text-base leading-none tracking-tight" aria-hidden="true">☰</span>
         </summary>
-        <ul
-            class="app-user-menu__panel absolute end-0 z-50 m-0 mt-2 min-w-[15rem] max-w-[calc(100vw-1.5rem)] list-none space-y-0.5 rounded-xl border border-gray-600 bg-gray-950 p-2 py-3 text-gray-100 shadow-2xl ring-1 ring-black/50 [&>li]:list-none"
+        <div
+            class="app-user-menu__panel absolute end-0 z-50 m-0 mt-2 min-w-[15rem] max-w-[calc(100vw-1.5rem)] rounded-xl border border-gray-600 bg-gray-950 p-2 py-3 text-gray-100 shadow-2xl ring-1 ring-black/50"
         >
-            <li v-if="route.path !== '/'">
-                <NuxtLink to="/" :class="linkClass" @click="closeMenu">
-                    {{ t('menu.timeline') }}
-                </NuxtLink>
-            </li>
-            <li v-if="route.path !== '/feeds'">
-                <NuxtLink to="/feeds" :class="linkClass" @click="closeMenu">
-                    {{ t('menu.feeds') }}
-                </NuxtLink>
-            </li>
-            <li v-if="route.path !== '/settings/timeline-score'">
-                <NuxtLink to="/settings/timeline-score" :class="linkClass" @click="closeMenu">
-                    {{ t('menu.timelineScore') }}
-                </NuxtLink>
-            </li>
-            <li v-if="route.path !== '/settings/privacy'">
-                <NuxtLink to="/settings/privacy" :class="linkClass" @click="closeMenu">
-                    {{ t('menu.privacy') }}
-                </NuxtLink>
-            </li>
-            <li v-if="route.path !== '/settings/personalization'">
-                <NuxtLink to="/settings/personalization" :class="linkClass" @click="closeMenu">
-                    {{ t('menu.personalization') }}
-                </NuxtLink>
-            </li>
-            <li v-if="route.path !== '/help'">
-                <NuxtLink to="/help" :class="linkClass" @click="closeMenu">
-                    {{ t('menu.help') }}
-                </NuxtLink>
-            </li>
+            <nav :aria-label="t('menu.navLandmark')">
+                <ul class="app-user-menu__list m-0 list-none space-y-0.5 p-0">
+                    <li v-if="route.path !== '/'">
+                        <NuxtLink to="/" :class="linkClass" @click="closeMenu">
+                            {{ t('menu.timeline') }}
+                        </NuxtLink>
+                    </li>
+                    <li v-if="route.path !== '/feeds'">
+                        <NuxtLink to="/feeds" :class="linkClass" @click="closeMenu">
+                            {{ t('menu.feeds') }}
+                        </NuxtLink>
+                    </li>
+                    <li v-if="route.path !== '/settings/timeline-score'">
+                        <NuxtLink to="/settings/timeline-score" :class="linkClass" @click="closeMenu">
+                            {{ t('menu.timelineScore') }}
+                        </NuxtLink>
+                    </li>
+                    <li v-if="route.path !== '/settings/privacy'">
+                        <NuxtLink to="/settings/privacy" :class="linkClass" @click="closeMenu">
+                            {{ t('menu.privacy') }}
+                        </NuxtLink>
+                    </li>
+                    <li v-if="route.path !== '/settings/personalization'">
+                        <NuxtLink to="/settings/personalization" :class="linkClass" @click="closeMenu">
+                            {{ t('menu.personalization') }}
+                        </NuxtLink>
+                    </li>
+                    <li v-if="route.path !== '/help'">
+                        <NuxtLink to="/help" :class="linkClass" @click="closeMenu">
+                            {{ t('menu.help') }}
+                        </NuxtLink>
+                    </li>
+                </ul>
+            </nav>
+
+            <ul class="app-user-menu__list m-0 list-none space-y-0.5 p-0">
             <li class="mt-1 border-t border-gray-700 px-3 pb-1 pt-3">
                 <span
                     class="text-[0.65rem] font-semibold uppercase tracking-wider text-gray-400"
@@ -97,17 +103,18 @@ const linkClass =
                     {{ t('menu.logOut') }}
                 </button>
             </li>
-        </ul>
+            </ul>
+        </div>
     </details>
 </template>
 
 <style scoped>
 /* Safari / some UAs still paint ::marker even with list-style:none on the parent */
-.app-user-menu__panel > li {
+.app-user-menu__list > li {
     list-style-type: none;
 }
 
-.app-user-menu__panel > li::marker {
+.app-user-menu__list > li::marker {
     content: none;
 }
 </style>

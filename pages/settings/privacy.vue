@@ -53,6 +53,8 @@ async function onToggle(e: Event) {
           </span>
         </label>
       </section>
+
+      <SettingsPageFooter />
     </div>
   </div>
 </template>

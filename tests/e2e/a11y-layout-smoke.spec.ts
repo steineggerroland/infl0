@@ -65,6 +65,41 @@ async function expectNoCriticalAxeViolations(page: Page) {
   expect(critical).toEqual([])
 }
 
+/** Largest duration in a comma-separated computed time list (e.g. `0s, 0.2s`). */
+function maxCssTimeSeconds(value: string): number {
+  const parts = value
+    .split(',')
+    .map((part) => Number.parseFloat(part.trim()))
+    .filter((n) => Number.isFinite(n))
+  return parts.length === 0 ? 0 : Math.max(0, ...parts)
+}
+
+/**
+ * Under `prefers-reduced-motion: reduce`, the native `dialog.modal::backdrop`
+ * must not run timed motion (DaisyUI often animates it separately from
+ * `.modal` / `.modal-box`). Uses a real `<dialog class="modal">` + `showModal()`
+ * so we exercise `getComputedStyle(el, '::backdrop')`, not only stylesheet text.
+ */
+async function expectDialogModalBackdropIsMotionFree(page: Page) {
+  const backdrop = await page.evaluate(() => {
+    const d = document.createElement('dialog')
+    d.className = 'modal'
+    document.body.appendChild(d)
+    d.showModal()
+    const s = getComputedStyle(d, '::backdrop')
+    const out = {
+      animationDuration: s.animationDuration,
+      transitionDuration: s.transitionDuration,
+    }
+    d.close()
+    d.remove()
+    return out
+  })
+
+  expect(maxCssTimeSeconds(backdrop.animationDuration)).toBe(0)
+  expect(maxCssTimeSeconds(backdrop.transitionDuration)).toBe(0)
+}
+
 for (const route of ROUTES) {
   test(`a11y smoke on ${route}`, async ({ page }) => {
     await gotoAndSettleOnMain(page, route)
@@ -72,3 +107,10 @@ for (const route of ROUTES) {
     await expectNoCriticalAxeViolations(page)
   })
 }
+
+test('dialog.modal ::backdrop has no timed motion under prefers-reduced-motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await gotoAndSettleOnMain(page, '/login')
+  await expect(page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)).resolves.toBe(true)
+  await expectDialogModalBackdropIsMotionFree(page)
+})

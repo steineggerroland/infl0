@@ -55,4 +55,16 @@ function alertClass(variant: string) {
   opacity: 0;
   transform: translateX(0.5rem);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .toast-enter-active,
+  .toast-leave-active {
+    transition: none;
+  }
+
+  .toast-enter-from,
+  .toast-leave-to {
+    transform: none;
+  }
+}
 </style>

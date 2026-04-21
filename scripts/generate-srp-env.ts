@@ -1,7 +1,8 @@
 /**
  * Run locally (password stays in this shell only, not on the server):
  *   SRP_GEN_PASSWORD='your-secret' npx tsx scripts/generate-srp-env.ts [email]
- * Prints BETA_SRP_SALT_HEX and BETA_SRP_VERIFIER_HEX for .env, then run npm run db:seed.
+ * Prints `{PREFIX}_SRP_SALT_HEX` / `{PREFIX}_SRP_VERIFIER_HEX` for `.env` / `.env.e2e`,
+ * then run `npm run db:seed`. Prefix is `DEV` for `dev@localhost`, otherwise `BETA`.
  */
 import { createVerifierAndSalt, SRPParameters, SRPRoutines } from 'tssrp6a'
 
@@ -19,6 +20,8 @@ if (!password) {
 const routines = new SRPRoutines(new SRPParameters())
 const { s, v } = await createVerifierAndSalt(routines, email, password)
 
-console.log('# Paste into .env (then npm run db:seed):')
-console.log(`BETA_SRP_SALT_HEX=${s.toString(16)}`)
-console.log(`BETA_SRP_VERIFIER_HEX=${v.toString(16)}`)
+const prefix = email === 'dev@localhost' ? 'DEV' : 'BETA'
+
+console.log('# Paste into .env / .env.e2e (then npm run db:seed):')
+console.log(`${prefix}_SRP_SALT_HEX=${s.toString(16)}`)
+console.log(`${prefix}_SRP_VERIFIER_HEX=${v.toString(16)}`)

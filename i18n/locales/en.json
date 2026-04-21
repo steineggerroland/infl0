@@ -15,6 +15,7 @@
     "de": "German"
   },
   "menu": {
+    "navLandmark": "App navigation",
     "open": "Menu",
     "timeline": "Timeline",
     "feeds": "Manage sources",
@@ -33,6 +34,9 @@
       "details": "When you sign in, your device computes a mathematical proof locally. Only that proof is sent to the server — never your actual password.",
       "readMore": "How we protect your password"
     }
+  },
+  "settingsCommon": {
+    "footerNav": "Page shortcuts"
   },
   "settingsPersonalization": {
     "title": "Why at the top?",
