@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { nextTick } from 'vue'
+import AppFooterShortcuts from '../../components/AppFooterShortcuts.vue'
 import SettingsPageFooter from '../../components/SettingsPageFooter.vue'
 
 function makeI18n() {
@@ -35,6 +36,7 @@ describe('SettingsPageFooter', () => {
       attachTo: '#attach',
       global: {
         plugins: [i18n],
+        components: { AppFooterShortcuts },
         stubs: {
           NuxtLink: {
             props: ['to'],
@@ -66,6 +68,7 @@ describe('SettingsPageFooter', () => {
       attachTo: '#attach',
       global: {
         plugins: [i18n],
+        components: { AppFooterShortcuts },
         stubs: {
           NuxtLink: {
             props: ['to'],

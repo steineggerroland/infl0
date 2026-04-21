@@ -183,12 +183,13 @@ regress any of it.
     focus visibility on `/`, `/help`, `/login`.
   - Keep reviewer attention anyway: the smoke is intentionally
     coarse and catches regressions, not every visual nuance.
-  - Long-form app pages under `layouts/app.vue` (e.g. `pages/settings/*`)
-    should expose a page-level `<header>` with the `<h1>` and, where it
-    helps landmark navigation, a **document-level** `<footer>` (implicit
-    `contentinfo`) with a small `<nav>` of neutral shortcuts. Do **not**
-    nest that `<footer>` inside `<main>` — use a `Teleport` to `body` (see
-    `components/SettingsPageFooter.vue`).
+  - Long-form app pages under `layouts/app.vue` (e.g. `pages/settings/*`,
+    `pages/feeds.vue`) should expose a page-level `<header>` with the `<h1>`
+    and, where it helps landmark navigation, a **document-level** `<footer>`
+    (implicit `contentinfo`) with a small `<nav>` of neutral shortcuts. Do
+    **not** nest that `<footer>` inside `<main>` — use a `Teleport` to `body`
+    (see `components/AppFooterShortcuts.vue`; settings use
+    `components/SettingsPageFooter.vue` as a thin wrapper).
 - Lists are `<ul>/<ol>`, not stacks of `<div>`s.
 - Interactive elements are `<button>` or `<a>`, never a `<div>` with
   `@click`. The `tabindex` attribute is only for managing focus order on

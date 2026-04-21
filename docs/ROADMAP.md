@@ -19,9 +19,9 @@ wichtigsten Sprachthemen adressiert):
 
 - `<header>` / `<nav>` / `<footer>` (ergänzend zu `<main>`) auf weiteren
   Seiten prüfen (teilweise erledigt: `layouts/app.vue` + `AppUserMenu`;
-  `pages/settings/*` mit Seiten-`<header>` und gemeinsamem
-  `SettingsPageFooter` am Seitenende). Offen z. B. ähnliche Landmarks für
-  `pages/feeds.vue` und neue Layout-Seiten.
+  `pages/settings/*` mit Seiten-`<header>` und `SettingsPageFooter`;
+  `pages/feeds.vue` mit gemeinsamer `AppFooterShortcuts`-Komponente).
+  Offen z. B. neue Layout-Seiten ohne diese Baseline.
 
 ## Architektur
 
@@ -262,6 +262,12 @@ Commits, deutsches oder englisches Imperativ) und in
     (Teleport vs. `<main>`).
   - `docs/CONTENT_AND_A11Y.md` (Struktur-Baseline) und offener Punkt §1
     in diesem Dokument angepasst.
+
+- **Sprint 7.3 — Feeds: gleiche Footer-Kurznavigation + Extrakt `AppFooterShortcuts`.**
+  - Markup in `components/AppFooterShortcuts.vue` ausgelagert; Wrapper
+    `SettingsPageFooter.vue` setzt `data-testid="settings-page-footer"`.
+  - `pages/feeds.vue` nutzt `AppFooterShortcuts` (`data-testid="feeds-page-footer"`).
+  - Authed Playwright: `settings-smoke.spec.ts` prüft `/feeds`-Footer.
 
 - **Sprint 6 — Modal-Stack & Shortcut-Scoping (vormals §3).**
   - Fachlicher Bug: Öffnen des Volltexts zu einem Artikel und

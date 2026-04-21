@@ -174,6 +174,8 @@ async function removeFeed(id: string) {
             <p v-else class="text-center text-sm text-gray-800">
                 {{ $t('feeds.emptyList') }}
             </p>
+
+            <AppFooterShortcuts test-id="feeds-page-footer" />
         </div>
     </div>
 </template>
