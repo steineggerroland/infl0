@@ -189,18 +189,20 @@ defineShortcuts({
 
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
         <!-- Title -->
-        <h1 class="w-full text-end text-sm smh:text-md mdh:text-lg font-bold mb-4 tracking-tighter">{{
+        <h1
+          class="w-full text-end !text-sm mdh:!text-lg font-bold mb-4 tracking-tighter"
+        >{{
           article.title }}
         </h1>
         <!-- Teaser -->
         <p
-class="teaser flex-1 content-center text-lg smh:text-2xl mdh:text-4xl mb-6 cursor-pointer text-[var(--infl0-article-front-fg-dim)]"
+          class="teaser mt-0 mb-6 flex-1 content-center !text-lg smh:!text-2xl mdh:!text-4xl cursor-pointer text-[var(--infl0-article-front-fg-dim)]"
           tabindex="0" @click="toggleDetailView">
           {{
             article.teaser }}</p>
       </div>
-      <!-- Meta Information -->
-      <div class="meta max-h-1/5 h-1/5 w-full text-xs smh:text-sm mdh:text-lg px-6 py-2 text-start">
+      <!-- Meta: keep small at every height; `mdh:text-lg` inflated the whole strip + `em`-sized chips (Freshness/Name). -->
+      <div class="meta max-h-1/5 h-1/5 w-full !text-xs smh:!text-sm mdh:!text-sm px-6 py-2 text-start leading-snug">
         <div class="flex items-center mb-2 mt-0 text-[var(--infl0-article-front-fg-dim)]">
           <TypeIcon :type="article.source_type" class="shadow-md tooltip" :data-tip="article.source_type" />
           <FreshnessIndicator
@@ -225,11 +227,15 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
     <div class="article-detail rounded-xl bg-back relative shadow-inner transition-all text-[var(--infl0-article-back-fg)]">
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
         <!-- Title -->
-        <h1 class="w-full text-end text-sm smh:text-md mdh:text-lg font-bold mb-4 tracking-tighter">{{
+        <h1
+          class="w-full text-end !text-sm mdh:!text-lg font-bold mb-4 tracking-tighter"
+        >{{
           article.title }}
         </h1>
         <!-- Detailed Summary -->
-        <p class="summary flex-1 content-center text-sm smh:text-md mdh:text-lg mb-6 overflow-y-auto text-[var(--infl0-article-back-fg-dim)]">
+        <p
+          class="summary mt-0 mb-6 flex-1 content-center !text-sm mdh:!text-lg overflow-y-auto text-[var(--infl0-article-back-fg-dim)]"
+        >
           {{ article.summary_long }}
         </p>
         <p class="m-0 w-full text-end text-xs mdh:text-sm">
@@ -247,8 +253,8 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
           </a>
         </p>
       </div>
-      <!-- Meta Information -->
-      <div class="meta text-xs smh:text-sm mdh:text-lg max-h-1/5 h-1/5 w-full px-6 py-2 text-start">
+      <!-- Meta: same compact scale as front (see front block comment). -->
+      <div class="meta max-h-1/5 h-1/5 w-full !text-xs smh:!text-sm mdh:!text-sm px-6 py-2 text-start leading-snug">
         <div class="flex items-center mb-1 mt-0 text-[var(--infl0-article-back-fg-mute)]">
           <TypeIcon
 :type="article.source_type" class="me-1 mdh:me-3 shadow-md tooltip"
@@ -279,7 +285,9 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
       @close="onDialogClose"
       @cancel="onDialogClose"
     >
-      <div class="modal-box max-w-[100vw] w-[640px] bg-white text-black">
+      <div
+        class="modal-box max-w-[100vw] w-[640px] border border-[var(--infl0-surface-reader-border)] bg-[var(--infl0-surface-reader-bg)] text-[var(--infl0-surface-reader-text)]"
+      >
         <form method="dialog" class="mb-2 flex justify-end">
           <button class="btn btn-sm btn-circle btn-ghost">✕</button>
         </form>
@@ -291,17 +299,17 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
           <!-- eslint-disable vue/no-v-html -- Markdown sanitized with DOMPurify -->
           <div
             v-else-if="modalVisible && article.rawMarkdown && renderedRawMarkdown"
-            class="article-markdown prose prose-neutral prose-sm sm:prose-base max-w-none text-gray-900 prose-headings:font-semibold prose-a:text-blue-700 prose-pre:rounded-lg prose-pre:bg-gray-100 prose-code:text-pink-900 prose-code:bg-pink-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded"
+            class="article-markdown prose prose-sm sm:prose-base max-w-none text-[var(--infl0-surface-reader-text)] prose-headings:font-semibold prose-headings:text-[var(--infl0-surface-reader-text)] prose-p:text-[var(--infl0-surface-reader-text)] prose-li:marker:text-[var(--infl0-reader-prose-muted)] prose-a:text-[var(--infl0-reader-link)] prose-pre:rounded-lg prose-pre:bg-[var(--infl0-reader-code-bg)] prose-pre:text-[var(--infl0-reader-code-fg)] prose-code:text-[var(--infl0-reader-code-fg)] prose-code:bg-[var(--infl0-reader-code-bg)] prose-code:px-1 prose-code:py-0.5 prose-code:rounded"
             v-html="renderedRawMarkdown"
           />
           <!-- eslint-enable vue/no-v-html -->
           <pre
             v-else-if="modalVisible && article.rawMarkdown"
-            class="whitespace-pre-wrap break-words text-sm text-gray-900 font-sans"
+            class="whitespace-pre-wrap break-words font-sans text-sm text-[var(--infl0-surface-reader-text)]"
             >{{ article.rawMarkdown }}</pre
           >
         </div>
-        <p class="mt-3 text-xs text-gray-500 select-none">
+        <p class="mt-3 select-none text-xs text-[var(--infl0-reader-prose-muted)]">
           {{ t('article.modalKeyboardHint') }}
         </p>
       </div>
@@ -433,12 +441,14 @@ TypeIcon {
   position: absolute;
   bottom: 1rem;
   right: 1rem;
+  color: var(--infl0-article-front-fg-mute);
 }
 
 .action-flip-back {
   position: absolute;
   bottom: 1rem;
   left: 1rem;
+  color: var(--infl0-article-back-fg-mute);
 }
 
 @media (prefers-reduced-motion: reduce) {

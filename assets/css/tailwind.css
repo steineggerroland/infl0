@@ -185,193 +185,14 @@ html[data-motion='reduced'] dialog.modal::backdrop {
 }
 
 /*
- * Readability theme tokens.
+ * Readability theme: all `--infl0-*` values are set on `<html style="...">` from
+ * `app.vue` + `buildThemeHtmlStyle` — six source colours (primary / secondary /
+ * reader) per preset or custom, see `utils/infl0-theme-derive.ts`. No
+ * duplicate palette blocks here (SSR + client share one pipeline).
  *
- * `data-infl0-theme` on `<html>` (from `app.vue` + `useUiPrefs()`) selects the
- * preset. Shell components, settings, auth, help and the timeline card
- * consume these variables — no separate “theme” and “untreated” surfaces.
- *
- * Surface vocabulary:
- *   --infl0-app-bg                 page canvas behind content
- *   --infl0-canvas-fg(-muted)      text sitting directly on the canvas
- *   --infl0-panel-*                settings / empty-state panels (light in calm)
- *   --infl0-card-grad-a|b, --infl0-card-back   ArticleView flip card
- *   --infl0-article-*-fg*          body text on card faces (separate from UI)
- *   --infl0-raised-*               help centre document cards on the canvas
- *   --infl0-surface-*              settings preview + future reader migration
+ * Vocabulary: --infl0-app-bg, --infl0-canvas-*, --infl0-panel-*, --infl0-card-*,
+ * --infl0-chrome-*, --infl0-raised-*, help, footer, fields.
  */
-:root,
-html[data-infl0-theme='calm-light'],
-html[data-infl0-theme='custom'] {
-  /* Light, calm page chrome (not mid-gray-400). */
-  --infl0-app-bg: #e5e7eb;
-  --infl0-surface-front-bg: #eff6ff;
-  --infl0-surface-front-text: #0f172a;
-  --infl0-surface-front-border: #93c5fd;
-  --infl0-surface-back-bg: #f1f5f9;
-  --infl0-surface-back-text: #1e293b;
-  --infl0-surface-back-border: #cbd5e1;
-  --infl0-surface-reader-bg: #ffffff;
-  --infl0-surface-reader-text: #1f2937;
-  --infl0-surface-reader-border: #e2e8f0;
-  --infl0-canvas-fg: #111827;
-  /* Body copy on --infl0-app-bg */
-  --infl0-canvas-fg-muted: #4b5563;
-  /* Timeline card front: pastel sky / blue (readable with dark type) */
-  --infl0-card-grad-a: #e0f2fe;
-  --infl0-card-grad-b: #bfdbfe;
-  --infl0-card-back: #e2e8f0;
-  --infl0-article-front-fg: #0f172a;
-  --infl0-article-front-fg-dim: #334155;
-  --infl0-article-front-fg-mute: #64748b;
-  --infl0-article-back-fg: #1e293b;
-  --infl0-article-back-fg-dim: #475569;
-  --infl0-article-back-fg-mute: #64748b;
-  /* Settings / empty-state panels: light “tiles”, not dark gray-900 */
-  --infl0-panel-bg: #ffffff;
-  --infl0-panel-border: #e2e8f0;
-  --infl0-panel-text: #111827;
-  --infl0-panel-text-muted: #64748b;
-  --infl0-section-label: #64748b;
-  --infl0-nested-surface: #f1f5f9;
-  --infl0-formula-pre-fg: #047857;
-  --infl0-footer-separator: #9ca3af;
-  --infl0-footer-fg: #374151;
-  --infl0-footer-link: #111827;
-  --infl0-footer-link-hover-bg: rgba(148, 163, 184, 0.35);
-  --infl0-field-bg: #ffffff;
-  --infl0-field-border: #cbd5e1;
-  --infl0-surface-dim: rgba(241, 245, 249, 0.95);
-  --infl0-control-sel-border: #93c5fd;
-  --infl0-control-sel-bg: rgba(59, 130, 246, 0.12);
-  /* Menu & locale: light cards */
-  --infl0-chrome-surface: #ffffff;
-  --infl0-chrome-border: #e2e8f0;
-  --infl0-chrome-fg: #111827;
-  --infl0-chrome-fg-subtle: #64748b;
-  --infl0-chrome-link-hover: #f1f5f9;
-  --infl0-chrome-field-bg: #ffffff;
-  --infl0-chrome-field-border: #cbd5e1;
-  --infl0-raised-bg: #ffffff;
-  --infl0-raised-fg: #111827;
-  --infl0-raised-fg-muted: #374151;
-  --infl0-raised-border: #e5e7eb;
-  --infl0-help-nested-bg: #f9fafb;
-  --infl0-help-header-bg: #ffffff;
-  --infl0-help-header-border: #e5e7eb;
-  --infl0-help-back-link: #374151;
-}
-html[data-infl0-theme='warm-dark'] {
-  --infl0-app-bg: #0f0f0f;
-  --infl0-surface-front-bg: #0f172a;
-  --infl0-surface-front-text: #f3f4f6;
-  --infl0-surface-front-border: #1e3a8a;
-  --infl0-surface-back-bg: #1a202c;
-  --infl0-surface-back-text: #d1d5db;
-  --infl0-surface-back-border: #374151;
-  --infl0-surface-reader-bg: #1a202c;
-  --infl0-surface-reader-text: #d1d5db;
-  --infl0-surface-reader-border: #374151;
-  --infl0-canvas-fg: #f3f4f6;
-  --infl0-canvas-fg-muted: #9ca3af;
-  --infl0-card-grad-a: #1e3a8a;
-  --infl0-card-grad-b: #0f172a;
-  --infl0-card-back: #1a202c;
-  --infl0-article-front-fg: #f3f4f6;
-  --infl0-article-front-fg-dim: #e5e7eb;
-  --infl0-article-front-fg-mute: #9ca3af;
-  --infl0-article-back-fg: #e5e7eb;
-  --infl0-article-back-fg-dim: #d1d5db;
-  --infl0-article-back-fg-mute: #9ca3af;
-  --infl0-panel-bg: #1a202c;
-  --infl0-panel-border: #374151;
-  --infl0-panel-text: #e5e7eb;
-  --infl0-panel-text-muted: #9ca3af;
-  --infl0-section-label: #9ca3af;
-  --infl0-nested-surface: #030712;
-  --infl0-formula-pre-fg: rgba(16, 185, 129, 0.95);
-  --infl0-footer-separator: rgba(75, 85, 99, 0.8);
-  --infl0-footer-fg: #d1d5db;
-  --infl0-footer-link: #f9fafb;
-  --infl0-footer-link-hover-bg: rgba(55, 65, 81, 0.45);
-  --infl0-field-bg: #1f2937;
-  --infl0-field-border: #4b5563;
-  --infl0-surface-dim: rgba(0, 0, 0, 0.35);
-  --infl0-control-sel-border: #4b5563;
-  --infl0-control-sel-bg: rgba(31, 41, 55, 0.6);
-  --infl0-chrome-surface: #0a0a0a;
-  --infl0-chrome-border: #4b5563;
-  --infl0-chrome-fg: #e5e7eb;
-  --infl0-chrome-fg-subtle: #9ca3af;
-  --infl0-chrome-link-hover: #1f2937;
-  --infl0-chrome-field-bg: #1f2937;
-  --infl0-chrome-field-border: #4b5563;
-  --infl0-raised-bg: #1a202c;
-  --infl0-raised-fg: #e5e7eb;
-  --infl0-raised-fg-muted: #9ca3af;
-  --infl0-raised-border: #374151;
-  --infl0-help-nested-bg: #111827;
-  --infl0-help-header-bg: #0f0f0f;
-  --infl0-help-header-border: #374151;
-  --infl0-help-back-link: #9ca3af;
-}
-html[data-infl0-theme='high-contrast'] {
-  --infl0-app-bg: #000000;
-  --infl0-surface-front-bg: #ffffff;
-  --infl0-surface-front-text: #000000;
-  --infl0-surface-front-border: #000000;
-  --infl0-surface-back-bg: #000000;
-  --infl0-surface-back-text: #ffffff;
-  --infl0-surface-back-border: #ffffff;
-  --infl0-surface-reader-bg: #ffffff;
-  --infl0-surface-reader-text: #000000;
-  --infl0-surface-reader-border: #000000;
-  --infl0-canvas-fg: #ffffff;
-  /* ≥4.5:1 on #000; still clearly “secondary” to white headings */
-  --infl0-canvas-fg-muted: #e5e5e5;
-  --infl0-card-grad-a: #ffffff;
-  --infl0-card-grad-b: #d4d4d4;
-  --infl0-card-back: #000000;
-  --infl0-article-front-fg: #000000;
-  --infl0-article-front-fg-dim: #171717;
-  --infl0-article-front-fg-mute: #404040;
-  --infl0-article-back-fg: #ffffff;
-  --infl0-article-back-fg-dim: #d4d4d4;
-  --infl0-article-back-fg-mute: #a3a3a3;
-  --infl0-panel-bg: #ffffff;
-  --infl0-panel-border: #000000;
-  --infl0-panel-text: #000000;
-  --infl0-panel-text-muted: #262626;
-  --infl0-section-label: #000000;
-  --infl0-nested-surface: #e5e5e5;
-  --infl0-formula-pre-fg: #0f766e;
-  --infl0-footer-separator: #ffffff;
-  --infl0-footer-fg: #ffffff;
-  --infl0-footer-link: #ffffff;
-  --infl0-footer-link-hover-bg: #404040;
-  --infl0-field-bg: #ffffff;
-  --infl0-field-border: #000000;
-  --infl0-surface-dim: #404040;
-  --infl0-control-sel-border: #000000;
-  /* Selected theme/motion row: must not look like “disabled” light grey on white */
-  --infl0-control-sel-bg: #9ca3af;
-  --infl0-chrome-surface: #000000;
-  --infl0-chrome-border: #ffffff;
-  --infl0-chrome-fg: #ffffff;
-  --infl0-chrome-fg-subtle: #a3a3a3;
-  --infl0-chrome-link-hover: #404040;
-  --infl0-chrome-field-bg: #000000;
-  --infl0-chrome-field-border: #ffffff;
-  --infl0-raised-bg: #ffffff;
-  --infl0-raised-fg: #000000;
-  --infl0-raised-fg-muted: #262626;
-  --infl0-raised-border: #000000;
-  --infl0-help-nested-bg: #e5e5e5;
-  --infl0-help-header-bg: #000000;
-  --infl0-help-header-border: #ffffff;
-  --infl0-help-back-link: #e5e5e5;
-}
-
 html {
   background-color: var(--infl0-app-bg);
 }
@@ -394,13 +215,11 @@ body {
 }
 
 /*
- * High-contrast + Settings: Daisy’s `radio-primary` follows the product
- * primary (purple). Pin radios on white panels to a monochrome accent.
- * `accent-color` is supported where Daisy still uses native form controls.
+ * Settings radios: use derived panel text, not Daisy’s product purple.
  */
-html[data-infl0-theme='high-contrast'] .infl0-panel [type='radio'] {
-  accent-color: #000;
-  border-color: #000;
+.infl0-panel [type='radio'] {
+  accent-color: var(--infl0-radio-accent);
+  border-color: var(--infl0-panel-border);
 }
 
 @layer components {
@@ -415,6 +234,12 @@ html[data-infl0-theme='high-contrast'] .infl0-panel [type='radio'] {
   }
   .infl0-canvas-muted {
     color: var(--infl0-canvas-fg-muted);
+  }
+  .infl0-delta-positive {
+    color: var(--infl0-delta-positive-fg);
+  }
+  .infl0-delta-negative {
+    color: var(--infl0-delta-negative-fg);
   }
   .infl0-panel {
     @apply rounded-xl border shadow-xl;

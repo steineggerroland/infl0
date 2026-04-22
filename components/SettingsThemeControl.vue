@@ -6,13 +6,10 @@
  * `<fieldset>` with `<legend>`, native radios, behavioural updates
  * through `useUiPrefs().update({ theme })`.
  *
- * `custom` is intentionally listed as an option even though the
- * per-surface color pickers are still on their way. Picking it today
- * just persists the choice (so the user's intent survives hydration
- * and device switches) and shows an explainer under the label. When
- * the custom-colors slice lands, the same radio starts driving the
- * real color-picker UI without this component having to change.
+ * Choosing `custom` shows `SettingsCustomThemeColors` for
+ * per-surface hex colors, mapped to `--infl0-*` on `<html>`.
  */
+import SettingsCustomThemeColors from '~/components/SettingsCustomThemeColors.vue'
 import { THEME_PRESET_IDS, type ThemeChoice } from '~/utils/ui-prefs'
 
 const { t } = useI18n()
@@ -66,4 +63,5 @@ function onSelect(choice: ThemeChoice) {
       </label>
     </div>
   </fieldset>
+  <SettingsCustomThemeColors />
 </template>

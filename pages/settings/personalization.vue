@@ -71,16 +71,16 @@ function rankDelta(row: { rankScore: number | null; rankScoreFromFactors: number
 // `docs/CONTENT_AND_A11Y.md` (Colour & contrast).
 function deltaClass(delta: number | null) {
   const dir = scoreDirection(delta)
-  if (dir === 'positive') return 'text-emerald-300/95'
-  if (dir === 'negative') return 'text-amber-300/95'
+  if (dir === 'positive') return 'infl0-delta-positive'
+  if (dir === 'negative') return 'infl0-delta-negative'
   if (dir === 'neutral') return 'infl0-panel-muted'
   return 'infl0-panel-muted'
 }
 
 function contributionClass(contribution: number) {
   const dir = scoreDirection(contribution)
-  if (dir === 'positive') return 'text-emerald-300/90'
-  if (dir === 'negative') return 'text-amber-300/90'
+  if (dir === 'positive') return 'infl0-delta-positive'
+  if (dir === 'negative') return 'infl0-delta-negative'
   return 'infl0-panel-muted'
 }
 
@@ -161,7 +161,7 @@ function directionLabel(value: number | null | undefined) {
                   </p>
                 </div>
                 <div class="shrink-0 text-end">
-                  <div class="font-mono text-sm text-emerald-300/95">
+                  <div class="font-mono text-sm text-[var(--infl0-panel-text)]">
                     {{ row.rankScore != null ? fmt(row.rankScore, 4) : '—' }}
                   </div>
                   <div class="infl0-panel-muted text-[0.65rem]">
@@ -179,7 +179,7 @@ function directionLabel(value: number | null | undefined) {
                     <h3 class="infl0-panel-muted mb-1 text-xs font-semibold uppercase">
                       {{ $t('settingsPersonalization.rankStored') }}
                     </h3>
-                    <p class="font-mono text-lg text-emerald-300/95">
+                    <p class="font-mono text-lg text-[var(--infl0-panel-text)]">
                       {{ row.rankScore != null ? fmt(row.rankScore, 4) : '—' }}
                     </p>
                   </div>
@@ -187,7 +187,7 @@ function directionLabel(value: number | null | undefined) {
                     <h3 class="infl0-panel-muted mb-1 text-xs font-semibold uppercase">
                       {{ $t('settingsPersonalization.rankLive') }}
                     </h3>
-                    <p class="font-mono text-lg text-emerald-300/95">
+                    <p class="font-mono text-lg text-[var(--infl0-panel-text)]">
                       {{ fmt(row.rankScoreFromFactors, 4) }}
                     </p>
                   </div>

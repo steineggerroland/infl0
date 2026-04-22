@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { buildThemeHtmlStyle } from '~/utils/infl0-theme-derive'
+
 // Keep `<html lang>` (and hreflang/meta) aligned with the active i18n locale
 // (`de-DE` / `en-US` from `nuxt.config` locales), not a static default.
 const i18nHead = useLocaleHead({
@@ -11,7 +13,7 @@ const i18nHead = useLocaleHead({
  * Reflect the user's UI preferences on `<html>` as `data-*` attributes.
  * CSS hooks onto these attributes to honour `motion: reduced|standard`
  * regardless of the OS `prefers-reduced-motion` setting, and (future)
- * `data-infl0-theme` carries our four presets. We intentionally do NOT
+ * `data-infl0-theme` names the product preset (incl. custom). We intentionally do NOT
  * use `data-theme` on `<html>` — DaisyUI also binds that attribute to
  * its own colour schemes; sharing it caused a white `body` while our
  * CSS variables still assumed a dark “canvas” in high-contrast.
@@ -24,24 +26,32 @@ const i18nHead = useLocaleHead({
  */
 const { prefs: uiPrefs } = useUiPrefs()
 
-useHead(() => ({
-  htmlAttrs: {
-    ...(i18nHead.value.htmlAttrs ?? {}),
-    'data-motion': uiPrefs.value.motion,
-    /** Our four readability presets (CSS in `assets/css/tailwind.css`). */
-    'data-infl0-theme': uiPrefs.value.theme,
-    /**
-     * Keep DaisyUI on a well-known built-in skin. We used to store *our*
-     * preset name in `data-theme`, which is also Daisy’s theme switcher —
-     * `high-contrast` / `calm-light` are not valid Daisy theme ids and the
-     * whole document fell back to a light body while our tokens still
-     * described a different canvas. `data-infl0-theme` is the real hook.
-     */
-    'data-theme': 'light',
-  },
-  link: i18nHead.value.link ?? [],
-  meta: i18nHead.value.meta ?? [],
-}))
+useHead(() => {
+  const tokenStyle = buildThemeHtmlStyle(uiPrefs.value)
+  return {
+    htmlAttrs: {
+      ...(i18nHead.value.htmlAttrs ?? {}),
+      'data-motion': uiPrefs.value.motion,
+      /**
+       * Preset id for Daisy-free hooks; all `--infl0-*` colours come from
+       * `buildThemeHtmlStyle` (six source colours → full token set).
+       */
+      'data-infl0-theme': uiPrefs.value.theme,
+      /**
+       * Keep DaisyUI on a well-known built-in skin. We used to store *our*
+       * preset name in `data-theme`, which is also Daisy’s theme switcher —
+       * `high-contrast` / `calm-light` are not valid Daisy theme ids and the
+       * whole document fell back to a light body while our tokens still
+       * described a different canvas. `data-infl0-theme` is the real hook.
+       */
+      'data-theme': 'light',
+      /** Always set: derived from primary / secondary / reader sources (`utils/infl0-theme-derive.ts`). */
+      style: tokenStyle,
+    },
+    link: i18nHead.value.link ?? [],
+    meta: i18nHead.value.meta ?? [],
+  }
+})
 </script>
 
 <template>

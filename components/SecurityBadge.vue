@@ -35,7 +35,9 @@ const readMore = computed(() => t(`${props.i18nPrefix}.readMore`))
 </script>
 
 <template>
-    <div class="security-badge inline-flex items-center gap-2 rounded-full border border-emerald-700/60 bg-emerald-950/40 px-3 py-1.5 text-xs text-emerald-200">
+    <div
+        class="security-badge inline-flex items-center gap-2 rounded-full border border-[var(--infl0-semantic-trust-border)] bg-[var(--infl0-semantic-trust-bg)] px-3 py-1.5 text-xs text-[var(--infl0-semantic-trust-fg)]"
+    >
         <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -54,12 +56,12 @@ const readMore = computed(() => t(`${props.i18nPrefix}.readMore`))
         <InfoPopover
             :trigger-label="label"
             :align="align"
-            trigger-class="text-emerald-300 hover:text-emerald-200"
+            trigger-class="text-[var(--infl0-semantic-trust-link)] hover:text-[var(--infl0-semantic-trust-link-hover)]"
         >
-            <p class="mb-3 leading-relaxed text-gray-100">{{ details }}</p>
+            <p class="mb-3 leading-relaxed text-[var(--infl0-panel-text)]">{{ details }}</p>
             <NuxtLink
                 :to="`/help#${helpAnchor}`"
-                class="inline-flex items-center gap-1 text-sm text-emerald-300 underline-offset-2 hover:underline"
+                class="inline-flex items-center gap-1 text-sm text-[var(--infl0-semantic-trust-link)] underline-offset-2 hover:text-[var(--infl0-semantic-trust-link-hover)] hover:underline"
             >
                 {{ readMore }}
                 <span aria-hidden="true">→</span>

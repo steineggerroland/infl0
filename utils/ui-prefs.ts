@@ -123,6 +123,11 @@ function isFontFamilyId(v: unknown): v is FontFamilyId {
 
 function isThemeChoice(v: unknown): v is ThemeChoice {
   if (v === 'custom') return true
+  return isThemePresetId(v)
+}
+
+/** `true` for built-in palette ids only (not `'custom'`). */
+export function isThemePresetId(v: unknown): v is ThemePresetId {
   return typeof v === 'string' && (THEME_PRESET_IDS as readonly string[]).includes(v)
 }
 

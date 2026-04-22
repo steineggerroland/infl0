@@ -22,7 +22,7 @@
  * Colour is the decorative fourth layer and stays at the call
  * site (via a `:class` on the wrapping element), so the same
  * component can be themed emerald/amber on the personalization
- * page, teal/orange on a timeline card, etc.
+ * page, or with `infl0-delta-*` tokens on settings, etc.
  */
 import { computed } from 'vue'
 import { scoreDirection, scoreGlyph } from '~/utils/score-indicator'

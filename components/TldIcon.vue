@@ -1,38 +1,27 @@
 <script setup lang="ts">
-const props = defineProps({
-  tld: {
-    type: String,
-    required: true,
-  },
-})
+import { sanitizeNameIconInitials } from '~/utils/name-icon-initials'
+
+const props = defineProps<{
+  tld: string
+}>()
+
 const shortHand = computed(() => {
-  const domain: string = props.tld.split('.')[0]
-  return domain
-    .split('-')
-    .map((word) => word.slice(0, 1))
-    .join('')
-    .concat(domain.slice(1, 2))
-    .slice(0, 2)
-    .toUpperCase()
-    .replace(/S[S|A]/g, 'SZ')
+  const domain = props.tld.split('.')[0] ?? ''
+  return sanitizeNameIconInitials(
+    domain
+      .split('-')
+      .map((word) => word.slice(0, 1))
+      .join('')
+      .concat(domain.slice(1, 2))
+      .slice(0, 2)
+      .toUpperCase(),
+  )
 })
 </script>
 
 <template>
-    <span class="inline-flex justify-center align-middle h-[1em] w-[1em]">
-        <svg
-class="inline-block h-full w-full" xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1080" height="1080" viewBox="0 0 1080 1080"
-            xml:space="preserve">
-            <g id="089b5f6c-d4b4-4f37-9f72-9a6c5131f81d" transform="matrix(8.38 0 0 8.38 540 540)" style="">
-                <text
-xml:space="preserve" font-family="monospace" font-size="100" font-style="normal" font-weight="900"
-                    style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1; white-space: pre;">
-                    <tspan x="-60" y="35">{{ shortHand }}</tspan>
-                </text>
-            </g>
-        </svg>
-    </span>
+  <span
+    class="inline-flex h-[1em] w-[1em] items-center justify-center align-middle font-mono text-[0.62em] font-black leading-none text-current"
+    aria-hidden="true"
+  >{{ shortHand }}</span>
 </template>
-
-<style></style>

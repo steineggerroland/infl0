@@ -48,7 +48,7 @@
   },
   "settingsDisplay": {
     "heading": "Display",
-    "intro": "How infl0 feels for you. Font size per surface and custom colors will join in upcoming steps.",
+    "intro": "Theme and reading mode. “Custom colors” use the same three-way split as the built-in themes — everything is derived from primary, secondary and reader colors.",
     "themeLabel": "Theme",
     "themeHint": "The preview below shows the effect on the card front, card back and the full-text reader as soon as you pick a theme.",
     "themeOptions": {
@@ -66,7 +66,23 @@
       },
       "custom": {
         "label": "Custom colors",
-        "hint": "Placeholder: the color pickers for custom themes land in the next step. Until then this falls back to \"Calm & light\"."
+        "hint": "Like the built-in themes: three groups (primary, secondary, reader) — the rest is computed from them."
+      }
+    },
+    "customColors": {
+      "background": "Background",
+      "text": "Text",
+      "resetSurface": "Reset",
+      "surfaces": {
+        "card-front": {
+          "label": "Primary colors"
+        },
+        "card-back": {
+          "label": "Secondary colors"
+        },
+        "reader": {
+          "label": "Reader"
+        }
       }
     },
     "preview": {

@@ -6,5 +6,7 @@ defineProps<{
 }>()
 </script>
 <template>
-    <div class="bg-gray-300 text-black rounded py-1 px-2 w-min h-min text-center">{{ tag }}</div>
+  <div
+    class="h-min w-min rounded border border-[var(--infl0-panel-border)] bg-[var(--infl0-nested-surface)] px-2 py-1 text-center text-[var(--infl0-panel-text)]"
+  >{{ tag }}</div>
 </template>

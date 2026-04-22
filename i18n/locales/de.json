@@ -48,7 +48,7 @@
   },
   "settingsDisplay": {
     "heading": "Darstellung",
-    "intro": "Wie sich infl0 für dich anfühlt. Schriftgröße pro Bereich und eigene Farben folgen in den nächsten Schritten.",
+    "intro": "Thema und Lesemodus. „Eigene Farben“ nutzen dieselbe dreigeteilte Logik wie die Standardthemen — alles leitet sich aus Primär-, Sekundär- und Leseansicht ab.",
     "themeLabel": "Thema",
     "themeHint": "Die Vorschau unten zeigt dir sofort, wie sich deine Auswahl auf Kartenvorder- und Rückseite sowie den Volltext auswirkt.",
     "themeOptions": {
@@ -66,7 +66,23 @@
       },
       "custom": {
         "label": "Eigene Farben",
-        "hint": "Platzhalter: Die Auswahlregler für eigene Farben folgen im nächsten Schritt. Solange sie noch nicht da sind, bleibt alles wie bei „Ruhig & hell“."
+        "hint": "Wie bei den Standardthemen: drei Gruppen (Primär, Sekundär, Leseansicht), der Rest wird daraus berechnet."
+      }
+    },
+    "customColors": {
+      "background": "Hintergrund",
+      "text": "Text",
+      "resetSurface": "Zurücksetzen",
+      "surfaces": {
+        "card-front": {
+          "label": "Primärfarben"
+        },
+        "card-back": {
+          "label": "Sekundärfarben"
+        },
+        "reader": {
+          "label": "Leseansicht"
+        }
       }
     },
     "preview": {

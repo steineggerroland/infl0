@@ -48,7 +48,10 @@ function makeI18n() {
 
 function mountControl() {
   return mount(SettingsThemeControl, {
-    global: { plugins: [makeI18n()] },
+    global: {
+      plugins: [makeI18n()],
+      stubs: { SettingsCustomThemeColors: true },
+    },
   })
 }
 
@@ -80,10 +83,9 @@ describe('SettingsThemeControl', () => {
     })
   })
 
-  it('sends { theme: "custom" } even though the color pickers are not wired yet', async () => {
-    // This is the product call: committing to the intent survives the
-    // UI gap. When the color-picker UI lands it inherits the stored
-    // value and the user does not have to "re-choose custom".
+  it('sends { theme: "custom" } when the user picks own colors', async () => {
+    // Choosing custom reveals the per-surface color UI; the theme value
+    // must persist so hydration and device switches keep the intent.
     const wrapper = mountControl()
     await wrapper.get('[data-testid="theme-option-custom"]').setValue(true)
     expect(updateSpy).toHaveBeenCalledWith({ theme: 'custom' })

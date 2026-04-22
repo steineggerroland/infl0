@@ -59,7 +59,7 @@ const { t } = useI18n()
         </p>
         <NuxtLink
           to="/settings#tracking"
-          class="inline-flex min-h-11 items-center justify-center rounded-lg border border-emerald-500/60 px-4 text-sm font-semibold text-emerald-300 underline decoration-2 underline-offset-4 hover:bg-emerald-500/10"
+          class="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--infl0-semantic-trust-border)] px-4 text-sm font-semibold text-[var(--infl0-semantic-trust-link)] underline decoration-2 underline-offset-4 hover:bg-[var(--infl0-semantic-trust-bg)] hover:text-[var(--infl0-semantic-trust-link-hover)]"
           data-testid="privacy-cta-to-settings"
         >
           {{ t('settingsPrivacy.controlCta') }}

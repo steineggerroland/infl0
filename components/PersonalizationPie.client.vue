@@ -47,7 +47,7 @@ const chartOptions = computed(() => ({
       display: false,
       position: 'bottom' as const,
       labels: {
-        color: '#e5e7eb',
+        color: 'var(--infl0-panel-text-muted)',
         boxWidth: 12,
         font: { size: 11 },
       },
@@ -66,16 +66,16 @@ const chartOptions = computed(() => ({
 
 <template>
   <section class="infl0-panel p-4">
-    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+    <h2 class="infl0-section-label mb-3 text-sm font-semibold uppercase tracking-wide">
       {{ title }}
     </h2>
-    <div v-if="slices.length === 0" class="text-sm text-gray-500">
+    <div v-if="slices.length === 0" class="infl0-panel-muted text-sm">
       —
     </div>
     <div v-else class="mx-auto h-56 w-full max-w-sm">
       <Pie :data="chartData" :options="chartOptions" />
     </div>
-    <ul v-if="slices.length" class="mt-3 space-y-1 text-xs text-gray-300">
+    <ul v-if="slices.length" class="infl0-panel-muted mt-3 space-y-1 text-xs">
       <li
         v-for="(slice, idx) in slices"
         :key="slice.key"
@@ -88,7 +88,7 @@ const chartOptions = computed(() => ({
           />
           {{ labelResolver(slice) }}
         </div>
-        <div class="shrink-0 font-mono text-gray-400">
+        <div class="infl0-section-label shrink-0 font-mono">
           {{ (slice.share * 100).toFixed(1) }}% ({{ slice.weight.toFixed(3) }})
         </div>
       </li>
