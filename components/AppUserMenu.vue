@@ -42,19 +42,33 @@ const linkClass =
                             {{ t('menu.feeds') }}
                         </NuxtLink>
                     </li>
+                    <!--
+                        Settings is the one-click destination for visual +
+                        sorting + data-consent preferences. "Warum oben?"
+                        stays as its own entry because it is an explanatory
+                        read, not a setting, and "Privatsphäre" stays
+                        because it carries the storage philosophy (and
+                        eventually the legal privacy statement), not a
+                        toggle — the toggle lives inside Settings.
+                    -->
+                    <li v-if="route.path !== '/settings'">
+                        <NuxtLink to="/settings" :class="linkClass" @click="closeMenu">
+                            {{ t('menu.settings') }}
+                        </NuxtLink>
+                    </li>
                     <li v-if="route.path !== '/settings/timeline-score'">
                         <NuxtLink to="/settings/timeline-score" :class="linkClass" @click="closeMenu">
                             {{ t('menu.timelineScore') }}
                         </NuxtLink>
                     </li>
-                    <li v-if="route.path !== '/settings/privacy'">
-                        <NuxtLink to="/settings/privacy" :class="linkClass" @click="closeMenu">
-                            {{ t('menu.privacy') }}
-                        </NuxtLink>
-                    </li>
                     <li v-if="route.path !== '/settings/personalization'">
                         <NuxtLink to="/settings/personalization" :class="linkClass" @click="closeMenu">
                             {{ t('menu.personalization') }}
+                        </NuxtLink>
+                    </li>
+                    <li v-if="route.path !== '/settings/privacy'">
+                        <NuxtLink to="/settings/privacy" :class="linkClass" @click="closeMenu">
+                            {{ t('menu.privacy') }}
                         </NuxtLink>
                     </li>
                     <li v-if="route.path !== '/help'">

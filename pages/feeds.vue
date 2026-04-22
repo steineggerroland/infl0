@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
     layout: 'app',
+    appFooter: { testId: 'feeds-page-footer' },
 })
 
 type UserFeedRow = {
@@ -174,8 +175,6 @@ async function removeFeed(id: string) {
             <p v-else class="text-center text-sm text-gray-800">
                 {{ $t('feeds.emptyList') }}
             </p>
-
-            <AppFooterShortcuts test-id="feeds-page-footer" />
         </div>
     </div>
 </template>

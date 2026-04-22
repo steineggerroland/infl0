@@ -19,6 +19,7 @@
     "open": "Menu",
     "timeline": "Timeline",
     "feeds": "Manage sources",
+    "settings": "Settings",
     "timelineScore": "Adjust sorting",
     "privacy": "Privacy",
     "personalization": "Why at the top?",
@@ -37,6 +38,11 @@
   },
   "settingsCommon": {
     "footerNav": "Page shortcuts"
+  },
+  "settingsIndex": {
+    "title": "Settings",
+    "intro": "Change how infl0 looks for you and how your timeline gets sorted.",
+    "placeholder": "Work in progress. Display (theme, font size, colors, motion), sorting weights and the consent for reading-behaviour analysis will live here soon."
   },
   "settingsPersonalization": {
     "title": "Why at the top?",

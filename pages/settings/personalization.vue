@@ -4,6 +4,7 @@ import { scoreDirection } from '~/utils/score-indicator'
 
 definePageMeta({
   layout: 'app',
+  appFooter: { containerMax: '4xl', testId: 'settings-page-footer' },
 })
 
 const { t } = useI18n()
@@ -363,8 +364,6 @@ function directionLabel(value: number | null | undefined) {
           />
         </div>
       </div>
-
-      <SettingsPageFooter container-max="4xl" />
     </div>
   </div>
 </template>

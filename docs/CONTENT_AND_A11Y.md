@@ -187,9 +187,22 @@ regress any of it.
     `pages/feeds.vue`) should expose a page-level `<header>` with the `<h1>`
     and, where it helps landmark navigation, a **document-level** `<footer>`
     (implicit `contentinfo`) with a small `<nav>` of neutral shortcuts. Do
-    **not** nest that `<footer>` inside `<main>` — use a `Teleport` to `body`
-    (see `components/AppFooterShortcuts.vue`; settings use
-    `components/SettingsPageFooter.vue` as a thin wrapper).
+    **not** nest that `<footer>` inside `<main>` — instead opt into the
+    layout-owned footer via page meta:
+
+    ```ts
+    definePageMeta({
+      layout: 'app',
+      appFooter: true, // or { containerMax: '4xl', testId: 'feeds-page-footer' }
+    })
+    ```
+
+    The layout renders `components/AppFooterShortcuts.vue` as a sibling
+    of `<main>`. We intentionally do NOT use `<Teleport to="body">` here:
+    Vue 3 SSR serialises teleports to `body` *inside* `#__nuxt` at the
+    top of the tree, which caused the footer to paint above the page
+    content on reload (the post-hydration teleport move was what "fixed"
+    it after client-side navigation).
 - Lists are `<ul>/<ol>`, not stacks of `<div>`s.
 - Interactive elements are `<button>` or `<a>`, never a `<div>` with
   `@click`. The `tabindex` attribute is only for managing focus order on

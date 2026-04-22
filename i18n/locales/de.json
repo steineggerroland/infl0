@@ -19,6 +19,7 @@
     "open": "Menü",
     "timeline": "Timeline",
     "feeds": "Quellen verwalten",
+    "settings": "Einstellungen",
     "timelineScore": "Sortierung anpassen",
     "privacy": "Privatsphäre",
     "personalization": "Warum oben?",
@@ -37,6 +38,11 @@
   },
   "settingsCommon": {
     "footerNav": "Kurznavigation"
+  },
+  "settingsIndex": {
+    "title": "Einstellungen",
+    "intro": "Hier passt du an, wie infl0 für dich aussieht und wie deine Timeline sortiert wird.",
+    "placeholder": "Noch in Arbeit. Hier kommen bald Darstellung (Theme, Schriftgröße, Farben, Bewegung), die Sortierungs-Gewichte und die Zustimmung zur Leseverhalten-Auswertung zusammen."
   },
   "settingsPersonalization": {
     "title": "Warum oben?",

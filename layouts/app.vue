@@ -1,5 +1,41 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const route = useRoute()
+
+/**
+ * Pages opt into the shared "Timeline/Hilfe" footer via page meta:
+ *
+ *   definePageMeta({
+ *     layout: 'app',
+ *     appFooter: true,                                      // sensible defaults
+ *     // or: { containerMax: '4xl', testId: 'feeds-page-footer' }
+ *   })
+ *
+ * Rendering the footer HERE (as a sibling of `<main>`) — instead of
+ * teleporting it from inside the page — keeps the `<footer>` out of
+ * the main landmark AND avoids Vue 3's SSR teleport-to-body placement,
+ * which put the footer above the page content on reload.
+ */
+type FooterMeta = true | { containerMax?: 'lg' | '4xl'; testId?: string }
+
+const footerMeta = computed<FooterMeta | undefined>(() => {
+  const raw = route.meta.appFooter as unknown
+  if (raw === true) return true
+  if (raw && typeof raw === 'object') return raw as FooterMeta
+  return undefined
+})
+
+const footerContainerMax = computed<'lg' | '4xl'>(() => {
+  const m = footerMeta.value
+  if (m && typeof m === 'object' && m.containerMax) return m.containerMax
+  return 'lg'
+})
+
+const footerTestId = computed<string>(() => {
+  const m = footerMeta.value
+  if (m && typeof m === 'object' && m.testId) return m.testId
+  return 'app-footer-shortcuts'
+})
 </script>
 
 <template>
@@ -32,6 +68,17 @@ const { t } = useI18n()
         <main id="main" tabindex="-1" class="outline-none">
             <slot />
         </main>
+
+        <!--
+          Page-level `<footer>` landmark. Rendered OUTSIDE `<main>` so
+          assistive tech treats it as `contentinfo`, not as part of the
+          page's main region. Opt-in via `definePageMeta({ appFooter })`.
+        -->
+        <AppFooterShortcuts
+            v-if="footerMeta"
+            :container-max="footerContainerMax"
+            :test-id="footerTestId"
+        />
 
         <!--
           Avoid `position:fixed` inside transformed ancestors (e.g. ArticleView flip).

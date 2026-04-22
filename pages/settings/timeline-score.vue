@@ -6,6 +6,7 @@ import {
 
 definePageMeta({
   layout: 'app',
+  appFooter: { testId: 'settings-page-footer' },
 })
 
 const { t } = useI18n()
@@ -121,8 +122,6 @@ function factorHint(id: string) {
           {{ $t('settingsTimeline.reset') }}
         </button>
       </div>
-
-      <SettingsPageFooter />
     </div>
   </div>
 </template>

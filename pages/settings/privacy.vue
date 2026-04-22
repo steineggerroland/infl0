@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'app',
+  appFooter: { testId: 'settings-page-footer' },
 })
 
 const { enabled, loaded, ensureLoaded, setEnabled } = useEngagementTrackingPrefs()
@@ -53,8 +54,6 @@ async function onToggle(e: Event) {
           </span>
         </label>
       </section>
-
-      <SettingsPageFooter />
     </div>
   </div>
 </template>
