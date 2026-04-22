@@ -56,11 +56,6 @@ const linkClass =
                             {{ t('menu.settings') }}
                         </NuxtLink>
                     </li>
-                    <li v-if="route.path !== '/settings/timeline-score'">
-                        <NuxtLink to="/settings/timeline-score" :class="linkClass" @click="closeMenu">
-                            {{ t('menu.timelineScore') }}
-                        </NuxtLink>
-                    </li>
                     <li v-if="route.path !== '/settings/personalization'">
                         <NuxtLink to="/settings/personalization" :class="linkClass" @click="closeMenu">
                             {{ t('menu.personalization') }}

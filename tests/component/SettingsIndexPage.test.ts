@@ -2,12 +2,62 @@
 import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n, useI18n as vueUseI18n } from 'vue-i18n'
+import { reactive, ref } from 'vue'
 
-// `definePageMeta` is a Nuxt compiler macro; under Vitest we stub it to a
-// no-op before importing the page. `useI18n` is an auto-import in Nuxt;
-// we delegate to the real vue-i18n entry that reads the installed plugin.
+/**
+ * `/settings` is the direct-access settings surface and carries the
+ * one-click promise of the menu. The page must:
+ *   1. render a single `<h1>` ("Einstellungen")
+ *   2. expose the Sortierung section with its accessible label
+ *   3. expose the Leseverhalten section with its accessible label AND
+ *      `id="tracking"` for the deep link coming from the Privacy page
+ *   4. render the engagement tracking toggle itself (not a stub)
+ *   5. delegate the `<footer>` landmark to the layout (no inline footer)
+ *
+ * The sorting-section internals (sliders, formula, reset button) are
+ * covered by `timeline-score-prefs` unit tests and e2e; here we only
+ * confirm the section boundary so later refactors cannot silently
+ * delete it.
+ */
+
+// Nuxt auto-imports we need to reach real module code in Vitest.
 vi.stubGlobal('definePageMeta', () => {})
 vi.stubGlobal('useI18n', () => vueUseI18n())
+
+// The page composes two data-layer composables. Both would hit `$fetch`
+// without a running Nuxt runtime; stub them to their public shape.
+const stubWeights = reactive({
+  published_recency: 60,
+  inserted_recency: 40,
+  content_length: 20,
+  crawl_diversity: 0,
+  category_diversity: 0,
+  tag_diversity: 0,
+  engagement_positive: 0,
+  engagement_negative: 0,
+})
+const stubContentLengthPref = ref(0)
+const stubFormulaLines = ref('score = 0.6·pub + 0.4·ins')
+const resetWeightsSpy = vi.fn()
+
+vi.stubGlobal('useTimelineScoreWeights', () => ({
+  weights: stubWeights,
+  contentLengthPreference: stubContentLengthPref,
+  resetWeights: resetWeightsSpy,
+  formulaLines: stubFormulaLines,
+}))
+
+const trackingEnabled = ref(false)
+const trackingLoaded = ref(true)
+const ensureLoadedSpy = vi.fn().mockResolvedValue(undefined)
+const setEnabledSpy = vi.fn().mockResolvedValue(undefined)
+
+vi.stubGlobal('useEngagementTrackingPrefs', () => ({
+  enabled: trackingEnabled,
+  loaded: trackingLoaded,
+  ensureLoaded: ensureLoadedSpy,
+  setEnabled: setEnabledSpy,
+}))
 
 const SettingsIndex = (await import('../../pages/settings/index.vue')).default
 
@@ -17,7 +67,35 @@ function makeI18n() {
     settingsIndex: {
       title: 'Settings',
       intro: 'Change how infl0 looks and sorts.',
-      placeholder: 'Work in progress.',
+      trackingHeading: 'Reading-behaviour analysis',
+      trackingIntro: 'Off by default.',
+      trackingLabel: 'Use reading behaviour for sorting',
+      trackingHint: 'Articles seen for 2s+ count as read.',
+    },
+    settingsTimeline: {
+      title: 'Adjust sorting',
+      intro: 'Drag sliders to weigh signals.',
+      formulaTitle: 'Formula',
+      formulaHint: 'Only signals above 0 show.',
+      reset: 'Reset to defaults',
+      groups: { time: 'Recency', content: 'Content', mix: 'Mix', feedback: 'Feedback' },
+      contentLengthPreference: {
+        label: 'Prefer short or long?',
+        hint: 'Left short, right long.',
+        preferShorter: 'Shorter',
+        neutral: 'Either',
+        preferLonger: 'Longer',
+      },
+      factors: {
+        published_recency: { label: 'Freshness', hint: '' },
+        inserted_recency: { label: 'Timeline freshness', hint: '' },
+        content_length: { label: 'Length matters', hint: '' },
+        crawl_diversity: { label: 'Source variety', hint: '' },
+        category_diversity: { label: 'Category variety', hint: '' },
+        tag_diversity: { label: 'Tag variety', hint: '' },
+        engagement_positive: { label: 'What you enjoy', hint: '' },
+        engagement_negative: { label: 'What you skip', hint: '' },
+      },
     },
     menu: { timeline: 'Timeline', help: 'Help' },
   }
@@ -38,28 +116,40 @@ function mountPage() {
   })
 }
 
-describe('SettingsIndex page (stub)', () => {
-  it('renders a single page heading from i18n', () => {
+describe('SettingsIndex page', () => {
+  it('renders exactly one <h1>, labelled "Einstellungen"', () => {
     const wrapper = mountPage()
-    const h1 = wrapper.get('h1')
-    expect(h1.text()).toBe('Settings')
+    const h1s = wrapper.findAll('h1')
+    expect(h1s).toHaveLength(1)
+    expect(h1s[0].text()).toBe('Settings')
   })
 
-  it('announces the placeholder section politely so screen readers pick up later live updates', () => {
-    // The stub will grow into a real settings surface where save-feedback
-    // is announced in the same region. `aria-live=polite` today is what
-    // keeps that contract stable while the UI is being built.
+  it('exposes a Sortierung section with its section heading', () => {
     const wrapper = mountPage()
-    const liveRegion = wrapper.find('[aria-live="polite"]')
-    expect(liveRegion.exists()).toBe(true)
-    expect(liveRegion.text()).toContain('Work in progress.')
+    const heading = wrapper.find('#settings-sorting-heading')
+    expect(heading.exists()).toBe(true)
+    expect(heading.element.tagName.toLowerCase()).toBe('h2')
+    expect(heading.text()).toBe('Adjust sorting')
   })
 
-  it('does not render its own footer — the "Timeline/Hilfe" shortcuts come from the layout via definePageMeta({ appFooter })', () => {
-    // The page only declares its intent in page meta. The `<footer>` is
-    // rendered by `layouts/app.vue` as a sibling of `<main>`, so it stays
-    // a `contentinfo` landmark AND SSR places it after the page content
-    // (unlike the previous `<Teleport to="body">` approach).
+  it('exposes a Leseverhalten section with id="tracking" so /settings/privacy can deep-link to it', () => {
+    const wrapper = mountPage()
+    const section = wrapper.find('section#tracking')
+    expect(section.exists()).toBe(true)
+    expect(section.attributes('aria-labelledby')).toBe('settings-tracking-heading')
+    const heading = section.find('#settings-tracking-heading')
+    expect(heading.exists()).toBe(true)
+    expect(heading.element.tagName.toLowerCase()).toBe('h2')
+  })
+
+  it('renders the real engagement-tracking toggle (not a placeholder)', () => {
+    const wrapper = mountPage()
+    const toggle = wrapper.find('[data-testid="tracking-toggle"]')
+    expect(toggle.exists()).toBe(true)
+    expect((toggle.element as HTMLInputElement).type).toBe('checkbox')
+  })
+
+  it('does not render its own footer — the shortcut footer comes from the layout', () => {
     const wrapper = mountPage()
     expect(wrapper.find('footer').exists()).toBe(false)
   })

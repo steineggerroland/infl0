@@ -20,7 +20,6 @@
     "timeline": "Timeline",
     "feeds": "Manage sources",
     "settings": "Settings",
-    "timelineScore": "Adjust sorting",
     "privacy": "Privacy",
     "personalization": "Why at the top?",
     "help": "Help",
@@ -41,8 +40,11 @@
   },
   "settingsIndex": {
     "title": "Settings",
-    "intro": "Change how infl0 looks for you and how your timeline gets sorted.",
-    "placeholder": "Work in progress. Display (theme, font size, colors, motion), sorting weights and the consent for reading-behaviour analysis will live here soon."
+    "intro": "Change how infl0 looks for you and how your timeline gets sorted. Display (theme, font size, colors, motion) will join next.",
+    "trackingHeading": "Reading-behaviour analysis",
+    "trackingIntro": "Off by default. You decide whether we may use your reading behaviour for sorting. You can switch it off at any time — no new data will be stored after that.",
+    "trackingLabel": "Use reading behaviour for better sorting",
+    "trackingHint": "When on, we remember how long you look at the headline, the teaser or the longer text. Articles you look at for around two seconds or longer count as read."
   },
   "settingsPersonalization": {
     "title": "Why at the top?",
@@ -96,9 +98,12 @@
   },
   "settingsPrivacy": {
     "title": "Privacy",
-    "intro": "Off by default. You decide whether we may use your reading behavior to improve the sorting. You can turn it off again anytime — no new data will be stored after that.",
-    "trackingLabel": "Use my reading behavior to improve sorting",
-    "trackingHint": "When on, we note how long you look at the headline, teaser or longer text of each article. Articles you look at for about two seconds or more are counted as read."
+    "intro": "What we store about you and why. The control — whether we may analyse your reading behaviour — lives in Settings.",
+    "philosophyHeading": "Our storage philosophy",
+    "philosophyBody": "infl0 only stores what it needs: your sources, your sorting preferences and — only if you consent — how long you look at articles. We do not share any of this with third parties and do not use it for advertising. Once you turn the analysis off, no new data is collected.",
+    "controlHeading": "Control the analysis yourself",
+    "controlBody": "You can change whether we may analyse your reading behaviour at any time in Settings.",
+    "controlCta": "Open Settings"
   },
   "settingsTimeline": {
     "title": "Adjust sorting",

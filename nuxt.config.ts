@@ -36,6 +36,21 @@ export default defineNuxtConfig({
     timelineScoreCronSecret: '',
   },
   devtools: { enabled: true },
+  /**
+   * Compatibility redirects.
+   *
+   * `/settings/timeline-score` → `/settings#settings-sorting-heading`:
+   * the sorting controls moved into the main Settings page so they are
+   * reachable with a single click from the menu. Old bookmarks and deep
+   * links keep working without a 404. 308 is permanent + preserves
+   * method, so POSTs (unlikely but possible for future form actions)
+   * would not silently turn into GET.
+   */
+  routeRules: {
+    '/settings/timeline-score': {
+      redirect: { to: '/settings#settings-sorting-heading', statusCode: 308 },
+    },
+  },
   css: ['@/assets/css/tailwind.css'],
   postcss: {
     plugins: {

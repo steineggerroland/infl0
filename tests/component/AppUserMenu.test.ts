@@ -11,8 +11,12 @@ import { defineComponent, h, ref } from 'vue'
  * entry for direct-access preferences, alongside "Warum oben?" (an
  * explanatory read) and "Privatsphäre" (storage philosophy / legal page).
  * The settings toggles themselves live inside /settings; /settings is NOT
- * a hub of links. This test locks the *link set* a user sees, not the
- * exact markup.
+ * a hub of links. "Sortierung anpassen" deliberately has no menu entry:
+ * it lives as a section inside /settings, reached by the Einstellungen
+ * link (old deep-links to /settings/timeline-score are kept alive via a
+ * 308 redirect configured in `nuxt.config.ts`).
+ *
+ * This test locks the *link set* a user sees, not the exact markup.
  */
 
 // Nuxt auto-imports the menu component reaches for. We stub them at the
@@ -42,7 +46,6 @@ function makeI18n() {
       timeline: 'Timeline',
       feeds: 'Manage sources',
       settings: 'Settings',
-      timelineScore: 'Adjust sorting',
       personalization: 'Why at the top?',
       privacy: 'Privacy',
       help: 'Help',
@@ -84,17 +87,26 @@ describe('AppUserMenu navigation', () => {
     vi.clearAllMocks()
   })
 
-  it('surfaces Einstellungen, Warum oben?, Privatsphäre and Sortierung as flat menu entries', async () => {
+  it('surfaces Einstellungen, Warum oben? and Privatsphäre as flat menu entries', async () => {
     const wrapper = await mountMenu('/')
     const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
     expect(hrefs).toEqual(
       expect.arrayContaining([
         '/settings',
-        '/settings/timeline-score',
         '/settings/personalization',
         '/settings/privacy',
       ]),
     )
+  })
+
+  it('no longer exposes "Sortierung anpassen" as a separate menu entry — it is a section inside /settings', async () => {
+    // Keeping this as its own link would reintroduce a two-entry "settings
+    // group" for the same page and contradict the "one click to the
+    // setting" product rule. The 308 redirect for old bookmarks lives in
+    // `nuxt.config.ts`, not in the menu.
+    const wrapper = await mountMenu('/')
+    const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
+    expect(hrefs).not.toContain('/settings/timeline-score')
   })
 
   it('keeps Timeline, Manage sources and Help reachable alongside the settings entries', async () => {
@@ -104,15 +116,14 @@ describe('AppUserMenu navigation', () => {
   })
 
   it('hides only the current-route entry so the rest of the menu stays navigable', async () => {
-    // On /settings the Einstellungen link is hidden, but Warum oben? /
-    // Privatsphäre / Sortierung stay reachable — they are siblings, not
-    // children of Einstellungen.
+    // On /settings the Einstellungen link is hidden, but Warum oben? and
+    // Privatsphäre stay reachable — they are siblings, not children of
+    // Einstellungen.
     const wrapper = await mountMenu('/settings')
     const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
     expect(hrefs).not.toContain('/settings')
     expect(hrefs).toEqual(
       expect.arrayContaining([
-        '/settings/timeline-score',
         '/settings/personalization',
         '/settings/privacy',
       ]),

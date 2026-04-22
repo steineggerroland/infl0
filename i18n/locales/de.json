@@ -20,7 +20,6 @@
     "timeline": "Timeline",
     "feeds": "Quellen verwalten",
     "settings": "Einstellungen",
-    "timelineScore": "Sortierung anpassen",
     "privacy": "Privatsphäre",
     "personalization": "Warum oben?",
     "help": "Hilfe",
@@ -41,8 +40,11 @@
   },
   "settingsIndex": {
     "title": "Einstellungen",
-    "intro": "Hier passt du an, wie infl0 für dich aussieht und wie deine Timeline sortiert wird.",
-    "placeholder": "Noch in Arbeit. Hier kommen bald Darstellung (Theme, Schriftgröße, Farben, Bewegung), die Sortierungs-Gewichte und die Zustimmung zur Leseverhalten-Auswertung zusammen."
+    "intro": "Hier passt du an, wie infl0 für dich aussieht und wie deine Timeline sortiert wird. Darstellung (Theme, Schriftgröße, Farben, Bewegung) folgt im nächsten Schritt.",
+    "trackingHeading": "Leseverhalten auswerten",
+    "trackingIntro": "Standardmäßig aus. Du entscheidest, ob wir dein Leseverhalten für die Sortierung nutzen dürfen. Du kannst jederzeit wieder abschalten – dann werden keine neuen Daten mehr gespeichert.",
+    "trackingLabel": "Leseverhalten für bessere Sortierung nutzen",
+    "trackingHint": "Wenn aktiv, merken wir uns, wie lange du Überschrift, Teaser oder den längeren Text ansiehst. Artikel, die du rund zwei Sekunden oder länger betrachtest, gelten als gelesen."
   },
   "settingsPersonalization": {
     "title": "Warum oben?",
@@ -96,9 +98,12 @@
   },
   "settingsPrivacy": {
     "title": "Privatsphäre",
-    "intro": "Standardmäßig aus. Du entscheidest, ob wir dein Leseverhalten für die Sortierung nutzen dürfen. Du kannst jederzeit wieder abschalten – dann werden keine neuen Daten mehr gespeichert.",
-    "trackingLabel": "Leseverhalten für bessere Sortierung nutzen",
-    "trackingHint": "Wenn aktiv, merken wir uns, wie lange du Überschrift, Teaser oder den längeren Text ansiehst. Artikel, die du rund zwei Sekunden oder länger betrachtest, gelten als gelesen."
+    "intro": "Was wir über dich speichern und wozu. Die Steuerung – ob wir dein Leseverhalten auswerten dürfen – lebt bei den Einstellungen.",
+    "philosophyHeading": "Unsere Speicherphilosophie",
+    "philosophyBody": "infl0 speichert nur, was wir wirklich brauchen: deine Quellen, deine Sortierungs-Einstellungen und – nur wenn du zustimmst – wie lange du Artikel anschaust. Wir geben diese Daten nicht an Dritte weiter und verwenden sie nicht für Werbung. Einmal abgeschaltet, werden keine neuen Daten mehr gesammelt.",
+    "controlHeading": "Auswertung selbst steuern",
+    "controlBody": "Die Zustimmung zur Auswertung deines Leseverhaltens kannst du jederzeit in den Einstellungen ändern.",
+    "controlCta": "Zu den Einstellungen"
   },
   "settingsTimeline": {
     "title": "Sortierung anpassen",
