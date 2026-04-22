@@ -10,6 +10,28 @@ mitbedient, soweit sie unmittelbar zur Lesbarkeit gehören.
 
 Entwurf
 
+## Entscheidungen aus externem Review
+
+Ein externes Review schlug unter anderem vor, das Paket in kleinere
+Iterationen zu schneiden und „Gelesene anzeigen“ als Quick-Toggle im
+User-Menü zu belassen. Dazu dieser Stand:
+
+- **Paket-Scope bleibt.** Der Kernnutzen dieses Pakets (Live-Preview über
+  drei Surfaces, frei wählbare Farben, Motion-Setting, geräteübergreifende
+  Persistenz) hängt inhaltlich zusammen; ein weiteres Aufspalten bringt
+  mehr Umbau als Mehrwert.
+- **„Gelesene anzeigen“ zieht trotzdem in Settings um**, bekommt aber
+  einen **Tastaturkürzel** als schnellen Arbeitsmodus. Das Shortcut-Paket
+  folgt direkt im Anschluss und führt den Toggle in der kommenden
+  Shortcuts-Übersicht mit. Der User-Menü-Eintrag bleibt erhalten, bis
+  dieses Shortcut-Paket gelandet ist — so entsteht keine Lücke.
+- **Motion behält drei Werte (`system | reduced | standard`).** Default
+  ist `system`; `reduced` senkt Motion auch gegen das OS, `standard`
+  erlaubt Motion auch gegen die OS-Einstellung. Der a11y-Einwand, dass
+  `standard` die OS-Präferenz überstimmt, ist gesehen: genau deshalb ist
+  es nie der Default und wird als bewusste Nutzerentscheidung im UI
+  beschrieben, nicht als „Motion an“-Schalter.
+
 ## Ziel
 
 Nutzerinnen haben **gerätübergreifend** Kontrolle über die Darstellung, die
@@ -66,8 +88,26 @@ Pro Surface konfigurierbar:
 - `textColor`
 - `fontFamily` (ein kurzer, gut lesbarer System-Stack als Standard + eine
   kleine Auswahl)
-- `fontSize` (diskrete Stufen, z. B. `xs / sm / md / lg / xl`)
+- `fontSize` (**ganze Pixel, numerisch einstellbar pro Surface**, geklammert
+  auf einen sicheren Bereich — siehe unten)
 - `lineHeight` (diskrete Stufen, z. B. `tight / normal / relaxed`)
+
+### Schriftgröße: numerisch, pro Surface
+
+Keine `xs/sm/md/lg/xl`-Stufen. Stattdessen pflegt jede Surface ihren eigenen
+`fontSize`-Wert in ganzen **Pixeln**. Das macht die Live-Vorschau ehrlich
+(was konfiguriert ist, ist genau das, was ich sehe) und den Shortcut
+nutzbar: wenn ein Kartentext gerade nicht reinpasst, schiebe ich `card-front`
+um 1 px herunter, ohne dabei den Reader mitzuziehen.
+
+- Einheit: **px** (kanonisch im Storage; das UI darf zusätzlich eine
+  pt-Anzeige anbieten, 1 pt ≈ 1.333 px bei 96 dpi).
+- Wertebereich: `10 px … 32 px`, ganzzahlig. Werte außerhalb werden beim
+  Parse/Patch geklammert, non-finite Werte auf den aktuellen bzw.
+  Default-Wert zurückgesetzt.
+- Defaults: `card-front` und `card-back` = `16 px`, `reader` = `18 px`.
+- Eingabe im UI: Slider **und** nummerisches Eingabefeld pro Surface,
+  damit Tastatur- und Mausnutzerinnen denselben Komfort haben.
 
 Themes sind **Presets** dieser Werte für alle drei Surfaces gleichzeitig
 (z. B. „Hell ruhig“, „Dunkel warm“, „Kontrastreich“).
@@ -124,24 +164,42 @@ um**. Begründung: Es ist eine persistente Darstellungspräferenz, keine
 einmalige Aktion, und gehört zu anderen „so will ich meine Timeline
 sehen“-Einstellungen.
 
+Externes Feedback merkte zu Recht an, dass „Gelesene anzeigen“ heute auch
+als **schneller Arbeitsmodus** in der Timeline fungiert und der Wegfall aus
+dem User-Menü deshalb ein Rückschritt ist, wenn kein gleichwertig schneller
+Zugriff existiert. Entschärfung:
+
+- „Gelesene anzeigen“ bekommt ein **Tastaturkürzel**, das jederzeit auf der
+  Timeline greift (kein Navigieren in Settings, kein Menü aufklappen nötig).
+- Der konkrete Bind und die Umsetzung gehören in das **Shortcuts-Paket
+  direkt im Anschluss** an dieses Paket. Hier wird nur das Erfordernis
+  festgehalten; die Shortcuts-Übersicht soll den Toggle mitführen.
+- Bis dieses Shortcut-Paket gelandet ist, bleibt der bisherige Quick-Toggle
+  im User-Menü bestehen. Er verschwindet **gleichzeitig** mit dem Landen des
+  Shortcuts, nicht vorher. Damit gibt es keine Lücke im Arbeitsmodus der
+  Stammnutzerinnen.
+
 Migrationsplan:
 
 - `useTimelinePreferences` bleibt als Composable erhalten.
 - `localStorage`-Key bleibt (Kompatibilität), zusätzlich wird der Wert
   in `useUiPrefs()` serverseitig gespiegelt, sobald die UI-Prefs-API
   existiert.
-- Das Toggle im User-Menü entfällt oder wird in einen kleinen „zu den
-  Einstellungen“-Link umgewandelt, damit Stammnutzerinnen nicht im Leeren
-  suchen.
+- Wenn der User-Menü-Eintrag wegfällt, bleibt als Fallback ein kleiner
+  „zu den Einstellungen“-Link, damit Nutzerinnen, die das Toggle kennen,
+  nicht im Leeren suchen. Mit gelandetem Shortcut ist das aber nur noch
+  eine Entdeckungshilfe, nicht der primäre Weg.
 
 ## Tastaturkürzel
 
-- Schriftgröße erhöhen: `=` / `+`
-- Schriftgröße verkleinern: `-`
-- Standardgröße wiederherstellen: `0`
+- Schriftgröße erhöhen: `=` / `+` (**+1 px**)
+- Schriftgröße verkleinern: `-` (**-1 px**)
+- Standardgröße wiederherstellen: `0` (Surface-Default: 16 bzw. 18 px)
 - Zielen auf die **aktuell sichtbare Surface** (Timeline → Kartenvorderseite;
   Volltext offen → Reader). Rückseite wird nur in Settings verändert, dort
   aber mit Live-Preview.
+- An den Klammergrenzen (10 px / 32 px) wird kein Fehler angezeigt; der
+  Shortcut ist dann schlicht wirkungslos.
 - Alle Kürzel gehorchen der bestehenden `defineShortcuts`-Hygiene (kein
   Auslösen bei Fokus in Eingabefeldern, kein Chord mit Cmd/Ctrl/Alt).
 
@@ -173,7 +231,7 @@ Migrationsplan:
       "backgroundColor": "#1f2937",
       "textColor": "#e5e7eb",
       "fontFamily": "system-ui",
-      "fontSize": "md",
+      "fontSize": 16,
       "lineHeight": "normal"
     },
     "card-back": { "…": "…" },

@@ -23,6 +23,8 @@ model User {
   updatedAt    DateTime @updatedAt @map("updated_at")
   /// JSON: { v, weights, contentLengthPreference } — timeline ranking sliders (see utils/timeline-score-factors).
   timelineScorePrefs Json? @map("timeline_score_prefs")
+  /// JSON: { v, theme, motion, surfaces, seenFeatureAnnouncements } — readability / theme / motion (see utils/ui-prefs).
+  uiPrefs Json? @map("ui_prefs")
   /// When false, the app does not record article engagement (dwell) events.
   engagementTrackingEnabled Boolean @default(false) @map("engagement_tracking_enabled")
 
