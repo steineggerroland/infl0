@@ -115,12 +115,17 @@ function mountPage() {
           props: ['to'],
           template: '<a :href="to"><slot /></a>',
         },
-        // The Motion control has its own component test; here we only
-        // care that the Darstellung section renders around a mount
-        // point for it. Stubbing avoids pulling in `useUiPrefs` from
-        // that component and keeps this test framework-agnostic.
+        // The Darstellung children have their own component tests; here
+        // we only care that the section renders around mount points for
+        // them. Stubbing avoids pulling `useUiPrefs` through the tree.
         SettingsMotionControl: {
           template: '<div data-testid="motion-control-stub" />',
+        },
+        SettingsThemeControl: {
+          template: '<div data-testid="theme-control-stub" />',
+        },
+        SettingsThemePreview: {
+          template: '<div data-testid="theme-preview-stub" />',
         },
       },
     },
@@ -135,15 +140,17 @@ describe('SettingsIndex page', () => {
     expect(h1s[0].text()).toBe('Settings')
   })
 
-  it('exposes a Darstellung section with its section heading and a mount point for the motion control', () => {
+  it('exposes a Darstellung section with heading + theme picker + preview + motion control', () => {
     const wrapper = mountPage()
     const heading = wrapper.find('#settings-display-heading')
     expect(heading.exists()).toBe(true)
     expect(heading.element.tagName.toLowerCase()).toBe('h2')
     expect(heading.text()).toBe('Display')
-    // The motion control is the first concrete readability control to
-    // land in this section; later slices add theme + font size around
-    // it. Locking the mount point keeps the outline stable.
+    // Each readability control is its own component (tested in
+    // isolation). Locking the mount points here guards the section
+    // outline — adding or removing one by accident surfaces loudly.
+    expect(wrapper.find('[data-testid="theme-control-stub"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="theme-preview-stub"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="motion-control-stub"]').exists()).toBe(true)
   })
 

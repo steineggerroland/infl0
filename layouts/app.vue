@@ -39,7 +39,7 @@ const footerTestId = computed<string>(() => {
 </script>
 
 <template>
-    <div class="relative min-h-dvh">
+    <div class="relative min-h-dvh infl0-page-shell">
         <!--
           Skip link: invisible until focused. Lets keyboard and
           screen-reader users jump past the floating user menu and any

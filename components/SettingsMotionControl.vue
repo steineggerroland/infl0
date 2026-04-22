@@ -29,10 +29,10 @@ function onSelect(mode: MotionMode) {
     class="space-y-3"
     data-testid="motion-control"
   >
-    <legend class="text-sm font-medium text-gray-200">
+    <legend class="text-sm font-medium text-[var(--infl0-panel-text)]">
       {{ t('settingsDisplay.motionLabel') }}
     </legend>
-    <p class="text-xs leading-snug text-gray-500">
+    <p class="infl0-panel-muted text-xs leading-snug">
       {{ t('settingsDisplay.motionHint') }}
     </p>
     <div class="space-y-2">
@@ -45,8 +45,8 @@ function onSelect(mode: MotionMode) {
       <label
         v-for="m in MOTION_MODES"
         :key="m"
-        class="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 hover:border-gray-700"
-        :class="prefs.motion === m ? 'border-gray-700 bg-gray-800/60' : ''"
+        class="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 hover:border-[var(--infl0-control-sel-border)]"
+        :class="prefs.motion === m ? 'border-[var(--infl0-control-sel-border)] bg-[var(--infl0-control-sel-bg)]' : ''"
       >
         <input
           type="radio"
@@ -57,11 +57,11 @@ function onSelect(mode: MotionMode) {
           :data-testid="`motion-option-${m}`"
           @change="onSelect(m)"
         >
-        <span class="min-w-0">
-          <span class="block text-sm font-medium text-gray-200">{{
+        <span class="min-w-0 text-[var(--infl0-panel-text)]">
+          <span class="block text-sm font-medium">{{
             t(`settingsDisplay.motionOptions.${m}.label`)
           }}</span>
-          <span class="mt-0.5 block text-xs leading-snug text-gray-500">{{
+          <span class="infl0-panel-muted mt-0.5 block text-xs leading-snug">{{
             t(`settingsDisplay.motionOptions.${m}.hint`)
           }}</span>
         </span>

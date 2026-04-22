@@ -20,41 +20,41 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="min-h-dvh bg-gray-400 text-gray-100 pb-16 pt-16">
+  <div class="infl0-page-shell pb-16 pt-16">
     <div class="mx-auto w-full max-w-lg px-4">
-      <header class="mb-8 text-center text-gray-900">
-        <h1 class="text-2xl font-semibold">{{ t('settingsPrivacy.title') }}</h1>
-        <p class="mt-2 text-sm text-gray-800">
+      <header class="mb-8 text-center">
+        <h1 class="infl0-canvas-fg text-2xl font-semibold">{{ t('settingsPrivacy.title') }}</h1>
+        <p class="infl0-canvas-muted mt-2 text-sm">
           {{ t('settingsPrivacy.intro') }}
         </p>
       </header>
 
       <section
         aria-labelledby="privacy-philosophy-heading"
-        class="mb-6 rounded-xl border border-gray-700 bg-gray-900/95 p-5 shadow-xl"
+        class="infl0-panel mb-6 p-5"
       >
         <h2
           id="privacy-philosophy-heading"
-          class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400"
+          class="infl0-section-label mb-3 text-sm font-semibold uppercase tracking-wide"
         >
           {{ t('settingsPrivacy.philosophyHeading') }}
         </h2>
-        <p class="text-sm leading-relaxed text-gray-300">
+        <p class="text-sm leading-relaxed text-[var(--infl0-panel-text)]">
           {{ t('settingsPrivacy.philosophyBody') }}
         </p>
       </section>
 
       <section
         aria-labelledby="privacy-control-heading"
-        class="rounded-xl border border-gray-700 bg-gray-900/95 p-5 shadow-xl"
+        class="infl0-panel p-5"
       >
         <h2
           id="privacy-control-heading"
-          class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-400"
+          class="infl0-section-label mb-2 text-sm font-semibold uppercase tracking-wide"
         >
           {{ t('settingsPrivacy.controlHeading') }}
         </h2>
-        <p class="mb-4 text-sm leading-relaxed text-gray-300">
+        <p class="mb-4 text-sm leading-relaxed text-[var(--infl0-panel-text)]">
           {{ t('settingsPrivacy.controlBody') }}
         </p>
         <NuxtLink

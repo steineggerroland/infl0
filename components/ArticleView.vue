@@ -183,7 +183,7 @@ defineShortcuts({
 <template>
   <div :id="article.id" class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }">
     <!-- Front: Short Summary -->
-    <div class="article-content rounded-xl bg-front text-gray-100 relative transition-all">
+    <div class="article-content rounded-xl bg-front relative transition-all">
       <!-- Corner fold -->
       <CornerFold position="top-right" :tooltip="t('article.cornerFold')" @click="toggleDetailView" />
 
@@ -194,14 +194,14 @@ defineShortcuts({
         </h1>
         <!-- Teaser -->
         <p
-class="teaser flex-1 content-center text-lg smh:text-2xl mdh:text-4xl mb-6 text-gray-200 cursor-pointer"
+class="teaser flex-1 content-center text-lg smh:text-2xl mdh:text-4xl mb-6 cursor-pointer text-[var(--infl0-article-front-fg-dim)]"
           tabindex="0" @click="toggleDetailView">
           {{
             article.teaser }}</p>
       </div>
       <!-- Meta Information -->
       <div class="meta max-h-1/5 h-1/5 w-full text-xs smh:text-sm mdh:text-lg px-6 py-2 text-start">
-        <div class="flex items-center mb-2 mt-0 text-gray-300">
+        <div class="flex items-center mb-2 mt-0 text-[var(--infl0-article-front-fg-dim)]">
           <TypeIcon :type="article.source_type" class="shadow-md tooltip" :data-tip="article.source_type" />
           <FreshnessIndicator
 v-if="article.publishedAt" class="ms-1 mdh:ms-3 tooltip"
@@ -213,7 +213,7 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             :name="article.author"/>
           <span v-else class="ms-1 mdh:ms-3 h-[1em] w-[1em]"/>
         </div>
-        <div v-if="article.category" class="mb-2 text-gray-400">
+        <div v-if="article.category" class="mb-2 text-[var(--infl0-article-front-fg-mute)]">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
         </div>
       </div>
@@ -222,14 +222,14 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
     </div>
 
     <!-- Back: Detailed Summary -->
-    <div class="article-detail rounded-xl bg-back text-gray-200 relative shadow-inner transition-all">
+    <div class="article-detail rounded-xl bg-back relative shadow-inner transition-all text-[var(--infl0-article-back-fg)]">
       <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
         <!-- Title -->
         <h1 class="w-full text-end text-sm smh:text-md mdh:text-lg font-bold mb-4 tracking-tighter">{{
           article.title }}
         </h1>
         <!-- Detailed Summary -->
-        <p class="summary flex-1 content-center text-sm smh:text-md mdh:text-lg mb-6 text-gray-300 overflow-y-auto">
+        <p class="summary flex-1 content-center text-sm smh:text-md mdh:text-lg mb-6 overflow-y-auto text-[var(--infl0-article-back-fg-dim)]">
           {{ article.summary_long }}
         </p>
         <p class="m-0 w-full text-end text-xs mdh:text-sm">
@@ -237,33 +237,35 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             v-if="matchingPage"
             :href="article.link"
             target="_blank"
+            class="article-back-link font-bold"
             @click.prevent="showOriginalArticle"
           >
             {{ t('article.originalArticle') }}
           </a>
-          <a v-else :href="article.link" target="_blank">
+          <a v-else :href="article.link" target="_blank" class="article-back-link font-bold">
             {{ t('article.originalArticle') }}
           </a>
         </p>
       </div>
       <!-- Meta Information -->
       <div class="meta text-xs smh:text-sm mdh:text-lg max-h-1/5 h-1/5 w-full px-6 py-2 text-start">
-        <div class="flex items-center mb-1 mt-0 text-gray-400">
+        <div class="flex items-center mb-1 mt-0 text-[var(--infl0-article-back-fg-mute)]">
           <TypeIcon
 :type="article.source_type" class="me-1 mdh:me-3 shadow-md tooltip"
             :data-tip="article.source_type" />
           {{ formatDate(article.publishedAt) }}
         </div>
-        <div class="text-gray-400 mb-1 max-w-full flex flex-nowrap">
+        <div class="mb-1 max-w-full flex flex-nowrap text-[var(--infl0-article-back-fg-mute)]">
           <div class="me-1 mdh:me-3 tooltip" :data-tip="article?.tld">
             <TldIcon v-if="article?.tld" :tld="article?.tld"/>
           </div>
           <div v-if="article?.author" class="tooltip max-w-full" :data-tip="article?.author">
-            <div class="text-white me-1 mdh:me-3 truncate">{{ article?.author
-              }}</div>
+            <div class="me-1 mdh:me-3 truncate text-[var(--infl0-article-back-fg)]">{{
+              article?.author
+            }}</div>
           </div>
         </div>
-        <div v-if="article.category" class="mb-1 text-gray-400">
+        <div v-if="article.category" class="mb-1 text-[var(--infl0-article-back-fg-mute)]">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
         </div>
       </div>
@@ -329,18 +331,24 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
 </style>
 
 <style scoped>
-/* Global gradient for the front */
-.bg-front-gradient {
-  background: linear-gradient(135deg, #1e3a8a, #0f172a);
-  /* Blue gradient */
+/* Timeline card front — gradient + text colours follow `html[data-infl0-theme]`. */
+.bg-front {
+  background: linear-gradient(135deg, var(--infl0-card-grad-a), var(--infl0-card-grad-b));
+  color: var(--infl0-article-front-fg);
   transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
-/* Back: Dark and immersive */
 .bg-back {
-  background-color: #1a202c;
-  /* Dark gray slate */
+  background-color: var(--infl0-card-back);
   transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.article-back-link {
+  color: var(--infl0-article-back-fg-dim);
+  text-decoration: underline;
+}
+.article-back-link:hover {
+  color: var(--infl0-article-back-fg);
 }
 
 /* SVG Icon shadow for visibility */

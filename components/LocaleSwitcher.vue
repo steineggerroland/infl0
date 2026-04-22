@@ -59,14 +59,16 @@ onMounted(() => {
 
 <template>
   <label
-    class="flex items-center gap-2 text-sm text-gray-300"
+    class="flex items-center gap-2 text-sm text-[var(--infl0-chrome-fg)]"
     :class="menu ? 'w-full' : ''"
   >
     <span class="sr-only">{{ $t('locale.label') }}</span>
     <select
       v-model="selectedCode"
-      class="select select-bordered border-gray-500 bg-gray-900 text-gray-100 focus:border-gray-400 focus:outline-none"
-      :class="menu ? 'select-sm h-10 min-h-10 w-full max-w-none' : 'select-xs max-w-[9rem] bg-gray-800 border-gray-600 text-gray-200'"
+      class="select select-bordered text-[var(--infl0-chrome-fg)] focus:outline-none"
+      :class="[
+        menu ? 'infl0-chrome-field select-sm h-10 min-h-10 w-full max-w-none' : 'infl0-field select-xs max-w-[9rem]',
+      ]"
     >
       <option v-for="opt in options" :key="opt.code" :value="opt.code">
         {{ opt.name }}

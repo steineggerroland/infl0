@@ -328,8 +328,10 @@ Leitlinie:
 - **CSS-Variablen** pro Surface: z. B. `--front-bg`, `--front-fg`,
   `--front-font-family`, `--front-font-size-step`, `--reader-…`. Tailwind /
   DaisyUI-Klassen greifen diese Variablen statt Hardcodes.
-- **Root-Datenattribute**: `<html data-theme="…" data-motion="…"
-  data-surface-preview="card-front">` — letzteres optional für die Preview.
+- **Root-Datenattribute**: `<html data-infl0-theme="…" data-motion="…"
+  data-surface-preview="card-front">` — Preset-IDs kommen in `data-infl0-theme`
+  (DaisyUI nutzt `data-theme` separat, aktuell fest `data-theme="light"`);
+  `data-surface-preview` optional für die Preview.
 - **Composable** `useUiPrefs()` stellt reaktive Werte bereit; Setter
   aktualisieren CSS-Variablen + optimistisch den Zustand, senden dann
   `PATCH`.

@@ -30,11 +30,11 @@ const innerMaxClass = computed(() =>
   -->
   <footer
     :data-testid="testId"
-    class="app-footer-shortcuts border-t border-gray-600/80 bg-gray-400"
+    class="app-footer-shortcuts infl0-app-footer"
   >
     <div
       :class="innerMaxClass"
-      class="mx-auto mt-12 w-full px-4 pb-8 pt-8 text-gray-800"
+      class="infl0-footer-text mx-auto mt-12 w-full px-4 pb-8 pt-8"
     >
       <nav class="w-full" :aria-label="t('settingsCommon.footerNav')">
         <!--
@@ -46,7 +46,7 @@ const innerMaxClass = computed(() =>
         >
           <li class="shrink-0">
             <NuxtLink
-              class="inline-flex min-h-11 min-w-[5.5rem] items-center justify-center rounded-lg px-4 text-base font-semibold text-gray-900 underline decoration-2 underline-offset-4 hover:bg-gray-500/25 hover:text-gray-950"
+              class="infl0-footer-link inline-flex min-h-11 min-w-[5.5rem] items-center justify-center rounded-lg px-4 text-base font-semibold underline decoration-2 underline-offset-4"
               to="/"
             >
               {{ t('menu.timeline') }}
@@ -54,7 +54,7 @@ const innerMaxClass = computed(() =>
           </li>
           <li class="shrink-0">
             <NuxtLink
-              class="inline-flex min-h-11 min-w-[5.5rem] items-center justify-center rounded-lg px-4 text-base font-semibold text-gray-900 underline decoration-2 underline-offset-4 hover:bg-gray-500/25 hover:text-gray-950"
+              class="infl0-footer-link inline-flex min-h-11 min-w-[5.5rem] items-center justify-center rounded-lg px-4 text-base font-semibold underline decoration-2 underline-offset-4"
               to="/help"
             >
               {{ t('menu.help') }}

@@ -65,7 +65,7 @@ const chartOptions = computed(() => ({
 </script>
 
 <template>
-  <section class="rounded-xl border border-gray-700 bg-gray-900/95 p-4 shadow-xl">
+  <section class="infl0-panel p-4">
     <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
       {{ title }}
     </h2>

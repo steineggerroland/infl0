@@ -140,7 +140,7 @@ const alignClass = computed(() => {
             aria-modal="false"
             :aria-label="triggerLabel"
             :class="[
-                'info-popover__panel absolute top-full z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-gray-600 bg-gray-950 p-4 text-sm text-gray-100 shadow-2xl ring-1 ring-black/50',
+                'info-popover__panel infl0-chrome-panel absolute top-full z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-xl border p-4 text-sm shadow-2xl ring-1 ring-black/50',
                 alignClass,
             ]"
         >
@@ -148,7 +148,7 @@ const alignClass = computed(() => {
             <div class="mt-3 flex justify-end">
                 <button
                     type="button"
-                    class="rounded-md px-2 py-1 text-xs text-gray-300 hover:bg-gray-800 hover:text-white"
+                    class="infl0-menu-link rounded-md px-2 py-1 text-xs"
                     @click="close(true)"
                 >
                     {{ $t('common.close') }}

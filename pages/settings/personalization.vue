@@ -73,15 +73,15 @@ function deltaClass(delta: number | null) {
   const dir = scoreDirection(delta)
   if (dir === 'positive') return 'text-emerald-300/95'
   if (dir === 'negative') return 'text-amber-300/95'
-  if (dir === 'neutral') return 'text-gray-300'
-  return 'text-gray-400'
+  if (dir === 'neutral') return 'infl0-panel-muted'
+  return 'infl0-panel-muted'
 }
 
 function contributionClass(contribution: number) {
   const dir = scoreDirection(contribution)
   if (dir === 'positive') return 'text-emerald-300/90'
   if (dir === 'negative') return 'text-amber-300/90'
-  return 'text-gray-400'
+  return 'infl0-panel-muted'
 }
 
 function directionLabel(value: number | null | undefined) {
@@ -90,33 +90,33 @@ function directionLabel(value: number | null | undefined) {
 </script>
 
 <template>
-  <div class="min-h-dvh bg-gray-400 pb-24 pt-14 text-gray-100">
+  <div class="infl0-page-shell pb-24 pt-14">
     <div class="mx-auto w-full max-w-4xl px-4">
-      <header class="mb-8 text-center text-gray-900">
-        <h1 class="text-2xl font-semibold">{{ $t('settingsPersonalization.title') }}</h1>
-        <p class="mt-2 text-sm text-gray-800">
+      <header class="mb-8 text-center">
+        <h1 class="infl0-canvas-fg text-2xl font-semibold">{{ $t('settingsPersonalization.title') }}</h1>
+        <p class="infl0-canvas-muted mt-2 text-sm">
           {{ $t('settingsPersonalization.intro') }}
         </p>
-        <p v-if="data?.generatedAt" class="mt-1 text-xs text-gray-600">
+        <p v-if="data?.generatedAt" class="infl0-canvas-muted mt-1 text-xs">
           {{ $t('settingsPersonalization.generatedAt') }} {{ data.generatedAt }}
         </p>
       </header>
 
       <div v-if="pending" class="flex justify-center py-16">
-        <span class="loading loading-spinner loading-lg text-gray-800" />
+        <span class="loading loading-spinner loading-lg text-[var(--infl0-canvas-fg-muted)]" />
       </div>
 
       <div v-else-if="data" class="space-y-10">
-        <section class="rounded-xl border border-gray-700 bg-gray-900/95 p-5 shadow-xl">
-          <h2 class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-400">
+        <section class="infl0-panel p-5">
+          <h2 class="infl0-section-label mb-2 text-sm font-semibold uppercase tracking-wide">
             {{ $t('settingsPersonalization.algorithmTitle') }}
           </h2>
-          <p class="text-sm leading-relaxed text-gray-300">
+          <p class="text-sm leading-relaxed text-[var(--infl0-panel-text)]">
             {{ $t('settingsPersonalization.algorithmBody') }}
           </p>
-          <dl class="mt-4 grid gap-2 text-xs text-gray-400 sm:grid-cols-2">
+          <dl class="infl0-panel-muted mt-4 grid gap-2 text-xs sm:grid-cols-2">
             <div>
-              <dt class="font-medium text-gray-500">
+              <dt class="font-medium">
                 {{ $t('settingsPersonalization.priorLabel') }}
               </dt>
               <dd>
@@ -124,7 +124,7 @@ function directionLabel(value: number | null | undefined) {
               </dd>
             </div>
             <div>
-              <dt class="font-medium text-gray-500">
+              <dt class="font-medium">
                 {{ $t('settingsPersonalization.blendLabel') }}
               </dt>
               <dd>
@@ -138,25 +138,25 @@ function directionLabel(value: number | null | undefined) {
         </section>
 
         <section>
-          <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-800">
+          <h2 class="infl0-canvas-fg mb-3 text-sm font-semibold uppercase tracking-wide">
             {{ $t('settingsPersonalization.timelineHeading') }}
           </h2>
           <ul class="space-y-2">
             <li
               v-for="row in data.timeline"
               :key="row.timelineItemId"
-              class="overflow-hidden rounded-xl border border-gray-700 bg-gray-900/95 shadow-lg"
+              class="infl0-panel--flush"
             >
               <button
                 type="button"
-                class="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-800/80"
+                class="hover:bg-[var(--infl0-surface-dim)] flex w-full items-start gap-3 px-4 py-3 text-left text-[var(--infl0-panel-text)] transition-colors"
                 @click="toggleRow(row.timelineItemId)"
               >
                 <div class="min-w-0 flex-1">
-                  <div class="text-sm font-medium text-gray-100">
+                  <div class="text-sm font-medium">
                     {{ row.title }}
                   </div>
-                  <p class="mt-1 line-clamp-2 text-xs text-gray-400">
+                  <p class="infl0-panel-muted mt-1 line-clamp-2 text-xs">
                     {{ row.teaserPreview || '—' }}
                   </p>
                 </div>
@@ -164,7 +164,7 @@ function directionLabel(value: number | null | undefined) {
                   <div class="font-mono text-sm text-emerald-300/95">
                     {{ row.rankScore != null ? fmt(row.rankScore, 4) : '—' }}
                   </div>
-                  <div class="text-[0.65rem] text-gray-500">
+                  <div class="infl0-panel-muted text-[0.65rem]">
                     {{ expandedId === row.timelineItemId ? '▼' : '▶' }}
                   </div>
                 </div>
@@ -172,11 +172,11 @@ function directionLabel(value: number | null | undefined) {
 
               <div
                 v-show="expandedId === row.timelineItemId"
-                class="border-t border-gray-700/80 px-4 py-4 text-sm text-gray-300"
+                class="border-t border-[var(--infl0-panel-border)]/80 px-4 py-4 text-sm text-[var(--infl0-panel-text)]"
               >
                 <div class="mb-4 grid gap-3 sm:grid-cols-3">
                   <div>
-                    <h3 class="mb-1 text-xs font-semibold uppercase text-gray-500">
+                    <h3 class="infl0-panel-muted mb-1 text-xs font-semibold uppercase">
                       {{ $t('settingsPersonalization.rankStored') }}
                     </h3>
                     <p class="font-mono text-lg text-emerald-300/95">
@@ -184,7 +184,7 @@ function directionLabel(value: number | null | undefined) {
                     </p>
                   </div>
                   <div>
-                    <h3 class="mb-1 text-xs font-semibold uppercase text-gray-500">
+                    <h3 class="infl0-panel-muted mb-1 text-xs font-semibold uppercase">
                       {{ $t('settingsPersonalization.rankLive') }}
                     </h3>
                     <p class="font-mono text-lg text-emerald-300/95">
@@ -192,7 +192,7 @@ function directionLabel(value: number | null | undefined) {
                     </p>
                   </div>
                   <div>
-                    <h3 class="mb-1 text-xs font-semibold uppercase text-gray-500">
+                    <h3 class="infl0-panel-muted mb-1 text-xs font-semibold uppercase">
                       {{ $t('settingsPersonalization.rankDelta') }}
                     </h3>
                     <!--
@@ -214,13 +214,13 @@ function directionLabel(value: number | null | undefined) {
                   </div>
                 </div>
 
-                <h3 class="mb-2 text-xs font-semibold uppercase text-gray-500">
+                <h3 class="infl0-panel-muted mb-2 text-xs font-semibold uppercase">
                   {{ $t('settingsPersonalization.factorsHeading') }}
                 </h3>
                 <div class="overflow-x-auto">
                   <table class="table table-sm w-full text-xs">
                     <thead>
-                      <tr class="border-gray-700 text-gray-400">
+                      <tr class="border-[var(--infl0-panel-border)] text-[var(--infl0-panel-text-muted)]">
                         <th>{{ $t('settingsPersonalization.colFactor') }}</th>
                         <th class="text-end">{{ $t('settingsPersonalization.colNormalizedSimple') }}</th>
                         <th class="text-end">{{ $t('settingsPersonalization.colWeightSimple') }}</th>
@@ -228,7 +228,11 @@ function directionLabel(value: number | null | undefined) {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="f in row.factors" :key="f.id" class="border-gray-800">
+                      <tr
+                        v-for="f in row.factors"
+                        :key="f.id"
+                        class="border-[var(--infl0-panel-border)]/60"
+                      >
                         <td>{{ factorLabel(f.id) }}</td>
                         <td class="text-end font-mono">{{ fmt(f.normalized, 4) }}</td>
                         <td class="text-end font-mono">{{ f.weight }}</td>
@@ -243,34 +247,34 @@ function directionLabel(value: number | null | undefined) {
                   </table>
                 </div>
 
-                <h3 class="mb-2 mt-6 text-xs font-semibold uppercase text-gray-500">
+                <h3 class="infl0-panel-muted mb-2 mt-6 text-xs font-semibold uppercase">
                   {{ $t('settingsPersonalization.engagementHeading') }}
                 </h3>
-                <p class="mb-2 text-xs text-gray-500">
+                <p class="infl0-panel-muted mb-2 text-xs">
                   {{ $t('settingsPersonalization.engagementIntro') }}
                 </p>
                 <div class="space-y-3 text-xs">
-                  <div class="rounded-lg bg-gray-950/60 p-3">
-                    <div class="font-medium text-gray-200">
+                  <div class="infl0-nested-slab">
+                    <div class="font-medium text-[var(--infl0-panel-text)]">
                       {{ $t('settingsPersonalization.feedSignal') }}
                     </div>
-                    <div class="mt-2 grid gap-2 text-gray-400 sm:grid-cols-2">
+                    <div class="infl0-panel-muted mt-2 grid gap-2 sm:grid-cols-2">
                       <div>
-                        <span class="text-gray-500">{{ $t('settingsPersonalization.sourceLabel') }}</span>
+                        <span class="infl0-section-label">{{ $t('settingsPersonalization.sourceLabel') }}</span>
                         {{ row.engagement.feed.crawlKey }}
                       </div>
                       <div>
-                        <span class="text-gray-500">{{ $t('settingsPersonalization.feedbackLabel') }}</span>
+                        <span class="infl0-section-label">{{ $t('settingsPersonalization.feedbackLabel') }}</span>
                         {{ row.engagement.feed.posPoints }} / {{ row.engagement.feed.negPoints }}
                       </div>
                       <div>
-                        <span class="text-gray-500">{{ $t('settingsPersonalization.scoreLabel') }}</span>
+                        <span class="infl0-section-label">{{ $t('settingsPersonalization.scoreLabel') }}</span>
                         +{{ fmt(row.engagement.feed.positiveScore, 4) }} / −{{
                           fmt(row.engagement.feed.negativeScore, 4)
                         }}
                       </div>
                       <div>
-                        <span class="text-gray-500">{{ $t('settingsPersonalization.weightedLabel') }}</span>
+                        <span class="infl0-section-label">{{ $t('settingsPersonalization.weightedLabel') }}</span>
                         +{{ fmt(row.engagement.feed.weightedPositive, 4) }} / −{{
                           fmt(row.engagement.feed.weightedNegative, 4)
                         }}
@@ -279,12 +283,12 @@ function directionLabel(value: number | null | undefined) {
                   </div>
                   <div
                     v-if="row.engagement.categories.length"
-                    class="rounded-lg bg-gray-950/60 p-3"
+                    class="infl0-nested-slab"
                   >
-                    <div class="font-medium text-gray-200">
+                    <div class="font-medium text-[var(--infl0-panel-text)]">
                       {{ $t('settingsPersonalization.categoriesSignal') }}
                     </div>
-                    <ul class="mt-2 space-y-1 text-gray-400">
+                    <ul class="infl0-panel-muted mt-2 space-y-1">
                       <li v-for="c in row.engagement.categories" :key="c.name">
                         {{ c.name }} — +{{ fmt(c.positiveScore, 4) }} / −{{ fmt(c.negativeScore, 4) }}
                         ({{ $t('settingsPersonalization.feedbackShort') }} {{ c.posPoints }}/{{
@@ -292,24 +296,24 @@ function directionLabel(value: number | null | undefined) {
                         }})
                       </li>
                     </ul>
-                    <p class="mt-2 text-gray-500">
+                    <p class="infl0-panel-muted mt-2">
                       {{ $t('settingsPersonalization.categoryAvg') }}
                       +{{ fmt(row.engagement.averages.categoryPositive, 4) }} / −{{
                         fmt(row.engagement.averages.categoryNegative, 4)
                       }}
                     </p>
-                    <p class="mt-1 text-gray-500">
+                    <p class="infl0-panel-muted mt-1">
                       {{ $t('settingsPersonalization.categoryWeighted') }}
                       +{{ fmt(row.engagement.averages.categoryWeightedPositive, 4) }} / −{{
                         fmt(row.engagement.averages.categoryWeightedNegative, 4)
                       }}
                     </p>
                   </div>
-                  <div v-if="row.engagement.tags.length" class="rounded-lg bg-gray-950/60 p-3">
-                    <div class="font-medium text-gray-200">
+                  <div v-if="row.engagement.tags.length" class="infl0-nested-slab">
+                    <div class="font-medium text-[var(--infl0-panel-text)]">
                       {{ $t('settingsPersonalization.tagsSignal') }}
                     </div>
-                    <ul class="mt-2 space-y-1 text-gray-400">
+                    <ul class="infl0-panel-muted mt-2 space-y-1">
                       <li v-for="tg in row.engagement.tags" :key="tg.name">
                         {{ tg.name }} — +{{ fmt(tg.positiveScore, 4) }} / −{{ fmt(tg.negativeScore, 4) }}
                         ({{ $t('settingsPersonalization.feedbackShort') }} {{ tg.posPoints }}/{{
@@ -317,20 +321,20 @@ function directionLabel(value: number | null | undefined) {
                         }})
                       </li>
                     </ul>
-                    <p class="mt-2 text-gray-500">
+                    <p class="infl0-panel-muted mt-2">
                       {{ $t('settingsPersonalization.tagAvg') }}
                       +{{ fmt(row.engagement.averages.tagPositive, 4) }} / −{{
                         fmt(row.engagement.averages.tagNegative, 4)
                       }}
                     </p>
-                    <p class="mt-1 text-gray-500">
+                    <p class="infl0-panel-muted mt-1">
                       {{ $t('settingsPersonalization.tagWeighted') }}
                       +{{ fmt(row.engagement.averages.tagWeightedPositive, 4) }} / −{{
                         fmt(row.engagement.averages.tagWeightedNegative, 4)
                       }}
                     </p>
                   </div>
-                  <div class="rounded-lg border border-gray-700/80 bg-gray-950/40 p-3 font-mono text-[0.8rem]">
+                  <div class="infl0-code-well p-3 font-mono text-[0.8rem] text-[var(--infl0-panel-text)]">
                     <div>
                       {{ $t('settingsPersonalization.finalInterestUp') }}
                       {{ fmt(row.engagement.combinedPositive, 4) }}

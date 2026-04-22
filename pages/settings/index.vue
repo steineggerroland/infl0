@@ -61,11 +61,11 @@ async function onTrackingToggle(e: Event) {
 </script>
 
 <template>
-  <div class="min-h-dvh bg-gray-400 text-gray-100 pb-16 pt-16">
+  <div class="infl0-page-shell pb-16 pt-16">
     <div class="mx-auto w-full max-w-lg px-4">
-      <header class="mb-10 text-center text-gray-900">
-        <h1 class="text-2xl font-semibold">{{ t('settingsIndex.title') }}</h1>
-        <p class="mt-2 text-sm text-gray-800">
+      <header class="mb-10 text-center">
+        <h1 class="infl0-canvas-fg text-2xl font-semibold">{{ t('settingsIndex.title') }}</h1>
+        <p class="infl0-canvas-muted mt-2 text-sm">
           {{ t('settingsIndex.intro') }}
         </p>
       </header>
@@ -77,17 +77,26 @@ async function onTrackingToggle(e: Event) {
         follow-up slices without changing this section's outline.
       -->
       <section aria-labelledby="settings-display-heading" class="mb-10">
-        <header class="mb-4 text-center text-gray-900">
-          <h2 id="settings-display-heading" class="text-lg font-semibold">
+        <header class="mb-4 text-center">
+          <h2 id="settings-display-heading" class="infl0-canvas-fg text-lg font-semibold">
             {{ t('settingsDisplay.heading') }}
           </h2>
-          <p class="mt-1 text-sm text-gray-800">
+          <p class="infl0-canvas-muted mt-1 text-sm">
             {{ t('settingsDisplay.intro') }}
           </p>
         </header>
 
-        <div class="rounded-xl border border-gray-700 bg-gray-900/95 p-5 shadow-xl">
-          <SettingsMotionControl />
+        <div class="infl0-panel space-y-6 p-5">
+          <SettingsThemeControl />
+          <!--
+            The preview lives next to the picker, not inside it, so the
+            fieldset/legend semantics stay focused on "pick a theme" and
+            screen readers do not read the preview rows as radio options.
+          -->
+          <SettingsThemePreview />
+          <div class="border-t border-[var(--infl0-panel-border)] pt-5">
+            <SettingsMotionControl />
+          </div>
         </div>
       </section>
 
@@ -97,11 +106,11 @@ async function onTrackingToggle(e: Event) {
         the "Einstellungen → Sortierung → einzelne Gruppen" nesting.
       -->
       <section aria-labelledby="settings-sorting-heading" class="mb-10">
-        <header class="mb-4 text-center text-gray-900">
-          <h2 id="settings-sorting-heading" class="text-lg font-semibold">
+        <header class="mb-4 text-center">
+          <h2 id="settings-sorting-heading" class="infl0-canvas-fg text-lg font-semibold">
             {{ t('settingsTimeline.title') }}
           </h2>
-          <p class="mt-1 text-sm text-gray-800">
+          <p class="infl0-canvas-muted mt-1 text-sm">
             {{ t('settingsTimeline.intro') }}
           </p>
         </header>
@@ -109,9 +118,9 @@ async function onTrackingToggle(e: Event) {
         <div
           v-for="g in GROUP_ORDER"
           :key="g"
-          class="mb-4 rounded-xl border border-gray-700 bg-gray-900/95 p-5 shadow-xl"
+          class="infl0-panel mb-4 p-5"
         >
-          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-400">
+          <h3 class="infl0-section-label mb-4 text-sm font-semibold uppercase tracking-wide">
             {{ t(`settingsTimeline.groups.${g}`) }}
           </h3>
           <ul class="list-none space-y-6">
@@ -119,14 +128,14 @@ async function onTrackingToggle(e: Event) {
               <li class="space-y-2">
                 <div class="flex items-end justify-between gap-3">
                   <div class="min-w-0 flex-1">
-                    <label class="text-sm font-medium text-gray-200" :for="`w-${d.id}`">{{
+                    <label class="text-sm font-medium" :for="`w-${d.id}`">{{
                       factorLabel(d.id)
                     }}</label>
-                    <p class="mt-0.5 text-xs leading-snug text-gray-500">
+                    <p class="infl0-panel-muted mt-0.5 text-xs leading-snug">
                       {{ factorHint(d.id) }}
                     </p>
                   </div>
-                  <span class="shrink-0 tabular-nums text-sm text-gray-400">{{ weights[d.id] }}</span>
+                  <span class="infl0-section-label shrink-0 tabular-nums text-sm">{{ weights[d.id] }}</span>
                 </div>
                 <input
                   :id="`w-${d.id}`"
@@ -140,22 +149,22 @@ async function onTrackingToggle(e: Event) {
               </li>
               <li
                 v-if="d.id === 'content_length'"
-                class="space-y-2 border-t border-gray-700/80 pt-4"
+                class="space-y-2 border-t border-[var(--infl0-panel-border)]/80 pt-4"
               >
                 <div class="flex items-end justify-between gap-3">
                   <div class="min-w-0 flex-1">
-                    <label class="text-sm font-medium text-gray-200" for="content-length-pref">{{
+                    <label class="text-sm font-medium" for="content-length-pref">{{
                       t('settingsTimeline.contentLengthPreference.label')
                     }}</label>
-                    <p class="mt-0.5 text-xs leading-snug text-gray-500">
+                    <p class="infl0-panel-muted mt-0.5 text-xs leading-snug">
                       {{ t('settingsTimeline.contentLengthPreference.hint') }}
                     </p>
                   </div>
-                  <span class="shrink-0 tabular-nums text-sm text-gray-400">{{
+                  <span class="infl0-section-label shrink-0 tabular-nums text-sm">{{
                     contentLengthPreference
                   }}</span>
                 </div>
-                <div class="flex justify-between px-0.5 text-[0.65rem] font-medium text-gray-500">
+                <div class="infl0-panel-muted flex justify-between px-0.5 text-[0.65rem] font-medium">
                   <span>{{ t('settingsTimeline.contentLengthPreference.preferShorter') }}</span>
                   <span>{{ t('settingsTimeline.contentLengthPreference.neutral') }}</span>
                   <span>{{ t('settingsTimeline.contentLengthPreference.preferLonger') }}</span>
@@ -174,20 +183,25 @@ async function onTrackingToggle(e: Event) {
           </ul>
         </div>
 
-        <div class="mb-4 rounded-xl border border-gray-700 bg-gray-900/95 p-5 shadow-xl">
-          <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-400">
+        <div class="infl0-panel mb-4 p-5">
+          <h3 class="infl0-section-label mb-2 text-sm font-semibold uppercase tracking-wide">
             {{ t('settingsTimeline.formulaTitle') }}
           </h3>
-          <p class="mb-3 text-xs text-gray-500">
+          <p class="infl0-panel-muted mb-3 text-xs">
             {{ t('settingsTimeline.formulaHint') }}
           </p>
           <pre
-            class="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-gray-950 p-3 text-xs leading-relaxed text-emerald-300/95"
+            class="overflow-x-auto whitespace-pre-wrap break-all rounded-lg p-3 text-xs leading-relaxed"
+            style="background-color: var(--infl0-nested-surface); color: var(--infl0-formula-pre-fg)"
           >{{ formulaLines }}</pre>
         </div>
 
         <div class="flex justify-center">
-          <button type="button" class="btn btn-outline border-gray-600 text-gray-200" @click="resetWeights">
+          <button
+            type="button"
+            class="btn btn-outline border-[var(--infl0-field-border)] text-[var(--infl0-panel-text)]"
+            @click="resetWeights"
+          >
             {{ t('settingsTimeline.reset') }}
           </button>
         </div>
@@ -203,17 +217,17 @@ async function onTrackingToggle(e: Event) {
         aria-labelledby="settings-tracking-heading"
         class="mb-4"
       >
-        <header class="mb-4 text-center text-gray-900">
-          <h2 id="settings-tracking-heading" class="text-lg font-semibold">
+        <header class="mb-4 text-center">
+          <h2 id="settings-tracking-heading" class="infl0-canvas-fg text-lg font-semibold">
             {{ t('settingsIndex.trackingHeading') }}
           </h2>
-          <p class="mt-1 text-sm text-gray-800">
+          <p class="infl0-canvas-muted mt-1 text-sm">
             {{ t('settingsIndex.trackingIntro') }}
           </p>
         </header>
 
         <div
-          class="rounded-xl border border-gray-700 bg-gray-900/95 p-5 shadow-xl"
+          class="infl0-panel p-5"
           :aria-busy="trackingBusy || !trackingLoaded"
         >
           <label class="flex cursor-pointer items-start gap-4">
@@ -225,11 +239,11 @@ async function onTrackingToggle(e: Event) {
               data-testid="tracking-toggle"
               @change="onTrackingToggle"
             >
-            <span class="min-w-0">
-              <span class="block text-sm font-medium text-gray-200">{{
+            <span class="min-w-0 text-[var(--infl0-panel-text)]">
+              <span class="block text-sm font-medium">{{
                 t('settingsIndex.trackingLabel')
               }}</span>
-              <span class="mt-1 block text-xs leading-snug text-gray-500">{{
+              <span class="infl0-panel-muted mt-1 block text-xs leading-snug">{{
                 t('settingsIndex.trackingHint')
               }}</span>
             </span>

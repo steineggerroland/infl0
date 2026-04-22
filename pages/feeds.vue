@@ -104,34 +104,36 @@ async function removeFeed(id: string) {
 </script>
 
 <template>
-    <div class="min-h-dvh bg-gray-400 text-gray-100 flex flex-col items-center px-4 pb-12 pt-16">
+    <div class="infl0-page-shell flex flex-col items-center px-4 pb-12 pt-16">
         <div class="w-full max-w-lg space-y-8">
-            <header class="text-center text-gray-900">
-                <h1 class="text-2xl font-semibold">{{ $t('feeds.title') }}</h1>
-                <p class="mt-2 text-sm text-gray-800">
+            <header class="text-center">
+                <h1 class="infl0-canvas-fg text-2xl font-semibold">{{ $t('feeds.title') }}</h1>
+                <p class="infl0-canvas-muted mt-2 text-sm">
                     {{ $t('feeds.intro') }}
                 </p>
             </header>
 
-            <section class="rounded-xl border border-gray-700 bg-gray-900/95 p-6 shadow-xl">
-                <h2 class="text-sm font-medium text-gray-300 mb-4">{{ $t('feeds.addSection') }}</h2>
+            <section class="infl0-panel p-6">
+                <h2 class="mb-4 text-sm font-medium text-[var(--infl0-panel-text)]">{{
+                    $t('feeds.addSection')
+                }}</h2>
                 <form class="flex flex-col gap-4" @submit.prevent="addFeed">
-                    <label class="flex flex-col gap-1 text-sm">
-                        <span class="text-gray-400">{{ $t('feeds.feedUrl') }}</span>
+                    <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
+                        <span class="infl0-panel-muted">{{ $t('feeds.feedUrl') }}</span>
                         <input
                             v-model="newFeedUrl"
                             type="url"
                             required
                             :placeholder="$t('feeds.feedUrlPlaceholder')"
-                            class="input input-bordered w-full bg-gray-800 border-gray-600"
+                            class="input input-bordered infl0-field w-full"
                         >
                     </label>
-                    <label class="flex flex-col gap-1 text-sm">
-                        <span class="text-gray-400">{{ $t('feeds.displayNameOptional') }}</span>
+                    <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
+                        <span class="infl0-panel-muted">{{ $t('feeds.displayNameOptional') }}</span>
                         <input
                             v-model="newDisplayTitle"
                             type="text"
-                            class="input input-bordered w-full bg-gray-800 border-gray-600"
+                            class="input input-bordered infl0-field w-full"
                         >
                     </label>
                     <p v-if="addError" class="text-sm text-red-400">{{ addError }}</p>
@@ -141,21 +143,23 @@ async function removeFeed(id: string) {
                 </form>
             </section>
 
-            <section v-if="feedList.length > 0" class="rounded-xl border border-gray-700 bg-gray-900/95 p-6 shadow-xl">
-                <h2 class="text-sm font-medium text-gray-300 mb-4">{{ $t('feeds.listSection') }}</h2>
-                <ul class="text-sm space-y-3">
+            <section v-if="feedList.length > 0" class="infl0-panel p-6">
+                <h2 class="mb-4 text-sm font-medium text-[var(--infl0-panel-text)]">{{
+                    $t('feeds.listSection')
+                }}</h2>
+                <ul class="space-y-3 text-sm">
                     <li
                         v-for="f in feedList"
                         :key="f.id"
-                        class="flex items-start justify-between gap-3 border-b border-gray-700/80 pb-3 last:border-0 last:pb-0"
+                        class="flex items-start justify-between gap-3 border-b border-[var(--infl0-panel-border)]/80 pb-3 last:border-0 last:pb-0"
                     >
                         <div class="min-w-0 flex-1 break-all">
-                            <div class="font-medium text-gray-200">
+                            <div class="font-medium text-[var(--infl0-panel-text)]">
                                 {{ f.displayTitle || f.feedUrl }}
                             </div>
                             <div
                                 v-if="f.displayTitle"
-                                class="mt-0.5 text-xs text-gray-500 break-all font-mono"
+                                class="infl0-panel-muted mt-0.5 break-all font-mono text-xs"
                             >
                                 {{ f.feedUrl }}
                             </div>
@@ -172,7 +176,7 @@ async function removeFeed(id: string) {
                 </ul>
             </section>
 
-            <p v-else class="text-center text-sm text-gray-800">
+            <p v-else class="infl0-canvas-muted text-center text-sm">
                 {{ $t('feeds.emptyList') }}
             </p>
         </div>

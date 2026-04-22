@@ -16,19 +16,19 @@ async function onLogout() {
 }
 
 const linkClass =
-    'block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-100 no-underline visited:text-gray-100 transition-colors hover:bg-gray-800 hover:text-white active:bg-gray-800/80'
+    'infl0-menu-link block rounded-lg px-3 py-2.5 text-sm font-medium no-underline visited:[color:inherit] transition-colors'
 </script>
 
 <template>
     <details ref="menuRoot" class="relative z-40">
         <summary
-            class="btn btn-sm h-10 min-h-0 cursor-pointer list-none rounded-xl border border-gray-600 bg-gray-950 px-3 text-gray-100 shadow-lg ring-1 ring-black/40 hover:bg-gray-900 hover:ring-white/10 [&::-webkit-details-marker]:hidden"
+            class="btn btn-sm h-10 min-h-0 cursor-pointer list-none rounded-xl border px-3 shadow-lg ring-1 ring-black/40 [&::-webkit-details-marker]:hidden infl0-chrome-button"
             :aria-label="t('menu.open')"
         >
             <span class="text-base leading-none tracking-tight" aria-hidden="true">☰</span>
         </summary>
         <div
-            class="app-user-menu__panel absolute end-0 z-50 m-0 mt-2 min-w-[15rem] max-w-[calc(100vw-1.5rem)] rounded-xl border border-gray-600 bg-gray-950 p-2 py-3 text-gray-100 shadow-2xl ring-1 ring-black/50"
+            class="app-user-menu__panel infl0-chrome-panel absolute end-0 z-50 m-0 mt-2 min-w-[15rem] max-w-[calc(100vw-1.5rem)] rounded-xl border p-2 py-3 shadow-2xl ring-1 ring-black/50"
         >
             <nav :aria-label="t('menu.navLandmark')">
                 <ul class="app-user-menu__list m-0 list-none space-y-0.5 p-0">
@@ -75,14 +75,14 @@ const linkClass =
             </nav>
 
             <ul class="app-user-menu__list m-0 list-none space-y-0.5 p-0">
-            <li class="mt-1 border-t border-gray-700 px-3 pb-1 pt-3">
+            <li class="mt-1 border-t border-[var(--infl0-panel-border)] px-3 pb-1 pt-3">
                 <span
-                    class="text-[0.65rem] font-semibold uppercase tracking-wider text-gray-400"
+                    class="infl0-chrome-muted text-[0.65rem] font-semibold uppercase tracking-wider"
                 >{{ t('menu.view') }}</span>
             </li>
             <li class="px-1">
                 <label
-                    class="flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-100 hover:bg-gray-800 hover:text-white"
+                    class="infl0-menu-row"
                     data-testid="menu-show-read-toggle"
                 >
                     <span class="leading-snug">{{ t('index.showReadLabel') }}</span>
@@ -95,15 +95,15 @@ const linkClass =
                     >
                 </label>
             </li>
-            <li class="mt-1 border-t border-gray-700 px-3 pb-1 pt-3">
+            <li class="mt-1 border-t border-[var(--infl0-panel-border)] px-3 pb-1 pt-3">
                 <span
-                    class="text-[0.65rem] font-semibold uppercase tracking-wider text-gray-400"
+                    class="infl0-chrome-muted text-[0.65rem] font-semibold uppercase tracking-wider"
                 >{{ t('menu.language') }}</span>
             </li>
             <li class="px-2 pb-2">
                 <LocaleSwitcher menu />
             </li>
-            <li class="mt-1 border-t border-gray-700 px-1 pt-2">
+            <li class="mt-1 border-t border-[var(--infl0-panel-border)] px-1 pt-2">
                 <button
                     type="button"
                     class="w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-400 transition-colors hover:bg-red-950/50 hover:text-red-300"

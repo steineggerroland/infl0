@@ -284,14 +284,14 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="bg-gray-400 text-white h-dvh w-full flex justify-center items-center relative">
+    <div class="h-dvh w-full flex justify-center items-center relative text-[var(--infl0-canvas-fg)]">
         <div
             v-if="showOnboarding"
-            class="relative z-10 w-full max-w-md mx-auto px-4 py-8 text-gray-900"
+            class="relative z-10 mx-auto w-full max-w-md px-4 py-8"
         >
-            <div class="rounded-xl bg-gray-900/90 text-gray-100 p-8 shadow-xl border border-gray-700 text-center">
+            <div class="infl0-panel p-8 text-center">
                 <h1 class="text-xl font-semibold mb-2">{{ $t('index.emptyNoFeedsTitle') }}</h1>
-                <p class="text-sm text-gray-400 mb-6">
+                <p class="infl0-panel-muted mb-6 text-sm">
                     {{ $t('index.emptyNoFeedsBody') }}
                 </p>
                 <NuxtLink to="/feeds" class="btn btn-primary w-full">
@@ -302,26 +302,32 @@ onMounted(async () => {
 
         <div
             v-else-if="showWaiting"
-            class="relative z-10 w-full max-w-lg mx-auto px-4 py-8 text-gray-900"
+            class="relative z-10 mx-auto w-full max-w-lg px-4 py-8"
         >
-            <div class="rounded-xl bg-gray-900/90 text-gray-100 p-8 shadow-xl border border-gray-700">
+            <div class="infl0-panel p-8">
                 <h1 class="text-xl font-semibold mb-2">{{ $t('index.preparingTitle') }}</h1>
-                <p class="text-sm text-gray-400 mb-4">
+                <p class="infl0-panel-muted mb-4 text-sm">
                     {{ $t('index.preparingBody') }}
                 </p>
-                <ul class="text-sm space-y-2 mb-6 border border-gray-700 rounded-lg p-3 bg-gray-800/50">
+                <ul
+                    class="mb-6 space-y-2 rounded-lg border p-3 text-sm"
+                    style="
+                      border-color: var(--infl0-panel-border);
+                      background-color: var(--infl0-surface-dim);
+                    "
+                >
                     <li
                         v-for="f in feedList"
                         :key="f.id"
-                        class="border-b border-gray-700/60 pb-2 last:border-0 last:pb-0"
+                        class="border-b border-[var(--infl0-panel-border)]/60 pb-2 last:border-0 last:pb-0"
                     >
                         <div class="min-w-0 break-all">
-                            <span class="font-medium text-gray-200">{{
+                            <span class="font-medium text-[var(--infl0-panel-text)]">{{
                                 f.displayTitle || f.feedUrl
                             }}</span>
                             <div
                                 v-if="f.displayTitle"
-                                class="mt-0.5 text-xs text-gray-500 break-all font-mono"
+                                class="infl0-panel-muted mt-0.5 break-all font-mono text-xs"
                             >
                                 {{ f.feedUrl }}
                             </div>
@@ -331,12 +337,15 @@ onMounted(async () => {
                 <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <button
                         type="button"
-                        class="btn btn-outline btn-sm border-gray-600 flex-1"
+                        class="btn btn-outline btn-sm flex-1 border-[var(--infl0-field-border)]"
                         @click="refreshAll"
                     >
                         {{ $t('index.refreshTimeline') }}
                     </button>
-                    <NuxtLink to="/feeds" class="btn btn-ghost btn-sm border border-gray-600 flex-1">
+                    <NuxtLink
+                        to="/feeds"
+                        class="btn btn-ghost btn-sm flex-1 border border-[var(--infl0-field-border)]"
+                    >
                         {{ $t('index.manageFeeds') }}
                     </NuxtLink>
                 </div>
@@ -345,14 +354,14 @@ onMounted(async () => {
 
         <div
             v-else-if="showAllReadEmpty"
-            class="relative z-10 w-full max-w-lg mx-auto px-4 py-8 text-gray-900"
+            class="relative z-10 mx-auto w-full max-w-lg px-4 py-8"
         >
-            <div class="rounded-xl bg-gray-900/90 text-gray-100 p-8 shadow-xl border border-gray-700 text-center">
+            <div class="infl0-panel p-8 text-center">
                 <h1 class="text-xl font-semibold mb-2">{{ $t('index.allReadTitle') }}</h1>
-                <p class="text-sm text-gray-400 mb-6">
+                <p class="infl0-panel-muted mb-6 text-sm">
                     {{ $t('index.allReadBody') }}
                 </p>
-                <label class="flex cursor-pointer items-center justify-center gap-3 text-sm text-gray-200">
+                <label class="flex cursor-pointer items-center justify-center gap-3 text-sm text-[var(--infl0-panel-text)]">
                     <span>{{ $t('index.showReadLabel') }}</span>
                     <input v-model="showRead" type="checkbox" role="switch" class="toggle toggle-primary" >
                 </label>
@@ -383,7 +392,7 @@ onMounted(async () => {
                 class="h-24 w-full shrink-0 flex items-center justify-center opacity-40 pointer-events-none"
                 aria-hidden="true"
             >
-                <span class="loading loading-spinner loading-md text-gray-800" />
+                <span class="loading loading-spinner loading-md text-[var(--infl0-canvas-fg-muted)]" />
             </div>
         </div>
 

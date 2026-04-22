@@ -51,7 +51,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="min-h-dvh flex flex-col items-center justify-center bg-gray-800 text-gray-100 px-4">
+  <div class="infl0-auth-shell">
     <!--
       Skip link + <main> landmark. Kept in sync with pages/login.vue
       and layouts/app.vue; see
@@ -66,50 +66,50 @@ async function onSubmit() {
     <div class="mb-4 w-full max-w-sm flex justify-end">
       <LocaleSwitcher />
     </div>
-    <main id="main" tabindex="-1" class="w-full max-w-sm rounded-xl bg-gray-900/80 p-8 shadow-xl border border-gray-700 outline-none">
-      <h1 class="text-xl font-semibold mb-1 text-center">{{ $t('register.title') }}</h1>
-      <p class="mb-5 text-center text-sm text-gray-400">{{ $t('register.tagline') }}</p>
+    <main id="main" tabindex="-1" class="infl0-panel w-full max-w-sm p-8 outline-none">
+      <h1 class="text-center text-xl font-semibold mb-1 text-[var(--infl0-panel-text)]">{{ $t('register.title') }}</h1>
+      <p class="infl0-panel-muted mb-5 text-center text-sm">{{ $t('register.tagline') }}</p>
       <div class="mb-4 flex justify-center">
         <SecurityBadge align="center" />
       </div>
       <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-gray-400">{{ $t('register.inviteCode') }}</span>
+        <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
+          <span class="infl0-panel-muted">{{ $t('register.inviteCode') }}</span>
           <input
             v-model="inviteCode"
             type="password"
             autocomplete="off"
             required
-            class="input input-bordered w-full bg-gray-800 border-gray-600"
+            class="input input-bordered infl0-field w-full"
           >
         </label>
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-gray-400">{{ $t('register.email') }}</span>
+        <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
+          <span class="infl0-panel-muted">{{ $t('register.email') }}</span>
           <input
             v-model="email"
             type="email"
             autocomplete="username"
             required
-            class="input input-bordered w-full bg-gray-800 border-gray-600"
+            class="input input-bordered infl0-field w-full"
           >
         </label>
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-gray-400">{{ $t('register.nameOptional') }}</span>
+        <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
+          <span class="infl0-panel-muted">{{ $t('register.nameOptional') }}</span>
           <input
             v-model="name"
             type="text"
             autocomplete="name"
-            class="input input-bordered w-full bg-gray-800 border-gray-600"
+            class="input input-bordered infl0-field w-full"
           >
         </label>
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-gray-400">{{ $t('register.password') }}</span>
+        <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
+          <span class="infl0-panel-muted">{{ $t('register.password') }}</span>
           <input
             v-model="password"
             type="password"
             autocomplete="new-password"
             required
-            class="input input-bordered w-full bg-gray-800 border-gray-600"
+            class="input input-bordered infl0-field w-full"
           >
         </label>
         <p v-if="errorMsg" class="text-sm text-red-400">{{ errorMsg }}</p>
@@ -118,7 +118,7 @@ async function onSubmit() {
         </button>
         <NuxtLink
           to="/login"
-          class="text-center text-sm text-gray-400 hover:text-gray-200 underline-offset-2 hover:underline"
+          class="infl0-panel-muted text-center text-sm underline-offset-2 hover:underline hover:text-[var(--infl0-panel-text)]"
         >
           {{ $t('register.signInLink') }}
         </NuxtLink>

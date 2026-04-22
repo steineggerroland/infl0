@@ -48,7 +48,34 @@
   },
   "settingsDisplay": {
     "heading": "Darstellung",
-    "intro": "Wie sich infl0 für dich anfühlt. Weitere Optionen (Theme, Schriftgröße pro Karten- und Lesebereich, eigene Farben) folgen in den nächsten Schritten.",
+    "intro": "Wie sich infl0 für dich anfühlt. Schriftgröße pro Bereich und eigene Farben folgen in den nächsten Schritten.",
+    "themeLabel": "Thema",
+    "themeHint": "Die Vorschau unten zeigt dir sofort, wie sich deine Auswahl auf Kartenvorder- und Rückseite sowie den Volltext auswirkt.",
+    "themeOptions": {
+      "calm-light": {
+        "label": "Ruhig & hell",
+        "hint": "Helles Grau als Seitenhintergrund, pastellblaue Timeline-Kacheln, helle Menü- und Einstellungsflächen. Der Standard."
+      },
+      "warm-dark": {
+        "label": "Warm & dunkel",
+        "hint": "Wie die Timeline-Kacheln: dunkles Blaugrau. Der Seitenhintergrund ist extra dunkel, damit helle Schrift klar erkennbar bleibt."
+      },
+      "high-contrast": {
+        "label": "Starker Kontrast",
+        "hint": "Reines Schwarz und Weiß. Maximal lesbar, wenn niedrige Kontraste dir schwerfallen."
+      },
+      "custom": {
+        "label": "Eigene Farben",
+        "hint": "Platzhalter: Die Auswahlregler für eigene Farben folgen im nächsten Schritt. Solange sie noch nicht da sind, bleibt alles wie bei „Ruhig & hell“."
+      }
+    },
+    "preview": {
+      "label": "Vorschau",
+      "frontHeadline": "Beispiel-Überschrift einer Karte",
+      "frontMeta": "Quelle · vor 2 Stunden",
+      "backTeaser": "Kurzer Teaser, der auf der Karten-Rückseite zu sehen wäre. Hier zählt vor allem die Lesbarkeit im Alltag.",
+      "readerBody": "So sieht ein Absatz im Volltext-Modus aus. Ausreichender Kontrast, ruhige Zeilenhöhe, keine Ablenkung."
+    },
     "motionLabel": "Bewegung und Animationen",
     "motionHint": "Weniger Bewegung hilft, wenn dir sanfte Übergänge zu unruhig sind oder sie dir Unwohlsein bereiten.",
     "motionOptions": {
