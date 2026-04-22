@@ -87,7 +87,10 @@ async function onTrackingToggle(e: Event) {
         </header>
 
         <div class="infl0-panel space-y-6 p-5">
-          <SettingsThemeControl />
+          <SettingsAppearanceControl />
+          <div class="border-t border-[var(--infl0-panel-border)] pt-5">
+            <SettingsThemeControl />
+          </div>
           <!--
             The preview lives next to the picker, not inside it, so the
             fieldset/legend semantics stay focused on "pick a theme" and

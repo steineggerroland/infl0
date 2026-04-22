@@ -4,16 +4,14 @@ import { mount } from '@vue/test-utils'
 import { createI18n, useI18n as vueUseI18n } from 'vue-i18n'
 import { ref } from 'vue'
 import type { ThemeChoice, UiPrefs, UiPrefsPatch } from '../../utils/ui-prefs'
-import { defaultUiPrefs, THEME_PRESET_IDS } from '../../utils/ui-prefs'
+import { defaultUiPrefs, THEME_HUE_IDS, THEME_PRESET_IDS } from '../../utils/ui-prefs'
 
 /**
  * Behavioural test for the theme picker on `/settings`.
  *
- * The contract: selecting a preset (or `custom`) calls
+ * The contract: choosing a preset (or `custom`) calls
  * `useUiPrefs().update({ theme })` exactly once with the new value;
- * re-selecting the active option is a no-op. We do NOT assert color
- * values or CSS class lists — those are token / preview concerns and
- * live in `assets/css/tailwind.css` + `SettingsThemePreview.vue`.
+ * re-selecting the active option is a no-op.
  */
 
 const updateSpy = vi.fn<(patch: UiPrefsPatch) => void>()
@@ -25,22 +23,34 @@ vi.stubGlobal('useUiPrefs', () => ({
   reset: vi.fn(),
   markAnnouncementSeen: vi.fn(),
 }))
+vi.stubGlobal('useEffectiveAppearance', () => ({
+  effectiveAppearance: ref<'light' | 'dark'>('light'),
+}))
 vi.stubGlobal('useI18n', () => vueUseI18n())
 
 const SettingsThemeControl = (await import('../../components/SettingsThemeControl.vue'))
   .default
 
+function themeOptionKey(choice: ThemeChoice): string {
+  if (choice === 'custom') return 'custom'
+  if (choice === 'high-contrast') return 'highContrast'
+  return choice.replace(':', '_')
+}
+
 function makeI18n() {
+  const themeOptions: Record<string, { label: string; hint: string }> = {}
+  for (const id of THEME_PRESET_IDS) {
+    themeOptions[themeOptionKey(id)] = { label: String(id), hint: '' }
+  }
+  themeOptions.custom = { label: 'custom', hint: '' }
+  themeOptions.highContrast = { label: 'hc', hint: '' }
   const messages = {
     settingsDisplay: {
-      themeLabel: 'Theme',
-      themeHint: 'Preview updates live.',
-      themeOptions: {
-        'calm-light': { label: 'Calm & light', hint: 'Default.' },
-        'warm-dark': { label: 'Warm & dark', hint: 'Low glare.' },
-        'high-contrast': { label: 'High contrast', hint: 'Max. readability.' },
-        custom: { label: 'Custom colors', hint: 'Placeholder.' },
-      },
+      themeLabel: 'Palette',
+      themeHint: 'Pick one.',
+      themePastelGroup: 'Pastel',
+      themeWarmGroup: 'Warm',
+      themeOptions,
     },
   }
   return createI18n({ legacy: false, locale: 'en', messages: { en: messages, de: messages } })
@@ -61,51 +71,55 @@ describe('SettingsThemeControl', () => {
     sharedPrefs.value = defaultUiPrefs()
   })
 
-  it('marks the current theme choice as checked', () => {
-    sharedPrefs.value = { ...defaultUiPrefs(), theme: 'warm-dark' }
+  it('marks the current warm preset swatch (aria-checked)', () => {
+    sharedPrefs.value = { ...defaultUiPrefs(), theme: 'warm:blue' }
     const wrapper = mountControl()
-    const warmDark = wrapper.get('[data-testid="theme-option-warm-dark"]')
-      .element as HTMLInputElement
-    const calm = wrapper.get('[data-testid="theme-option-calm-light"]')
-      .element as HTMLInputElement
-    expect(warmDark.checked).toBe(true)
-    expect(calm.checked).toBe(false)
+    const warmBlue = wrapper.get('[data-testid="theme-swatch-warm-blue"]').element as HTMLButtonElement
+    const pastelBlue = wrapper.get('[data-testid="theme-swatch-pastel-blue"]').element as HTMLButtonElement
+    expect(warmBlue.getAttribute('aria-checked')).toBe('true')
+    expect(pastelBlue.getAttribute('aria-checked')).toBe('false')
   })
 
-  it('sends { theme } when the user picks a new preset', async () => {
+  it('sends { theme } when the user picks a pastel swatch', async () => {
     const wrapper = mountControl()
-    await wrapper
-      .get('[data-testid="theme-option-high-contrast"]')
-      .setValue(true)
+    await wrapper.get('[data-testid="theme-swatch-pastel-green"]').trigger('click')
     expect(updateSpy).toHaveBeenCalledTimes(1)
-    expect(updateSpy.mock.calls[0][0]).toEqual({
-      theme: 'high-contrast' satisfies ThemeChoice,
-    })
+    expect(updateSpy.mock.calls[0][0]).toEqual({ theme: 'pastel:green' })
+  })
+
+  it('sends { theme } when the user picks a warm swatch', async () => {
+    const wrapper = mountControl()
+    await wrapper.get('[data-testid="theme-swatch-warm-red"]').trigger('click')
+    expect(updateSpy).toHaveBeenCalledWith({ theme: 'warm:red' })
+  })
+
+  it('sends { theme: "high-contrast" } from the extra radio row', async () => {
+    const wrapper = mountControl()
+    await wrapper.get('[data-testid="theme-option-high-contrast"]').setValue(true)
+    expect(updateSpy).toHaveBeenCalledTimes(1)
+    expect(updateSpy.mock.calls[0][0]).toEqual({ theme: 'high-contrast' })
   })
 
   it('sends { theme: "custom" } when the user picks own colors', async () => {
-    // Choosing custom reveals the per-surface color UI; the theme value
-    // must persist so hydration and device switches keep the intent.
     const wrapper = mountControl()
     await wrapper.get('[data-testid="theme-option-custom"]').setValue(true)
     expect(updateSpy).toHaveBeenCalledWith({ theme: 'custom' })
   })
 
-  it('does not re-send a patch when the user re-selects the active option', async () => {
-    sharedPrefs.value = { ...defaultUiPrefs(), theme: 'warm-dark' }
+  it('does not re-send a patch when the user re-selects the active swatch', async () => {
+    sharedPrefs.value = { ...defaultUiPrefs(), theme: 'warm:blue' }
     const wrapper = mountControl()
-    await wrapper.get('[data-testid="theme-option-warm-dark"]').trigger('change')
+    await wrapper.get('[data-testid="theme-swatch-warm-blue"]').trigger('click')
     expect(updateSpy).not.toHaveBeenCalled()
   })
 
-  it('surfaces every preset plus the custom option, in a stable order', () => {
-    // If the preset list ever grows, the order we show users must match
-    // `THEME_PRESET_IDS` + custom, so the UI stays predictable and
-    // translators can trust the display sequence.
+  it('exposes five pastel and five warm swatches plus high-contrast and custom', () => {
     const wrapper = mountControl()
-    const values = wrapper
-      .findAll('input[name="ui-theme"]')
-      .map((n) => (n.element as HTMLInputElement).value)
-    expect(values).toEqual([...THEME_PRESET_IDS, 'custom'])
+    for (const hue of THEME_HUE_IDS) {
+      expect(wrapper.find(`[data-testid="theme-swatch-pastel-${hue}"]`).exists()).toBe(true)
+      expect(wrapper.find(`[data-testid="theme-swatch-warm-${hue}"]`).exists()).toBe(true)
+    }
+    expect(wrapper.find('[data-testid="theme-option-high-contrast"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="theme-option-custom"]').exists()).toBe(true)
   })
 })

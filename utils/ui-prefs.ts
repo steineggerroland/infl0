@@ -42,6 +42,20 @@ export const MOTION_MODES = ['system', 'reduced', 'standard'] as const
 export type MotionMode = (typeof MOTION_MODES)[number]
 
 /**
+ * Hell / Dunkel / wie das Gerät — wählt die helle oder dunkle Variante der
+ * eingebauten Paletten (Pastell/Warm) und passt System-UI (z. B. Scrollleisten)
+ * daran an. Eigene Farben (`custom`) bleiben eine einzige Palette.
+ *
+ * - `auto` — folgt der Systemeinstellung (Client; SSR startet hell).
+ * - `light` / `dark` — feste Nutzerwahl.
+ *
+ * Alte gespeicherte Prefs ohne `appearance`: wie bisher `light`,
+ * außer Migration von `warm-dark` (siehe `parseUiPrefsFromJson`).
+ */
+export const APPEARANCE_MODES = ['auto', 'light', 'dark'] as const
+export type AppearanceMode = (typeof APPEARANCE_MODES)[number]
+
+/**
  * Registry of selectable font IDs. Today only system stacks are wired;
  * the self-hosted font package adds OFL-licensed entries (e.g. Atkinson
  * Hyperlegible, OpenDyslexic) without a schema migration — we just extend
@@ -51,13 +65,23 @@ export const FONT_FAMILY_IDS = ['system-sans', 'system-serif', 'system-mono'] as
 export type FontFamilyId = (typeof FONT_FAMILY_IDS)[number]
 
 /**
- * Preset identifiers. Resolving a preset to concrete colors / fonts is the
- * UI's job; here we only persist the choice. `'custom'` means "keep the
- * explicit per-surface values the user set".
+ * Pastell und Warm je mit fünf festen Farbton-Paletten; hoher Kontrast; `custom` = eigene Sechs-Farben.
+ * Jedes Preset (außer `high-contrast` und `custom`) besitzt ein helles und dunkles Paar
+ * — die aktive Variante wählt `appearance`.
  */
-export const THEME_PRESET_IDS = ['calm-light', 'warm-dark', 'high-contrast'] as const
+export const THEME_HUE_IDS = ['yellow', 'green', 'blue', 'red', 'purple'] as const
+export type ThemeHueId = (typeof THEME_HUE_IDS)[number]
+
+export const THEME_PRESET_IDS = [
+  ...THEME_HUE_IDS.map((h) => `pastel:${h}` as const),
+  ...THEME_HUE_IDS.map((h) => `warm:${h}` as const),
+  'high-contrast',
+] as const
 export type ThemePresetId = (typeof THEME_PRESET_IDS)[number]
+export type ThemeHuePreset = Exclude<ThemePresetId, 'high-contrast'>
 export type ThemeChoice = ThemePresetId | 'custom'
+
+const THEME_PRESET_RE = /^(pastel|warm):(yellow|green|blue|red|purple)$|^high-contrast$/
 
 export type SurfacePrefs = {
   /** `null` means "inherit from preset/theme". */
@@ -74,6 +98,7 @@ export type UiPrefs = {
   version: typeof UI_PREFS_VERSION
   theme: ThemeChoice
   motion: MotionMode
+  appearance: AppearanceMode
   surfaces: Record<SurfaceId, SurfacePrefs>
   /**
    * Feature-announcement IDs the user has already dismissed. Used for the
@@ -117,6 +142,10 @@ function isMotionMode(v: unknown): v is MotionMode {
   return typeof v === 'string' && (MOTION_MODES as readonly string[]).includes(v)
 }
 
+function isAppearanceMode(v: unknown): v is AppearanceMode {
+  return typeof v === 'string' && (APPEARANCE_MODES as readonly string[]).includes(v)
+}
+
 function isFontFamilyId(v: unknown): v is FontFamilyId {
   return typeof v === 'string' && (FONT_FAMILY_IDS as readonly string[]).includes(v)
 }
@@ -128,7 +157,11 @@ function isThemeChoice(v: unknown): v is ThemeChoice {
 
 /** `true` for built-in palette ids only (not `'custom'`). */
 export function isThemePresetId(v: unknown): v is ThemePresetId {
-  return typeof v === 'string' && (THEME_PRESET_IDS as readonly string[]).includes(v)
+  return typeof v === 'string' && THEME_PRESET_RE.test(v)
+}
+
+export function isThemeHueId(v: unknown): v is ThemeHueId {
+  return typeof v === 'string' && (THEME_HUE_IDS as readonly string[]).includes(v)
 }
 
 export function isHexColor(v: unknown): v is string {
@@ -157,8 +190,9 @@ export function defaultSurfacePrefs(surface: SurfaceId): SurfacePrefs {
 export function defaultUiPrefs(): UiPrefs {
   return {
     version: UI_PREFS_VERSION,
-    theme: 'calm-light',
+    theme: 'pastel:blue',
     motion: 'system',
+    appearance: 'auto',
     surfaces: {
       'card-front': defaultSurfacePrefs('card-front'),
       'card-back': defaultSurfacePrefs('card-back'),
@@ -208,8 +242,21 @@ export function parseUiPrefsFromJson(json: unknown): UiPrefs | null {
   const j = json as Record<string, unknown>
   if (typeof j.v !== 'number' || j.v < 1) return null
   const base = defaultUiPrefs()
-  const theme = isThemeChoice(j.theme) ? j.theme : base.theme
   const motion = isMotionMode(j.motion) ? j.motion : base.motion
+  const hasAppearanceKey = 'appearance' in j
+  let appearance: AppearanceMode = isAppearanceMode(j.appearance) ? j.appearance : 'light'
+
+  let theme: ThemeChoice = base.theme
+  const rawTheme = j.theme
+  if (rawTheme === 'calm-light') {
+    theme = 'pastel:blue'
+    if (!hasAppearanceKey) appearance = 'light'
+  } else if (rawTheme === 'warm-dark') {
+    theme = 'warm:blue'
+    if (!hasAppearanceKey) appearance = 'dark'
+  } else if (isThemeChoice(rawTheme)) {
+    theme = rawTheme
+  }
   const surfacesRaw =
     j.surfaces && typeof j.surfaces === 'object' && !Array.isArray(j.surfaces)
       ? (j.surfaces as Record<string, unknown>)
@@ -223,6 +270,7 @@ export function parseUiPrefsFromJson(json: unknown): UiPrefs | null {
     version: UI_PREFS_VERSION,
     theme,
     motion,
+    appearance,
     surfaces,
     seenFeatureAnnouncements: parseAnnouncementIds(j.seenFeatureAnnouncements),
   }
@@ -239,6 +287,7 @@ export function toStoredUiPrefs(prefs: UiPrefs): UiPrefsStored {
     v: UI_PREFS_VERSION,
     theme: prefs.theme,
     motion: prefs.motion,
+    appearance: prefs.appearance,
     surfaces: prefs.surfaces,
     seenFeatureAnnouncements: prefs.seenFeatureAnnouncements,
   }
@@ -252,6 +301,7 @@ export function toStoredUiPrefs(prefs: UiPrefs): UiPrefsStored {
 export type UiPrefsPatch = {
   theme?: ThemeChoice
   motion?: MotionMode
+  appearance?: AppearanceMode
   surfaces?: Partial<Record<SurfaceId, Partial<SurfacePrefs>>>
   seenFeatureAnnouncements?: string[]
 }
@@ -272,6 +322,7 @@ export function applyUiPrefsPatch(base: UiPrefs, patch: UiPrefsPatch): UiPrefs {
   }
   if (isThemeChoice(patch.theme)) next.theme = patch.theme
   if (isMotionMode(patch.motion)) next.motion = patch.motion
+  if (isAppearanceMode(patch.appearance)) next.appearance = patch.appearance
   if (patch.surfaces && typeof patch.surfaces === 'object' && !Array.isArray(patch.surfaces)) {
     for (const [rawId, rawSurface] of Object.entries(patch.surfaces)) {
       if (!isSurfaceId(rawId)) continue

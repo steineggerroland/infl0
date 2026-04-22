@@ -75,8 +75,9 @@ describe('useUiPrefs', () => {
   it('hydrates from the server on mount and mirrors to localStorage', async () => {
     const serverPrefs = {
       v: 1,
-      theme: 'warm-dark',
+      theme: 'warm:blue',
       motion: 'reduced',
+      appearance: 'auto',
       surfaces: {
         'card-front': {
           backgroundColor: '#112233',
@@ -111,8 +112,9 @@ describe('useUiPrefs', () => {
     await Promise.resolve()
 
     const vm = wrapper.vm as unknown as ExposedVm
-    expect(vm.prefs.theme).toBe('warm-dark')
+    expect(vm.prefs.theme).toBe('warm:blue')
     expect(vm.prefs.motion).toBe('reduced')
+    expect(vm.prefs.appearance).toBe('auto')
     expect(vm.prefs.surfaces['card-front'].backgroundColor).toBe('#112233')
     const mirrored = JSON.parse(window.localStorage.getItem(UI_PREFS_STORAGE_KEY) ?? 'null')
     expect(mirrored?.motion).toBe('reduced')
@@ -126,6 +128,7 @@ describe('useUiPrefs', () => {
         v: 1,
         theme: 'high-contrast',
         motion: 'standard',
+        appearance: 'light',
         surfaces: {
           'card-front': {
             backgroundColor: '#000000',
@@ -181,6 +184,7 @@ describe('useUiPrefs', () => {
           v: 1,
           theme: base.theme,
           motion: 'reduced',
+          appearance: base.appearance,
           surfaces: {
             ...base.surfaces,
             'card-front': { ...base.surfaces['card-front'], backgroundColor: fronts.backgroundColor ?? null },
@@ -228,16 +232,18 @@ describe('useUiPrefs', () => {
     vi.useFakeTimers()
     const hydrateSpy = vi.fn().mockResolvedValue({
       v: 1,
-      theme: 'warm-dark',
+      theme: 'warm:blue',
       motion: 'system',
+      appearance: defaultUiPrefs().appearance,
       surfaces: defaultUiPrefs().surfaces,
       seenFeatureAnnouncements: [],
     })
     installRequestFetch(() => hydrateSpy as unknown as RelaxedFetch)
     const patchSpy = vi.fn(async () => ({
       v: 1,
-      theme: 'warm-dark',
+      theme: 'warm:blue',
       motion: 'reduced',
+      appearance: defaultUiPrefs().appearance,
       surfaces: defaultUiPrefs().surfaces,
       seenFeatureAnnouncements: [],
     }))
@@ -251,8 +257,8 @@ describe('useUiPrefs', () => {
     expect(hydrateSpy).toHaveBeenCalledOnce()
     const vmA = a.vm as unknown as ExposedVm
     const vmB = b.vm as unknown as ExposedVm
-    expect(vmA.prefs.theme).toBe('warm-dark')
-    expect(vmB.prefs.theme).toBe('warm-dark')
+    expect(vmA.prefs.theme).toBe('warm:blue')
+    expect(vmB.prefs.theme).toBe('warm:blue')
 
     // Two updates from two consumers collapse into a single debounced PATCH.
     vmA.update({ motion: 'reduced' })
@@ -281,6 +287,7 @@ describe('useUiPrefs', () => {
       v: 1,
       theme: defaultUiPrefs().theme,
       motion: defaultUiPrefs().motion,
+      appearance: defaultUiPrefs().appearance,
       surfaces: defaultUiPrefs().surfaces,
       seenFeatureAnnouncements: [],
     })

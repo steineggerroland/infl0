@@ -1,5 +1,11 @@
-import type { SurfaceId, ThemePresetId, UiPrefs } from './ui-prefs'
-import { applyUiPrefsPatch, defaultUiPrefs, isHexColor, isThemePresetId } from './ui-prefs'
+import type { SurfaceId, ThemeHueId, ThemePresetId, UiPrefs } from './ui-prefs'
+import {
+  applyUiPrefsPatch,
+  defaultUiPrefs,
+  isHexColor,
+  isThemeHueId,
+  isThemePresetId,
+} from './ui-prefs'
 
 /**
  * The three user-facing color groups. Every UI token is derived from these
@@ -12,42 +18,132 @@ export type ThemeSource = {
 }
 
 /**
- * Fixed source palettes for built-in themes — one calm / warm / high-contrast
- * look each, expressed only as primary / secondary / reader (bg + text).
- * All app chrome is computed in {@link deriveInfl0TokensFromSource}.
+ * Pastell hell — feste Hex-Sets (keine globale Hue-Rotation), angelehnt an gängige Referenzen:
+ * z. B. „Water“ #CBF6F8 / „Blizzard Blue“ #A8E4EF (schemecolor.com), Pastellgelb #FCFC99,
+ * Mint #CFF5E7 / #BCEAD5 (media.io „Mint Macaron“), weiche Rot-/Violett-Hintergründe.
  */
-export const PRESET_SOURCE: Record<ThemePresetId, ThemeSource> = {
-  'calm-light': {
-    cardFront: { bg: '#e0f2fe', text: '#0f172a' },
-    cardBack: { bg: '#e2e8f0', text: '#1e293b' },
-    reader: { bg: '#ffffff', text: '#1f2937' },
+const PASTEL_LIGHT_BY_HUE: Readonly<Record<ThemeHueId, ThemeSource>> = {
+  yellow: {
+    cardFront: { bg: '#FFF9C4', text: '#4A4314' },
+    cardBack: { bg: '#FFF59D', text: '#5C4F0A' },
+    reader: { bg: '#FFFEF5', text: '#3D3810' },
   },
-  'warm-dark': {
-    cardFront: { bg: '#0f172a', text: '#f3f4f6' },
-    cardBack: { bg: '#1a202c', text: '#d1d5db' },
-    reader: { bg: '#1a202c', text: '#d1d5db' },
+  green: {
+    cardFront: { bg: '#CFF5E7', text: '#13402C' },
+    cardBack: { bg: '#B8EBD4', text: '#164A35' },
+    reader: { bg: '#F8FEFB', text: '#1E3328' },
   },
-  'high-contrast': {
-    cardFront: { bg: '#ffffff', text: '#000000' },
-    cardBack: { bg: '#000000', text: '#ffffff' },
-    reader: { bg: '#ffffff', text: '#000000' },
+  blue: {
+    cardFront: { bg: '#CBF6F8', text: '#0F2940' },
+    cardBack: { bg: '#A8E4EF', text: '#153A48' },
+    reader: { bg: '#F5FCFF', text: '#1A2C36' },
+  },
+  red: {
+    cardFront: { bg: '#FFD6DC', text: '#4A1520' },
+    cardBack: { bg: '#FFC2CB', text: '#5E1A24' },
+    reader: { bg: '#FFFBFC', text: '#3D1818' },
+  },
+  purple: {
+    cardFront: { bg: '#E9E3FF', text: '#31224A' },
+    cardBack: { bg: '#DDD4FC', text: '#3A2856' },
+    reader: { bg: '#FAF8FF', text: '#2D2240' },
   },
 }
 
-/** Defaults for custom pickers and null `surfaces` fields — same as calm-light. */
+/**
+ * Warm hell — satter als Pastell, angelehnt an warme UI-Paletten (Cream/Wheat/Terracotta/Sage),
+ * z. B. colormagic „Sunkissed Terracotta“, „Warm Amber“ (Maize/Cream-Töne).
+ */
+const WARM_LIGHT_BY_HUE: Readonly<Record<ThemeHueId, ThemeSource>> = {
+  yellow: {
+    cardFront: { bg: '#FFE9A8', text: '#5C3D06' },
+    cardBack: { bg: '#FFD978', text: '#6B4700' },
+    reader: { bg: '#FFFAF0', text: '#422508' },
+  },
+  green: {
+    cardFront: { bg: '#DCE8D6', text: '#2A3D24' },
+    cardBack: { bg: '#C5D6B8', text: '#253320' },
+    reader: { bg: '#F5F8F2', text: '#1E2A18' },
+  },
+  blue: {
+    cardFront: { bg: '#C3DAE8', text: '#162F3D' },
+    cardBack: { bg: '#A7C8DC', text: '#183544' },
+    reader: { bg: '#EEF6FA', text: '#142A36' },
+  },
+  red: {
+    cardFront: { bg: '#EFC4B2', text: '#4A2318' },
+    cardBack: { bg: '#E0A890', text: '#542818' },
+    reader: { bg: '#FDF7F4', text: '#3D1F16' },
+  },
+  purple: {
+    cardFront: { bg: '#DEC4DA', text: '#3A2136' },
+    cardBack: { bg: '#CEA8C8', text: '#42243C' },
+    reader: { bg: '#FAF5F9', text: '#341C30' },
+  },
+}
+
+/** Hoher Kontrast — ein gemeinsames Sechser-Set (Hell/Dunkel-Modus egal). */
+export const PRESET_HIGH_CONTRAST: ThemeSource = {
+  cardFront: { bg: '#ffffff', text: '#000000' },
+  cardBack: { bg: '#000000', text: '#ffffff' },
+  reader: { bg: '#ffffff', text: '#000000' },
+}
+
+/** Defaults für „Eigene Farben“ — Pastell · Blau hell. */
 export const CALM_LIGHT_PICKER_DEFAULTS: Record<SurfaceId, { bg: string; text: string }> = {
-  'card-front': {
-    bg: PRESET_SOURCE['calm-light'].cardFront.bg,
-    text: PRESET_SOURCE['calm-light'].cardFront.text,
-  },
-  'card-back': {
-    bg: PRESET_SOURCE['calm-light'].cardBack.bg,
-    text: PRESET_SOURCE['calm-light'].cardBack.text,
-  },
-  reader: {
-    bg: PRESET_SOURCE['calm-light'].reader.bg,
-    text: PRESET_SOURCE['calm-light'].reader.text,
-  },
+  'card-front': { bg: PASTEL_LIGHT_BY_HUE.blue.cardFront.bg, text: PASTEL_LIGHT_BY_HUE.blue.cardFront.text },
+  'card-back': { bg: PASTEL_LIGHT_BY_HUE.blue.cardBack.bg, text: PASTEL_LIGHT_BY_HUE.blue.cardBack.text },
+  reader: { bg: PASTEL_LIGHT_BY_HUE.blue.reader.bg, text: PASTEL_LIGHT_BY_HUE.blue.reader.text },
+}
+
+function rgbToHsl(r255: number, g255: number, b255: number): [number, number, number] {
+  const r = r255 / 255
+  const g = g255 / 255
+  const b = b255 / 255
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  const l = (max + min) / 2
+  if (max - min < 1e-9) return [0, 0, l]
+  const d = max - min
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max - min)
+  let h = 0
+  switch (max) {
+    case r:
+      h = ((g - b) / d + (g < b ? 6 : 0)) / 6
+      break
+    case g:
+      h = ((b - r) / d + 2) / 6
+      break
+    default:
+      h = ((r - g) / d + 4) / 6
+      break
+  }
+  return [h, s, l]
+}
+
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  const hue2rgb = (p: number, q: number, t: number) => {
+    let tt = t
+    if (tt < 0) tt += 1
+    if (tt > 1) tt -= 1
+    if (tt < 1 / 6) return p + (q - p) * 6 * tt
+    if (tt < 1 / 2) return q
+    if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6
+    return p
+  }
+  let r: number
+  let g: number
+  let b: number
+  if (s < 1e-9) {
+    r = g = b = l
+  } else {
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s
+    const p = 2 * l - q
+    r = hue2rgb(p, q, h + 1 / 3)
+    g = hue2rgb(p, q, h)
+    b = hue2rgb(p, q, h - 1 / 3)
+  }
+  return [r * 255, g * 255, b * 255]
 }
 
 function parseHex6(hex: string): [number, number, number] {
@@ -63,6 +159,69 @@ function toHex6(r: number, g: number, b: number): string {
       .toString(16)
       .padStart(2, '0')
   return `#${c(r)}${c(g)}${c(b)}`
+}
+
+/** Dominanter Farbton eines Hex-Werts in Grad (0–360), u. a. für Tests. */
+export function hexHueDegrees(hex: string): number {
+  const [r, g, b] = parseHex6(hex)
+  const [h] = rgbToHsl(r, g, b)
+  return h * 360
+}
+
+/** Etwas kräftigerer Ton auf derselben Hue — für Verläufe und Links ohne festes Blau. */
+function tonalAccent(
+  hex: string,
+  opts: { satBump: number; lightBump: number; satCap?: number; lightCap?: number },
+): string {
+  const [r, g, b] = parseHex6(hex)
+  const [h, s, l] = rgbToHsl(r, g, b)
+  const satCap = opts.satCap ?? 0.68
+  const lightCap = opts.lightCap ?? 0.58
+  const sn = Math.min(satCap, Math.max(0, s + opts.satBump))
+  const ln = Math.min(lightCap, Math.max(0, Math.min(1, l + opts.lightBump)))
+  return toHex6(...hslToRgb(h, sn, ln))
+}
+
+/** Dunkles Pastell aus dem hellen Sechser-Set (weiche Sättigung). */
+function pastelDarkFromLight(light: ThemeSource): ThemeSource {
+  const deep = (hex: string, floorL: number) => {
+    const [r, g, b] = parseHex6(hex)
+    const [h, s, l] = rgbToHsl(r, g, b)
+    const lNew = Math.max(0.1, Math.min(0.26, floorL + l * 0.07))
+    const sNew = Math.max(0.08, Math.min(0.3, s * 0.72 + 0.07))
+    return toHex6(...hslToRgb(h, sNew, lNew))
+  }
+  const fg = (tintHex: string) => {
+    const [r, g, b] = parseHex6(tintHex)
+    const [h] = rgbToHsl(r, g, b)
+    return toHex6(...hslToRgb(h, 0.04, 0.92))
+  }
+  return {
+    cardFront: { bg: deep(light.cardFront.bg, 0.14), text: fg(light.cardFront.bg) },
+    cardBack: { bg: deep(light.cardBack.bg, 0.16), text: fg(light.cardBack.bg) },
+    reader: { bg: deep(light.reader.bg, 0.12), text: fg(light.reader.bg) },
+  }
+}
+
+/** Dunkles Warm-Preset aus dem hellen Sechser-Set. */
+function warmDarkThemeFromLight(light: ThemeSource): ThemeSource {
+  const deep = (hex: string, floorL: number) => {
+    const [r, g, b] = parseHex6(hex)
+    const [h, s, l] = rgbToHsl(r, g, b)
+    const lNew = Math.max(0.08, Math.min(0.24, floorL + l * 0.06))
+    const sNew = Math.max(0.12, Math.min(0.42, s * 0.9 + 0.14))
+    return toHex6(...hslToRgb(h, sNew, lNew))
+  }
+  const fg = (tintHex: string) => {
+    const [r, g, b] = parseHex6(tintHex)
+    const [h] = rgbToHsl(r, g, b)
+    return toHex6(...hslToRgb(h, 0.05, 0.91))
+  }
+  return {
+    cardFront: { bg: deep(light.cardFront.bg, 0.13), text: fg(light.cardFront.bg) },
+    cardBack: { bg: deep(light.cardBack.bg, 0.15), text: fg(light.cardBack.bg) },
+    reader: { bg: deep(light.reader.bg, 0.11), text: fg(light.reader.bg) },
+  }
 }
 
 /** t=0 -> a, t=1 -> b */
@@ -103,11 +262,36 @@ function isGlobalLightTheme(s: ThemeSource): boolean {
   return isLightBackground(blend)
 }
 
+export function presetSourceFor(preset: ThemePresetId, mode: 'light' | 'dark'): ThemeSource {
+  if (preset === 'high-contrast') return PRESET_HIGH_CONTRAST
+
+  const colon = preset.indexOf(':')
+  if (colon === -1) {
+    return PASTEL_LIGHT_BY_HUE.blue
+  }
+  const family = preset.slice(0, colon)
+  const hueId = preset.slice(colon + 1)
+  if (!isThemeHueId(hueId)) {
+    return PASTEL_LIGHT_BY_HUE.blue
+  }
+
+  if (family === 'pastel') {
+    const light = PASTEL_LIGHT_BY_HUE[hueId]
+    return mode === 'light' ? light : pastelDarkFromLight(light)
+  }
+  if (family === 'warm') {
+    const light = WARM_LIGHT_BY_HUE[hueId]
+    return mode === 'light' ? light : warmDarkThemeFromLight(light)
+  }
+  return PASTEL_LIGHT_BY_HUE.blue
+}
+
 /**
- * Resolves the six source colours for any theme. Presets use {@link PRESET_SOURCE};
- * custom merges stored surfaces with {@link CALM_LIGHT_PICKER_DEFAULTS} for nulls.
+ * Resolves the six source colours. Built-in presets use Pastell/Warm (hell
+ * oder dunkel je `mode`) bzw. High Contrast; `custom` nutzt nur gespeicherte
+ * Surfaces (`mode` wird ignoriert).
  */
-export function resolveThemeSource(prefs: UiPrefs): ThemeSource {
+export function resolveThemeSource(prefs: UiPrefs, mode: 'light' | 'dark' = 'light'): ThemeSource {
   if (prefs.theme === 'custom') {
     const patchSurfaces =
       prefs.surfaces && typeof prefs.surfaces === 'object' && !Array.isArray(prefs.surfaces)
@@ -147,9 +331,9 @@ export function resolveThemeSource(prefs: UiPrefs): ThemeSource {
     }
   }
   if (isThemePresetId(prefs.theme)) {
-    return PRESET_SOURCE[prefs.theme]
+    return presetSourceFor(prefs.theme, mode)
   }
-  return PRESET_SOURCE['calm-light']
+  return presetSourceFor('pastel:blue', mode)
 }
 
 /**
@@ -171,7 +355,10 @@ export function deriveInfl0TokensFromSource(s: ThemeSource): Record<string, stri
   const canvasFgMuted = mixHex(Pt, appBg, 0.32)
 
   const gradA = Pbg
-  const gradB = light ? mixHex(mixHex(Pbg, '#60a5fa', 0.28), '#bfdbfe', 0.4) : mixHex(Pbg, '#000000', 0.25)
+  const gradAccent = tonalAccent(Pbg, { satBump: 0.2, lightBump: 0.08, lightCap: 0.55 })
+  const gradB = light
+    ? mixHex(mixHex(Pbg, gradAccent, 0.52), mixHex(Pbg, '#ffffff', 0.45), 0.38)
+    : mixHex(Pbg, '#000000', 0.25)
 
   const surfaceFrontBg = light ? mixHex(Pbg, '#ffffff', 0.32) : mixHex(Pbg, Sbg, 0.2)
   const surfaceFrontText = Pt
@@ -211,8 +398,14 @@ export function deriveInfl0TokensFromSource(s: ThemeSource): Record<string, stri
   const fieldBorder = mixHex(panelBg, panelText, 0.18)
   const surfaceDim = mixHex(panelBg, appBg, 0.25)
 
-  const controlSelBorder = mixHex(mixHex(Pbg, panelBg, 0.2), mixHex(Pt, '#3b82f6', 0.2), 0.5)
-  const controlSelBg = light ? mixHex(panelBg, '#3b82f6', 0.14) : mixHex(panelBg, '#3b82f6', 0.22)
+  const controlAccent = tonalAccent(Pbg, {
+    satBump: light ? 0.32 : 0.22,
+    lightBump: light ? -0.12 : 0.08,
+    satCap: 0.72,
+    lightCap: light ? 0.48 : 0.55,
+  })
+  const controlSelBorder = mixHex(mixHex(Pbg, panelBg, 0.2), mixHex(Pt, controlAccent, 0.22), 0.5)
+  const controlSelBg = light ? mixHex(panelBg, controlAccent, 0.14) : mixHex(panelBg, controlAccent, 0.22)
 
   const chromeSurface = light ? mixHex('#ffffff', Pbg, 0.04) : mixHex(Sbg, Pbg, 0.3)
   const chromeBorder = mixHex(chromeSurface, isLightBackground(chromeSurface) ? Pbg : St, 0.14)
@@ -251,7 +444,15 @@ export function deriveInfl0TokensFromSource(s: ThemeSource): Record<string, stri
   const trustLinkHover = mixHex(trustLink, trustFg, 0.15)
 
   const lightReader = isLightBackground(Rbg)
-  const readerLink = lightReader ? mixHex(Rt, '#1d4ed8', 0.28) : mixHex(Rt, '#93c5fd', 0.22)
+  const readerLinkAccent = tonalAccent(mixHex(Rbg, Pbg, 0.35), {
+    satBump: lightReader ? 0.28 : 0.12,
+    lightBump: lightReader ? -0.38 : 0.18,
+    satCap: 0.75,
+    lightCap: lightReader ? 0.42 : 0.72,
+  })
+  const readerLink = lightReader
+    ? mixHex(Rt, readerLinkAccent, 0.3)
+    : mixHex(Rt, readerLinkAccent, 0.24)
   const readerCodeBg = mixHex(Rbg, Rt, 0.1)
   const readerCodeFg = mixHex(Rt, Rbg, 0.06)
   const readerProseMuted = mixHex(Rt, Rbg, 0.38)
@@ -333,12 +534,31 @@ export function themeSourceToStyleAttr(tokens: Readonly<Record<string, string>>)
     .join('; ')
 }
 
+/** Light vs dark for HTML chrome only (not persisted as a theme id). */
+export type UiChromeAppearance = 'light' | 'dark'
+
+export type BuildThemeHtmlStyleOptions = {
+  /**
+   * Hell/dunkel: steuert `color-scheme`, Daisy `data-theme` und (bei Presets)
+   * welches helle/dunkle Farbpaar in die Token-Pipeline geht. `custom` ignoriert
+   * die Paarwahl für die Sechs Farben.
+   */
+  effectiveAppearance?: UiChromeAppearance
+}
+
 /**
  * Full inline `style` for `<html>`. Always emitted so SSR and every preset
  * share the same pipeline (six sources → all tokens).
  */
-export function buildThemeHtmlStyle(prefs: UiPrefs): string {
-  const source = resolveThemeSource(prefs)
+export function buildThemeHtmlStyle(
+  prefs: UiPrefs,
+  options?: BuildThemeHtmlStyleOptions,
+): string {
+  const chrome: UiChromeAppearance = options?.effectiveAppearance ?? 'light'
+  const pairMode: 'light' | 'dark' = chrome === 'dark' ? 'dark' : 'light'
+  const source = resolveThemeSource(prefs, pairMode)
   const tokens = deriveInfl0TokensFromSource(source)
-  return themeSourceToStyleAttr(tokens)
+  const base = themeSourceToStyleAttr(tokens)
+  const cs = chrome === 'dark' ? 'dark' : 'light'
+  return `${base}; color-scheme: ${cs}`
 }

@@ -48,25 +48,45 @@
   },
   "settingsDisplay": {
     "heading": "Darstellung",
-    "intro": "Thema und Lesemodus. „Eigene Farben“ nutzen dieselbe dreigeteilte Logik wie die Standardthemen — alles leitet sich aus Primär-, Sekundär- und Leseansicht ab.",
-    "themeLabel": "Thema",
-    "themeHint": "Die Vorschau unten zeigt dir sofort, wie sich deine Auswahl auf Kartenvorder- und Rückseite sowie den Volltext auswirkt.",
+    "intro": "Zuerst wählst du, ob die App hell, dunkel oder wie dein Gerät aussehen soll. Danach die Farbpalette. Eigene Farben bleiben unverändert, wie du sie setzt.",
+    "themeLabel": "Farbpalette",
+    "themeHint": "Die Kacheln zeigen immer die helle Variante (Pastell weich, Warm kräftiger). Deine Hell-/Dunkel-Einstellung oben gilt für die ganze App. Darunter: starker Kontrast oder eigene Farben.",
+    "themePastelGroup": "Pastell",
+    "themeWarmGroup": "Warm",
+    "appearanceLabel": "Hell oder dunkel",
+    "appearanceHint": "Legt die Stimmung für die eingebauten Paletten fest: heller Tag, dunkle Nacht oder wie Telefon oder Computer. Eigene Farben unter „Eigene Farben“ werden davon nicht verändert.",
+    "appearanceOptions": {
+      "auto": {
+        "label": "Wie mein Gerät",
+        "hint": "Wenn du am System zwischen hell und dunkel wechselst, passt sich infl0 an."
+      },
+      "light": {
+        "label": "Immer hell",
+        "hint": "Nutzt immer die helle Variante deiner gewählten Palette."
+      },
+      "dark": {
+        "label": "Immer dunkel",
+        "hint": "Nutzt immer die dunkle Variante deiner gewählten Palette."
+      }
+    },
     "themeOptions": {
-      "calm-light": {
-        "label": "Ruhig & hell",
-        "hint": "Helles Grau als Seitenhintergrund, pastellblaue Timeline-Kacheln, helle Menü- und Einstellungsflächen. Der Standard."
-      },
-      "warm-dark": {
-        "label": "Warm & dunkel",
-        "hint": "Wie die Timeline-Kacheln: dunkles Blaugrau. Der Seitenhintergrund ist extra dunkel, damit helle Schrift klar erkennbar bleibt."
-      },
-      "high-contrast": {
+      "pastel_yellow": { "label": "Pastell · Gelb", "hint": "Weiche Pastelltöne mit Gelbstich." },
+      "pastel_green": { "label": "Pastell · Grün", "hint": "Weiche Pastelltöne mit Grünstich." },
+      "pastel_blue": { "label": "Pastell · Blau", "hint": "Weiche Pastelltöne mit Blaustich." },
+      "pastel_red": { "label": "Pastell · Rot", "hint": "Weiche Pastelltöne mit Rotstich." },
+      "pastel_purple": { "label": "Pastell · Lila", "hint": "Weiche Pastelltöne mit Lilastich." },
+      "warm_yellow": { "label": "Warm · Gelb", "hint": "Wärmere Töne mit Gelbstich." },
+      "warm_green": { "label": "Warm · Grün", "hint": "Wärmere Töne mit Grünstich." },
+      "warm_blue": { "label": "Warm · Blau", "hint": "Wärmere Töne mit Blaustich." },
+      "warm_red": { "label": "Warm · Rot", "hint": "Wärmere Töne mit Rotstich." },
+      "warm_purple": { "label": "Warm · Lila", "hint": "Wärmere Töne mit Lilastich." },
+      "highContrast": {
         "label": "Starker Kontrast",
-        "hint": "Reines Schwarz und Weiß. Maximal lesbar, wenn niedrige Kontraste dir schwerfallen."
+        "hint": "Kräftiges Schwarz und Weiß für maximalen Kontrast."
       },
       "custom": {
         "label": "Eigene Farben",
-        "hint": "Wie bei den Standardthemen: drei Gruppen (Primär, Sekundär, Leseansicht), der Rest wird daraus berechnet."
+        "hint": "Du setzt Primär-, Sekundär- und Lesefarben; der Rest wird daraus berechnet."
       }
     },
     "customColors": {

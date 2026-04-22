@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useEffectiveAppearance } from '~/composables/useEffectiveAppearance'
 import { buildThemeHtmlStyle } from '~/utils/infl0-theme-derive'
 
 // Keep `<html lang>` (and hreflang/meta) aligned with the active i18n locale
@@ -10,42 +11,31 @@ const i18nHead = useLocaleHead({
 })
 
 /**
- * Reflect the user's UI preferences on `<html>` as `data-*` attributes.
- * CSS hooks onto these attributes to honour `motion: reduced|standard`
- * regardless of the OS `prefers-reduced-motion` setting, and (future)
- * `data-infl0-theme` names the product preset (incl. custom). We intentionally do NOT
- * use `data-theme` on `<html>` — DaisyUI also binds that attribute to
- * its own colour schemes; sharing it caused a white `body` while our
- * CSS variables still assumed a dark “canvas” in high-contrast.
+ * Schreibt UI-Prefs auf `<html>`: Bewegung, gewählte Farbpalette und
+ * hell/dunkel. Komponenten-Bibliothek und native Bedienelemente folgen der
+ * effektiven hell/dunkel-Ansicht; die App-Farben kommen aus den infl0-Tokens
+ * im `style`-Attribut.
  *
- * We mount the composable in `app.vue` so hydration runs once for the
- * whole app, not once per layout. During SSR the state equals
- * `defaultUiPrefs()` (motion `system`, theme `calm-light`), so the
- * initial HTML matches the OS-controlled baseline; the client updates
- * reactively after `/api/me/ui-prefs` resolves.
+ * Mount hier, damit Hydration einmal für die ganze App läuft. SSR startet mit
+ * `defaultUiPrefs()`; nach `/api/me/ui-prefs` aktualisiert sich der Client.
  */
 const { prefs: uiPrefs } = useUiPrefs()
+const { effectiveAppearance } = useEffectiveAppearance()
 
 useHead(() => {
-  const tokenStyle = buildThemeHtmlStyle(uiPrefs.value)
+  const tokenStyle = buildThemeHtmlStyle(uiPrefs.value, {
+    effectiveAppearance: effectiveAppearance.value,
+  })
+  const daisyTheme = effectiveAppearance.value === 'dark' ? 'dark' : 'light'
   return {
     htmlAttrs: {
       ...(i18nHead.value.htmlAttrs ?? {}),
       'data-motion': uiPrefs.value.motion,
-      /**
-       * Preset id for Daisy-free hooks; all `--infl0-*` colours come from
-       * `buildThemeHtmlStyle` (six source colours → full token set).
-       */
+      /** Gespeicherte Farbpalette (Preset inkl. eigene Farben). */
       'data-infl0-theme': uiPrefs.value.theme,
-      /**
-       * Keep DaisyUI on a well-known built-in skin. We used to store *our*
-       * preset name in `data-theme`, which is also Daisy’s theme switcher —
-       * `high-contrast` / `calm-light` are not valid Daisy theme ids and the
-       * whole document fell back to a light body while our tokens still
-       * described a different canvas. `data-infl0-theme` is the real hook.
-       */
-      'data-theme': 'light',
-      /** Always set: derived from primary / secondary / reader sources (`utils/infl0-theme-derive.ts`). */
+      /** Hell- oder dunkel-Modus für die UI-Bibliothek (passt zu `effectiveAppearance`). */
+      'data-theme': daisyTheme,
+      /** Vollständige infl0-Farb-Tokens aus den gewählten Quellfarben. */
       style: tokenStyle,
     },
     link: i18nHead.value.link ?? [],

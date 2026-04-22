@@ -127,6 +127,9 @@ function mountPage() {
         SettingsThemePreview: {
           template: '<div data-testid="theme-preview-stub" />',
         },
+        SettingsAppearanceControl: {
+          template: '<div data-testid="appearance-control-stub" />',
+        },
       },
     },
   })
@@ -140,7 +143,7 @@ describe('SettingsIndex page', () => {
     expect(h1s[0].text()).toBe('Settings')
   })
 
-  it('exposes a Darstellung section with heading + theme picker + preview + motion control', () => {
+  it('exposes a Darstellung section with appearance, theme, preview, and motion controls', () => {
     const wrapper = mountPage()
     const heading = wrapper.find('#settings-display-heading')
     expect(heading.exists()).toBe(true)
@@ -151,6 +154,7 @@ describe('SettingsIndex page', () => {
     // outline — adding or removing one by accident surfaces loudly.
     expect(wrapper.find('[data-testid="theme-control-stub"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="theme-preview-stub"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="appearance-control-stub"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="motion-control-stub"]').exists()).toBe(true)
   })
 

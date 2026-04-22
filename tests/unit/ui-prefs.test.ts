@@ -17,8 +17,9 @@ describe('ui-prefs data layer', () => {
     it('ships a stable shape for card-front, card-back and reader', () => {
       const d = defaultUiPrefs()
       expect(d.version).toBe(UI_PREFS_VERSION)
-      expect(d.theme).toBe('calm-light')
+      expect(d.theme).toBe('pastel:blue')
       expect(d.motion).toBe('system')
+      expect(d.appearance).toBe('auto')
       expect(Object.keys(d.surfaces).sort()).toEqual(['card-back', 'card-front', 'reader'])
       expect(d.seenFeatureAnnouncements).toEqual([])
     })
@@ -55,7 +56,7 @@ describe('ui-prefs data layer', () => {
     it('keeps known fields and drops unknown ones', () => {
       const parsed = parseUiPrefsFromJson({
         v: 1,
-        theme: 'warm-dark',
+        theme: 'warm:blue',
         motion: 'reduced',
         unknownTopLevel: 'ignored',
         surfaces: {
@@ -72,11 +73,59 @@ describe('ui-prefs data layer', () => {
         seenFeatureAnnouncements: ['reader-colors', '   ', 42, 'reader-colors', 'new-surface'],
       })
       expect(parsed).not.toBeNull()
-      expect(parsed?.theme).toBe('warm-dark')
+      expect(parsed?.theme).toBe('warm:blue')
       expect(parsed?.motion).toBe('reduced')
+      expect(parsed?.appearance).toBe('light')
       expect(parsed?.surfaces['card-front'].backgroundColor).toBe('#112233')
       expect(parsed?.surfaces['card-front'].fontSize).toBe(20)
       expect(parsed?.seenFeatureAnnouncements).toEqual(['reader-colors', 'new-surface'])
+    })
+
+    it('defaults appearance to light when the stored blob omits it (legacy)', () => {
+      const parsed = parseUiPrefsFromJson({
+        v: 1,
+        theme: 'pastel:green',
+        motion: 'system',
+        surfaces: defaultUiPrefs().surfaces,
+        seenFeatureAnnouncements: [],
+      })
+      expect(parsed?.appearance).toBe('light')
+    })
+
+    it('keeps a valid appearance field when present', () => {
+      const parsed = parseUiPrefsFromJson({
+        v: 1,
+        theme: 'pastel:green',
+        motion: 'system',
+        appearance: 'dark',
+        surfaces: defaultUiPrefs().surfaces,
+        seenFeatureAnnouncements: [],
+      })
+      expect(parsed?.appearance).toBe('dark')
+    })
+
+    it('migrates legacy warm-dark to warm:blue and dark when appearance omitted', () => {
+      const parsed = parseUiPrefsFromJson({
+        v: 1,
+        theme: 'warm-dark',
+        motion: 'system',
+        surfaces: defaultUiPrefs().surfaces,
+        seenFeatureAnnouncements: [],
+      })
+      expect(parsed?.theme).toBe('warm:blue')
+      expect(parsed?.appearance).toBe('dark')
+    })
+
+    it('migrates legacy calm-light to pastel:blue', () => {
+      const parsed = parseUiPrefsFromJson({
+        v: 1,
+        theme: 'calm-light',
+        motion: 'system',
+        surfaces: defaultUiPrefs().surfaces,
+        seenFeatureAnnouncements: [],
+      })
+      expect(parsed?.theme).toBe('pastel:blue')
+      expect(parsed?.appearance).toBe('light')
     })
 
     it('falls back to defaults for invalid enum values and malformed colors', () => {
@@ -97,6 +146,7 @@ describe('ui-prefs data layer', () => {
       const d = defaultUiPrefs()
       expect(parsed?.theme).toBe(d.theme)
       expect(parsed?.motion).toBe(d.motion)
+      expect(parsed?.appearance).toBe('light')
       expect(parsed?.surfaces.reader).toEqual(d.surfaces.reader)
     })
   })
@@ -123,12 +173,14 @@ describe('ui-prefs data layer', () => {
       const base = defaultUiPrefs()
       const next = applyUiPrefsPatch(base, {
         motion: 'reduced',
+        appearance: 'dark',
         surfaces: {
           'card-front': { backgroundColor: '#abcdef', fontSize: 22 },
           reader: { lineHeight: 'tight' },
         },
       })
       expect(next.motion).toBe('reduced')
+      expect(next.appearance).toBe('dark')
       expect(next.surfaces['card-front'].backgroundColor).toBe('#abcdef')
       expect(next.surfaces['card-front'].fontSize).toBe(22)
       expect(next.surfaces['card-front'].textColor).toBe(base.surfaces['card-front'].textColor)

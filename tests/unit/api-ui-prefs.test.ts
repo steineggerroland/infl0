@@ -55,6 +55,7 @@ describe('/api/me/ui-prefs', () => {
         v: 1,
         theme: defaults.theme,
         motion: defaults.motion,
+        appearance: defaults.appearance,
         surfaces: defaults.surfaces,
         seenFeatureAnnouncements: [],
       })
@@ -79,8 +80,9 @@ describe('/api/me/ui-prefs', () => {
       const res = await getHandler(mockEvent())
       expect(res).toMatchObject({
         v: 1,
-        theme: 'warm-dark',
+        theme: 'warm:blue',
         motion: 'reduced',
+        appearance: 'dark',
       })
       expect(res.surfaces['card-front'].backgroundColor).toBe('#112233')
       expect(res.seenFeatureAnnouncements).toEqual(['reader-colors'])
@@ -185,6 +187,7 @@ describe('/api/me/ui-prefs', () => {
         v: 1,
         theme: defaults.theme,
         motion: defaults.motion,
+        appearance: defaults.appearance,
       })
     })
   })

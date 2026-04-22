@@ -1,8 +1,7 @@
 <script setup lang="ts">
 /**
- * Per-surface background and text color pickers when `theme === 'custom'`.
- * Values are stored in `UiPrefs.surfaces` and mapped to `--infl0-*` on
- * `<html>` via `buildThemeHtmlStyle` in `app.vue`.
+ * Farbwahl für „Eigene Farben“: drei Flächen (Vorderseite, Rückseite, Leser).
+ * Gespeichert in `UiPrefs.surfaces`; die Darstellung übernimmt das Theme.
  */
 import { CALM_LIGHT_PICKER_DEFAULTS } from '~/utils/infl0-theme-derive'
 import { SURFACE_IDS, type SurfaceId } from '~/utils/ui-prefs'

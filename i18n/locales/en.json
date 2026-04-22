@@ -48,25 +48,45 @@
   },
   "settingsDisplay": {
     "heading": "Display",
-    "intro": "Theme and reading mode. “Custom colors” use the same three-way split as the built-in themes — everything is derived from primary, secondary and reader colors.",
-    "themeLabel": "Theme",
-    "themeHint": "The preview below shows the effect on the card front, card back and the full-text reader as soon as you pick a theme.",
+    "intro": "First choose whether you prefer a light or dark look (or follow your device). Then pick a colour palette. Custom colours stay exactly as you set them.",
+    "themeLabel": "Colour palette",
+    "themeHint": "Swatches always show the light variant (pastel is softer, warm is richer). Your light/dark setting above applies to the whole app. Below: high contrast or custom colours.",
+    "themePastelGroup": "Pastel",
+    "themeWarmGroup": "Warm",
+    "appearanceLabel": "Light or dark",
+    "appearanceHint": "Sets the overall mood for built-in palettes: bright day look, night look, or the same as your phone or computer. Does not change colours you set yourself under “Custom colours”.",
+    "appearanceOptions": {
+      "auto": {
+        "label": "Same as my device",
+        "hint": "When you switch the system between light and dark, infl0 follows."
+      },
+      "light": {
+        "label": "Always light",
+        "hint": "Keeps the bright variant of your chosen palette."
+      },
+      "dark": {
+        "label": "Always dark",
+        "hint": "Keeps the dark variant of your chosen palette."
+      }
+    },
     "themeOptions": {
-      "calm-light": {
-        "label": "Calm & light",
-        "hint": "Light grey page canvas, pastel blue timeline cards, bright menu and settings panels. The default."
-      },
-      "warm-dark": {
-        "label": "Warm & dark",
-        "hint": "Same family as the timeline cards (dark blue-grey). The page canvas is extra deep so light text stays clearly readable."
-      },
-      "high-contrast": {
+      "pastel_yellow": { "label": "Pastel · yellow", "hint": "Soft pastel look with a yellow tint." },
+      "pastel_green": { "label": "Pastel · green", "hint": "Soft pastel look with a green tint." },
+      "pastel_blue": { "label": "Pastel · blue", "hint": "Soft pastel look with a blue tint." },
+      "pastel_red": { "label": "Pastel · red", "hint": "Soft pastel look with a red tint." },
+      "pastel_purple": { "label": "Pastel · purple", "hint": "Soft pastel look with a purple tint." },
+      "warm_yellow": { "label": "Warm · yellow", "hint": "Warmer tones with a yellow tint." },
+      "warm_green": { "label": "Warm · green", "hint": "Warmer tones with a green tint." },
+      "warm_blue": { "label": "Warm · blue", "hint": "Warmer tones with a blue tint." },
+      "warm_red": { "label": "Warm · red", "hint": "Warmer tones with a red tint." },
+      "warm_purple": { "label": "Warm · purple", "hint": "Warmer tones with a purple tint." },
+      "highContrast": {
         "label": "High contrast",
-        "hint": "Pure black and white. Maximum readability if low contrast is hard for you."
+        "hint": "Strong black and white for maximum contrast."
       },
       "custom": {
-        "label": "Custom colors",
-        "hint": "Like the built-in themes: three groups (primary, secondary, reader) — the rest is computed from them."
+        "label": "Custom colours",
+        "hint": "You choose primary, secondary and reader colours; everything else is derived from them."
       }
     },
     "customColors": {

@@ -51,7 +51,7 @@ describe('SettingsCustomThemeColors', () => {
   })
 
   it('is hidden when theme is not custom', () => {
-    sharedPrefs.value = { ...defaultUiPrefs(), theme: 'calm-light' }
+    sharedPrefs.value = { ...defaultUiPrefs(), theme: 'pastel:blue' }
     const w = mountWithI18n()
     expect(w.find('[data-testid="custom-theme-colors"]').exists()).toBe(false)
   })
