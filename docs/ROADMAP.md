@@ -194,17 +194,18 @@ wenn sie kontrolliert und ruhig bleiben.
 
 Dieses Feld zahlt direkt auf Alltagstauglichkeit und A11y ein.
 
+> Lesbarkeit pro Surface (Karten/Reader), freie Farben mit Presets, Motion-
+> Setting, Textgrößen-Shortcut, self-hosted Fonts und neuer Settings-Bereich
+> sind ausgelagert nach
+> [`planned/readability-settings.md`](./planned/readability-settings.md).
+
 **Große Chancen**
 
-- **Lesbarkeits-Paket**:
-  Schriftgröße, Zeilenabstand, ggf. Schriftart als zusammenhängende Einstellung.
-- **Theme-System**:
-  `system | light | dark`, stabil und ohne FOUC.
-- **Reduzierte Bewegung als explizite App-Einstellung**:
-  zusätzlich zum System-`prefers-reduced-motion`.
 - **Visuelle Zuordnung mit Zurückhaltung**:
   Quelle oder Themencluster über Typo, Abstand und kleine Akzente statt
-  bunter Bilderlawine.
+  bunter Bilderlawine. Ergänzt die Lesbarkeitseinstellungen, ist aber ein
+  eigenes Paket, weil es Quelle/Thema semantisch behandelt, nicht
+  individuelle Vorlieben.
 
 **Spätere Erweiterungen**
 
@@ -302,11 +303,13 @@ Nicht alles hiervon ist sofort ein Paket. Die Liste ist bewusst grobkörnig.
 
 ### Darstellung & Arbeitsumgebung
 
-- Dark / Light / System
-- Lesbarkeits-Paket
-- App-seitige reduzierte Bewegung
 - Ruhige visuelle Quellen-/Themenakzente
 - Fokus-/Offline-Lesemodus
+
+> Lesbarkeits-Paket, Themes (inkl. Dark/Light), App-seitig reduzierte
+> Bewegung und der Textgrößen-Shortcut sind aus dem Ideenpool gezogen
+> und werden in [`planned/readability-settings.md`](./planned/readability-settings.md)
+> beschrieben.
 
 ### Medien
 
@@ -357,12 +360,17 @@ Eine Idee ist reif für `planned/`, wenn sie:
 - grob in 1-3 Iterationen beschreibbar ist,
 - erkennbare Risiken oder Abhängigkeiten hat.
 
-Gute Kandidaten für die ersten Pakete:
+Bereits als Paket vorhanden:
 
-1. `readability-and-theme-settings.md`
-2. `capture-and-knowledge-inbox.md`
-3. `article-and-knowledge-search.md`
-4. `source-health-and-suggestions.md`
+- [`planned/readability-settings.md`](./planned/readability-settings.md) —
+  Lesbarkeit pro Surface, freie Farben + Presets, Motion, Shortcuts,
+  self-hosted Fonts, neuer Settings-Bereich.
+
+Gute Kandidaten für die nächsten Pakete:
+
+1. `capture-and-knowledge-inbox.md`
+2. `article-and-knowledge-search.md`
+3. `source-health-and-suggestions.md`
 
 ---
 

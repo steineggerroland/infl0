@@ -19,7 +19,7 @@ Akzeptanzkriterien — getrennt von der großen Ideensammlung in
 
 | Paket | Kurzbeschreibung | Status |
 |-------|------------------|--------|
-| [`readability-settings.md`](./readability-settings.md) | Theme, Motion, Schrift/Abstand in den Settings | Entwurf |
+| [`readability-settings.md`](./readability-settings.md) | Lesbarkeit pro Surface (Karten/Reader), freie Farben + Presets, Motion, Shortcuts | Entwurf |
 
 *(Weitere Pakete: Zeile hinzufügen, wenn ein neues Markdown angelegt wird.)*
 
