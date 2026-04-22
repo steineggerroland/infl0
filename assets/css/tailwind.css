@@ -139,13 +139,47 @@
 }
 
 /*
- * DaisyUI `<dialog class="modal">` animates the native `::backdrop` in some
- * themes. Scoped SFC styles may not ship on routes that never mount the
- * dialog component, so this lives in global CSS and is covered by e2e.
+ * Reduced-motion contract.
+ *
+ * Three paths end up with "reduce animations":
+ *
+ *   1. OS asks (`prefers-reduced-motion: reduce`) AND the user did NOT
+ *      opt out via `<html data-motion="standard">`.
+ *   2. The user explicitly picked `Settings → Bewegung → reduziert`, so
+ *      `<html data-motion="reduced">` carries the choice.
+ *
+ * Case 1 matches the long-standing default. Case 2 lets people who
+ * disabled the OS-level toggle (or whose device doesn't expose one)
+ * still get a calmer app. `data-motion="system"` is the baseline — it
+ * simply follows the media query.
+ *
+ * The attribute lands on `<html>` via `app.vue` + `useUiPrefs()`. SSR
+ * serialises `data-motion="system"` by default, so the OS media query
+ * still wins on first paint before hydration.
  */
 @media (prefers-reduced-motion: reduce) {
-  dialog.modal::backdrop {
+  html:not([data-motion='standard']) dialog.modal::backdrop {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/*
+ * Forced reduced-motion: one broad brush that flattens animations and
+ * transitions everywhere. The 0.01ms instead of `0` is the standard
+ * WCAG-friendly pattern — it keeps event callbacks firing (JS that
+ * listens to `transitionend`/`animationend` still resolves) while the
+ * movement itself is imperceptible.
+ */
+html[data-motion='reduced'] *,
+html[data-motion='reduced'] *::before,
+html[data-motion='reduced'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+html[data-motion='reduced'] dialog.modal::backdrop {
+  animation: none !important;
+  transition: none !important;
 }

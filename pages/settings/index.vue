@@ -71,6 +71,27 @@ async function onTrackingToggle(e: Event) {
       </header>
 
       <!--
+        Darstellung / readability. Starts with Motion (ships now);
+        theme presets, per-surface font size and custom colors are
+        staged in `docs/planned/readability-settings.md` and join in
+        follow-up slices without changing this section's outline.
+      -->
+      <section aria-labelledby="settings-display-heading" class="mb-10">
+        <header class="mb-4 text-center text-gray-900">
+          <h2 id="settings-display-heading" class="text-lg font-semibold">
+            {{ t('settingsDisplay.heading') }}
+          </h2>
+          <p class="mt-1 text-sm text-gray-800">
+            {{ t('settingsDisplay.intro') }}
+          </p>
+        </header>
+
+        <div class="rounded-xl border border-gray-700 bg-gray-900/95 p-5 shadow-xl">
+          <SettingsMotionControl />
+        </div>
+      </section>
+
+      <!--
         Sorting weights. The h2 here is the section label; each
         factor group inside is an h3 so screen-reader outline mirrors
         the "Einstellungen → Sortierung → einzelne Gruppen" nesting.

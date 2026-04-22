@@ -72,6 +72,10 @@ function makeI18n() {
       trackingLabel: 'Use reading behaviour for sorting',
       trackingHint: 'Articles seen for 2s+ count as read.',
     },
+    settingsDisplay: {
+      heading: 'Display',
+      intro: 'How infl0 feels for you.',
+    },
     settingsTimeline: {
       title: 'Adjust sorting',
       intro: 'Drag sliders to weigh signals.',
@@ -111,6 +115,13 @@ function mountPage() {
           props: ['to'],
           template: '<a :href="to"><slot /></a>',
         },
+        // The Motion control has its own component test; here we only
+        // care that the Darstellung section renders around a mount
+        // point for it. Stubbing avoids pulling in `useUiPrefs` from
+        // that component and keeps this test framework-agnostic.
+        SettingsMotionControl: {
+          template: '<div data-testid="motion-control-stub" />',
+        },
       },
     },
   })
@@ -122,6 +133,18 @@ describe('SettingsIndex page', () => {
     const h1s = wrapper.findAll('h1')
     expect(h1s).toHaveLength(1)
     expect(h1s[0].text()).toBe('Settings')
+  })
+
+  it('exposes a Darstellung section with its section heading and a mount point for the motion control', () => {
+    const wrapper = mountPage()
+    const heading = wrapper.find('#settings-display-heading')
+    expect(heading.exists()).toBe(true)
+    expect(heading.element.tagName.toLowerCase()).toBe('h2')
+    expect(heading.text()).toBe('Display')
+    // The motion control is the first concrete readability control to
+    // land in this section; later slices add theme + font size around
+    // it. Locking the mount point keeps the outline stable.
+    expect(wrapper.find('[data-testid="motion-control-stub"]').exists()).toBe(true)
   })
 
   it('exposes a Sortierung section with its section heading', () => {
