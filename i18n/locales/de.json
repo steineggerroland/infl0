@@ -101,7 +101,7 @@
         "heading": "Karte · Rückseite",
         "areaLabel": "Rückseite",
         "typographyHint": "Schriftart und Textgröße auf der Rückseite (langer Text, Aktionen).",
-        "colorHint": "Bei „Eigene Farben“: Hinter- und Vordergrund für die Kartenrückseite."
+        "colorHint": "Bei „Eigene Farben“ können diese Werte auch andere UI betreffen. Oben: „Standard für diesen Bereich“ — immer in festen, gut lesbaren Buttonfarben, falls der Rest unleserlich wird."
       },
       "reader": {
         "heading": "Volltext",
@@ -116,13 +116,10 @@
       "background": "Hintergrund",
       "text": "Text",
       "colorBackgroundAria": "Hintergrundfarbe – {surface}",
-      "colorTextAria": "Textfarbe – {surface}",
-      "resetSurface": "Zurücksetzen",
-      "resetSurfaceAria": "Hinter- und Textfarbe auf die Thema-Vorgabe zurücksetzen – {surface}"
+      "colorTextAria": "Textfarbe – {surface}"
     },
     "resetSurfaceAll": "Standard für diesen Bereich",
     "resetSurfaceAllAria": "Schrift, Größe, Zeilenabstand und Farben dieses Bereichs auf die App-Standards zurücksetzen – {surface}",
-    "resetSurfaceAllHint": "Wenn Text und Hintergrund zu ähnlich sind: „Zurücksetzen“ bei den Farbfeldern, oder mit dieser Schaltfläche Schrift, Größe und Farben dieses Bereichs komplett auf die Vorgabe.",
     "fontFamilyLabel": "Schriftart",
     "fontFamilyOptions": {
       "system-sans": "System Sans (Gerät)",

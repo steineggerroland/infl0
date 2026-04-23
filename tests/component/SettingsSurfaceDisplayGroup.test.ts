@@ -63,12 +63,9 @@ function makeI18n() {
         text: 'Fg',
         colorBackgroundAria: 'Bg {surface}',
         colorTextAria: 'Fg {surface}',
-        resetSurface: 'R',
-        resetSurfaceAria: 'Reset {surface}',
       },
       resetSurfaceAll: 'All',
       resetSurfaceAllAria: 'All {surface}',
-      resetSurfaceAllHint: 'Hint',
       preview: { forThisSurface: 'Prev' },
     },
   }
@@ -138,28 +135,7 @@ describe('SettingsSurfaceDisplayGroup', () => {
     })
   })
 
-  it('resets this surface custom colours to inherit (null)', () => {
-    const base = defaultUiPrefs()
-    sharedPrefs.value = {
-      ...base,
-      theme: 'custom',
-      surfaces: {
-        ...base.surfaces,
-        'card-front': {
-          ...base.surfaces['card-front'],
-          backgroundColor: '#111111',
-          textColor: '#222222',
-        },
-      },
-    }
-    const w = mountGroup('card-front')
-    w.get('[data-testid="custom-color-reset-card-front"]').trigger('click')
-    expect(updateSpy).toHaveBeenCalledWith({
-      surfaces: { 'card-front': { backgroundColor: null, textColor: null } },
-    })
-  })
-
-  it('resets the entire surface to app defaults (font, size, line height, colours)', () => {
+  it('resets the entire surface to app defaults (font, size, line height, colours inherit)', () => {
     const base = defaultUiPrefs()
     sharedPrefs.value = {
       ...base,

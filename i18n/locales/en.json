@@ -101,7 +101,7 @@
         "heading": "Card · back",
         "areaLabel": "card back",
         "typographyHint": "Typeface and text size for the back of a card (longer summary and actions).",
-        "colorHint": "When using custom theme colours, these apply to the card back text."
+        "colorHint": "With custom theme colours, these values can also affect other chrome. The “Restore defaults for this area” control above is always drawn with a fixed, readable style so you can use it if the rest of the page becomes hard to read."
       },
       "reader": {
         "heading": "Full text",
@@ -116,13 +116,10 @@
       "background": "Background",
       "text": "Text",
       "colorBackgroundAria": "Background colour — {surface}",
-      "colorTextAria": "Text colour — {surface}",
-      "resetSurface": "Reset",
-      "resetSurfaceAria": "Reset background and text colours to the theme default — {surface}"
+      "colorTextAria": "Text colour — {surface}"
     },
     "resetSurfaceAll": "Restore defaults for this area",
     "resetSurfaceAllAria": "Reset typeface, size, line spacing, and colours for this area to the app default — {surface}",
-    "resetSurfaceAllHint": "If text and background are too similar or hard to read, use “Reset” next to the colour pickers, or this button to restore the default typeface, size, and colours for this area.",
     "fontFamilyLabel": "Typeface",
     "fontFamilyOptions": {
       "system-sans": "System Sans (device)",

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
  * One presentation surface: font, text size, and (if theme is custom) its colours.
- * Replaces the former `SettingsCustomThemeColors.vue`, which listed all three
- * surfaces in one block — behaviour is unchanged: per-surface bg/text pickers,
- * reset to inherit (`null`), same `data-testid` hooks for tests.
+ * The “Standard für diesen Bereich” control uses **hard-coded** label colours so it
+ * stays legible and clickable if the user’s custom colours make theme tokens
+ * unusable. The actual reset still applies `defaultSurfacePrefs` (incl. colour inherit).
  * Live preview for this surface only while the user works in the group.
  */
 import { CALM_LIGHT_PICKER_DEFAULTS } from '~/utils/infl0-theme-derive'
@@ -80,12 +80,9 @@ function onTextInput(e: Event) {
   update({ surfaces: { [props.surfaceId]: { textColor: el.value } } })
 }
 
-function resetSurfaceColors() {
-  update({ surfaces: { [props.surfaceId]: { backgroundColor: null, textColor: null } } })
-}
-
 function resetEntireSurface() {
-  update({ surfaces: { [props.surfaceId]: { ...defaultSurfacePrefs(props.surfaceId) } } })
+  const s = props.surfaceId
+  update({ surfaces: { [s]: { ...defaultSurfacePrefs(s) } } })
 }
 </script>
 
@@ -103,13 +100,10 @@ function resetEntireSurface() {
       <p class="infl0-panel-muted mt-1 text-xs leading-snug">
         {{ i18nSurface('typographyHint') }}
       </p>
-      <p class="infl0-panel-muted mt-2 text-xs leading-snug">
-        {{ t('settingsDisplay.resetSurfaceAllHint') }}
-      </p>
       <div class="mt-2 flex flex-wrap items-center justify-end gap-2">
         <button
           type="button"
-          class="btn btn-outline btn-xs h-8 min-h-0 border-[var(--infl0-field-border)]"
+          class="infl0-surface-area-reset-btn h-8 min-h-0 shrink-0 rounded px-3 text-xs font-medium"
           :data-testid="`surface-reset-all-${surfaceId}`"
           :aria-label="t('settingsDisplay.resetSurfaceAllAria', { surface: i18nSurface('areaLabel') })"
           @click="resetEntireSurface"
@@ -224,15 +218,6 @@ function resetEntireSurface() {
           class="h-8 w-12 cursor-pointer rounded border border-[var(--infl0-field-border)] bg-[var(--infl0-field-bg)] p-0.5"
           @input="onTextInput"
         >
-        <button
-          type="button"
-          class="btn btn-ghost btn-xs h-8 min-h-0"
-          :data-testid="`custom-color-reset-${surfaceId}`"
-          :aria-label="t('settingsDisplay.customColors.resetSurfaceAria', { surface: i18nSurface('areaLabel') })"
-          @click="resetSurfaceColors"
-        >
-          {{ t('settingsDisplay.customColors.resetSurface') }}
-        </button>
       </div>
     </fieldset>
 
@@ -248,3 +233,25 @@ function resetEntireSurface() {
     </div>
   </div>
 </template>
+
+<style scoped>
+/**
+ * Hard-coded: must not use theme/surface tokens — bad custom colours can make
+ * `--infl0-*` unusable; this control is the way out.
+ */
+.infl0-surface-area-reset-btn {
+  background-color: #ffffff;
+  color: #0f172a;
+  border: 1px solid #0f172a;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+.infl0-surface-area-reset-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #0f172a;
+}
+.infl0-surface-area-reset-btn:focus-visible {
+  outline: 2px solid #0f172a;
+  outline-offset: 2px;
+}
+</style>
