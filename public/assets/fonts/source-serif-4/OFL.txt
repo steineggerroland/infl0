@@ -1,33 +1,9 @@
-# Bundled typefaces — attribution
+Copyright 2014 The Source Serif 4 Project Authors (https://github.com/adobe-fonts/source-serif)
 
-infl0 ships **only** self-hosted font files (see `assets/css/fonts.css`). The following families are used under the **SIL Open Font License, Version 1.1** (OFL-1.1). The full license text is reproduced at the end of this file and must be kept with any distribution of these fonts.
-
-| Family | Copyright / attribution (summary) |
-|--------|----------------------------------|
-| Inter | Copyright (c) 2016 The Inter Project Authors. |
-| Source Sans 3 | Copyright (c) 2023 Adobe. |
-| Source Serif 4 | Copyright (c) 2014–2021 Adobe. |
-| Lexend | Copyright (c) 2018 The Lexend Project Authors. |
-| IBM Plex Sans | Copyright (c) 2017 IBM Corp. |
-| Fraunces | Copyright (c) 2018 The Fraunces Project Authors. |
-| Atkinson Hyperlegible | Copyright (c) 2020 Braille Institute, Inc. |
-| OpenDyslexic | See `opendyslexic/OFL.txt` (Abbie Gonzalez; Reserved Font Name OpenDyslexic). |
-
-Original sources: typically [Google Fonts](https://fonts.google.com/) and upstream repositories for each project; the `.woff2` files in this tree were produced from those OFL releases.
-
----
-
-## SIL Open Font License 1.1
-
-The text below is the **canonical** OFL-1.1. For each family we ship, the
-matching directory under `public/assets/fonts/` includes an `OFL.txt` from the
-upstream project (copyright line(s), Reserved Font Name(s) where declared, and
-the full license). Official copy: [openfontlicense.org](https://openfontlicense.org/).
-
-```
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
 https://openfontlicense.org
+
 
 -----------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
@@ -42,7 +18,7 @@ with others.
 
 The OFL allows the licensed fonts to be used, studied, modified and
 redistributed freely as long as they are not sold by themselves. The
-fonts, including any derivative works, can be bundled, embedded,
+fonts, including any derivative works, can be bundled, embedded, 
 redistributed and/or sold with any software provided that any reserved
 names are not used by derivative works. The fonts and derivatives,
 however, cannot be released under any other type of license. The
@@ -115,6 +91,3 @@ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
 DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
-```
-
-Per-family **copyright**, **Reserved Font Name** (if any), and the full OFL text are in `public/assets/fonts/<family>/OFL.txt` (for example `inter/OFL.txt`, `opendyslexic/OFL.txt`).
