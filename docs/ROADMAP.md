@@ -192,17 +192,10 @@ wenn sie kontrolliert und ruhig bleiben.
 
 ### E. Lesbarkeit, Reizniveau, persönliche Arbeitsweise
 
-Dieses Feld zahlt direkt auf Alltagstauglichkeit und A11y ein.
-
-> Lesbarkeit pro Surface (Karten/Reader), freie Farben mit Presets, Motion-
-> Setting, Textgrößen-Shortcut, self-hosted Fonts und neuer Settings-Bereich
-> sind ausgelagert nach
-> [`planned/readability-settings.md`](./planned/readability-settings.md).
-
-**Stand:** Das Paket ist als **MVP abgeschlossen** (siehe Status und
-**Abweichungen** in derselben Datei). Follow-ups: zentrale Shortcuts-Hilfe
-([`planned/shortcuts-help.md`](./planned/shortcuts-help.md)), E2E/Onboarding
-([`planned/onboarding-welcome-timeline.md`](./planned/onboarding-welcome-timeline.md)).
+Dieses Feld zahlt direkt auf Alltagstauglichkeit und A11y ein — Lesefluss
+justieren, Reizniveau beherrschen, persönlich passende Darstellung, ohne
+den Kern des Produkts zu verlieren. Konkrete **nächste** Planungs-Pakete dazu
+stehen, wenn nötig, in [`planned/`](./planned/), nicht in dieser Landkarte.
 
 **Große Chancen**
 
@@ -311,11 +304,6 @@ Nicht alles hiervon ist sofort ein Paket. Die Liste ist bewusst grobkörnig.
 - Ruhige visuelle Quellen-/Themenakzente
 - Fokus-/Offline-Lesemodus
 
-> Lesbarkeits-Paket, Themes (inkl. Dark/Light), App-seitig reduzierte
-> Bewegung und der Textgrößen-Shortcut sind aus dem Ideenpool gezogen
-> und werden in [`planned/readability-settings.md`](./planned/readability-settings.md)
-> beschrieben.
-
 ### Medien
 
 - Vorlesen / Podcast aus markierten Artikeln
@@ -364,12 +352,6 @@ Eine Idee ist reif für `planned/`, wenn sie:
 - einen **abgrenzbaren Scope** hat,
 - grob in 1-3 Iterationen beschreibbar ist,
 - erkennbare Risiken oder Abhängigkeiten hat.
-
-Bereits als Paket vorhanden:
-
-- [`planned/readability-settings.md`](./planned/readability-settings.md) —
-  Lesbarkeit pro Surface, freie Farben + Presets, Motion, Shortcuts,
-  self-hosted Fonts, neuer Settings-Bereich.
 
 Gute Kandidaten für die nächsten Pakete:
 

@@ -52,4 +52,4 @@ Entwurf
 ## Links
 
 - PR: *(noch offen)*
-- Diskussion: Onboarding, Welcome-Content, E2E-Refit; ggf. [`readability-settings.md`](./readability-settings.md), [`shortcuts-help.md`](./shortcuts-help.md), [`../ROADMAP.md`](../ROADMAP.md)
+- Diskussion: Onboarding, Welcome-Content, E2E-Refit; ggf. [`shortcuts-help.md`](./shortcuts-help.md), [`../ROADMAP.md`](../ROADMAP.md)

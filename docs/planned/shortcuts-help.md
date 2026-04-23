@@ -2,12 +2,12 @@
 
 ## Status
 
-Entwurf — Follow-up zu Lesbarkeit / Darstellung; Details und Akzeptanzkriterien werden separat abgestimmt.
+Entwurf — folgt auf die **gelieferte** Darstellungs- und Lesbarkeitsfunktion
+in der App; Details und Akzeptanzkriterien werden separat abgestimmt.
 
 ## Ziel
 
-Lesbarkeits- und App-Kürzel sind **für Nutzerinnen nachvollziehbar** dokumentiert: wo sie gelten, welche Taste was tut, und wie sie in der (oder den) zentralen **Shortcuts-/Hilfe-Oberfläche(n)** erscheinen. Anknüpfung an Akzeptanzkriterium 5 des Pakets
-[`readability-settings.md`](./readability-settings.md) (Hilfeseite + Shortcuts-Übersicht) wird **hier** umgesetzt, nicht im Lesbarkeits-Paket selbst.
+Lesbarkeits- und App-Kürzel sind **für Nutzerinnen nachvollziehbar** dokumentiert: wo sie gelten, welche Taste was tut, und wie sie in der (oder den) zentralen **Shortcuts-/Hilfe-Oberfläche(n)** erscheinen. Das schließt die Lücke zur bisherigen Hilfeseite (dort: Timeline-Kürzel, aber noch keine vollständige Lesbarkeits-Matrix) — **hier** liegt die Konsolidierung.
 
 ## Nicht-Ziele
 
@@ -16,7 +16,7 @@ Lesbarkeits- und App-Kürzel sind **für Nutzerinnen nachvollziehbar** dokumenti
 
 ## Abhängigkeiten
 
-- Stabilisierung der im Lesbarkeits-Paket eingeführten Lesbarkeits-Tasten (`ArticleView`, `useShortcuts`), soweit noch nachgezogen.
+- Stabilisierung der in der **App** eingeführten Lesbarkeits-Tasten (`ArticleView`, `useShortcuts`), soweit noch nachgezogen.
 - Entscheidung, ob **eine** zentrale Hilfeseite, ein Modal oder ein eigenes Untermenü die „Shortcuts-Übersicht“ trägt.
 
 ## Akzeptanzkriterien
@@ -33,4 +33,4 @@ Lesbarkeits- und App-Kürzel sind **für Nutzerinnen nachvollziehbar** dokumenti
 ## Links
 
 - PR: *(noch offen)*
-- Diskussion: Lesbarkeits-Paket / ROADMAP
+- Diskussion: `ROADMAP.md`, `planned/README.md`

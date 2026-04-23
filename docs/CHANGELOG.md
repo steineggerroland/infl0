@@ -87,9 +87,9 @@ new entries accrue under **Unreleased**.
   - `docs/DEVELOPING.md`
   - `README.md`
   - `docs/planned/README.md`
-  - **Paket Lesbarkeit / Darstellung:** `docs/planned/readability-settings.md`
-    — Status *abgeschlossen*, Abschnitt **Abweichungen vom Pakettext (MVP) und
-    Follow-ups**; `docs/ROADMAP.md` (Feld E) verweist darauf
+  - **Paket Lesbarkeit / Darstellung (Archiv):** historische Paket-Spezifikation
+    unter `docs/archive/readability-settings.md` (kein aktives
+    `planned/`-Dokument mehr)
 
 - **Geplante Follow-ups**
   - zentrale Shortcut-Hilfe → `planned/shortcuts-help.md`

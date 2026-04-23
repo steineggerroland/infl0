@@ -7,7 +7,7 @@ Akzeptanzkriterien — getrennt von der großen Ideensammlung in
 ## Konvention
 
 - **Eine Datei pro Paket** (oder pro größerem Thema), z. B.
-  `readability-settings.md`, `shortcuts-overview.md`.
+  `shortcuts-help.md`, `onboarding-welcome-timeline.md`.
 - Oben: **Ziel**, **Nicht-Ziele**, **Abhängigkeiten**, optional **Schätzung /
   Risiko**.
 - Unten: **User Stories** oder Checkliste, **Definition of Done**, Links zu
@@ -19,17 +19,16 @@ Akzeptanzkriterien — getrennt von der großen Ideensammlung in
 
 | Paket | Kurzbeschreibung | Status |
 |-------|------------------|--------|
-| [`readability-settings.md`](./readability-settings.md) | Lesbarkeit pro Surface (Karten/Reader), freie Farben + Presets, Motion, Shortcuts | **Abgeschlossen** (MVP; Abweichungen im Doc) — Follow-ups: [`shortcuts-help.md`](./shortcuts-help.md), [`onboarding-welcome-timeline.md`](./onboarding-welcome-timeline.md) |
-| [`shortcuts-help.md`](./shortcuts-help.md) | Hilfetext + Shortcuts-Übersicht (Follow-up; Kürzel-Doku außerhalb des Lesbarkeits-Pakets) | Entwurf |
+| [`shortcuts-help.md`](./shortcuts-help.md) | Hilfetext + zentrale Shortcuts-Übersicht (v. a. Lesbarkeits- und App-Kürzel) | Entwurf |
 | [`onboarding-welcome-timeline.md`](./onboarding-welcome-timeline.md) | Willkommen per festen Kacheln (Shortcuts, Themes, Quellen, App-Logik), Grundlage für E2E mit Registrierung+Login | Entwurf |
 
 *(Weitere Pakete: Zeile hinzufügen, wenn ein neues Markdown angelegt wird.)*
 
 ## Reihenfolge (Vorschlag, nicht verbindlich)
 
-1. Lesbarkeit / Theme / Motion in den Settings (schneller Nutzen, wenig
-   Abhängigkeiten).
-2. Onboarding / Welcome-Timeline (feste Einführungskacheln, optional E2E-
-   Umstellung weg von reiner Dev-Seed).
-3. Explizites „Capture“ (Sammlung / Wissen) **ohne** LLM.
-4. Größere Produktblöcke (Wissen-Menü, Suche, …) jeweils eigenes Paket.
+1. Shortcuts / Hilfe (`shortcuts-help.md`) und ggf. Onboarding-
+   Einführung (`onboarding-welcome-timeline.md`) — wenig
+   Seiteneffekte, verbessert Auffindbarkeit und Testbarkeit.
+2. Später: explizites „Capture“ (Sammlung / Wissen) **ohne** LLM, dann
+   größere Produktblöcke (Wissen-Menü, Suche, …) je eigenes Paket (siehe
+   `ROADMAP.md`).

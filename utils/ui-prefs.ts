@@ -6,9 +6,9 @@
  * (`useUiPrefs`), so the stored shape stays in lock-step between DB JSON and
  * localStorage fallback.
  *
- * Concrete visual resolution (CSS variables, `@font-face`, presets) lives in
- * the follow-up CSS/UI steps of `docs/planned/readability-settings.md`. Here
- * we only define the stable persistence contract.
+ * Concrete visual resolution (CSS variables, `@font-face`, presets) is
+ * implemented in the app; `docs/archive/readability-settings.md` only holds
+ * a historical spec. Here we only define the stable persistence contract.
  */
 
 export const UI_PREFS_VERSION = 1
