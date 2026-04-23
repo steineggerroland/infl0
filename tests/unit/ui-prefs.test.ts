@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
+  FONT_FAMILY_IDS,
   UI_PREFS_VERSION,
   applyUiPrefsPatch,
   clampFontSizePx,
   clampFontSizePxForSurface,
+  cycleFontFamilyId,
   defaultUiPrefs,
   fontSizeBoundsForSurface,
   isHexColor,
@@ -13,6 +15,17 @@ import {
 } from '../../utils/ui-prefs'
 
 describe('ui-prefs data layer', () => {
+  describe('cycleFontFamilyId', () => {
+    it('steps along FONT_FAMILY_IDS with wrap', () => {
+      expect(cycleFontFamilyId('inter', 1)).toBe('source-sans-3')
+      expect(cycleFontFamilyId('inter', -1)).toBe('system-mono')
+      const first = FONT_FAMILY_IDS[0]!
+      const last = FONT_FAMILY_IDS[FONT_FAMILY_IDS.length - 1]!
+      expect(cycleFontFamilyId(first, -1)).toBe(last)
+      expect(cycleFontFamilyId(last, 1)).toBe(first)
+    })
+  })
+
   describe('defaults', () => {
     it('ships a stable shape for card-front, card-back and reader', () => {
       const d = defaultUiPrefs()

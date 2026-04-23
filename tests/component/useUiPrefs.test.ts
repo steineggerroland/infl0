@@ -209,7 +209,7 @@ describe('useUiPrefs', () => {
     expect(mirroredOptimistic?.surfaces['card-front'].backgroundColor).toBe('#111111')
     expect(patchSpy).not.toHaveBeenCalled()
 
-    await vi.advanceTimersByTimeAsync(500)
+    await vi.advanceTimersByTimeAsync(1000)
     await Promise.resolve()
     await Promise.resolve()
 
@@ -265,7 +265,7 @@ describe('useUiPrefs', () => {
     vmB.update({ surfaces: { 'card-front': { backgroundColor: '#112233' } } })
     expect(patchSpy).not.toHaveBeenCalled()
 
-    await vi.advanceTimersByTimeAsync(500)
+    await vi.advanceTimersByTimeAsync(1000)
     await Promise.resolve()
     await Promise.resolve()
 

@@ -148,6 +148,15 @@ export function fontSizeBoundsForSurface(surface: SurfaceId): { min: number; max
  * Normalize a candidate font size to an integer in the allowed range for
  * `surface`. Returns `null` for non-finite values.
  */
+/** Next/previous entry in {@link FONT_FAMILY_IDS} (wraps). */
+export function cycleFontFamilyId(current: FontFamilyId, delta: 1 | -1): FontFamilyId {
+  const n = FONT_FAMILY_IDS.length
+  const i = (FONT_FAMILY_IDS as readonly string[]).indexOf(current)
+  const base = i < 0 ? 0 : i
+  const next = (((base + delta) % n) + n) % n
+  return FONT_FAMILY_IDS[next]!
+}
+
 export function clampFontSizePxForSurface(v: unknown, surface: SurfaceId): number | null {
   if (typeof v !== 'number' || !Number.isFinite(v)) return null
   const { min, max } = fontSizeBoundsForSurface(surface)

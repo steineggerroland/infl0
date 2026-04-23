@@ -4,6 +4,12 @@ import { format } from 'date-fns'
 import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 import type { ArticleEngagementSegment } from '~/utils/article-engagement'
+import {
+  clampFontSizePxForSurface,
+  cycleFontFamilyId,
+  SURFACE_DEFAULT_FONT_PX,
+  type SurfaceId,
+} from '~/utils/ui-prefs'
 
 const { t, locale } = useI18n()
 const dateLocale = computed(() => (locale.value === 'de' ? de : enUS))
@@ -178,6 +184,77 @@ defineShortcuts({
   'q': () => { if (props.isSelected) toggleOriginalArticle() },
 })
 
+const { prefs, update } = useUiPrefs()
+
+function activeSurfaceId(): SurfaceId {
+  if (modalVisible.value) return 'reader'
+  if (isDetailView.value) return 'card-back'
+  return 'card-front'
+}
+
+function bumpFontSize(step: 1 | -1) {
+  const s = activeSurfaceId()
+  const cur = prefs.value.surfaces[s].fontSize
+  const next = clampFontSizePxForSurface(cur + step, s)
+  if (next == null || next === cur) return
+  update({ surfaces: { [s]: { fontSize: next } } })
+}
+
+function resetFontSizeToSurfaceDefault() {
+  const s = activeSurfaceId()
+  const d = SURFACE_DEFAULT_FONT_PX[s]
+  if (prefs.value.surfaces[s].fontSize === d) return
+  update({ surfaces: { [s]: { fontSize: d } } })
+}
+
+function cycleSurfaceFont(delta: 1 | -1) {
+  const s = activeSurfaceId()
+  const cur = prefs.value.surfaces[s].fontFamily
+  const next = cycleFontFamilyId(cur, delta)
+  update({ surfaces: { [s]: { fontFamily: next } } })
+}
+
+defineShortcuts(
+  {
+    '+': (e) => {
+      e.preventDefault()
+      bumpFontSize(1)
+    },
+    '=': (e) => {
+      e.preventDefault()
+      bumpFontSize(1)
+    },
+    '-': (e) => {
+      e.preventDefault()
+      bumpFontSize(-1)
+    },
+    numpadadd: (e) => {
+      e.preventDefault()
+      bumpFontSize(1)
+    },
+    numpadsubtract: (e) => {
+      e.preventDefault()
+      bumpFontSize(-1)
+    },
+    '0': (e) => {
+      e.preventDefault()
+      resetFontSizeToSurfaceDefault()
+    },
+    numpad0: (e) => {
+      e.preventDefault()
+      resetFontSizeToSurfaceDefault()
+    },
+    'shift+k': (e) => {
+      e.preventDefault()
+      cycleSurfaceFont(-1)
+    },
+    'shift+l': (e) => {
+      e.preventDefault()
+      cycleSurfaceFont(1)
+    },
+  },
+  { when: () => props.isSelected },
+)
 </script>
 
 <template>

@@ -10,7 +10,8 @@ import {
   type UiPrefsStored,
 } from '~/utils/ui-prefs'
 
-const SYNC_DEBOUNCE_MS = 400
+/** PATCH debounce (merged patches); same for Settings and Lesbarkeits-Tastatur. */
+const SYNC_DEBOUNCE_MS = 1000
 
 /**
  * Non-reactive bookkeeping for the singleton. Lives behind the same

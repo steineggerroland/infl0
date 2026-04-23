@@ -34,13 +34,13 @@ export interface ShortcutOptions {
  *   input field is focused") and protects users from accidentally
  *   triggering global actions while typing. `skipEditableTarget` opts
  *   out for dismissal keys such as `Escape`.
- * - Shortcuts only fire when the key is pressed **on its own**. Chords
- *   with `Ctrl`, `Meta`, or `Alt` are reserved for the browser and OS
- *   (e.g. `Cmd+R` / `Ctrl+R` for page reload, `Alt+Left` for back).
- *   Swallowing them would silently fight user expectations and, in the
- *   concrete case of the timeline, caused the `showRead` preference to
- *   flip on every reload. `Shift` is allowed because it is a casing
- *   modifier, not a chord (caps-lock or natural capitalisation).
+ * - Unmodified single-key shortcuts must be pressed **alone**: chords with
+ *   `Ctrl` or `Meta` never fire, so the browser can keep e.g. reload or back.
+ *   **Explicit** `alt+{key}` and `shift+{key}` entries are allowed (without
+ *   Ctrl/Meta). The editable guard still applies. If a `shift+{key}` entry
+ *   exists, it is tried first while `shiftKey` is set; if none exist for that
+ *   key, a plain `{key}` handler still runs (so `r` and `Shift+R` both match
+ *   `r` when there is no `shift+r` map — legacy casing).
  * - A `when` predicate scopes the group to a reactive condition. Use it
  *   to yield keyboard control to a higher surface — e.g. the timeline
  *   `w`/`s` navigation must be silent while a full-text article modal
@@ -60,8 +60,26 @@ export function defineShortcuts(
     function handleKeyPress(event: KeyboardEvent) {
         if (options.when && !options.when()) return
         if (!options.skipEditableTarget && isEditableTarget(event.target)) return
-        if (event.ctrlKey || event.metaKey || event.altKey) return
+        if (event.ctrlKey || event.metaKey) return
+
         const key = event.key.toLowerCase()
+
+        if (event.altKey) {
+            const comb = `alt+${key}`
+            if (shortcuts[comb]) {
+                shortcuts[comb](event)
+            }
+            return
+        }
+
+        if (event.shiftKey) {
+            const scomb = `shift+${key}`
+            if (shortcuts[scomb]) {
+                shortcuts[scomb](event)
+                return
+            }
+        }
+
         if (shortcuts[key]) {
             shortcuts[key](event)
         }

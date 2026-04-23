@@ -91,7 +91,7 @@ describe('defineShortcuts editable-target guard', () => {
     ]
 
     it.each(modifierCases)(
-        'does NOT fire when the user presses $name + the shortcut key',
+        'does NOT fire when the user presses $name + the shortcut key (plain map)',
         ({ init }) => {
             const handler = vi.fn()
             const wrapper = mountWithShortcut(handler)
@@ -118,6 +118,205 @@ describe('defineShortcuts editable-target guard', () => {
         // Shift is a pure casing modifier, not a chord. The user is still
         // "just pressing r" from a keyboard-shortcut perspective.
         expect(handler).toHaveBeenCalledOnce()
+        wrapper.unmount()
+    })
+})
+
+describe('defineShortcuts alt+ chords', () => {
+    afterEach(() => {
+        document.body.innerHTML = ''
+    })
+
+    it('invokes the handler for alt+key when registered as "alt+{key}"', () => {
+        const onAltK = vi.fn()
+        const Harness = defineComponent({
+            setup() {
+                defineShortcuts({ 'alt+k': onAltK })
+            },
+            render() {
+                return h('div')
+            },
+        })
+        const wrapper = mount(Harness, { attachTo: document.body })
+
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'k', altKey: true, bubbles: true }),
+        )
+        expect(onAltK).toHaveBeenCalledOnce()
+        wrapper.unmount()
+    })
+
+    it('does not invoke the alt+ handler on plain k', () => {
+        const onAltK = vi.fn()
+        const Harness = defineComponent({
+            setup() {
+                defineShortcuts({ 'alt+k': onAltK })
+            },
+            render() {
+                return h('div')
+            },
+        })
+        const wrapper = mount(Harness, { attachTo: document.body })
+
+        document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', bubbles: true }))
+        expect(onAltK).not.toHaveBeenCalled()
+        wrapper.unmount()
+    })
+
+    it('keeps plain and alt+ maps independent for the same letter', () => {
+        const onPlainK = vi.fn()
+        const onAltK = vi.fn()
+        const Harness = defineComponent({
+            setup() {
+                defineShortcuts({ k: onPlainK, 'alt+k': onAltK })
+            },
+            render() {
+                return h('div')
+            },
+        })
+        const wrapper = mount(Harness, { attachTo: document.body })
+
+        document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', bubbles: true }))
+        expect(onPlainK).toHaveBeenCalledOnce()
+        expect(onAltK).not.toHaveBeenCalled()
+        onPlainK.mockClear()
+        onAltK.mockClear()
+
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'k', altKey: true, bubbles: true }),
+        )
+        expect(onAltK).toHaveBeenCalledOnce()
+        expect(onPlainK).not.toHaveBeenCalled()
+        wrapper.unmount()
+    })
+
+    it('does not fire alt+ shortcuts while typing in an <input>', () => {
+        const onAltK = vi.fn()
+        const Harness = defineComponent({
+            setup() {
+                defineShortcuts({ 'alt+k': onAltK })
+            },
+            render() {
+                return h('div')
+            },
+        })
+        const wrapper = mount(Harness, { attachTo: document.body })
+
+        const input = document.createElement('input')
+        document.body.appendChild(input)
+        input.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'k', altKey: true, bubbles: true }),
+        )
+        expect(onAltK).not.toHaveBeenCalled()
+        wrapper.unmount()
+    })
+})
+
+describe('defineShortcuts shift+ chords', () => {
+    afterEach(() => {
+        document.body.innerHTML = ''
+    })
+
+    it('invokes the handler for shift+key when registered as "shift+{key}"', () => {
+        const onShiftK = vi.fn()
+        const Harness = defineComponent({
+            setup() {
+                defineShortcuts({ 'shift+k': onShiftK })
+            },
+            render() {
+                return h('div')
+            },
+        })
+        const wrapper = mount(Harness, { attachTo: document.body })
+
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'k', shiftKey: true, bubbles: true }),
+        )
+        expect(onShiftK).toHaveBeenCalledOnce()
+        wrapper.unmount()
+    })
+
+    it('does not invoke the shift+ handler on plain k', () => {
+        const onShiftK = vi.fn()
+        const Harness = defineComponent({
+            setup() {
+                defineShortcuts({ 'shift+k': onShiftK })
+            },
+            render() {
+                return h('div')
+            },
+        })
+        const wrapper = mount(Harness, { attachTo: document.body })
+
+        document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', bubbles: true }))
+        expect(onShiftK).not.toHaveBeenCalled()
+        wrapper.unmount()
+    })
+
+    it('keeps plain and shift+ maps independent for the same letter', () => {
+        const onPlainK = vi.fn()
+        const onShiftK = vi.fn()
+        const Harness = defineComponent({
+            setup() {
+                defineShortcuts({ k: onPlainK, 'shift+k': onShiftK })
+            },
+            render() {
+                return h('div')
+            },
+        })
+        const wrapper = mount(Harness, { attachTo: document.body })
+
+        document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', bubbles: true }))
+        expect(onPlainK).toHaveBeenCalledOnce()
+        expect(onShiftK).not.toHaveBeenCalled()
+        onPlainK.mockClear()
+        onShiftK.mockClear()
+
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'k', shiftKey: true, bubbles: true }),
+        )
+        expect(onShiftK).toHaveBeenCalledOnce()
+        expect(onPlainK).not.toHaveBeenCalled()
+        wrapper.unmount()
+    })
+
+    it('falls back to the plain key when Shift is held but no shift+ map exists', () => {
+        const onR = vi.fn()
+        const Harness = defineComponent({
+            setup() {
+                defineShortcuts({ r: onR })
+            },
+            render() {
+                return h('div')
+            },
+        })
+        const wrapper = mount(Harness, { attachTo: document.body })
+
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'r', shiftKey: true, bubbles: true }),
+        )
+        expect(onR).toHaveBeenCalledOnce()
+        wrapper.unmount()
+    })
+
+    it('does not fire shift+ shortcuts while typing in an <input>', () => {
+        const onShiftK = vi.fn()
+        const Harness = defineComponent({
+            setup() {
+                defineShortcuts({ 'shift+k': onShiftK })
+            },
+            render() {
+                return h('div')
+            },
+        })
+        const wrapper = mount(Harness, { attachTo: document.body })
+
+        const input = document.createElement('input')
+        document.body.appendChild(input)
+        input.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'k', shiftKey: true, bubbles: true }),
+        )
+        expect(onShiftK).not.toHaveBeenCalled()
         wrapper.unmount()
     })
 })
