@@ -120,6 +120,9 @@
       "resetSurface": "Zurücksetzen",
       "resetSurfaceAria": "Hinter- und Textfarbe auf die Thema-Vorgabe zurücksetzen – {surface}"
     },
+    "resetSurfaceAll": "Standard für diesen Bereich",
+    "resetSurfaceAllAria": "Schrift, Größe, Zeilenabstand und Farben dieses Bereichs auf die App-Standards zurücksetzen – {surface}",
+    "resetSurfaceAllHint": "Wenn Text und Hintergrund zu ähnlich sind: „Zurücksetzen“ bei den Farbfeldern, oder mit dieser Schaltfläche Schrift, Größe und Farben dieses Bereichs komplett auf die Vorgabe.",
     "fontFamilyLabel": "Schriftart",
     "fontFamilyOptions": {
       "system-sans": "System Sans (Gerät)",

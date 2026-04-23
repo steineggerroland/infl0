@@ -20,6 +20,7 @@ Akzeptanzkriterien — getrennt von der großen Ideensammlung in
 | Paket | Kurzbeschreibung | Status |
 |-------|------------------|--------|
 | [`readability-settings.md`](./readability-settings.md) | Lesbarkeit pro Surface (Karten/Reader), freie Farben + Presets, Motion, Shortcuts | Entwurf |
+| [`shortcuts-help.md`](./shortcuts-help.md) | Hilfetext + Shortcuts-Übersicht (Follow-up; Kürzel-Doku außerhalb des Lesbarkeits-Pakets) | Entwurf |
 
 *(Weitere Pakete: Zeile hinzufügen, wenn ein neues Markdown angelegt wird.)*
 

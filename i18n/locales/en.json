@@ -120,6 +120,9 @@
       "resetSurface": "Reset",
       "resetSurfaceAria": "Reset background and text colours to the theme default — {surface}"
     },
+    "resetSurfaceAll": "Restore defaults for this area",
+    "resetSurfaceAllAria": "Reset typeface, size, line spacing, and colours for this area to the app default — {surface}",
+    "resetSurfaceAllHint": "If text and background are too similar or hard to read, use “Reset” next to the colour pickers, or this button to restore the default typeface, size, and colours for this area.",
     "fontFamilyLabel": "Typeface",
     "fontFamilyOptions": {
       "system-sans": "System Sans (device)",

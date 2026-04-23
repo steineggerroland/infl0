@@ -8,6 +8,7 @@
  */
 import { CALM_LIGHT_PICKER_DEFAULTS } from '~/utils/infl0-theme-derive'
 import {
+  defaultSurfacePrefs,
   FONT_FAMILY_IDS,
   fontSizeBoundsForSurface,
   type FontFamilyId,
@@ -82,6 +83,10 @@ function onTextInput(e: Event) {
 function resetSurfaceColors() {
   update({ surfaces: { [props.surfaceId]: { backgroundColor: null, textColor: null } } })
 }
+
+function resetEntireSurface() {
+  update({ surfaces: { [props.surfaceId]: { ...defaultSurfacePrefs(props.surfaceId) } } })
+}
 </script>
 
 <template>
@@ -98,6 +103,20 @@ function resetSurfaceColors() {
       <p class="infl0-panel-muted mt-1 text-xs leading-snug">
         {{ i18nSurface('typographyHint') }}
       </p>
+      <p class="infl0-panel-muted mt-2 text-xs leading-snug">
+        {{ t('settingsDisplay.resetSurfaceAllHint') }}
+      </p>
+      <div class="mt-2 flex flex-wrap items-center justify-end gap-2">
+        <button
+          type="button"
+          class="btn btn-outline btn-xs h-8 min-h-0 border-[var(--infl0-field-border)]"
+          :data-testid="`surface-reset-all-${surfaceId}`"
+          :aria-label="t('settingsDisplay.resetSurfaceAllAria', { surface: i18nSurface('areaLabel') })"
+          @click="resetEntireSurface"
+        >
+          {{ t('settingsDisplay.resetSurfaceAll') }}
+        </button>
+      </div>
     </div>
 
     <div class="space-y-1.5">

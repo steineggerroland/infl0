@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils'
 import { createI18n, useI18n as vueUseI18n } from 'vue-i18n'
 import { ref } from 'vue'
 import type { UiPrefs, UiPrefsPatch } from '../../utils/ui-prefs'
-import { defaultUiPrefs } from '../../utils/ui-prefs'
+import { defaultSurfacePrefs, defaultUiPrefs } from '../../utils/ui-prefs'
 
 const updateSpy = vi.fn<(patch: UiPrefsPatch) => void>()
 const sharedPrefs = ref<UiPrefs>(defaultUiPrefs())
@@ -66,6 +66,9 @@ function makeI18n() {
         resetSurface: 'R',
         resetSurfaceAria: 'Reset {surface}',
       },
+      resetSurfaceAll: 'All',
+      resetSurfaceAllAria: 'All {surface}',
+      resetSurfaceAllHint: 'Hint',
       preview: { forThisSurface: 'Prev' },
     },
   }
@@ -153,6 +156,29 @@ describe('SettingsSurfaceDisplayGroup', () => {
     w.get('[data-testid="custom-color-reset-card-front"]').trigger('click')
     expect(updateSpy).toHaveBeenCalledWith({
       surfaces: { 'card-front': { backgroundColor: null, textColor: null } },
+    })
+  })
+
+  it('resets the entire surface to app defaults (font, size, line height, colours)', () => {
+    const base = defaultUiPrefs()
+    sharedPrefs.value = {
+      ...base,
+      theme: 'custom',
+      surfaces: {
+        ...base.surfaces,
+        'card-back': {
+          backgroundColor: '#000000',
+          textColor: '#000001',
+          fontFamily: 'lexend',
+          fontSize: 18,
+          lineHeight: 'tight',
+        },
+      },
+    }
+    const w = mountGroup('card-back')
+    w.get('[data-testid="surface-reset-all-card-back"]').trigger('click')
+    expect(updateSpy).toHaveBeenCalledWith({
+      surfaces: { 'card-back': { ...defaultSurfacePrefs('card-back') } },
     })
   })
 })
