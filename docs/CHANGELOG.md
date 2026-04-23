@@ -11,6 +11,13 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-04-24
+
+**Darstellung und Lesbarkeit:** UI-Präferenzen (Theme, Motion, Schrift und
+Farben pro Oberfläche) werden serverseitig persistiert; self-hosted
+Schriftdateien inkl. OFL; Tastaturkürzel in der Timeline; Doku und
+`planned/`-Fokus für Folgepakete.
+
 ### Breaking
 
 - **Datenbank (erforderlich):** Nach Deployment `npx prisma migrate deploy` ausführen  
@@ -18,8 +25,6 @@ new entries accrue under **Unreleased**.
 - **API (neu):** `GET` und `PATCH /api/me/ui-prefs` (auth erforderlich)  
   Shape siehe `utils/ui-prefs.ts` (`v`, Surfaces, Theme, Motion, ggf. `seenFeatureAnnouncements`).  
   Bestehende Gästeseiten bleiben unverändert.
-
----
 
 ### Added
 
@@ -55,8 +60,6 @@ new entries accrue under **Unreleased**.
   - nutzt `DEV_SRP_SALT_HEX` / `DEV_SRP_VERIFIER_HEX`, falls gesetzt
   - kompatibel mit `prisma db seed` / `.env.e2e`
 
----
-
 ### Changed
 
 - **Dev-Daten (`npm run devData`)**
@@ -69,16 +72,12 @@ new entries accrue under **Unreleased**.
   - Footer-Kontext angepasst
   - Details in `DEVELOPING.md` und `README.md`
 
----
-
 ### Removed
 
 - **E2E-Test (Lesbarkeits-Shortcuts, Timeline)**
   - experimenteller Playwright-Spec entfernt
   - wird ersetzt durch stabilere Onboarding-basierte E2E-Strategie
   - bestehende Settings-/Feeds-Smokes bleiben unverändert
-
----
 
 ### Documentation
 

@@ -6,7 +6,7 @@
   `main`: `npm ci`, `prisma generate`, `nuxt prepare`, Lint, Unit-Tests,
   Typecheck.
 - **`Release`** (`.github/workflows/release.yml`) läuft, sobald ein **Tag**
-  wie `v0.1.0` **gepusht** wird: es wird ein **GitHub Release** mit
+  wie `v0.2.0` **gepusht** wird: es wird ein **GitHub Release** mit
   auto-generierten Release Notes (Commits/PRs seit dem vorherigen Tag)
   erstellt.
 
@@ -27,8 +27,8 @@ den Release-Job.
 4. Tag setzen und pushen:
 
    ```bash
-   git tag -a v0.1.0 -m "Release v0.1.0"
-   git push origin v0.1.0
+   git tag -a v0.2.0 -m "Release v0.2.0"
+   git push origin v0.2.0
    ```
 
 5. Auf GitHub unter **Releases** prüfen; Text bei Bedarf manuell nachbearbeiten.
