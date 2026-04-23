@@ -200,8 +200,21 @@ Migrationsplan:
   aber mit Live-Preview.
 - An den Klammergrenzen (10 px / 32 px) wird kein Fehler angezeigt; der
   Shortcut ist dann schlicht wirkungslos.
-- Alle Kürzel gehorchen der bestehenden `defineShortcuts`-Hygiene (kein
-  Auslösen bei Fokus in Eingabefeldern, kein Chord mit Cmd/Ctrl/Alt).
+- `Shift+K` / `Shift+L`: vorige bzw. nächste **Schriftart** in der
+  konfigurierbaren Liste (kein nacktes `K`/`L`, u. a. wegen
+  macOS-Systembelegung von `Alt+L`).
+- Alle Kürzel gehorchen der `defineShortcuts`-Hygiene (kein Auslösen bei
+  Fokus in Eingabefeldern; `alt+…` / `shift+…` nur als explizite Einträge;
+  unmodifizierte Kürzel ohne Cmd/Ctrl/Meta, siehe `composables/useShortcuts.ts`).
+
+### Follow-up: E2E (Playwright)
+
+Die Kürzel sind in der **Timeline** bisher **nicht** durch Playwright
+abgedeckt — Abdeckung über Vitest (`useShortcuts`, `useUiPrefs`). **Offen:**
+mindestens ein authed E2E-Smoke, der z. B. `+` / `0` / `Shift+L` sendet
+und prüft, dass Prefs-Stand oder Wirkung (z. B. `localStorage` / API /
+sichtbares Token) dem erwarteten Schritt entspricht. Mit der späteren
+Shortcuts-Hilfeseite gemeinsam sinnvoll.
 
 ## Persistenz (Architektur)
 
