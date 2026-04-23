@@ -11,7 +11,88 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
-- **Darstellung / Lesbarkeit:** Einstellungen pro Oberfläche (Kacheln Vorder-/Rückseite, Volltext), Presets, Motion, Tastaturkürzel in der Timeline; `public/assets/fonts/NOTICE.md` (OFL) für gehostete Schriften. Ausstehend: Hilfeseite/Shortcuts-Übersicht im Paket [`docs/planned/shortcuts-help.md`](./planned/shortcuts-help.md), belastbare E2E-Szenarien im Paket [`docs/planned/onboarding-welcome-timeline.md`](./planned/onboarding-welcome-timeline.md).
+### Breaking
+
+- **Datenbank (erforderlich):** Nach Deployment `npx prisma migrate deploy` ausführen  
+  (u. a. Migration `20260422120000_ui_prefs`), damit UI-Präferenzen persistiert werden können.
+- **API (neu):** `GET` und `PATCH /api/me/ui-prefs` (auth erforderlich)  
+  Shape siehe `utils/ui-prefs.ts` (`v`, Surfaces, Theme, Motion, ggf. `seenFeatureAnnouncements`).  
+  Bestehende Gästeseiten bleiben unverändert.
+
+---
+
+### Added
+
+- **Einstellungen → Darstellung** (`/settings`)
+  - Appearance: hell / dunkel / System  
+  - Farbpaletten: Pastell / Warm, Hoher Kontrast, **eigene Farben**  
+  - Motion: wie System / reduziert / Standard  
+  - Pro Oberfläche (Front, Back, Reader):
+    - Schriftart (self-hosted)
+    - Textgröße
+    - Zeilenabstand
+    - bei Custom: Hintergrund / Textfarbe  
+  - Live-Vorschau + serverseitige Synchronisierung
+
+- **Tastatur (Timeline, aktive Kachel)**
+  - `+` / `=` / `-` / `0`: Schriftgröße (größer / kleiner / Standard)
+  - `Shift+K` / `Shift+L`: Schriftart wechseln
+  - berücksichtigt Shortcut-Hygiene (keine Eingabefelder, klare Modifier-Regeln)
+
+- **Self-hosted Schriften**
+  - lokale `woff2` unter `public/assets/fonts/`
+  - keine externen CDNs
+  - Lizenz: SIL OFL 1.1 → `public/assets/fonts/NOTICE.md`
+
+- **Fallback bei unleserlichen Einstellungen**
+  - „Standard für diesen Bereich“ pro Oberfläche
+  - feste, kontrastreiche Darstellung (theme-unabhängig)
+  - setzt Werte auf App-Defaults zurück
+
+- **Dev-Daten (`scripts/dev-data.ts`)**
+  - erstellt Demo-Kacheln und Feeds
+  - nutzt `DEV_SRP_SALT_HEX` / `DEV_SRP_VERIFIER_HEX`, falls gesetzt
+  - kompatibel mit `prisma db seed` / `.env.e2e`
+
+---
+
+### Changed
+
+- **Dev-Daten (`npm run devData`)**
+  - nutzt SRP-Variablen aus `process.env`, falls vorhanden
+  - sonst Fallback wie bisher (`dev@localhost` / Passwort `dev`)
+  - siehe README „Local seed data“
+
+- **Dokumentation / Navigation**
+  - flachere `/settings`-Struktur
+  - Footer-Kontext angepasst
+  - Details in `DEVELOPING.md` und `README.md`
+
+---
+
+### Removed
+
+- **E2E-Test (Lesbarkeits-Shortcuts, Timeline)**
+  - experimenteller Playwright-Spec entfernt
+  - wird ersetzt durch stabilere Onboarding-basierte E2E-Strategie
+  - bestehende Settings-/Feeds-Smokes bleiben unverändert
+
+---
+
+### Documentation
+
+- **Aktualisiert**
+  - `CHANGELOG.md`
+  - `docs/DEVELOPING.md`
+  - `README.md`
+  - `docs/planned/README.md`
+
+- **Geplante Follow-ups**
+  - zentrale Shortcut-Hilfe → `planned/shortcuts-help.md`
+  - Onboarding + Welcome-Timeline → `planned/onboarding-welcome-timeline.md`
+
+- **Dieses CHANGELOG** (strukturierter Unreleased-Block), [`docs/DEVELOPING.md`](./DEVELOPING.md) (E2E, `devData`, DB-Merge, Verweis Onboarding), [`README.md`](../README.md), [`docs/planned/README.md`](./planned/README.md).
+- **Geplante Follow-ups (separat umsetzbar):** zentrale **Shortcuts-Hilfe** — [shortcuts-help.md](./planned/shortcuts-help.md); **E2E/Onboarding** mit Registrierung und festen Willkommens-Kacheln — [onboarding-welcome-timeline.md](./planned/onboarding-welcome-timeline.md).
 
 ---
 
