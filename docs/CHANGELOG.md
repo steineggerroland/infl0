@@ -11,7 +11,7 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
-*(Noch keine Einträge nach v0.1.0.)*
+- **Darstellung / Lesbarkeit:** Einstellungen pro Oberfläche (Kacheln Vorder-/Rückseite, Volltext), Presets, Motion, Tastaturkürzel in der Timeline; `public/assets/fonts/NOTICE.md` (OFL) für gehostete Schriften. Ausstehend: Hilfeseite/Shortcuts-Übersicht im Paket [`docs/planned/shortcuts-help.md`](./planned/shortcuts-help.md), belastbare E2E-Szenarien im Paket [`docs/planned/onboarding-welcome-timeline.md`](./planned/onboarding-welcome-timeline.md).
 
 ---
 

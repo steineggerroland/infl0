@@ -33,7 +33,7 @@ nvm use
 npm run devData
 ```
 
-Creates `dev@localhost` (password: `dev`), two sample feeds, and three
+Creates `dev@localhost` (password: **`dev`** if `DEV_SRP_*` is not set; otherwise your verifier’s password), two sample feeds, and three
 articles with enrichment and timeline rows. In `production` this only
 runs with `ALLOW_DEV_DATA=1` (not recommended).
 
