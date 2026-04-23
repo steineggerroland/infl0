@@ -183,26 +183,30 @@ defineShortcuts({
 <template>
   <div :id="article.id" class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }">
     <!-- Front: Short Summary -->
-    <div class="article-content rounded-xl bg-front relative transition-all">
+    <div class="article-content infl0-front-font rounded-xl bg-front relative transition-all">
       <!-- Corner fold -->
       <CornerFold position="top-right" :tooltip="t('article.cornerFold')" @click="toggleDetailView" />
 
-      <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
-        <!-- Title -->
-        <h1
-          class="w-full text-end !text-sm mdh:!text-lg font-bold mb-4 tracking-tighter"
-        >{{
-          article.title }}
-        </h1>
-        <!-- Teaser -->
-        <p
-          class="teaser mt-0 mb-6 flex-1 content-center !text-lg smh:!text-2xl mdh:!text-4xl cursor-pointer text-[var(--infl0-article-front-fg-dim)]"
-          tabindex="0" @click="toggleDetailView">
-          {{
-            article.teaser }}</p>
+      <div class="flex min-h-0 h-4/5 max-h-4/5 w-full flex-col items-stretch px-6 pt-6 pb-2 text-center">
+        <div class="infl0-surface-typo-front flex min-h-0 w-full min-w-0 flex-1 flex-col">
+          <!-- Title: slightly smaller than teaser so the teaser line stays the reading anchor. -->
+          <h1
+            class="mb-2 w-full shrink-0 text-end text-[length:max(0.7rem,0.78em)] font-bold leading-tight tracking-tighter"
+          >
+            {{ article.title }}
+          </h1>
+          <!-- Teaser: primary line size; scrolls if the chosen px size does not fit the card. -->
+          <p
+            class="teaser min-h-0 min-w-0 flex-1 cursor-pointer overflow-y-auto text-start text-[1em] text-[var(--infl0-article-front-fg-dim)] [overflow-wrap:anywhere] sm:text-center"
+            tabindex="0"
+            @click="toggleDetailView"
+          >
+            {{ article.teaser }}
+          </p>
+        </div>
       </div>
-      <!-- Meta: keep small at every height; `mdh:text-lg` inflated the whole strip + `em`-sized chips (Freshness/Name). -->
-      <div class="meta max-h-1/5 h-1/5 w-full !text-xs smh:!text-sm mdh:!text-sm px-6 py-2 text-start leading-snug">
+      <!-- Meta: `infl0-article-meta-front` ties chip text to the front surface (see tailwind.css). -->
+      <div class="meta infl0-article-meta-front max-h-1/5 h-1/5 w-full px-6 py-2 text-start">
         <div class="flex items-center mb-2 mt-0 text-[var(--infl0-article-front-fg-dim)]">
           <TypeIcon :type="article.source_type" class="shadow-md tooltip" :data-tip="article.source_type" />
           <FreshnessIndicator
@@ -224,37 +228,36 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
     </div>
 
     <!-- Back: Detailed Summary -->
-    <div class="article-detail rounded-xl bg-back relative shadow-inner transition-all text-[var(--infl0-article-back-fg)]">
-      <div class="flex flex-col items-center justify-center max-h-4/5 h-4/5 w-full p-6 text-center">
-        <!-- Title -->
-        <h1
-          class="w-full text-end !text-sm mdh:!text-lg font-bold mb-4 tracking-tighter"
-        >{{
-          article.title }}
-        </h1>
-        <!-- Detailed Summary -->
-        <p
-          class="summary mt-0 mb-6 flex-1 content-center !text-sm mdh:!text-lg overflow-y-auto text-[var(--infl0-article-back-fg-dim)]"
-        >
-          {{ article.summary_long }}
-        </p>
-        <p class="m-0 w-full text-end text-xs mdh:text-sm">
-          <a
-            v-if="matchingPage"
-            :href="article.link"
-            target="_blank"
-            class="article-back-link font-bold"
-            @click.prevent="showOriginalArticle"
+    <div class="article-detail infl0-back-font rounded-xl bg-back relative shadow-inner transition-all text-[var(--infl0-article-back-fg)]">
+      <div class="flex min-h-0 h-4/5 max-h-4/5 w-full flex-col items-stretch px-6 pt-6 pb-2 text-center">
+        <div class="infl0-surface-typo-back flex min-h-0 w-full min-w-0 flex-1 flex-col text-[var(--infl0-article-back-fg)]">
+          <h1
+            class="mb-2 w-full shrink-0 text-end text-[length:max(0.7rem,0.78em)] font-bold leading-tight tracking-tighter text-[var(--infl0-article-back-fg)]"
           >
-            {{ t('article.originalArticle') }}
-          </a>
-          <a v-else :href="article.link" target="_blank" class="article-back-link font-bold">
-            {{ t('article.originalArticle') }}
-          </a>
-        </p>
+            {{ article.title }}
+          </h1>
+          <p
+            class="summary min-h-0 min-w-0 flex-1 overflow-y-auto text-start text-[1em] text-[var(--infl0-article-back-fg-dim)] [overflow-wrap:anywhere] sm:text-center"
+          >
+            {{ article.summary_long }}
+          </p>
+          <p class="m-0 w-full shrink-0 pt-1 text-end text-[0.88em] text-[var(--infl0-article-back-fg-mute)]">
+            <a
+              v-if="matchingPage"
+              :href="article.link"
+              target="_blank"
+              class="article-back-link font-bold"
+              @click.prevent="showOriginalArticle"
+            >
+              {{ t('article.originalArticle') }}
+            </a>
+            <a v-else :href="article.link" target="_blank" class="article-back-link font-bold">
+              {{ t('article.originalArticle') }}
+            </a>
+          </p>
+        </div>
       </div>
-      <!-- Meta: same compact scale as front (see front block comment). -->
-      <div class="meta max-h-1/5 h-1/5 w-full !text-xs smh:!text-sm mdh:!text-sm px-6 py-2 text-start leading-snug">
+      <div class="meta infl0-article-meta-back max-h-1/5 h-1/5 w-full px-6 py-2 text-start">
         <div class="flex items-center mb-1 mt-0 text-[var(--infl0-article-back-fg-mute)]">
           <TypeIcon
 :type="article.source_type" class="me-1 mdh:me-3 shadow-md tooltip"
@@ -291,7 +294,9 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
         <form method="dialog" class="mb-2 flex justify-end">
           <button class="btn btn-sm btn-circle btn-ghost">✕</button>
         </form>
-        <div class="overflow-y-auto h-full max-h-[80vh] font-serif md:p-2">
+        <div
+          class="max-h-[80vh] h-full w-full min-w-0 overflow-y-auto infl0-reader-font infl0-surface-typo-reader prose max-w-none md:p-2 text-[var(--infl0-surface-reader-text)] prose-headings:font-semibold prose-headings:text-[var(--infl0-surface-reader-text)] prose-p:text-[var(--infl0-surface-reader-text)] prose-li:marker:text-[var(--infl0-reader-prose-muted)] prose-a:text-[var(--infl0-reader-link)] prose-pre:rounded-lg prose-pre:bg-[var(--infl0-reader-code-bg)] prose-pre:text-[var(--infl0-reader-code-fg)] prose-code:text-[var(--infl0-reader-code-fg)] prose-code:bg-[var(--infl0-reader-code-bg)] prose-code:px-1 prose-code:py-0.5 prose-code:rounded"
+        >
           <ContentRenderer
             v-if="modalVisible && matchingPage && !('_inline' in matchingPage && matchingPage._inline)"
             :value="matchingPage"
@@ -299,13 +304,13 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
           <!-- eslint-disable vue/no-v-html -- Markdown sanitized with DOMPurify -->
           <div
             v-else-if="modalVisible && article.rawMarkdown && renderedRawMarkdown"
-            class="article-markdown prose prose-sm sm:prose-base max-w-none text-[var(--infl0-surface-reader-text)] prose-headings:font-semibold prose-headings:text-[var(--infl0-surface-reader-text)] prose-p:text-[var(--infl0-surface-reader-text)] prose-li:marker:text-[var(--infl0-reader-prose-muted)] prose-a:text-[var(--infl0-reader-link)] prose-pre:rounded-lg prose-pre:bg-[var(--infl0-reader-code-bg)] prose-pre:text-[var(--infl0-reader-code-fg)] prose-code:text-[var(--infl0-reader-code-fg)] prose-code:bg-[var(--infl0-reader-code-bg)] prose-code:px-1 prose-code:py-0.5 prose-code:rounded"
+            class="article-markdown"
             v-html="renderedRawMarkdown"
           />
           <!-- eslint-enable vue/no-v-html -->
           <pre
             v-else-if="modalVisible && article.rawMarkdown"
-            class="whitespace-pre-wrap break-words font-sans text-sm text-[var(--infl0-surface-reader-text)]"
+            class="whitespace-pre-wrap break-words text-[1em] text-[var(--infl0-surface-reader-text)]"
             >{{ article.rawMarkdown }}</pre
           >
         </div>

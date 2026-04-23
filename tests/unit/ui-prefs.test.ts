@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
-  MAX_FONT_SIZE_PX,
-  MIN_FONT_SIZE_PX,
   UI_PREFS_VERSION,
   applyUiPrefsPatch,
   clampFontSizePx,
+  clampFontSizePxForSurface,
   defaultUiPrefs,
+  fontSizeBoundsForSurface,
   isHexColor,
   parseUiPrefsFromJson,
   resolveUiPrefs,
@@ -24,18 +24,17 @@ describe('ui-prefs data layer', () => {
       expect(d.seenFeatureAnnouncements).toEqual([])
     })
 
-    it('gives the reader surface a longer-read default (serif, larger, relaxed)', () => {
+    it('gives the reader surface a longer-read default (serif, relaxed line height)', () => {
       const d = defaultUiPrefs()
       expect(d.surfaces.reader.fontFamily).toBe('system-serif')
-      expect(d.surfaces.reader.fontSize).toBeGreaterThan(d.surfaces['card-front'].fontSize)
       expect(d.surfaces.reader.lineHeight).toBe('relaxed')
     })
 
-    it('defaults card and reader sizes to sensible pixel values', () => {
+    it('defaults per-surface text sizes to product defaults (independent uppers)', () => {
       const d = defaultUiPrefs()
-      expect(d.surfaces['card-front'].fontSize).toBe(16)
-      expect(d.surfaces['card-back'].fontSize).toBe(16)
-      expect(d.surfaces.reader.fontSize).toBe(18)
+      expect(d.surfaces['card-front'].fontSize).toBe(45)
+      expect(d.surfaces['card-back'].fontSize).toBe(22)
+      expect(d.surfaces.reader.fontSize).toBe(20)
     })
   })
 
@@ -77,7 +76,7 @@ describe('ui-prefs data layer', () => {
       expect(parsed?.motion).toBe('reduced')
       expect(parsed?.appearance).toBe('light')
       expect(parsed?.surfaces['card-front'].backgroundColor).toBe('#112233')
-      expect(parsed?.surfaces['card-front'].fontSize).toBe(20)
+      expect(parsed?.surfaces['card-front'].fontSize).toBe(27)
       expect(parsed?.seenFeatureAnnouncements).toEqual(['reader-colors', 'new-surface'])
     })
 
@@ -128,6 +127,23 @@ describe('ui-prefs data layer', () => {
       expect(parsed?.appearance).toBe('light')
     })
 
+    it('migrates the old 16/16/18 default font triplet to the new defaults', () => {
+      const parsed = parseUiPrefsFromJson({
+        v: 1,
+        theme: 'pastel:blue',
+        motion: 'system',
+        surfaces: {
+          'card-front': { fontSize: 16, fontFamily: 'system-sans', lineHeight: 'normal' },
+          'card-back': { fontSize: 16, fontFamily: 'system-sans', lineHeight: 'normal' },
+          reader: { fontSize: 18, fontFamily: 'system-serif', lineHeight: 'relaxed' },
+        },
+        seenFeatureAnnouncements: [],
+      })
+      expect(parsed?.surfaces['card-front'].fontSize).toBe(45)
+      expect(parsed?.surfaces['card-back'].fontSize).toBe(22)
+      expect(parsed?.surfaces.reader.fontSize).toBe(20)
+    })
+
     it('falls back to defaults for invalid enum values and malformed colors', () => {
       const parsed = parseUiPrefsFromJson({
         v: 1,
@@ -175,14 +191,14 @@ describe('ui-prefs data layer', () => {
         motion: 'reduced',
         appearance: 'dark',
         surfaces: {
-          'card-front': { backgroundColor: '#abcdef', fontSize: 22 },
+          'card-front': { backgroundColor: '#abcdef', fontSize: 40 },
           reader: { lineHeight: 'tight' },
         },
       })
       expect(next.motion).toBe('reduced')
       expect(next.appearance).toBe('dark')
       expect(next.surfaces['card-front'].backgroundColor).toBe('#abcdef')
-      expect(next.surfaces['card-front'].fontSize).toBe(22)
+      expect(next.surfaces['card-front'].fontSize).toBe(40)
       expect(next.surfaces['card-front'].textColor).toBe(base.surfaces['card-front'].textColor)
       expect(next.surfaces.reader.lineHeight).toBe('tight')
     })
@@ -236,24 +252,35 @@ describe('ui-prefs data layer', () => {
     })
   })
 
-  describe('clampFontSizePx', () => {
-    it('rounds fractional pixels to the nearest integer', () => {
-      expect(clampFontSizePx(16.4)).toBe(16)
-      expect(clampFontSizePx(16.6)).toBe(17)
+  describe('clampFontSizePxForSurface', () => {
+    it('rounds fractional pixels to the nearest integer within the surface range', () => {
+      expect(clampFontSizePxForSurface(45.4, 'card-front')).toBe(45)
+      expect(clampFontSizePxForSurface(16.2, 'card-back')).toBe(16)
     })
 
-    it('clamps values outside the safe range', () => {
-      expect(clampFontSizePx(0)).toBe(MIN_FONT_SIZE_PX)
-      expect(clampFontSizePx(-10)).toBe(MIN_FONT_SIZE_PX)
-      expect(clampFontSizePx(999)).toBe(MAX_FONT_SIZE_PX)
+    it('applies per-surface bands (tight front, moderate back, wide reader)', () => {
+      const f = fontSizeBoundsForSurface('card-front')
+      const b = fontSizeBoundsForSurface('card-back')
+      const r = fontSizeBoundsForSurface('reader')
+      expect(f).toEqual({ min: 27, max: 47 })
+      expect(b).toEqual({ min: 11, max: 33 })
+      expect(r).toEqual({ min: 10, max: 36 })
+      expect(clampFontSizePxForSurface(0, 'card-front')).toBe(27)
+      expect(clampFontSizePxForSurface(999, 'card-front')).toBe(47)
+      expect(clampFontSizePxForSurface(999, 'card-back')).toBe(33)
+      expect(clampFontSizePxForSurface(5, 'reader')).toBe(10)
     })
 
     it('returns null for non-numeric / non-finite input so callers can fall back', () => {
-      expect(clampFontSizePx('18' as unknown)).toBeNull()
-      expect(clampFontSizePx('lg' as unknown)).toBeNull()
-      expect(clampFontSizePx(Number.NaN)).toBeNull()
-      expect(clampFontSizePx(Number.POSITIVE_INFINITY)).toBeNull()
-      expect(clampFontSizePx(undefined)).toBeNull()
+      expect(clampFontSizePxForSurface('18' as unknown, 'reader')).toBeNull()
+      expect(clampFontSizePxForSurface('lg' as unknown, 'reader')).toBeNull()
+      expect(clampFontSizePxForSurface(Number.NaN, 'reader')).toBeNull()
+      expect(clampFontSizePxForSurface(Number.POSITIVE_INFINITY, 'reader')).toBeNull()
+      expect(clampFontSizePxForSurface(undefined, 'reader')).toBeNull()
+    })
+
+    it('deprecated clampFontSizePx delegates to the card front band', () => {
+      expect(clampFontSizePx(999)).toBe(47)
     })
   })
 

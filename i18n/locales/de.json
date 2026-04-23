@@ -50,7 +50,7 @@
     "heading": "Darstellung",
     "intro": "Zuerst wählst du, ob die App hell, dunkel oder wie dein Gerät aussehen soll. Danach die Farbpalette. Eigene Farben bleiben unverändert, wie du sie setzt.",
     "themeLabel": "Farbpalette",
-    "themeHint": "Die Kacheln zeigen immer die helle Variante (Pastell weich, Warm kräftiger). Deine Hell-/Dunkel-Einstellung oben gilt für die ganze App. Darunter: starker Kontrast oder eigene Farben.",
+    "themeHint": "Die Kacheln zeigen immer die helle Variante (Pastell weich, Warm kräftiger). Deine Hell-/Dunkel-Einstellung oben gilt für die ganze App. Darunter: starker Kontrast oder „Eigene Farben“ — die Flächenfarben stellst du weiter unten pro Bereich ein.",
     "themePastelGroup": "Pastell",
     "themeWarmGroup": "Warm",
     "appearanceLabel": "Hell oder dunkel",
@@ -86,27 +86,52 @@
       },
       "custom": {
         "label": "Eigene Farben",
-        "hint": "Du setzt Primär-, Sekundär- und Lesefarben; der Rest wird daraus berechnet."
+        "hint": "Hinter- und Vordergrundfarbe wählst du pro Bereich (Vorderseite, Rückseite, Volltext) in den jeweiligen Abschnitten unten; der Rest der Oberfläche leitet sich daraus ab."
+      }
+    },
+    "typographyIntro": "Schrift und Textgröße gelten für die Kartenflächen und die Volltextansicht — nicht für Menüleisten, Metazeilen oder anderes UI. Die einstellbare Spanne ist pro Fläche unterschiedlich: Vorderseite nur leicht (Layout), Rückseite moderat, Volltext mit großem Spielraum fürs Lesen. Die Vorschau erscheint, während du im Block arbeitest oder die Größe ziehst.",
+    "surfaces": {
+      "cardFront": {
+        "heading": "Karte · Vorderseite",
+        "areaLabel": "Vorderseite",
+        "typographyHint": "Schriftart und Textgröße auf der Vorderseite der Artikelkachel (Überschrift und Teaser).",
+        "colorHint": "Bei „Eigene Farben“: Hinter- und Vordergrund für diesen Kartenbereich."
+      },
+      "cardBack": {
+        "heading": "Karte · Rückseite",
+        "areaLabel": "Rückseite",
+        "typographyHint": "Schriftart und Textgröße auf der Rückseite (langer Text, Aktionen).",
+        "colorHint": "Bei „Eigene Farben“: Hinter- und Vordergrund für die Kartenrückseite."
+      },
+      "reader": {
+        "heading": "Volltext",
+        "areaLabel": "Volltext",
+        "typographyHint": "Schriftart und Textgröße in der Volltextansicht (z. B. Originalartikel im Fenster).",
+        "colorHint": "Bei „Eigene Farben“: Hinter- und Vordergrund für Fließtext und Überschriften im Volltext."
       }
     },
     "customColors": {
+      "perSurfaceTitle": "Farben für diesen Bereich",
+      "pickerGroupAria": "Eigene Hinter- und Textfarbe für {surface}",
       "background": "Hintergrund",
       "text": "Text",
+      "colorBackgroundAria": "Hintergrundfarbe – {surface}",
+      "colorTextAria": "Textfarbe – {surface}",
       "resetSurface": "Zurücksetzen",
-      "surfaces": {
-        "card-front": {
-          "label": "Primärfarben"
-        },
-        "card-back": {
-          "label": "Sekundärfarben"
-        },
-        "reader": {
-          "label": "Leseansicht"
-        }
-      }
+      "resetSurfaceAria": "Hinter- und Textfarbe auf die Thema-Vorgabe zurücksetzen – {surface}"
     },
+    "fontFamilyLabel": "Schriftart",
+    "fontFamilyOptions": {
+      "system-sans": "System Sans",
+      "system-serif": "System Serif",
+      "system-mono": "System Mono"
+    },
+    "fontSizeLabel": "Textgröße",
+    "fontSizeUnit": "px",
+    "fontSizeRangeAria": "Textgröße – {surface}",
     "preview": {
-      "label": "Vorschau",
+      "label": "Thema-Vorschau",
+      "forThisSurface": "Vorschau",
       "frontHeadline": "Beispiel-Überschrift einer Karte",
       "frontMeta": "Quelle · vor 2 Stunden",
       "backTeaser": "Kurzer Teaser, der auf der Karten-Rückseite zu sehen wäre. Hier zählt vor allem die Lesbarkeit im Alltag.",

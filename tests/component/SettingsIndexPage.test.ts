@@ -75,6 +75,7 @@ function makeI18n() {
     settingsDisplay: {
       heading: 'Display',
       intro: 'How infl0 feels for you.',
+      typographyIntro: 'Typography intro.',
     },
     settingsTimeline: {
       title: 'Adjust sorting',
@@ -118,17 +119,20 @@ function mountPage() {
         // The Darstellung children have their own component tests; here
         // we only care that the section renders around mount points for
         // them. Stubbing avoids pulling `useUiPrefs` through the tree.
+        SettingsDisplayThemeBlock: {
+          template: `
+            <div data-testid="display-theme-block-stub">
+              <div data-testid="appearance-control-stub" />
+              <div data-testid="theme-control-stub" />
+              <div data-testid="theme-preview-stub" />
+            </div>
+          `,
+        },
         SettingsMotionControl: {
           template: '<div data-testid="motion-control-stub" />',
         },
-        SettingsThemeControl: {
-          template: '<div data-testid="theme-control-stub" />',
-        },
-        SettingsThemePreview: {
-          template: '<div data-testid="theme-preview-stub" />',
-        },
-        SettingsAppearanceControl: {
-          template: '<div data-testid="appearance-control-stub" />',
+        SettingsSurfaceDisplayGroup: {
+          template: '<div data-testid="surface-group-stub" />',
         },
       },
     },
@@ -143,18 +147,17 @@ describe('SettingsIndex page', () => {
     expect(h1s[0].text()).toBe('Settings')
   })
 
-  it('exposes a Darstellung section with appearance, theme, preview, and motion controls', () => {
+  it('exposes a Darstellung section with a theme block, three surface groups, and motion', () => {
     const wrapper = mountPage()
     const heading = wrapper.find('#settings-display-heading')
     expect(heading.exists()).toBe(true)
     expect(heading.element.tagName.toLowerCase()).toBe('h2')
     expect(heading.text()).toBe('Display')
-    // Each readability control is its own component (tested in
-    // isolation). Locking the mount points here guards the section
-    // outline — adding or removing one by accident surfaces loudly.
+    expect(wrapper.find('[data-testid="display-theme-block-stub"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="theme-control-stub"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="theme-preview-stub"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="appearance-control-stub"]').exists()).toBe(true)
+    expect(wrapper.findAll('[data-testid="surface-group-stub"]')).toHaveLength(3)
     expect(wrapper.find('[data-testid="motion-control-stub"]').exists()).toBe(true)
   })
 

@@ -50,7 +50,7 @@
     "heading": "Display",
     "intro": "First choose whether you prefer a light or dark look (or follow your device). Then pick a colour palette. Custom colours stay exactly as you set them.",
     "themeLabel": "Colour palette",
-    "themeHint": "Swatches always show the light variant (pastel is softer, warm is richer). Your light/dark setting above applies to the whole app. Below: high contrast or custom colours.",
+    "themeHint": "Swatches always show the light variant (pastel is softer, warm is richer). Your light/dark setting above applies to the whole app. Below: high contrast or your own colour choices per surface in the text sections further down.",
     "themePastelGroup": "Pastel",
     "themeWarmGroup": "Warm",
     "appearanceLabel": "Light or dark",
@@ -86,27 +86,52 @@
       },
       "custom": {
         "label": "Custom colours",
-        "hint": "You choose primary, secondary and reader colours; everything else is derived from them."
+        "hint": "You set background and text for each of the three areas (card front, card back, full text) in the matching sections below; other UI is derived from these choices."
+      }
+    },
+    "typographyIntro": "Font and text size apply to the card reading areas and full-text view — not menus, meta rows, or other chrome. Adjustable range differs by surface: a tight band on the card front (layout), a moderate band on the back, and a wide band in the reader for comfort. A preview appears while you work in a block or drag the size control.",
+    "surfaces": {
+      "cardFront": {
+        "heading": "Card · front",
+        "areaLabel": "card front",
+        "typographyHint": "Typeface and text size for the front of timeline cards (headline and teaser).",
+        "colorHint": "When using custom theme colours, these apply to the card front reading area."
+      },
+      "cardBack": {
+        "heading": "Card · back",
+        "areaLabel": "card back",
+        "typographyHint": "Typeface and text size for the back of a card (longer summary and actions).",
+        "colorHint": "When using custom theme colours, these apply to the card back text."
+      },
+      "reader": {
+        "heading": "Full text",
+        "areaLabel": "full text",
+        "typographyHint": "Typeface and text size for the full-article / reader view (e.g. original article in the modal).",
+        "colorHint": "When using custom theme colours, these apply to the reader body and headings."
       }
     },
     "customColors": {
+      "perSurfaceTitle": "Colours for this area",
+      "pickerGroupAria": "Custom background and text colours for {surface}",
       "background": "Background",
       "text": "Text",
+      "colorBackgroundAria": "Background colour — {surface}",
+      "colorTextAria": "Text colour — {surface}",
       "resetSurface": "Reset",
-      "surfaces": {
-        "card-front": {
-          "label": "Primary colors"
-        },
-        "card-back": {
-          "label": "Secondary colors"
-        },
-        "reader": {
-          "label": "Reader"
-        }
-      }
+      "resetSurfaceAria": "Reset background and text colours to the theme default — {surface}"
     },
+    "fontFamilyLabel": "Typeface",
+    "fontFamilyOptions": {
+      "system-sans": "System Sans",
+      "system-serif": "System Serif",
+      "system-mono": "System Mono"
+    },
+    "fontSizeLabel": "Text size",
+    "fontSizeUnit": "px",
+    "fontSizeRangeAria": "Text size — {surface}",
     "preview": {
-      "label": "Preview",
+      "label": "Theme preview",
+      "forThisSurface": "Preview",
       "frontHeadline": "Sample card headline",
       "frontMeta": "Source · 2 hours ago",
       "backTeaser": "Short teaser shown on the card's back side. What matters here is everyday legibility.",

@@ -17,23 +17,14 @@ export const SURFACE_IDS = ['card-front', 'card-back', 'reader'] as const
 export type SurfaceId = (typeof SURFACE_IDS)[number]
 
 /**
- * Font sizes are stored as integer **pixels**, per surface.
- *
- * A numeric value (instead of a `xs/sm/md/lg/xl` scale) keeps the live-
- * preview honest: the user sees the exact size they configure, and the
- * `+ / - / 0` shortcuts can nudge by one pixel at a time when a card's
- * content just barely doesn't fit.
- *
- * The bounds are an accessibility guardrail: at the low end text remains
- * legible on dense UI surfaces, at the high end the reader does not break
- * timeline cards or touch targets. Values outside the range are clamped
- * during parse and patch so the DB never holds an unsafe size.
- *
- * `pt` → `px` conversion is trivial (1pt ≈ 1.333px at 96dpi), so we pick
- * one canonical unit and leave unit conversion to the UI label.
+ * Default text sizes (px) per reading surface (content-aware hierarchy, ≈98% fit).
+ * User-adjustable bounds are per role — see `fontSizeBoundsForSurface` (not uniform).
  */
-export const MIN_FONT_SIZE_PX = 10
-export const MAX_FONT_SIZE_PX = 32
+export const SURFACE_DEFAULT_FONT_PX: Record<SurfaceId, number> = {
+  'card-front': 45,
+  'card-back': 22,
+  reader: 20,
+}
 
 export const LINE_HEIGHT_STEPS = ['tight', 'normal', 'relaxed'] as const
 export type LineHeightStep = (typeof LINE_HEIGHT_STEPS)[number]
@@ -89,7 +80,7 @@ export type SurfacePrefs = {
   /** `null` means "inherit from preset/theme". */
   textColor: string | null
   fontFamily: FontFamilyId
-  /** Integer pixels, clamped to `[MIN_FONT_SIZE_PX, MAX_FONT_SIZE_PX]`. */
+  /** Integer px, clamped per {@link fontSizeBoundsForSurface} (range differs by surface). */
   fontSize: number
   lineHeight: LineHeightStep
 }
@@ -121,17 +112,43 @@ function isSurfaceId(id: unknown): id is SurfaceId {
 }
 
 /**
- * Normalize a candidate font size to an integer pixel value in the allowed
- * range. Returns `null` for non-finite values so callers can fall back to
- * the current / default size instead of storing a clamped but unintended
- * number (e.g. accidental `'xl'` string).
+ * Per-surface px bounds (integers) aligned to layout role: the card front is a
+ * curated “hero” block (tight), back is balanced fit, reader allows strong zoom for a11y.
  */
-export function clampFontSizePx(v: unknown): number | null {
+export function fontSizeBoundsForSurface(surface: SurfaceId): { min: number; max: number } {
+  const d = SURFACE_DEFAULT_FONT_PX[surface]
+  if (surface === 'card-front') {
+    const min = Math.max(1, Math.floor(d * 0.6 + 1e-9))
+    // +5%: use floor so 45×1.05 does not float to 48
+    const max = Math.max(min, Math.floor(d * 1.05 + 1e-9))
+    return { min, max }
+  }
+  if (surface === 'card-back') {
+    const min = Math.max(1, Math.floor(d * 0.5 + 1e-9))
+    const max = Math.max(min, Math.ceil(d * 1.5 - 1e-9))
+    return { min, max }
+  }
+  const min = Math.max(1, Math.floor(d * 0.5 + 1e-9))
+  const max = Math.max(min, Math.ceil(d * 1.8 - 1e-9))
+  return { min, max }
+}
+
+/**
+ * Normalize a candidate font size to an integer in the allowed range for
+ * `surface`. Returns `null` for non-finite values.
+ */
+export function clampFontSizePxForSurface(v: unknown, surface: SurfaceId): number | null {
   if (typeof v !== 'number' || !Number.isFinite(v)) return null
+  const { min, max } = fontSizeBoundsForSurface(surface)
   const rounded = Math.round(v)
-  if (rounded < MIN_FONT_SIZE_PX) return MIN_FONT_SIZE_PX
-  if (rounded > MAX_FONT_SIZE_PX) return MAX_FONT_SIZE_PX
+  if (rounded < min) return min
+  if (rounded > max) return max
   return rounded
+}
+
+/** @deprecated Use `clampFontSizePxForSurface(v, 'card-front')` for bounds semantics. */
+export function clampFontSizePx(v: unknown): number | null {
+  return clampFontSizePxForSurface(v, 'card-front')
 }
 
 function isLineHeight(v: unknown): v is LineHeightStep {
@@ -169,12 +186,13 @@ export function isHexColor(v: unknown): v is string {
 }
 
 export function defaultSurfacePrefs(surface: SurfaceId): SurfacePrefs {
+  const fontSize = SURFACE_DEFAULT_FONT_PX[surface]
   if (surface === 'reader') {
     return {
       backgroundColor: null,
       textColor: null,
       fontFamily: 'system-serif',
-      fontSize: 18,
+      fontSize,
       lineHeight: 'relaxed',
     }
   }
@@ -182,7 +200,7 @@ export function defaultSurfacePrefs(surface: SurfaceId): SurfacePrefs {
     backgroundColor: null,
     textColor: null,
     fontFamily: 'system-sans',
-    fontSize: 16,
+    fontSize,
     lineHeight: 'normal',
   }
 }
@@ -206,7 +224,7 @@ function parseSurface(raw: unknown, surface: SurfaceId): SurfacePrefs {
   const base = defaultSurfacePrefs(surface)
   if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) return base
   const r = raw as Record<string, unknown>
-  const fontSize = clampFontSizePx(r.fontSize)
+  const fontSize = clampFontSizePxForSurface(r.fontSize, surface)
   return {
     backgroundColor: isHexColor(r.backgroundColor) ? r.backgroundColor : base.backgroundColor,
     textColor: isHexColor(r.textColor) ? r.textColor : base.textColor,
@@ -261,10 +279,28 @@ export function parseUiPrefsFromJson(json: unknown): UiPrefs | null {
     j.surfaces && typeof j.surfaces === 'object' && !Array.isArray(j.surfaces)
       ? (j.surfaces as Record<string, unknown>)
       : {}
+
+  function rawFontSizeEntry(entry: unknown): number | undefined {
+    if (entry == null || typeof entry !== 'object' || Array.isArray(entry)) return undefined
+    const fs = (entry as Record<string, unknown>).fontSize
+    return typeof fs === 'number' && Number.isFinite(fs) ? fs : undefined
+  }
+
+  const rawF = rawFontSizeEntry(surfacesRaw['card-front'])
+  const rawB = rawFontSizeEntry(surfacesRaw['card-back'])
+  const rawR = rawFontSizeEntry(surfacesRaw.reader)
+  const isLegacyDefaultFontTriplet = rawF === 16 && rawB === 16 && rawR === 18
+
   const surfaces: Record<SurfaceId, SurfacePrefs> = {
     'card-front': parseSurface(surfacesRaw['card-front'], 'card-front'),
     'card-back': parseSurface(surfacesRaw['card-back'], 'card-back'),
     reader: parseSurface(surfacesRaw.reader, 'reader'),
+  }
+
+  if (isLegacyDefaultFontTriplet) {
+    surfaces['card-front'].fontSize = SURFACE_DEFAULT_FONT_PX['card-front']
+    surfaces['card-back'].fontSize = SURFACE_DEFAULT_FONT_PX['card-back']
+    surfaces.reader.fontSize = SURFACE_DEFAULT_FONT_PX.reader
   }
   return {
     version: UI_PREFS_VERSION,
@@ -341,7 +377,7 @@ export function applyUiPrefsPatch(base: UiPrefs, patch: UiPrefsPatch): UiPrefs {
       }
       if (isFontFamilyId(s.fontFamily)) target.fontFamily = s.fontFamily
       if ('fontSize' in s) {
-        const clamped = clampFontSizePx(s.fontSize)
+        const clamped = clampFontSizePxForSurface(s.fontSize, rawId)
         if (clamped != null) target.fontSize = clamped
       }
       if (isLineHeight(s.lineHeight)) target.lineHeight = s.lineHeight

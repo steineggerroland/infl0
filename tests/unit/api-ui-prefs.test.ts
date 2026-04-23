@@ -140,7 +140,7 @@ describe('/api/me/ui-prefs', () => {
       } as never)
       vi.mocked(readBody).mockResolvedValueOnce({
         motion: 'reduced',
-        surfaces: { 'card-front': { backgroundColor: '#123456', fontSize: 24 } },
+        surfaces: { 'card-front': { backgroundColor: '#123456', fontSize: 32 } },
       })
       vi.mocked(prisma.user.update).mockResolvedValue({} as never)
 
@@ -154,7 +154,7 @@ describe('/api/me/ui-prefs', () => {
       })
       expect(res.motion).toBe('reduced')
       expect(res.surfaces['card-front'].backgroundColor).toBe('#123456')
-      expect(res.surfaces['card-front'].fontSize).toBe(24)
+      expect(res.surfaces['card-front'].fontSize).toBe(32)
       expect(res.surfaces.reader.lineHeight).toBe('relaxed')
     })
 

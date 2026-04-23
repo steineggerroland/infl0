@@ -83,7 +83,7 @@ describe('useUiPrefs', () => {
           backgroundColor: '#112233',
           textColor: '#eeeeee',
           fontFamily: 'system-sans',
-          fontSize: 20,
+          fontSize: 40,
           lineHeight: 'normal',
         },
         'card-back': {

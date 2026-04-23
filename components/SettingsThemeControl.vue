@@ -3,7 +3,6 @@
  * Farbpalette: Pastell und Warm je als Swatch-Reihe, darunter hoher Kontrast und eigene Farben.
  * Hell/Dunkel wählt die Nutzerin über `SettingsAppearanceControl` davor.
  */
-import SettingsCustomThemeColors from '~/components/SettingsCustomThemeColors.vue'
 import { presetSourceFor } from '~/utils/infl0-theme-derive'
 import { THEME_HUE_IDS, type ThemeChoice, type ThemeHueId, type ThemePresetId } from '~/utils/ui-prefs'
 
@@ -157,5 +156,4 @@ function onSelectChoice(choice: ThemeChoice) {
       </label>
     </div>
   </fieldset>
-  <SettingsCustomThemeColors />
 </template>

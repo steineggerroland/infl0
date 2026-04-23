@@ -22,6 +22,12 @@ describe('buildThemeHtmlStyle', () => {
     expect(s).toContain('--infl0-panel-bg:')
     expect(s).toContain('--infl0-delta-positive-fg:')
     expect(s).toContain('--infl0-reader-link:')
+    expect(s).toContain('--infl0-font-front-family:')
+    expect(s).toContain('--infl0-font-back-family:')
+    expect(s).toContain('--infl0-font-reader-family:')
+    expect(s).toContain('--infl0-font-front-size: 45px')
+    expect(s).toContain('--infl0-font-reader-size: 20px')
+    expect(s).toContain('--infl0-line-height-front:')
   })
 
   it('differs between light and dark pair for the same preset id', () => {

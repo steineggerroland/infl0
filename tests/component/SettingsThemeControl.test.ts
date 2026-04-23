@@ -60,7 +60,6 @@ function mountControl() {
   return mount(SettingsThemeControl, {
     global: {
       plugins: [makeI18n()],
-      stubs: { SettingsCustomThemeColors: true },
     },
   })
 }

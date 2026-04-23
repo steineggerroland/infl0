@@ -1,4 +1,4 @@
-import type { SurfaceId, ThemeHueId, ThemePresetId, UiPrefs } from './ui-prefs'
+import type { FontFamilyId, LineHeightStep, SurfaceId, ThemeHueId, ThemePresetId, UiPrefs } from './ui-prefs'
 import {
   applyUiPrefsPatch,
   defaultUiPrefs,
@@ -534,6 +534,45 @@ export function themeSourceToStyleAttr(tokens: Readonly<Record<string, string>>)
     .join('; ')
 }
 
+function fontStack(id: FontFamilyId): string {
+  if (id === 'system-serif') return "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif"
+  if (id === 'system-mono')
+    return "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace"
+  return "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Noto Sans', sans-serif"
+}
+
+/**
+ * Line-height is stored as discrete steps; the canvas uses unitless line-height
+ * so `em` children scale predictably.
+ */
+function lineHeightStepToUnitless(s: LineHeightStep): string {
+  switch (s) {
+    case 'tight':
+      return '1.3'
+    case 'normal':
+      return '1.5'
+    case 'relaxed':
+      return '1.7'
+  }
+}
+
+export function deriveInfl0TypographyTokens(prefs: UiPrefs): Record<string, string> {
+  const front = prefs.surfaces['card-front']
+  const back = prefs.surfaces['card-back']
+  const reader = prefs.surfaces.reader
+  return {
+    '--infl0-font-front-family': fontStack(front.fontFamily),
+    '--infl0-font-back-family': fontStack(back.fontFamily),
+    '--infl0-font-reader-family': fontStack(reader.fontFamily),
+    '--infl0-font-front-size': `${front.fontSize}px`,
+    '--infl0-font-back-size': `${back.fontSize}px`,
+    '--infl0-font-reader-size': `${reader.fontSize}px`,
+    '--infl0-line-height-front': lineHeightStepToUnitless(front.lineHeight),
+    '--infl0-line-height-back': lineHeightStepToUnitless(back.lineHeight),
+    '--infl0-line-height-reader': lineHeightStepToUnitless(reader.lineHeight),
+  }
+}
+
 /** Light vs dark for HTML chrome only (not persisted as a theme id). */
 export type UiChromeAppearance = 'light' | 'dark'
 
@@ -557,8 +596,9 @@ export function buildThemeHtmlStyle(
   const chrome: UiChromeAppearance = options?.effectiveAppearance ?? 'light'
   const pairMode: 'light' | 'dark' = chrome === 'dark' ? 'dark' : 'light'
   const source = resolveThemeSource(prefs, pairMode)
-  const tokens = deriveInfl0TokensFromSource(source)
-  const base = themeSourceToStyleAttr(tokens)
+  const themeTokens = deriveInfl0TokensFromSource(source)
+  const typographyTokens = deriveInfl0TypographyTokens(prefs)
+  const base = `${themeSourceToStyleAttr(themeTokens)}; ${themeSourceToStyleAttr(typographyTokens)}`
   const cs = chrome === 'dark' ? 'dark' : 'light'
   return `${base}; color-scheme: ${cs}`
 }

@@ -2,17 +2,17 @@
 /**
  * `/settings` is the direct-access settings surface. No hub, no extra click.
  *
- * It currently hosts two behaviour groups — the sorting weights and the
- * engagement-tracking consent. Both used to live on their own page
- * (`/settings/timeline-score`, `/settings/privacy`); consolidating them
- * here is the product call from the navigation re-design. The readability
- * settings (theme, motion, font size per surface) will join as a third
- * section in the next baustein.
+ * Darstellung: Hell/Dunkel, Farbpalette (Theme-Vorschau nur bei Fokus im Block),
+ * dann Schrift & Textgröße (und ggf. Farben) pro Kartenfläche bzw. Volltext, Bewegung.
+ * Außerdem: Sortiergewichtung, Leseverhalten.
  */
 import {
   TIMELINE_SCORE_FACTOR_DEFS,
   type TimelineScoreFactorGroup,
 } from '~/utils/timeline-score-factors'
+import type { SurfaceId } from '~/utils/ui-prefs'
+
+const DISPLAY_SURFACES: SurfaceId[] = ['card-front', 'card-back', 'reader']
 
 definePageMeta({
   layout: 'app',
@@ -70,12 +70,6 @@ async function onTrackingToggle(e: Event) {
         </p>
       </header>
 
-      <!--
-        Darstellung / readability. Starts with Motion (ships now);
-        theme presets, per-surface font size and custom colors are
-        staged in `docs/planned/readability-settings.md` and join in
-        follow-up slices without changing this section's outline.
-      -->
       <section aria-labelledby="settings-display-heading" class="mb-10">
         <header class="mb-4 text-center">
           <h2 id="settings-display-heading" class="infl0-canvas-fg text-lg font-semibold">
@@ -87,16 +81,20 @@ async function onTrackingToggle(e: Event) {
         </header>
 
         <div class="infl0-panel space-y-6 p-5">
-          <SettingsAppearanceControl />
+          <SettingsDisplayThemeBlock />
           <div class="border-t border-[var(--infl0-panel-border)] pt-5">
-            <SettingsThemeControl />
+            <p class="infl0-canvas-muted mb-6 text-xs leading-snug">
+              {{ t('settingsDisplay.typographyIntro') }}
+            </p>
+            <div class="space-y-0">
+              <SettingsSurfaceDisplayGroup
+                v-for="(sid, i) in DISPLAY_SURFACES"
+                :key="sid"
+                :surface-id="sid"
+                :show-top-border="i > 0"
+              />
+            </div>
           </div>
-          <!--
-            The preview lives next to the picker, not inside it, so the
-            fieldset/legend semantics stay focused on "pick a theme" and
-            screen readers do not read the preview rows as radio options.
-          -->
-          <SettingsThemePreview />
           <div class="border-t border-[var(--infl0-panel-border)] pt-5">
             <SettingsMotionControl />
           </div>

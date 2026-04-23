@@ -34,7 +34,7 @@ const { t } = useI18n()
 
     <!-- Card front (headline) — same gradient as the timeline, not a flat "surface-front" swatch. -->
     <div
-      class="rounded-lg border p-3"
+      class="infl0-front-font infl0-surface-typo-front max-h-24 overflow-y-auto rounded-lg border p-3"
       style="
         background: linear-gradient(135deg, var(--infl0-card-grad-a), var(--infl0-card-grad-b));
         color: var(--infl0-article-front-fg);
@@ -42,17 +42,17 @@ const { t } = useI18n()
       "
       data-testid="theme-preview-front"
     >
-      <p class="m-0 text-sm font-semibold leading-snug">
+      <p class="m-0 text-[0.9em] font-semibold leading-tight [overflow-wrap:anywhere]">
         {{ t('settingsDisplay.preview.frontHeadline') }}
       </p>
-      <p class="m-0 mt-1 text-xs opacity-80">
+      <p class="m-0 mt-1 text-[0.8em] opacity-80">
         {{ t('settingsDisplay.preview.frontMeta') }}
       </p>
     </div>
 
     <!-- Card back (teaser) -->
     <div
-      class="rounded-lg border p-3"
+      class="infl0-back-font infl0-surface-typo-back max-h-24 overflow-y-auto rounded-lg border p-3"
       style="
         background-color: var(--infl0-surface-back-bg);
         color: var(--infl0-surface-back-text);
@@ -60,14 +60,14 @@ const { t } = useI18n()
       "
       data-testid="theme-preview-back"
     >
-      <p class="m-0 text-xs leading-relaxed">
+      <p class="m-0 [overflow-wrap:anywhere]">
         {{ t('settingsDisplay.preview.backTeaser') }}
       </p>
     </div>
 
     <!-- Reader (full-text) -->
     <div
-      class="rounded-lg border p-3"
+      class="infl0-reader-font infl0-surface-typo-reader max-h-32 overflow-y-auto rounded-lg border p-3"
       style="
         background-color: var(--infl0-surface-reader-bg);
         color: var(--infl0-surface-reader-text);
@@ -75,7 +75,7 @@ const { t } = useI18n()
       "
       data-testid="theme-preview-reader"
     >
-      <p class="m-0 text-sm leading-relaxed">
+      <p class="m-0 [overflow-wrap:anywhere]">
         {{ t('settingsDisplay.preview.readerBody') }}
       </p>
     </div>
