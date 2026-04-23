@@ -34,7 +34,7 @@ const { t } = useI18n()
 
     <!-- Card front (headline) — same gradient as the timeline, not a flat "surface-front" swatch. -->
     <div
-      class="infl0-front-font infl0-surface-typo-front max-h-24 overflow-y-auto rounded-lg border p-3"
+      class="infl0-surface-front infl0-surface-typo-front max-h-24 overflow-y-auto rounded-lg border p-3"
       style="
         background: linear-gradient(135deg, var(--infl0-card-grad-a), var(--infl0-card-grad-b));
         color: var(--infl0-article-front-fg);
@@ -52,7 +52,7 @@ const { t } = useI18n()
 
     <!-- Card back (teaser) -->
     <div
-      class="infl0-back-font infl0-surface-typo-back max-h-24 overflow-y-auto rounded-lg border p-3"
+      class="infl0-surface-back infl0-surface-typo-back max-h-24 overflow-y-auto rounded-lg border p-3"
       style="
         background-color: var(--infl0-surface-back-bg);
         color: var(--infl0-surface-back-text);
@@ -67,7 +67,7 @@ const { t } = useI18n()
 
     <!-- Reader (full-text) -->
     <div
-      class="infl0-reader-font infl0-surface-typo-reader max-h-32 overflow-y-auto rounded-lg border p-3"
+      class="infl0-surface-reader infl0-surface-typo-reader max-h-32 overflow-y-auto rounded-lg border p-3"
       style="
         background-color: var(--infl0-surface-reader-bg);
         color: var(--infl0-surface-reader-text);

@@ -534,11 +534,35 @@ export function themeSourceToStyleAttr(tokens: Readonly<Record<string, string>>)
     .join('; ')
 }
 
+const SYSTEM_FONT_STACK: Readonly<Record<'system-sans' | 'system-serif' | 'system-mono', string>> = {
+  'system-sans':
+    "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Noto Sans', sans-serif",
+  'system-serif': "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif",
+  'system-mono':
+    "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace",
+}
+
+const WEBFONT_TOKEN_BY_ID: Readonly<
+  Record<
+    Exclude<FontFamilyId, 'system-sans' | 'system-serif' | 'system-mono'>,
+    string
+  >
+> = {
+  inter: 'var(--font-sans-default)',
+  'source-sans-3': 'var(--font-sans-alt)',
+  'source-serif-4': 'var(--font-serif)',
+  atkinson: 'var(--font-a11y-1)',
+  lexend: 'var(--font-a11y-2)',
+  opendyslexic: 'var(--font-a11y-3)',
+  'ibm-plex': 'var(--font-character-1)',
+  fraunces: 'var(--font-character-2)',
+}
+
 function fontStack(id: FontFamilyId): string {
-  if (id === 'system-serif') return "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif"
-  if (id === 'system-mono')
-    return "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace"
-  return "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Noto Sans', sans-serif"
+  if (id === 'system-sans' || id === 'system-serif' || id === 'system-mono') {
+    return SYSTEM_FONT_STACK[id]
+  }
+  return WEBFONT_TOKEN_BY_ID[id] ?? WEBFONT_TOKEN_BY_ID.inter
 }
 
 /**

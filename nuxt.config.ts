@@ -51,7 +51,8 @@ export default defineNuxtConfig({
       redirect: { to: '/settings#settings-sorting-heading', statusCode: 308 },
     },
   },
-  css: ['@/assets/css/tailwind.css'],
+  // `fonts.css` = @font-face only; woff2 files live under `public/assets/fonts/`.
+  css: ['@/assets/css/fonts.css', '@/assets/css/tailwind.css'],
   postcss: {
     plugins: {
       tailwindcss: {},

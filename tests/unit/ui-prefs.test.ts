@@ -26,7 +26,9 @@ describe('ui-prefs data layer', () => {
 
     it('gives the reader surface a longer-read default (serif, relaxed line height)', () => {
       const d = defaultUiPrefs()
-      expect(d.surfaces.reader.fontFamily).toBe('system-serif')
+      expect(d.surfaces['card-front'].fontFamily).toBe('inter')
+      expect(d.surfaces['card-back'].fontFamily).toBe('source-sans-3')
+      expect(d.surfaces.reader.fontFamily).toBe('source-serif-4')
       expect(d.surfaces.reader.lineHeight).toBe('relaxed')
     })
 
@@ -77,6 +79,7 @@ describe('ui-prefs data layer', () => {
       expect(parsed?.appearance).toBe('light')
       expect(parsed?.surfaces['card-front'].backgroundColor).toBe('#112233')
       expect(parsed?.surfaces['card-front'].fontSize).toBe(27)
+      expect(parsed?.surfaces['card-front'].fontFamily).toBe('inter')
       expect(parsed?.seenFeatureAnnouncements).toEqual(['reader-colors', 'new-surface'])
     })
 
@@ -142,6 +145,24 @@ describe('ui-prefs data layer', () => {
       expect(parsed?.surfaces['card-front'].fontSize).toBe(45)
       expect(parsed?.surfaces['card-back'].fontSize).toBe(22)
       expect(parsed?.surfaces.reader.fontSize).toBe(20)
+      expect(parsed?.surfaces['card-front'].fontFamily).toBe('inter')
+      expect(parsed?.surfaces['card-back'].fontFamily).toBe('source-sans-3')
+      expect(parsed?.surfaces.reader.fontFamily).toBe('source-serif-4')
+    })
+
+    it('migrates legacy system-mono to system-mono (not a proportional font)', () => {
+      const parsed = parseUiPrefsFromJson({
+        v: 1,
+        theme: 'pastel:blue',
+        motion: 'system',
+        surfaces: {
+          'card-front': { fontSize: 40, fontFamily: 'system-mono', lineHeight: 'normal' },
+          'card-back': defaultUiPrefs().surfaces['card-back'],
+          reader: defaultUiPrefs().surfaces.reader,
+        },
+        seenFeatureAnnouncements: [],
+      })
+      expect(parsed?.surfaces['card-front'].fontFamily).toBe('system-mono')
     })
 
     it('falls back to defaults for invalid enum values and malformed colors', () => {

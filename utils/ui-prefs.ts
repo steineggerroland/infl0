@@ -47,12 +47,23 @@ export const APPEARANCE_MODES = ['auto', 'light', 'dark'] as const
 export type AppearanceMode = (typeof APPEARANCE_MODES)[number]
 
 /**
- * Registry of selectable font IDs. Today only system stacks are wired;
- * the self-hosted font package adds OFL-licensed entries (e.g. Atkinson
- * Hyperlegible, OpenDyslexic) without a schema migration — we just extend
- * this list and its mapping to CSS variables.
+ * Registry of selectable font IDs. `system-sans` / `system-serif` / `system-mono` use
+ * the OS system stacks; all others are self‑hosted in `public/assets/fonts` (see
+ * `assets/css/fonts.css`).
  */
-export const FONT_FAMILY_IDS = ['system-sans', 'system-serif', 'system-mono'] as const
+export const FONT_FAMILY_IDS = [
+  'system-sans',
+  'system-serif',
+  'system-mono',
+  'inter',
+  'source-sans-3',
+  'source-serif-4',
+  'atkinson',
+  'lexend',
+  'opendyslexic',
+  'ibm-plex',
+  'fraunces',
+] as const
 export type FontFamilyId = (typeof FONT_FAMILY_IDS)[number]
 
 /**
@@ -167,6 +178,26 @@ function isFontFamilyId(v: unknown): v is FontFamilyId {
   return typeof v === 'string' && (FONT_FAMILY_IDS as readonly string[]).includes(v)
 }
 
+/**
+ * One-time parse migration for stored prefs from before the self-hosted set:
+ * - `system-sans` → same defaults as a fresh account per surface (Inter / Source Sans 3 / Inter).
+ * - `system-serif` → `source-serif-4` (serif) on all surfaces.
+ * - `system-mono` → keep `system-mono` (ui-monospace, not a proportional webfont).
+ */
+function migrateLegacyFontFamilyId(
+  v: unknown,
+  surface: SurfaceId,
+): FontFamilyId | null {
+  if (v === 'system-mono') return 'system-mono'
+  if (v === 'system-serif') return 'source-serif-4'
+  if (v === 'system-sans') {
+    if (surface === 'card-back') return 'source-sans-3'
+    return 'inter'
+  }
+  if (isFontFamilyId(v)) return v
+  return null
+}
+
 function isThemeChoice(v: unknown): v is ThemeChoice {
   if (v === 'custom') return true
   return isThemePresetId(v)
@@ -191,15 +222,24 @@ export function defaultSurfacePrefs(surface: SurfaceId): SurfacePrefs {
     return {
       backgroundColor: null,
       textColor: null,
-      fontFamily: 'system-serif',
+      fontFamily: 'source-serif-4',
       fontSize,
       lineHeight: 'relaxed',
+    }
+  }
+  if (surface === 'card-back') {
+    return {
+      backgroundColor: null,
+      textColor: null,
+      fontFamily: 'source-sans-3',
+      fontSize,
+      lineHeight: 'normal',
     }
   }
   return {
     backgroundColor: null,
     textColor: null,
-    fontFamily: 'system-sans',
+    fontFamily: 'inter',
     fontSize,
     lineHeight: 'normal',
   }
@@ -225,10 +265,11 @@ function parseSurface(raw: unknown, surface: SurfaceId): SurfacePrefs {
   if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) return base
   const r = raw as Record<string, unknown>
   const fontSize = clampFontSizePxForSurface(r.fontSize, surface)
+  const migrated = migrateLegacyFontFamilyId(r.fontFamily, surface)
   return {
     backgroundColor: isHexColor(r.backgroundColor) ? r.backgroundColor : base.backgroundColor,
     textColor: isHexColor(r.textColor) ? r.textColor : base.textColor,
-    fontFamily: isFontFamilyId(r.fontFamily) ? r.fontFamily : base.fontFamily,
+    fontFamily: migrated ?? base.fontFamily,
     fontSize: fontSize ?? base.fontSize,
     lineHeight: isLineHeight(r.lineHeight) ? r.lineHeight : base.lineHeight,
   }

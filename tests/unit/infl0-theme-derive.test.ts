@@ -30,6 +30,14 @@ describe('buildThemeHtmlStyle', () => {
     expect(s).toContain('--infl0-line-height-front:')
   })
 
+  it('uses a real system monospace stack for system-mono (not IBM Plex or any hosted sans)', () => {
+    const p = applyUiPrefsPatch(defaultUiPrefs(), {
+      surfaces: { 'card-front': { fontFamily: 'system-mono' } },
+    })
+    const s = buildThemeHtmlStyle(p)
+    expect(s).toMatch(/--infl0-font-front-family:[^;]*ui-monospace/u)
+  })
+
   it('differs between light and dark pair for the same preset id', () => {
     const p = { ...defaultUiPrefs(), theme: 'pastel:blue' as const }
     const light = buildThemeHtmlStyle(p, { effectiveAppearance: 'light' })
@@ -74,7 +82,7 @@ describe('resolveThemeSource', () => {
         'card-front': {
           backgroundColor: '#aabbcc',
           textColor: null,
-          fontFamily: 'system-sans' as const,
+          fontFamily: 'inter' as const,
           fontSize: 16,
           lineHeight: 'normal' as const,
         },

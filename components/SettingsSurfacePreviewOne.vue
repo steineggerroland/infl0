@@ -15,7 +15,7 @@ const { t } = useI18n()
 <template>
   <div
     v-if="surfaceId === 'card-front'"
-    class="infl0-front-font infl0-surface-typo-front max-h-28 overflow-y-auto rounded-lg border p-3"
+    class="infl0-surface-front infl0-surface-typo-front max-h-28 overflow-y-auto rounded-lg border p-3"
     data-testid="surface-preview-card-front"
     style="
       background: linear-gradient(135deg, var(--infl0-card-grad-a), var(--infl0-card-grad-b));
@@ -33,7 +33,7 @@ const { t } = useI18n()
 
   <div
     v-else-if="surfaceId === 'card-back'"
-    class="infl0-back-font infl0-surface-typo-back max-h-28 overflow-y-auto rounded-lg border p-3"
+    class="infl0-surface-back infl0-surface-typo-back max-h-28 overflow-y-auto rounded-lg border p-3"
     data-testid="surface-preview-card-back"
     style="
       background-color: var(--infl0-surface-back-bg);
@@ -48,7 +48,7 @@ const { t } = useI18n()
 
   <div
     v-else
-    class="infl0-reader-font infl0-surface-typo-reader max-h-32 overflow-y-auto rounded-lg border p-3"
+    class="infl0-surface-reader infl0-surface-typo-reader max-h-32 overflow-y-auto rounded-lg border p-3"
     data-testid="surface-preview-reader"
     style="
       background-color: var(--infl0-surface-reader-bg);

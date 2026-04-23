@@ -44,9 +44,17 @@ function makeI18n() {
         reader: { heading: 'Reader', typographyHint: 'H', colorHint: 'C', areaLabel: 'reader' },
       },
       fontFamilyOptions: {
-        'system-sans': 'Sans',
-        'system-serif': 'Serif',
-        'system-mono': 'Mono',
+        'system-sans': 'SysS',
+        'system-serif': 'SysSerif',
+        'system-mono': 'SysM',
+        inter: 'Inter',
+        'source-sans-3': 'S3',
+        'source-serif-4': 'S4',
+        atkinson: 'A',
+        lexend: 'L',
+        opendyslexic: 'O',
+        'ibm-plex': 'Ibm',
+        fraunces: 'F',
       },
       customColors: {
         perSurfaceTitle: 'Colours',
@@ -85,11 +93,11 @@ describe('SettingsSurfaceDisplayGroup', () => {
       ...defaultUiPrefs(),
       surfaces: {
         ...defaultUiPrefs().surfaces,
-        'card-front': { ...defaultUiPrefs().surfaces['card-front'], fontSize: 42, fontFamily: 'system-mono' },
+        'card-front': { ...defaultUiPrefs().surfaces['card-front'], fontSize: 42, fontFamily: 'lexend' },
       },
     }
     const w = mountGroup('card-front')
-    expect((w.get('[data-testid="font-family-card-front"]').element as HTMLSelectElement).value).toBe('system-mono')
+    expect((w.get('[data-testid="font-family-card-front"]').element as HTMLSelectElement).value).toBe('lexend')
     expect((w.get('[data-testid="font-size-num-card-front"]').element as HTMLInputElement).value).toBe('42')
   })
 

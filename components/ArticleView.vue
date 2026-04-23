@@ -183,7 +183,7 @@ defineShortcuts({
 <template>
   <div :id="article.id" class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }">
     <!-- Front: Short Summary -->
-    <div class="article-content infl0-front-font rounded-xl bg-front relative transition-all">
+    <div class="article-content infl0-surface-front rounded-xl bg-front relative transition-all">
       <!-- Corner fold -->
       <CornerFold position="top-right" :tooltip="t('article.cornerFold')" @click="toggleDetailView" />
 
@@ -228,7 +228,7 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
     </div>
 
     <!-- Back: Detailed Summary -->
-    <div class="article-detail infl0-back-font rounded-xl bg-back relative shadow-inner transition-all text-[var(--infl0-article-back-fg)]">
+    <div class="article-detail infl0-surface-back rounded-xl bg-back relative shadow-inner transition-all text-[var(--infl0-article-back-fg)]">
       <div class="flex min-h-0 h-4/5 max-h-4/5 w-full flex-col items-stretch px-6 pt-6 pb-2 text-center">
         <div class="infl0-surface-typo-back flex min-h-0 w-full min-w-0 flex-1 flex-col text-[var(--infl0-article-back-fg)]">
           <h1
@@ -295,7 +295,7 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
           <button class="btn btn-sm btn-circle btn-ghost">✕</button>
         </form>
         <div
-          class="max-h-[80vh] h-full w-full min-w-0 overflow-y-auto infl0-reader-font infl0-surface-typo-reader prose max-w-none md:p-2 text-[var(--infl0-surface-reader-text)] prose-headings:font-semibold prose-headings:text-[var(--infl0-surface-reader-text)] prose-p:text-[var(--infl0-surface-reader-text)] prose-li:marker:text-[var(--infl0-reader-prose-muted)] prose-a:text-[var(--infl0-reader-link)] prose-pre:rounded-lg prose-pre:bg-[var(--infl0-reader-code-bg)] prose-pre:text-[var(--infl0-reader-code-fg)] prose-code:text-[var(--infl0-reader-code-fg)] prose-code:bg-[var(--infl0-reader-code-bg)] prose-code:px-1 prose-code:py-0.5 prose-code:rounded"
+          class="max-h-[80vh] h-full w-full min-w-0 overflow-y-auto infl0-surface-reader infl0-surface-typo-reader prose max-w-none md:p-2 text-[var(--infl0-surface-reader-text)] prose-headings:font-semibold prose-headings:text-[var(--infl0-surface-reader-text)] prose-p:text-[var(--infl0-surface-reader-text)] prose-li:marker:text-[var(--infl0-reader-prose-muted)] prose-a:text-[var(--infl0-reader-link)] prose-pre:rounded-lg prose-pre:bg-[var(--infl0-reader-code-bg)] prose-pre:text-[var(--infl0-reader-code-fg)] prose-code:text-[var(--infl0-reader-code-fg)] prose-code:bg-[var(--infl0-reader-code-bg)] prose-code:px-1 prose-code:py-0.5 prose-code:rounded"
         >
           <ContentRenderer
             v-if="modalVisible && matchingPage && !('_inline' in matchingPage && matchingPage._inline)"

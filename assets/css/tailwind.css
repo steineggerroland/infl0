@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Design tokens: self-hosted families (see `assets/css/fonts.css`) + a11y
+ * overrides on `html.font-a11y-*`.
+ */
+:root {
+  --font-sans-default: 'Inter', system-ui, sans-serif;
+  --font-sans-alt: 'Source Sans 3', system-ui, sans-serif;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+  --font-a11y-1: 'Atkinson Hyperlegible', sans-serif;
+  --font-a11y-2: 'Lexend', sans-serif;
+  --font-a11y-3: 'OpenDyslexic', sans-serif;
+  --font-character-1: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-character-2: 'Fraunces', Georgia, serif;
+}
+html.font-a11y-1 {
+  --font-sans-default: var(--font-a11y-1);
+}
+html.font-a11y-2 {
+  --font-sans-default: var(--font-a11y-2);
+}
+html.font-a11y-3 {
+  --font-sans-default: var(--font-a11y-3);
+}
+
 @layer base {
   /*
    * Baseline keyboard-focus indicator.
@@ -205,6 +229,7 @@ html {
  */
 body {
   /* DaisyUI’s [data-theme] can paint `body` after our base rules — keep the canvas. */
+  font-family: var(--font-sans-default);
   background-color: var(--infl0-app-bg) !important;
   color: var(--infl0-canvas-fg);
 }
@@ -222,16 +247,15 @@ body {
   border-color: var(--infl0-panel-border);
 }
 
-.infl0-front-font {
-  font-family: var(--infl0-font-front-family);
+/* Card / reader: prefs drive `--infl0-font-*-family` on the root; fallbacks follow surface roles. */
+.infl0-surface-front {
+  font-family: var(--infl0-font-front-family, var(--font-sans-default));
 }
-
-.infl0-back-font {
-  font-family: var(--infl0-font-back-family);
+.infl0-surface-back {
+  font-family: var(--infl0-font-back-family, var(--font-sans-alt));
 }
-
-.infl0-reader-font {
-  font-family: var(--infl0-font-reader-family);
+.infl0-surface-reader {
+  font-family: var(--infl0-font-reader-family, var(--font-serif));
 }
 
 /* Per-surface type size and line height from `useUiPrefs().surfaces` (px + step). */

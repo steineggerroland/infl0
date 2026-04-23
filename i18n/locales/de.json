@@ -122,9 +122,17 @@
     },
     "fontFamilyLabel": "Schriftart",
     "fontFamilyOptions": {
-      "system-sans": "System Sans",
-      "system-serif": "System Serif",
-      "system-mono": "System Mono"
+      "system-sans": "System Sans (Gerät)",
+      "system-serif": "System Serif (Gerät)",
+      "system-mono": "System-Monospace (Gerät)",
+      "inter": "Inter",
+      "source-sans-3": "Source Sans 3",
+      "source-serif-4": "Source Serif 4",
+      "atkinson": "Atkinson Hyperlegible",
+      "lexend": "Lexend",
+      "opendyslexic": "OpenDyslexic",
+      "ibm-plex": "IBM Plex Sans",
+      "fraunces": "Fraunces"
     },
     "fontSizeLabel": "Textgröße",
     "fontSizeUnit": "px",
