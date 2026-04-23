@@ -199,6 +199,11 @@ Dieses Feld zahlt direkt auf Alltagstauglichkeit und A11y ein.
 > sind ausgelagert nach
 > [`planned/readability-settings.md`](./planned/readability-settings.md).
 
+**Stand:** Das Paket ist als **MVP abgeschlossen** (siehe Status und
+**Abweichungen** in derselben Datei). Follow-ups: zentrale Shortcuts-Hilfe
+([`planned/shortcuts-help.md`](./planned/shortcuts-help.md)), E2E/Onboarding
+([`planned/onboarding-welcome-timeline.md`](./planned/onboarding-welcome-timeline.md)).
+
 **Große Chancen**
 
 - **Visuelle Zuordnung mit Zurückhaltung**:

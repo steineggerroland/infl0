@@ -8,7 +8,19 @@ mitbedient, soweit sie unmittelbar zur Lesbarkeit gehören.
 
 ## Status
 
-Entwurf
+**Abgeschlossen** (MVP, Stand 2026-04). Kernaussagen des Pakets (drei Surfaces, self-hosted Fonts, OFL, Live-Vorschau in den Settings, Persistenz, Motion, Tastaturkürzel) sind umgesetzt. Abweichungen vom ursprünglichen Wortlaut, Review-Beschlüsse und weitere Follow-ups: [unten](#abweichungen-vom-pakettext-mvp-und-follow-ups).
+
+## Abweichungen vom Pakettext (MVP) und Follow-ups
+
+Liste für **Release-Planung** und Reviews (kein Qualitätsurteil pro Zeile).
+
+1. **Pfade & Lizenzen (Schriften):** Dateien liegen unter `public/assets/fonts/<familie>/` (nicht `public/fonts/`). Kanonische OFL-1.1 in `public/assets/fonts/NOTICE.md`, ergänzt um **pro Familie** eine upstream-`OFL.txt` (Copyright, Reserved Font Names) neben den `woff2`-Dateien.
+2. **Schriftkatalog:** Kein **JetBrains Mono** in dieser Lieferung; stattdessen u. a. System-Stacks plus Inter, Source Sans 3, Source Serif 4, Lexend, IBM Plex Sans, Fraunces, Atkinson Hyperlegible, OpenDyslexic. **Subset „Latin-Extended“** als separater Build-Schritt ist nicht ausgewiesen; es werden die mitgelieferten variablen `woff2`-Artefakte (Google Fonts bzw. OpenDyslexic-Upstream) verwendet.
+3. **„Gelesene anzeigen“:** Das Paket beschrieb die **Verlagerung in Settings**; das Review erlaubte, den **User-Menü-Quicklink** bis zum Shortcut-Follow-up zu behalten. **Umsetzung:** Der Toggle steht weiterhin in der **Timeline** und im **User-Menü**; **kein** paralleler Block unter Settings. Nächster Schritt: mit `shortcuts-help.md` / Shortcut-Paket abstimmen, dann ggf. Umzug oder Konsolidierung.
+4. **Hilfe & Akzeptanzkriterium 5:** `/help` dokumentiert v. a. **Timeline-Kürzel** (Pfeile, W/S, E, Q, R, Escape). **Lesbarkeits-Kürzel** (Schriftgröße, Schriftart) sind in der Hilfe **noch nicht** in gleichem Detaillierungsgrad gepflegt. Die **zentrale Shortcuts-Übersicht** bleibt in [`shortcuts-help.md`](./shortcuts-help.md).
+5. **E2E:** Keine Playwright-Abdeckung der Lesbarkeits-Shortcuts in der Timeline in diesem Paket; früherer Experimentalspec entfernt (siehe `CHANGELOG.md`). Stabilere E2E → [`onboarding-welcome-timeline.md`](./onboarding-welcome-timeline.md).
+6. **Feature-Toast** (neue Surfaces / Farbknoten, Akzeptanzkriterium 11) und die zugehörige **einmalige Ankündigung** (`seenFeatureAnnouncements`) sind **kein** Teil der abgeschlossenen MVP-Lieferung.
+7. **Live-Vorschau-Layout:** Statt einzelner „drei Karten nebeneinander“-Miniblock sind die drei Surfaces in den Settings **untereinander** in einem Darstellungs-Panel; Live-Wirkung auf Vorschau und App entspricht dem Ziel (ohne Wartezeit / Neuladen).
 
 ## Entscheidungen aus externem Review
 
@@ -139,8 +151,8 @@ Auswahlprinzip:
 - Bei jeder Option steht im UI **kurz dabei, wofür sie empfohlen ist**
   („leseschwach“, „lange Texte“, „kompakte Kacheln“, „Code/Monospace“).
 
-Licensing-Hausaufgabe: beim Einbau die Lizenzdatei pro Font mitausliefern
-und in `docs/` oder `public/fonts/LICENSES.md` zentral verlinken.
+Lizenzdateien: erledigt — siehe `public/assets/fonts/NOTICE.md` und je Familie
+`OFL.txt` neben den Font-Dateien.
 
 ## Reduzierte Bewegung
 
@@ -327,7 +339,8 @@ Leitlinie:
    Surface-Variablen.
 9. **Self-hosted Fonts**: keine Netzwerkaufrufe an Drittanbieter; die
    angebotenen Schriften (inkl. mindestens einer dyslexie-freundlichen
-   Option) liegen unter `public/fonts/` mit mitgeführten Lizenzen.
+   Option) liegen unter `public/assets/fonts/` mit `NOTICE.md` und
+   pro Familie `OFL.txt`.
 10. **Settings-Navigation**: Top-Level-Eintrag „Settings“ existiert; der
     neue Bereich „Darstellung“ ist erreichbar; „Gelesene anzeigen“ ist
     aus dem User-Menü in Settings gewandert und das Verhalten bleibt
@@ -407,4 +420,5 @@ Leitlinie:
 - Produktkontext: `docs/ROADMAP.md` — Feld **E. Lesbarkeit, Reizniveau,
   persönliche Arbeitsweise**.
 - Inhaltliche / A11y-Regeln: `docs/CONTENT_AND_A11Y.md`.
-- Nach Umsetzung: Eintrag unter `docs/CHANGELOG.md` → `[Unreleased]`.
+- Nach Umsetzung: Eintrag unter `docs/CHANGELOG.md` → `[Unreleased]` (siehe dort
+  unter *Lesbarkeit / Darstellung*).

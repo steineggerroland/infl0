@@ -42,7 +42,8 @@ new entries accrue under **Unreleased**.
 - **Self-hosted Schriften**
   - lokale `woff2` unter `public/assets/fonts/`
   - keine externen CDNs
-  - Lizenz: SIL OFL 1.1 → `public/assets/fonts/NOTICE.md`
+  - Lizenz: SIL OFL 1.1 → `public/assets/fonts/NOTICE.md` und je Familie
+    `public/assets/fonts/<familie>/OFL.txt` (vollständiger upstream-Text)
 
 - **Fallback bei unleserlichen Einstellungen**
   - „Standard für diesen Bereich“ pro Oberfläche
@@ -86,6 +87,9 @@ new entries accrue under **Unreleased**.
   - `docs/DEVELOPING.md`
   - `README.md`
   - `docs/planned/README.md`
+  - **Paket Lesbarkeit / Darstellung:** `docs/planned/readability-settings.md`
+    — Status *abgeschlossen*, Abschnitt **Abweichungen vom Pakettext (MVP) und
+    Follow-ups**; `docs/ROADMAP.md` (Feld E) verweist darauf
 
 - **Geplante Follow-ups**
   - zentrale Shortcut-Hilfe → `planned/shortcuts-help.md`
