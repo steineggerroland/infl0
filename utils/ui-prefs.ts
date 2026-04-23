@@ -7,7 +7,7 @@
  * localStorage fallback.
  *
  * Concrete visual resolution (CSS variables, `@font-face`, presets) is
- * implemented in the app; `docs/archive/readability-settings.md` only holds
+ * implemented in the app; `docs/archive/26-04-24-readability-settings.md` only holds
  * a historical spec. Here we only define the stable persistence contract.
  */
 

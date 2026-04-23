@@ -88,7 +88,7 @@ new entries accrue under **Unreleased**.
   - `README.md`
   - `docs/planned/README.md`
   - **Paket Lesbarkeit / Darstellung (Archiv):** historische Paket-Spezifikation
-    unter `docs/archive/readability-settings.md` (kein aktives
+    unter `docs/archive/26-04-24-readability-settings.md` (kein aktives
     `planned/`-Dokument mehr)
 
 - **Geplante Follow-ups**
