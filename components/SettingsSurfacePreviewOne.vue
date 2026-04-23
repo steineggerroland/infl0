@@ -5,7 +5,7 @@
  */
 import type { SurfaceId } from '~/utils/ui-prefs'
 
-const props = defineProps<{
+defineProps<{
   surfaceId: SurfaceId
 }>()
 

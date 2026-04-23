@@ -28,8 +28,6 @@ vi.stubGlobal('useContainedFocusActive', () => {
 
 const SettingsSurfaceDisplayGroup = (await import('../../components/SettingsSurfaceDisplayGroup.vue'))
   .default
-const SettingsSurfacePreviewOne = (await import('../../components/SettingsSurfacePreviewOne.vue'))
-  .default
 
 function makeI18n() {
   const messages = {
