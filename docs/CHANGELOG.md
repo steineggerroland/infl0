@@ -20,6 +20,12 @@ new entries accrue under **Unreleased**.
 - Developer-facing **comments** in `.ts` / `.vue` (including tests) are
   **English**; user-visible strings stay in i18n, not in comments.
 
+### Security
+
+- Bumped **dompurify** (3.3.3 → 3.4.1) via `npm audit fix` to address
+  moderate-severity DOMPurify advisories. Used for article HTML sanitization
+  (`ArticleView`).
+
 ## [0.2.0] — 2026-04-24
 
 Appearance and readability: UI preferences (theme, motion, fonts, and colors per surface) are persisted server-side; self-hosted font files included with OFL licensing; keyboard shortcuts available in the timeline; documentation and a planned/ focus for follow-up work.
