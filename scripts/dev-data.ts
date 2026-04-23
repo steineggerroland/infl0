@@ -3,9 +3,10 @@
  *
  * Requires DATABASE_URL and a migrated schema (`npm run db:migrate` or db push).
  *
- * Browser login:
- *   Email: dev@localhost
- *   Password: dev
+ * Browser login (dev@localhost):
+ *   If `DEV_SRP_SALT_HEX` / `DEV_SRP_VERIFIER_HEX` are set (e.g. from `.env.e2e`),
+ *   the password is whatever you generated for that pair.
+ *   Otherwise the built-in pair below is used with password **dev** (local default).
  *
  * Run (Node version from .nvmrc):
  *   nvm use && npm run devData
@@ -21,11 +22,19 @@ const prisma = new PrismaClient()
 const DEV_EMAIL = 'dev@localhost'
 const DEV_NAME = 'Dev User'
 
-/** SRP for dev@localhost / password `dev` (tssrp6a createVerifierAndSalt). */
-const DEV_SRP_SALT_HEX =
+/** Default SRP for dev@localhost / password `dev` (no env): tssrp6a createVerifierAndSalt. */
+const DEFAULT_DEV_SRP_SALT_HEX =
   '969225e771337ef56f3e9b0f8f2e6ca8be00f7eb96ff8ce37d5ee460ccb5a2461ee2ca6e959117284023ea879d3bce06bd4cbc4c3723fb85d9834af79d4ccf10500ec56281e23d1d1a4a3f4a76aaa3f3e663ef3c0cee9673df7622f1e25f9620e032b9534c763f5d34aaf1574b10a0f8abf963ba32c65e421cfc5344340b2952'
-const DEV_SRP_VERIFIER_HEX =
+const DEFAULT_DEV_SRP_VERIFIER_HEX =
   '6565949588e347421f091bd82fa8f0139615ac964e6b63bec31317226cc185910a3540e94e56d2a74ad2fde775daaa9ef6e610ff5fd46940358125a28429ea1879b22fdf18651ca407252a20b669bcb187d91833d15546d9325aba014d2a73c513d1f28e862b8e2e50ecf24f9e091d4e2a5cfc97c0b058dce0738a4bfe5acc06f29f171efd49f17e55515642b4a2ff17e25c5e4773954fb8164494959308d2d5759103229dbf1062b79e73265ef986a3866dbf0f767aa4b19031e3c2a3288c1f547a730d847d5d8e5915a26a8f94d87a940abb13c123b13c35871a81fedaf6c4b18975a0013fd7fd2c903e27deeabd9204501a580b200702deaa3bd64d4c8ddc'
+
+function devSrpSaltFromEnv(): string {
+  return (process.env.DEV_SRP_SALT_HEX?.trim() || DEFAULT_DEV_SRP_SALT_HEX).trim()
+}
+
+function devSrpVerifierFromEnv(): string {
+  return (process.env.DEV_SRP_VERIFIER_HEX?.trim() || DEFAULT_DEV_SRP_VERIFIER_HEX).trim()
+}
 
 const FEED_SPECS = [
   { feedUrl: 'https://example.com/dev-feed/tech', displayTitle: 'Dev: Tech (sample)' },
@@ -98,19 +107,22 @@ async function main() {
 
   const feedKeys = FEED_SPECS.map((f) => crawlKeyFor(f.feedUrl))
 
+  const srpSalt = devSrpSaltFromEnv()
+  const srpVerifier = devSrpVerifierFromEnv()
+
   const user = await prisma.user.upsert({
     where: { email: DEV_EMAIL },
     create: {
       email: DEV_EMAIL,
       name: DEV_NAME,
-      srpSalt: DEV_SRP_SALT_HEX,
-      srpVerifier: DEV_SRP_VERIFIER_HEX,
+      srpSalt,
+      srpVerifier,
       passwordHash: null,
     },
     update: {
       name: DEV_NAME,
-      srpSalt: DEV_SRP_SALT_HEX,
-      srpVerifier: DEV_SRP_VERIFIER_HEX,
+      srpSalt,
+      srpVerifier,
       passwordHash: null,
     },
   })
@@ -181,7 +193,12 @@ async function main() {
   }
 
   console.info('devData OK')
-  console.info(`  Login: ${DEV_EMAIL} / password: dev`)
+  const usingEnvSrp = Boolean(
+    process.env.DEV_SRP_SALT_HEX?.trim() && process.env.DEV_SRP_VERIFIER_HEX?.trim(),
+  )
+  console.info(
+    `  ${DEV_EMAIL} — SRP: ${usingEnvSrp ? 'from DEV_SRP_* (match your password, e.g. E2E_LOGIN_PASSWORD)' : 'built-in / password: dev'}`,
+  )
   console.info(`  Feeds: ${FEED_SPECS.length}, articles: ${ARTICLE_SPECS.length}`)
 }
 
