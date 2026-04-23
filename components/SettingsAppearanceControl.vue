@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Ob die App hell, dunkel oder wie das Gerät wirkt — steuert das helle/dunkle
- * **Paar** der eingebauten Paletten. Eigene Farben bleiben unverändert.
+ * Whether the app is light, dark, or matches the device — controls the light/dark
+ * **pair** of the built-in palettes. Custom colours are unchanged.
  */
 import { APPEARANCE_MODES, type AppearanceMode } from '~/utils/ui-prefs'
 

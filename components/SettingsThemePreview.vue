@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Live preview for the Darstellung section on `/settings`.
+ * Live preview for the Appearance section on `/settings`.
  *
  * Renders three small surrogate surfaces — card front, card back,
  * reader — that consume the theme tokens declared in

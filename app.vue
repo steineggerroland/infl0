@@ -11,13 +11,13 @@ const i18nHead = useLocaleHead({
 })
 
 /**
- * Schreibt UI-Prefs auf `<html>`: Bewegung, gewählte Farbpalette und
- * hell/dunkel. Komponenten-Bibliothek und native Bedienelemente folgen der
- * effektiven hell/dunkel-Ansicht; die App-Farben kommen aus den infl0-Tokens
- * im `style`-Attribut.
+ * Writes UI prefs on `<html>`: motion, selected colour palette, and
+ * light/dark. The component library and native controls follow the
+ * effective light/dark appearance; app colours come from infl0 tokens
+ * on the `style` attribute.
  *
- * Mount hier, damit Hydration einmal für die ganze App läuft. SSR startet mit
- * `defaultUiPrefs()`; nach `/api/me/ui-prefs` aktualisiert sich der Client.
+ * Mount here so hydration runs once for the whole app. SSR starts from
+ * `defaultUiPrefs()`; the client updates after `/api/me/ui-prefs` loads.
  */
 const { prefs: uiPrefs } = useUiPrefs()
 const { effectiveAppearance } = useEffectiveAppearance()
@@ -31,11 +31,11 @@ useHead(() => {
     htmlAttrs: {
       ...(i18nHead.value.htmlAttrs ?? {}),
       'data-motion': uiPrefs.value.motion,
-      /** Gespeicherte Farbpalette (Preset inkl. eigene Farben). */
+      /** Stored colour palette (preset including custom colours). */
       'data-infl0-theme': uiPrefs.value.theme,
-      /** Hell- oder dunkel-Modus für die UI-Bibliothek (passt zu `effectiveAppearance`). */
+      /** Light or dark mode for the UI library (aligns with `effectiveAppearance`). */
       'data-theme': daisyTheme,
-      /** Vollständige infl0-Farb-Tokens aus den gewählten Quellfarben. */
+      /** Full infl0 colour tokens from the selected source colours. */
       style: tokenStyle,
     },
     link: i18nHead.value.link ?? [],

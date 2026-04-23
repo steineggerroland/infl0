@@ -3,8 +3,8 @@
  * `/settings/privacy` is the storage-philosophy page. It explains WHAT
  * we store about you and WHY; the actual consent toggle for reading-
  * behaviour analysis lives on `/settings#tracking` (one navigation
- * target, one click, matching the product rule "keine Hubs, direkte
- * Einstellung").
+ * target, one click, matching the product rule: no setting hubs — direct
+ * settings pages).
  *
  * Later this page will carry the legally-reviewed privacy statement
  * (`settingsPrivacy.legal*`). Until that text exists it is marked up

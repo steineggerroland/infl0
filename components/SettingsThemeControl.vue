@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Farbpalette: Pastell und Warm je als Swatch-Reihe, darunter hoher Kontrast und eigene Farben.
- * Hell/Dunkel wählt die Nutzerin über `SettingsAppearanceControl` davor.
+ * Colour palette: pastel and warm as rows of swatches, then high contrast and custom.
+ * Light/dark is chosen above in `SettingsAppearanceControl`.
  */
 import { presetSourceFor } from '~/utils/infl0-theme-derive'
 import { THEME_HUE_IDS, type ThemeChoice, type ThemeHueId, type ThemePresetId } from '~/utils/ui-prefs'
@@ -19,7 +19,7 @@ function themeOptionI18nKey(choice: ThemeChoice): string {
   return choice.replace(':', '_')
 }
 
-/** Immer helle Pastell-/Warm-Vorschau, damit die Kacheln auf dunklem UI erkennbar bleiben. */
+/** Always a light pastel/warm preview so swatches stay visible on a dark app chrome. */
 function swatchStyle(family: 'pastel' | 'warm', hue: ThemeHueId) {
   const src = presetSourceFor(presetId(family, hue), 'light')
   return {

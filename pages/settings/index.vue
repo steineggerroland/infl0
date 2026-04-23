@@ -2,9 +2,10 @@
 /**
  * `/settings` is the direct-access settings surface. No hub, no extra click.
  *
- * Darstellung: Hell/Dunkel, Farbpalette (Theme-Vorschau nur bei Fokus im Block),
- * dann Schrift & Textgröße (und ggf. Farben) pro Kartenfläche bzw. Volltext, Bewegung.
- * Außerdem: Sortiergewichtung, Leseverhalten.
+ * Appearance: light/dark, colour palette (theme preview only while focus
+ * stays in the block), then font & size (and for custom, colours) per
+ * card face or reader, and motion. Also: sorting weights and reading
+ * behaviour.
  */
 import {
   TIMELINE_SCORE_FACTOR_DEFS,
@@ -104,7 +105,7 @@ async function onTrackingToggle(e: Event) {
       <!--
         Sorting weights. The h2 here is the section label; each
         factor group inside is an h3 so screen-reader outline mirrors
-        the "Einstellungen → Sortierung → einzelne Gruppen" nesting.
+        the "Settings → Sorting → factor groups" nesting.
       -->
       <section aria-labelledby="settings-sorting-heading" class="mb-10">
         <header class="mb-4 text-center">

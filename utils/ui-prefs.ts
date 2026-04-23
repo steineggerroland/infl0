@@ -33,15 +33,15 @@ export const MOTION_MODES = ['system', 'reduced', 'standard'] as const
 export type MotionMode = (typeof MOTION_MODES)[number]
 
 /**
- * Hell / Dunkel / wie das Gerät — wählt die helle oder dunkle Variante der
- * eingebauten Paletten (Pastell/Warm) und passt System-UI (z. B. Scrollleisten)
- * daran an. Eigene Farben (`custom`) bleiben eine einzige Palette.
+ * Light / dark / match device — picks the light or dark variant of the
+ * built-in palettes (pastel/warm) and matches system UI (e.g. scrollbars)
+ * to it. Custom colours (`custom`) stay a single palette.
  *
- * - `auto` — folgt der Systemeinstellung (Client; SSR startet hell).
- * - `light` / `dark` — feste Nutzerwahl.
+ * - `auto` — follows the system (client; SSR starts in light).
+ * - `light` / `dark` — fixed user choice.
  *
- * Alte gespeicherte Prefs ohne `appearance`: wie bisher `light`,
- * außer Migration von `warm-dark` (siehe `parseUiPrefsFromJson`).
+ * Old stored prefs without `appearance`: as before, `light`, except
+ * migration from `warm-dark` (see `parseUiPrefsFromJson`).
  */
 export const APPEARANCE_MODES = ['auto', 'light', 'dark'] as const
 export type AppearanceMode = (typeof APPEARANCE_MODES)[number]
@@ -67,9 +67,9 @@ export const FONT_FAMILY_IDS = [
 export type FontFamilyId = (typeof FONT_FAMILY_IDS)[number]
 
 /**
- * Pastell und Warm je mit fünf festen Farbton-Paletten; hoher Kontrast; `custom` = eigene Sechs-Farben.
- * Jedes Preset (außer `high-contrast` und `custom`) besitzt ein helles und dunkles Paar
- * — die aktive Variante wählt `appearance`.
+ * Pastel and warm each with five fixed hue palettes; high contrast; `custom` = own six source colours.
+ * Every preset (except `high-contrast` and `custom`) has a light and dark pair
+ * — the active variant is selected by `appearance`.
  */
 export const THEME_HUE_IDS = ['yellow', 'green', 'blue', 'red', 'purple'] as const
 export type ThemeHueId = (typeof THEME_HUE_IDS)[number]

@@ -17,6 +17,8 @@ new entries accrue under **Unreleased**.
   package spec (`docs/archive/26-04-24-readability-settings.md`) is
   maintained in **English** (in-app copy remains available in `en` and `de` via
   i18n).
+- Developer-facing **comments** in `.ts` / `.vue` (including tests) are
+  **English**; user-visible strings stay in i18n, not in comments.
 
 ## [0.2.0] — 2026-04-24
 

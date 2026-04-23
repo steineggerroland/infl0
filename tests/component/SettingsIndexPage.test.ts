@@ -7,9 +7,9 @@ import { reactive, ref } from 'vue'
 /**
  * `/settings` is the direct-access settings surface and carries the
  * one-click promise of the menu. The page must:
- *   1. render a single `<h1>` ("Einstellungen")
- *   2. expose the Sortierung section with its accessible label
- *   3. expose the Leseverhalten section with its accessible label AND
+ *   1. render a single `<h1>` ("Settings" in the default locale)
+ *   2. expose the Sorting section with its accessible label
+ *   3. expose the Reading behaviour section with its accessible label AND
  *      `id="tracking"` for the deep link coming from the Privacy page
  *   4. render the engagement tracking toggle itself (not a stub)
  *   5. delegate the `<footer>` landmark to the layout (no inline footer)
@@ -116,7 +116,7 @@ function mountPage() {
           props: ['to'],
           template: '<a :href="to"><slot /></a>',
         },
-        // The Darstellung children have their own component tests; here
+        // The Appearance subcomponents have their own component tests; here
         // we only care that the section renders around mount points for
         // them. Stubbing avoids pulling `useUiPrefs` through the tree.
         SettingsDisplayThemeBlock: {
@@ -140,14 +140,14 @@ function mountPage() {
 }
 
 describe('SettingsIndex page', () => {
-  it('renders exactly one <h1>, labelled "Einstellungen"', () => {
+  it('renders exactly one <h1>, labelled "Settings"', () => {
     const wrapper = mountPage()
     const h1s = wrapper.findAll('h1')
     expect(h1s).toHaveLength(1)
     expect(h1s[0].text()).toBe('Settings')
   })
 
-  it('exposes a Darstellung section with a theme block, three surface groups, and motion', () => {
+  it('exposes an Appearance section with a theme block, three surface groups, and motion', () => {
     const wrapper = mountPage()
     const heading = wrapper.find('#settings-display-heading')
     expect(heading.exists()).toBe(true)
@@ -161,7 +161,7 @@ describe('SettingsIndex page', () => {
     expect(wrapper.find('[data-testid="motion-control-stub"]').exists()).toBe(true)
   })
 
-  it('exposes a Sortierung section with its section heading', () => {
+  it('exposes a Sorting section with its section heading', () => {
     const wrapper = mountPage()
     const heading = wrapper.find('#settings-sorting-heading')
     expect(heading.exists()).toBe(true)
@@ -169,7 +169,7 @@ describe('SettingsIndex page', () => {
     expect(heading.text()).toBe('Adjust sorting')
   })
 
-  it('exposes a Leseverhalten section with id="tracking" so /settings/privacy can deep-link to it', () => {
+  it('exposes a Reading behaviour section with id="tracking" so /settings/privacy can deep-link to it', () => {
     const wrapper = mountPage()
     const section = wrapper.find('section#tracking')
     expect(section.exists()).toBe(true)

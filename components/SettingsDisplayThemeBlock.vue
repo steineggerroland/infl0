@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Hell/Dunkel + Farbpalette; die Gesamtvorschau erscheint nur, solange
- * Fokus/Tastatur in diesem Block bleibt (Vorschau unten eingeblendet).
+ * Light/dark + colour palette; the full preview is shown only while
+ * focus/keyboard stays in this block (preview below is revealed then).
  */
 const { active, onFocusIn, onFocusOut } = useContainedFocusActive()
 </script>

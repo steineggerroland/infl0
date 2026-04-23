@@ -1,7 +1,7 @@
 import type { UiChromeAppearance } from '~/utils/infl0-theme-derive'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
-/** Leitet aus `appearance` und ggf. der Systemeinstellung die effektive hell/dunkel-Ansicht ab. */
+/** Resolves the effective light/dark appearance from `appearance` and, when needed, the system setting. */
 export function useEffectiveAppearance() {
   const { prefs } = useUiPrefs()
   const systemPrefersDark = ref(false)

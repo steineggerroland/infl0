@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * One presentation surface: font, text size, and (if theme is custom) its colours.
- * The “Standard für diesen Bereich” control uses **hard-coded** label colours so it
+ * The “Default for this area” control uses **hard-coded** label colours so it
  * stays legible and clickable if the user’s custom colours make theme tokens
  * unusable. The actual reset still applies `defaultSurfacePrefs` (incl. colour inherit).
  * Live preview for this surface only while the user works in the group.
@@ -19,7 +19,7 @@ import SettingsSurfacePreviewOne from '~/components/SettingsSurfacePreviewOne.vu
 const props = withDefaults(
   defineProps<{
     surfaceId: SurfaceId
-    /** Trennlinie oberhalb (erste Karten-Gruppe direkt nach der Einleitung: false) */
+    /** Top border (first card group right after the intro: false) */
     showTopBorder?: boolean
   }>(),
   { showTopBorder: true },

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Motion-mode picker for the Darstellung section of `/settings`.
+ * Motion-mode picker for the Appearance section of `/settings`.
  *
  * The tri-state choice (`system | reduced | standard`) matches the
  * contract documented in `utils/ui-prefs.ts`:

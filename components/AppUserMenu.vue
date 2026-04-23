@@ -44,9 +44,9 @@ const linkClass =
                     </li>
                     <!--
                         Settings is the one-click destination for visual +
-                        sorting + data-consent preferences. "Warum oben?"
+                        sorting + data-consent preferences. "Why at the top?"
                         stays as its own entry because it is an explanatory
-                        read, not a setting, and "Privatsphäre" stays
+                        read, not a setting, and "Privacy" stays
                         because it carries the storage philosophy (and
                         eventually the legal privacy statement), not a
                         toggle — the toggle lives inside Settings.

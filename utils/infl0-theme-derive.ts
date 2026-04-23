@@ -18,9 +18,9 @@ export type ThemeSource = {
 }
 
 /**
- * Pastell hell — feste Hex-Sets (keine globale Hue-Rotation), angelehnt an gängige Referenzen:
- * z. B. „Water“ #CBF6F8 / „Blizzard Blue“ #A8E4EF (schemecolor.com), Pastellgelb #FCFC99,
- * Mint #CFF5E7 / #BCEAD5 (media.io „Mint Macaron“), weiche Rot-/Violett-Hintergründe.
+ * Light pastel — fixed hex sets (no global hue rotation), inspired by common references:
+ * e.g. "Water" #CBF6F8 / "Blizzard Blue" #A8E4EF (schemecolor.com), pastel yellow #FCFC99,
+ * mint #CFF5E7 / #BCEAD5 (media.io "Mint Macaron"), soft red/violet backgrounds.
  */
 const PASTEL_LIGHT_BY_HUE: Readonly<Record<ThemeHueId, ThemeSource>> = {
   yellow: {
@@ -51,8 +51,8 @@ const PASTEL_LIGHT_BY_HUE: Readonly<Record<ThemeHueId, ThemeSource>> = {
 }
 
 /**
- * Warm hell — satter als Pastell, angelehnt an warme UI-Paletten (Cream/Wheat/Terracotta/Sage),
- * z. B. colormagic „Sunkissed Terracotta“, „Warm Amber“ (Maize/Cream-Töne).
+ * Light warm — richer than pastel, inspired by warm UI palettes (cream/wheat/terracotta/sage),
+ * e.g. colormagic "Sunkissed Terracotta", "Warm Amber" (maize/cream tones).
  */
 const WARM_LIGHT_BY_HUE: Readonly<Record<ThemeHueId, ThemeSource>> = {
   yellow: {
@@ -82,14 +82,14 @@ const WARM_LIGHT_BY_HUE: Readonly<Record<ThemeHueId, ThemeSource>> = {
   },
 }
 
-/** Hoher Kontrast — ein gemeinsames Sechser-Set (Hell/Dunkel-Modus egal). */
+/** High contrast — one shared six-colour set (independent of light/dark mode). */
 export const PRESET_HIGH_CONTRAST: ThemeSource = {
   cardFront: { bg: '#ffffff', text: '#000000' },
   cardBack: { bg: '#000000', text: '#ffffff' },
   reader: { bg: '#ffffff', text: '#000000' },
 }
 
-/** Defaults für „Eigene Farben“ — Pastell · Blau hell. */
+/** Defaults for custom colours — pastel · light blue. */
 export const CALM_LIGHT_PICKER_DEFAULTS: Record<SurfaceId, { bg: string; text: string }> = {
   'card-front': { bg: PASTEL_LIGHT_BY_HUE.blue.cardFront.bg, text: PASTEL_LIGHT_BY_HUE.blue.cardFront.text },
   'card-back': { bg: PASTEL_LIGHT_BY_HUE.blue.cardBack.bg, text: PASTEL_LIGHT_BY_HUE.blue.cardBack.text },
@@ -161,14 +161,14 @@ function toHex6(r: number, g: number, b: number): string {
   return `#${c(r)}${c(g)}${c(b)}`
 }
 
-/** Dominanter Farbton eines Hex-Werts in Grad (0–360), u. a. für Tests. */
+/** Dominant hue of a hex value in degrees (0–360), including for tests. */
 export function hexHueDegrees(hex: string): number {
   const [r, g, b] = parseHex6(hex)
   const [h] = rgbToHsl(r, g, b)
   return h * 360
 }
 
-/** Etwas kräftigerer Ton auf derselben Hue — für Verläufe und Links ohne festes Blau. */
+/** Slightly stronger tint on the same hue — for gradients and links without fixed blue. */
 function tonalAccent(
   hex: string,
   opts: { satBump: number; lightBump: number; satCap?: number; lightCap?: number },
@@ -182,7 +182,7 @@ function tonalAccent(
   return toHex6(...hslToRgb(h, sn, ln))
 }
 
-/** Dunkles Pastell aus dem hellen Sechser-Set (weiche Sättigung). */
+/** Dark pastel derived from the light six-colour set (soft saturation). */
 function pastelDarkFromLight(light: ThemeSource): ThemeSource {
   const deep = (hex: string, floorL: number) => {
     const [r, g, b] = parseHex6(hex)
@@ -203,7 +203,7 @@ function pastelDarkFromLight(light: ThemeSource): ThemeSource {
   }
 }
 
-/** Dunkles Warm-Preset aus dem hellen Sechser-Set. */
+/** Dark warm preset derived from the light six-colour set. */
 function warmDarkThemeFromLight(light: ThemeSource): ThemeSource {
   const deep = (hex: string, floorL: number) => {
     const [r, g, b] = parseHex6(hex)
@@ -287,9 +287,9 @@ export function presetSourceFor(preset: ThemePresetId, mode: 'light' | 'dark'): 
 }
 
 /**
- * Resolves the six source colours. Built-in presets use Pastell/Warm (hell
- * oder dunkel je `mode`) bzw. High Contrast; `custom` nutzt nur gespeicherte
- * Surfaces (`mode` wird ignoriert).
+ * Resolves the six source colours. Built-in presets use pastel/warm (light
+ * or dark per `mode`) or high contrast; `custom` uses only stored
+ * surface colours (`mode` is ignored).
  */
 export function resolveThemeSource(prefs: UiPrefs, mode: 'light' | 'dark' = 'light'): ThemeSource {
   if (prefs.theme === 'custom') {
@@ -602,9 +602,9 @@ export type UiChromeAppearance = 'light' | 'dark'
 
 export type BuildThemeHtmlStyleOptions = {
   /**
-   * Hell/dunkel: steuert `color-scheme`, Daisy `data-theme` und (bei Presets)
-   * welches helle/dunkle Farbpaar in die Token-Pipeline geht. `custom` ignoriert
-   * die Paarwahl für die Sechs Farben.
+   * Light/dark: drives `color-scheme`, Daisy `data-theme`, and (for presets)
+   * which light/dark colour pair feeds the token pipeline. `custom` ignores
+   * the light/dark pair choice for the six source colours.
    */
   effectiveAppearance?: UiChromeAppearance
 }
