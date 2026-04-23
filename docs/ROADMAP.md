@@ -1,359 +1,349 @@
-# Roadmap — Produktlandkarte für infl0
+# Roadmap — product map for infl0
 
-infl0 soll nicht "noch ein Feed-Reader mit KI" werden, sondern eine
-**ruhige Leselern-App**: klar, vertrauenswürdig, barrierearm und bewusst.
-Dieses Dokument sammelt die Ideen, die diese Richtung stärken, ohne sie schon
-zu früh in Releases, Sprints oder halbfertige Tickets zu pressen.
+infl0 should not become “just another feed reader with AI”, but a **calm
+reading-and-learning app**: clear, trustworthy, low-friction, and intentional.
+This document collects ideas that strengthen that direction without forcing
+them too early into releases, sprints, or half-baked tickets.
 
-Es ist absichtlich keine Chronik und kein Umsetzungspaket.
+It is intentionally **not** a chronicle or an implementation package.
 
-- **Was bereits geliefert ist** steht in [`CHANGELOG.md`](./CHANGELOG.md).
-- **Was konkret gebaut werden soll** landet als Paket in
-  [`planned/`](./planned/) — mit Scope, Akzeptanzkriterien und Reihenfolge.
+- **What has already shipped** is in [`CHANGELOG.md`](./CHANGELOG.md).
+- **What to build concretely** lives as a package in
+  [`planned/`](./planned/) — with scope, acceptance criteria, and order.
 
 ---
 
-## Wozu diese Roadmap da ist
+## What this roadmap is for
 
-Die Roadmap soll drei Dinge leisten:
+The roadmap should do three things:
 
-1. **Richtung geben**: Wofür steht infl0 als Produkt?
-2. **Ideen festhalten**: Welche Chancen sehen wir, ohne sie sofort zu
-   committen?
-3. **Arbeit vorbereiten**: Welche zusammenhängenden Blöcke lohnen sich als
-   nächstes Paket in `planned/`?
+1. **Set direction:** What does infl0 stand for as a product?
+2. **Capture ideas:** What opportunities do we see without committing
+   immediately?
+3. **Prepare work:** What coherent blocks are worth the next `planned/`
+   package?
 
-Wenn eine Idee reif wird, wird sie aus dieser Landkarte **herausgezogen** und
-als konkretes Paket beschrieben. Diese Datei bleibt bewusst auf Produktniveau.
+When an idea matures, it is **pulled out** of this map and written up as a
+concrete package. This file stays deliberately at product level.
 
 ---
 
 ## North Star
 
-> infl0 hilft Menschen, gute Inhalte nicht nur zu sehen, sondern zu
-> verstehen, wiederzufinden und bewusst in eigenes Wissen zu überführen —
-> ohne Lärm, Druck oder intransparente Automatisierung.
+> infl0 helps people not only *see* good content, but *understand* it,
+> *find it again*, and *turn it into their own knowledge* — without noise,
+> pressure, or opaque automation.
 
-Daraus folgen fünf Produktprinzipien:
+From that follow five product principles:
 
-### 1. Ruhe vor Reibungsmaximierung
+### 1. Calm over friction maximisation
 
-Keine hektische Engagement-Logik, keine aggressive Gamification, keine
-überraschenden Eingriffe in den Lesefluss.
+No hectic engagement logic, no aggressive gamification, no surprise
+interruptions to the reading flow.
 
-### 2. Kontrolle vor Automatik
+### 2. Control over automation
 
-Alles, was stärker eingreift — Lernen, Wissensaufbau, KI-Anreicherung,
-Podcast, Vorschläge — braucht eine **klare, explizite Zustimmung**.
+Anything that intervenes more strongly — learning, knowledge building, AI
+enrichment, podcast, suggestions — needs **clear, explicit consent**.
 
-### 3. Provenienz vor Magie
+### 3. Provenance over magic
 
-Wenn infl0 etwas erklärt, verdichtet oder empfiehlt, muss sichtbar bleiben:
-**woher** es kommt, **warum** es erscheint und **wie** man es wieder loswird.
+Whenever infl0 explains, compresses, or recommends something, it must stay
+visible **where** it comes from, **why** it appears, and **how** to get rid
+of it.
 
-### 4. Wiederfinden ist genauso wichtig wie Lesen
+### 4. Finding again matters as much as reading
 
-Lesen allein ist kein Endzustand. infl0 soll helfen, Inhalte später
-wiederzufinden, einzuordnen und in Zusammenhänge zu bringen.
+Reading alone is not the end state. infl0 should help people find content
+later, place it in context, and connect it to other knowledge.
 
-### 5. Barrierefreiheit ist Produktqualität
+### 5. Accessibility is product quality
 
-Klare Sprache, Fokus, Landmarken, ruhige Bewegung, sichtbare Herkunft und
-stabile Bedienung sind keine Extras, sondern Teil des Kernprodukts.
+Clear language, focus, landmarks, calm motion, visible provenance, and
+stable operation are not extras — they are part of the core product.
 
 ---
 
-## Kernloop
+## Core loop
 
-Die produktive Mitte von infl0 ist nicht "Artikel konsumieren", sondern dieser
-Loop:
+The productive centre of infl0 is not “consume articles”, but this loop:
 
 ```text
-entdecken -> lesen -> verstehen -> markieren -> wiederfinden -> verbinden
+discover -> read -> understand -> mark -> find again -> connect
 ```
 
-Fast jede gute Idee für infl0 sollte mindestens einen dieser Schritte stärker,
-klarer oder ruhiger machen.
+Almost every good idea for infl0 should make at least one of these steps
+stronger, clearer, or calmer.
 
 ---
 
-## Strategische Produktfelder
+## Strategic product areas
 
-Die folgende Landkarte gruppiert Ideen nicht nach Release, sondern nach
-Produktwirkung. Innerhalb jedes Felds stehen zunächst die Ideen mit dem größten
-Hebel für infl0.
+The map below groups ideas by product impact, not by release. Within each
+area, the highest-leverage ideas for infl0 are listed first.
 
-### A. Lesen, Fokus, Orientierung
+### A. Reading, focus, orientation
 
-Hier geht es um den eigentlichen Lesefluss: Was erscheint? Warum? Wie ruhig und
-verständlich ist die Timeline?
+The actual reading flow: what appears? why? how calm and legible is the
+timeline?
 
-**Große Chancen**
+**Major opportunities**
 
-- **"Warum steht das oben?" direkt an der Kachel**:
-  kurze, ehrliche Begründung mit Verweis auf tiefergehende Erklärung.
-- **Shortcuts-Übersicht**:
-  ein Ort für alle Tastaturkürzel inklusive Kontext, wann sie aktiv sind.
-- **Szenen-Presets statt nur Regler**:
-  z. B. "Fokus", "Entdecken", "nur kurz scrollen", "Zeit für Tiefe".
-- **Artikelsuche / Wiederfinden im Lesestrom**:
-  "Ich hatte doch etwas zu X gelesen" über Titel, Snippet, Datum, Quelle;
-  Volltext nur, wenn rechtlich und technisch sauber.
-- **Später lesen / Leseliste**:
-  mit optional stiller Erinnerung, nicht als Dringlichkeitssystem.
+- **“Why is this on top?” on the card itself:**
+  short, honest reasoning with a path to a deeper explanation.
+- **Shortcuts reference:**
+  one place for all keyboard shortcuts, including when they are active.
+- **Scene presets instead of only sliders:**
+  e.g. “Focus”, “Discover”, “quick scroll only”, “time for depth”.
+- **Article search / refind in the reading stream:**
+  “I read something about X” via title, snippet, date, source; full text only
+  when legally and technically sound.
+- **Read later / reading list:**
+  with optional quiet reminder, not an urgency system.
 
-**Spätere Erweiterungen**
+**Later extensions**
 
-- **Diese Woche neu bei euren Quellen** als ruhige Transparenz-Kachel.
-- **Lesereflektion statt Streak-Druck**:
-  z. B. Wochenrückblick oder "das hat dich zuletzt länger beschäftigt".
-- **Quellen-Gesundheitsanzeige**:
-  seltene Updates, 404, Dubletten, auffällig repetitive Titel.
+- **This week from your sources** as a calm transparency tile.
+- **Reading reflection instead of streak pressure:**
+  e.g. weekly look-back or “this stayed with you recently”.
+- **Source health view:**
+  rare updates, 404s, dupes, obviously repetitive titles.
 
-### B. Verstehen, Merken, Wiederfinden
+### B. Understanding, remembering, finding again
 
-Hier liegt wahrscheinlich das stärkste Differenzierungsmerkmal von infl0:
-aus Lesen wird schrittweise persönliches Wissen.
+Likely the strongest differentiator for infl0: from reading, step by step, to
+personal knowledge.
 
-**Große Chancen**
+**Major opportunities**
 
-- **Explizites Capture / "Lernen"**:
-  Nutzer wählt bewusst "lernen" oder "ins Wissen aufnehmen"; erst danach
-  beginnt weitere Verarbeitung.
-- **Wissensdatenbank mit Provenienz**:
-  jedes Wissenselement kennt Quelle, Artikel, Zeitpunkt, Kontext und
-  Unterscheidung zwischen Original, Nutzerentscheidung und Verdichtung.
-- **Zwischenraum vor der Wissensdatenbank**:
-  eine ruhige Inbox für "später einordnen", bevor aus Markierungen echte
-  Wissenseinträge werden.
-- **Themenstruktur statt nur Listen**:
-  z. B. Themenfelder, Begriffe, Artikel und Quellen als navigierbare
-  Landkarte.
-- **Suche über Wissen + gelesene Artikel**:
-  nicht nur "welcher Artikel?", sondern "wo habe ich dieses Thema schon
-  gesehen?".
+- **Explicit capture / “learn”:**
+  the user explicitly chooses “learn” or “add to knowledge” before further
+  processing.
+- **Knowledge base with provenance:**
+  every item knows source, article, time, context, and distinction between
+  original, user choice, and summary.
+- **Inbox before the knowledge base:**
+  a calm holding area for “sort later” before marks become real knowledge
+  entries.
+- **Topic structure instead of lists only:**
+  e.g. topic fields, terms, articles, and sources as a navigable map.
+- **Search across knowledge + read articles:**
+  not only “which article?” but “where have I seen this topic before?”.
 
-**Spätere Erweiterungen**
+**Later extensions**
 
-- **Glossar-Kacheln** aus Lesestoff, verbunden mit der Themenstruktur.
-- **Sammlungen / Themenboards** als Vorstufe oder leichtgewichtiges Modell
-  vor einer tieferen Wissensarchitektur.
-- **Optionale Denkanstöße** am Ende des Volltexts:
-  z. B. drei offene Fragen, aber nur als ruhiges Werkzeug, nie als Zwang.
+- **Glossary cards** from reading, linked to the topic map.
+- **Collections / topic boards** as a lightweight model before a deeper
+  knowledge architecture.
+- **Optional prompts** at the end of full text:
+  e.g. three open questions, only as a quiet tool, never as pressure.
 
-### C. Vertrauen, Erklärbarkeit, Produktethik
+### C. Trust, explainability, product ethics
 
-Dieses Feld ist kein Add-on, sondern die Voraussetzung dafür, dass spätere
-intelligentere Funktionen zu infl0 passen.
+Not an add-on, but the prerequisite for smarter features to fit infl0
+later.
 
-**Große Chancen**
+**Major opportunities**
 
-- **Provenienz als Produktprinzip**:
-  jede Empfehlung, Wissensverdichtung oder KI-Kachel zeigt Herkunft, Zweck,
-  Grund und Ausweg.
-- **Vorschläge nur mit Erklärung**:
-  "weil du Quelle X oft liest", "weil du Thema Y gespeichert hast".
-- **Trennschärfe bei Feedbacksignalen**:
-  "weniger Gewicht", "nicht mehr zeigen", "mehr davon" sind unterschiedliche
-  Nutzerintentionen und sollten nicht vermischt werden.
-- **Portabilität / Export**:
-  Quellen, Sammlungen, Wissen, Bewertungen und Lesespuren dürfen kein Käfig
-  sein.
+- **Provenance as a product rule:**
+  every recommendation, knowledge tile, or AI block shows source, purpose,
+  reason, and how to turn it off.
+- **Suggestions only with explanation:**
+  “because you often read source X”, “because you saved topic Y”.
+- **Clear separation of feedback signals:**
+  “less weight”, “don’t show again”, “more like this” are different intents
+  and should not be merged.
 
-**Spätere Erweiterungen**
+**Later extensions**
 
-- **Vertrauensprofil pro Signaltyp**:
-  Nutzer sehen, ob etwas aus Lesen, Quelle, Thema, expliziter Markierung oder
-  KI-Verdichtung stammt.
+- **Trust profile per signal type:**
+  users see whether something comes from reading, source, topic, explicit
+  mark, or AI summary.
 
-### D. Quellen, Medien, Erweiterungen
+### D. Sources, media, extensions
 
-Hier liegen die Ideen, die infl0 verbreitern, aber den Kern nur dann stärken,
-wenn sie kontrolliert und ruhig bleiben.
+Ideas that broaden infl0 but should strengthen the core only if kept
+controlled and calm.
 
-**Große Chancen**
+**Major opportunities**
 
-- **Quellenvorschläge mit Opt-in**:
-  "Sie interessieren sich vielleicht für ..." mit Begründung, Dismiss und
-  "weniger solche Vorschläge".
-- **Mastodon als optionale Quelle**:
-  nur wenn Umgang mit Instanzen, Listen, CW und Limits sauber modelliert ist.
-- **Vorlesen / Podcast**:
-  markierte Artikel werden zu einem eigenen, bewussten Hörkanal statt zu
-  Autoplay-Nebenrauschen.
+- **Source suggestions with opt-in:**
+  “You might be interested in …” with reasoning, dismiss, and “fewer like
+  this”.
+- **Mastodon as an optional source:**
+  only if instances, lists, CWs, and limits are modelled cleanly.
+- **Read aloud / podcast:**
+  marked articles become a conscious listening channel, not autoplay noise.
 
-**Spätere Erweiterungen**
+**Later extensions**
 
-- **Perspektiven-Mix**:
-  mehr Grundlagen, mehr Gegenpositionen, mehr tiefe Analysen, weniger
-  Newsrauschen.
-- **Medienübergreifende Sammlungen**:
-  Artikel, Audio und Wissen zu einem Thema zusammenführen.
+- **Perspective mix:**
+  more fundamentals, more counterpoints, more deep analysis, less news
+  churn.
+- **Cross-media collections:**
+  article, audio, and knowledge on one topic in one place.
 
-### E. Lesbarkeit, Reizniveau, persönliche Arbeitsweise
+### E. Readability, stimulation level, personal workflow
 
-Dieses Feld zahlt direkt auf Alltagstauglichkeit und A11y ein — Lesefluss
-justieren, Reizniveau beherrschen, persönlich passende Darstellung, ohne
-den Kern des Produkts zu verlieren. Konkrete **nächste** Planungs-Pakete dazu
-stehen, wenn nötig, in [`planned/`](./planned/), nicht in dieser Landkarte.
+Taps directly into day-to-day usability and a11y — tune reading flow, manage
+stimulation, and personal presentation without losing the product core. The
+**next** planning packages for this, when needed, live in
+[`planned/`](./planned/), not in this product map.
 
-**Große Chancen**
+**Major opportunities**
 
-- **Visuelle Zuordnung mit Zurückhaltung**:
-  Quelle oder Themencluster über Typo, Abstand und kleine Akzente statt
-  bunter Bilderlawine. Ergänzt die Lesbarkeitseinstellungen, ist aber ein
-  eigenes Paket, weil es Quelle/Thema semantisch behandelt, nicht
-  individuelle Vorlieben.
+- **Visual association with restraint:**
+  source or topic cluster via type, spacing, and small accents instead of a
+  wall of images. Complements readability settings, but is its own package
+  because it treats source/topic semantically, not only personal taste.
 
-**Spätere Erweiterungen**
+**Later extensions**
 
-- **Reading goals ohne Druck**:
-  z. B. "mehr Architektur, weniger News", nicht als Leistungsmetrik.
-- **Offline- oder Fokusmodus**:
-  weniger Ablenkung, klare Zustände, gute Lesbarkeit.
+- **Reading goals without pressure:**
+  e.g. “more architecture, less news”, not a performance metric.
+- **Offline or focus mode:**
+  less distraction, clear states, good readability.
 
 ---
 
-## Die stärksten nächsten Hebel
+## Strongest next levers
 
-Wenn wir nur wenige größere Dinge verfolgen, scheinen diese drei besonders
-wirksam:
+If we only pursue a few larger efforts, these three seem especially
+impactful:
 
-### 1. Capture -> Wissen mit Provenienz
+### 1. Capture -> knowledge with provenance
 
-Das wäre der Schritt vom guten Reader zum eigenständigen Produkt.
+The step from a good reader to a product that stands on its own.
 
-**Warum wichtig**
+**Why it matters**
 
-- verbindet Lesen mit langfristigem Nutzen,
-- stärkt Vertrauen statt Black-Box-Automatik,
-- schafft ein Fundament für spätere KI-Funktionen, ohne sofort von ihnen
-  abzuhängen.
+- Connects reading to long-term value,
+- builds trust instead of black-box automation,
+- lays groundwork for later AI without depending on it immediately.
 
-**Mögliche Paketnamen**
+**Possible package names**
 
 - `capture-and-knowledge-inbox.md`
 - `knowledge-provenance-model.md`
 
-### 2. Wiederfinden -> Suche -> Themenlandkarte
+### 2. Find again -> search -> topic map
 
-Viele Produkte helfen beim Einsammeln, aber nicht beim Wiederfinden.
+Many products help collect; fewer help you find again.
 
-**Warum wichtig**
+**Why it matters**
 
-- erhöht den Wert gelesener Inhalte über den Moment hinaus,
-- macht Wissen praktisch nutzbar,
-- schafft einen natürlichen Einstieg in Themen- statt Feed-Navigation.
+- Increases the value of what you read beyond the moment,
+- makes knowledge practical,
+- is a natural entry to topic- instead of feed-first navigation.
 
-**Mögliche Paketnamen**
+**Possible package names**
 
 - `article-and-knowledge-search.md`
 - `topic-map-navigation.md`
 
-### 3. Quellenqualität + transparente Vorschläge
+### 3. Source quality + transparent suggestions
 
-Das würde infl0 helfen, "klug" zu werden, ohne beliebig oder manipulativ zu
-wirken.
+Helps infl0 feel “smart” without arbitrary or manipulative behaviour.
 
-**Warum wichtig**
+**Why it matters**
 
-- stärkt den Kernfeed, statt ihn zu überfrachten,
-- schafft erklärbare Empfehlungen,
-- verbindet Kontrolle mit echtem Produktgewinn.
+- Strengthens the core feed without overloading it,
+- makes recommendations explainable,
+- pairs control with real product upside.
 
-**Mögliche Paketnamen**
+**Possible package names**
 
 - `source-health-and-suggestions.md`
 - `explicit-feedback-signals.md`
 
 ---
 
-## Ideenpool
+## Idea pool
 
-Nicht alles hiervon ist sofort ein Paket. Die Liste ist bewusst grobkörnig.
+Not all of this becomes a package immediately. The list is intentionally
+coarse.
 
-### Reader & Timeline
+### Reader & timeline
 
-- Shortcuts-Übersicht
-- Warum-steht-das-oben-Erklärung
-- Szenen-Presets
-- Leseliste / später lesen
-- Artikelsuche
-- Wochenrückblick statt Streak
-- Quellen-Gesundheitsanzeige
+- Shortcuts reference
+- “Why on top” explanation
+- Scene presets
+- Reading list / read later
+- Article search
+- Weekly look-back instead of streaks
+- Source health indicator
 
-### Wissen & Struktur
+### Knowledge & structure
 
-- Explizites Lernen / Capture
-- Wissensinbox vor dauerhafter Ablage
-- Themenlandkarte
-- Wissensmenü
-- Glossar
-- Sammlungen / Boards
-- Strukturierte Einordnung statt Freitextnotizen
+- Explicit learn / capture
+- Knowledge inbox before permanent storage
+- Topic map
+- Knowledge menu
+- Glossary
+- Collections / boards
+- Structured placement instead of free-text-only notes
 
-### Empfehlungen & Signale
+### Recommendations & signals
 
-- Quellenvorschläge mit Opt-in
-- Mehr davon / weniger davon / nicht mehr zeigen
-- Transparente Empfehlungserklärung
-- Perspektiven-Mix
+- Source suggestions with opt-in
+- More / less / don’t show
+- Transparent recommendation explanation
+- Perspective mix
 
-### Darstellung & Arbeitsumgebung
+### Presentation & work environment
 
-- Ruhige visuelle Quellen-/Themenakzente
-- Fokus-/Offline-Lesemodus
+- Calm visual source/topic accents
+- Focus / offline reading mode
 
-### Medien
+### Media
 
-- Vorlesen / Podcast aus markierten Artikeln
-- Mastodon als Quelle
-- Medienübergreifende Sammlungen
-
----
-
-## Technische und operative Follow-ups
-
-Diese Punkte sind kleiner, aber wichtig. Sie werden nur dann als Paket
-ausformuliert, wenn wir sie wirklich anfassen.
-
-### Qualität
-
-- `help.vue` irgendwann mit echter Nuxt-Integration testen:
-  keine Auth-Kopplung, Back-Link bleibt neutral.
-- Für `/api/*` optional ein laufender Server-Smoke auf Status + Content-Type,
-  ergänzend zu den Unit-Tests.
-
-### A11y-Baseline
-
-- Neue Layout-Seiten immer gegen die Landmark-Baseline prüfen:
-  `header`, `nav`, `footer`, `main`, Skip-Link, Fokusfluss.
-
-### Betriebsfragen
-
-- CORS zentral dokumentieren oder setzen, falls `infl0` Clients von anderen
-  Origins bedienen soll.
-
-### Prozess
-
-- Commit-/Branch-Konvention in [`DEVELOPING.md`](./DEVELOPING.md)
-  explizit festhalten.
-- Produktidee zuerst hier, dann Paket in `planned/`, dann Umsetzung,
-  dann Eintrag im `CHANGELOG`.
+- Read aloud / podcast from marked articles
+- Mastodon as a source
+- Cross-media collections
 
 ---
 
-## Von der Idee zum Paket
+## Technical and operational follow-ups
 
-Eine Idee ist reif für `planned/`, wenn sie:
+These are smaller but important. They get written up as a package only when
+we actually touch them.
 
-- einen **klaren Nutzergewinn** hat,
-- nicht nur "wäre auch nett" ist,
-- einen **abgrenzbaren Scope** hat,
-- grob in 1-3 Iterationen beschreibbar ist,
-- erkennbare Risiken oder Abhängigkeiten hat.
+### Quality
 
-Gute Kandidaten für die nächsten Pakete:
+- Eventually test `help.vue` with a real Nuxt integration test: no auth
+  coupling, back link stays neutral.
+- For `/api/*`, optional live server smoke on status + content-type, in
+  addition to unit tests.
+
+### A11y baseline
+
+- New layout pages: always check against the landmark baseline:
+  `header`, `nav`, `footer`, `main`, skip link, focus flow.
+
+### Operations
+
+- Document or enforce CORS centrally if infl0 should serve clients from
+  other origins.
+
+### Process
+
+- Record commit/branch convention explicitly in [`DEVELOPING.md`](./DEVELOPING.md).
+- Product idea first here, then a `planned/` package, then implementation,
+  then a `CHANGELOG` entry.
+
+---
+
+## From idea to package
+
+An idea is ready for `planned/` if it:
+
+- has a **clear user benefit**,
+- is not only “nice to have”,
+- has a **bounded scope**,
+- can be sketched in roughly 1–3 iterations,
+- has visible risks or dependencies.
+
+Good candidates for the next packages:
 
 1. `capture-and-knowledge-inbox.md`
 2. `article-and-knowledge-search.md`
@@ -361,12 +351,12 @@ Gute Kandidaten für die nächsten Pakete:
 
 ---
 
-## Verknüpfungen
+## Links
 
-| Dokument | Zweck |
-|----------|-------|
-| [`CHANGELOG.md`](./CHANGELOG.md) | Gelieferte Änderungen, Fixes, Breaking |
-| [`RELEASING.md`](./RELEASING.md) | GitHub CI, Tag, GitHub Release |
-| [`planned/README.md`](./planned/README.md) | Umsetzungspakete mit Scope und Akzeptanzkriterien |
-| [`DEVELOPING.md`](./DEVELOPING.md) | Setup, Tests, lokale Entwicklung |
-| [`CONTENT_AND_A11Y.md`](./CONTENT_AND_A11Y.md) | Ton, Inhalt, A11y-Verträge |
+| Document | Purpose |
+|----------|---------|
+| [`CHANGELOG.md`](./CHANGELOG.md) | Shipped changes, fixes, breaking |
+| [`RELEASING.md`](./RELEASING.md) | GitHub CI, tag, GitHub release |
+| [`planned/README.md`](./planned/README.md) | Implementation packages with scope and acceptance criteria |
+| [`DEVELOPING.md`](./DEVELOPING.md) | Setup, tests, local development |
+| [`CONTENT_AND_A11Y.md`](./CONTENT_AND_A11Y.md) | Voice, content, a11y contracts |

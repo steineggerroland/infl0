@@ -1,55 +1,103 @@
-# Paket: Onboarding · Welcome-Timeline · E2E-Grundlage
+# Package: onboarding · welcome timeline · E2E foundation
 
 ## Status
 
-Entwurf
+Draft
 
-## Ziel
+## Goal
 
-**Nutzerinnen:** Frisch registrierte Accounts erhalten **sofort** eine sinnvolle, erklärende **Start-Timeline** — nicht eine leere Fläche und nicht von Hand eingespielte Dev-Daten. Vorgefertigte Kacheln führen in die **Kernidee** der App, **Tastaturkürzel**, **Themes / Anpassbarkeit** (Hinweis auf Settings), **Quellen (Feeds)** und die **grundsätzliche Funktionsweise** (Lesen, Timeline, o.ä.) ein. Die Inhalte sind **Lese-Kacheln** (wie echte Artikel), damit dieselben Flächen (Vorder- und Rückseite, ggf. Volltext) und Interaktionen genutzt werden, die im Alltag zählen.
+**Users:** Newly registered accounts get **immediately** a useful, explanatory
+**starting timeline** — not an empty screen and not hand-seeded dev data.
+Prefabricated cards introduce the app’s **core idea**, **keyboard
+shortcuts**, **themes / customisation** (pointer to settings), **sources
+(feeds)**, and **basic behaviour** (reading, timeline, etc.). Content is
+**reading cards** (like real articles) so the same surfaces (front, back, and
+full text where applicable) and interactions apply that matter day to day.
 
-**Produkt / Qualitätssicherung:** End-to-end-Tests, die **einen angemeldeten Zustand** brauchen, laufen künftig auf einem **vorhersagbaren, produktionsnahen** Pfad: **Registrierung (oder Garantie eines leeren Onboarding-Accounts) → Anmeldung → Arbeit auf den festspezifizierten Onboarding-Kacheln** (Shortcuts, Einstellungen, Lesefluss). So entfällt die Abhängigkeit von `devData` / manuellen Seeds für Timelines in E2E, soweit diese Tests inhaltlich an **dieselben** Kacheln andocken.
+**Product / QA:** End-to-end tests that need a **signed-in** session will run
+on a **predictable, production-like** path: **sign-up (or a guaranteed clean
+onboarding account) → sign in → work against fixed onboarding
+cards** (shortcuts, settings, reading flow). That removes dependency on
+`devData` / manual seeds for timeline E2E insofar as those tests align with
+**the same** cards.
 
-## Nicht-Ziele
+## Non-goals
 
-- Vollständiges interaktives Tutorial mit Wizard, Gamification oder Pflicht-Checklisten zwischen einzelnen Schritten (eher **optionale, scrollbare** Einführung in der normalen Timeline).
-- Ersetzung aller bisherigen E2E-Szenarien in einem Rutsch: Migration schrittweise; Paket liefert **Zielbild** und **Priorität** für E2E-Umstellung.
-- Doppelte Pflege: Onboarding-Texte sollten **eine** Quelle (z. B. i18n + serverseitig bereitgestellte „System-Artikel“) haben, keine copy-paste-Abweichung zur Hilfeseite.
-- Detaillierte Kapitel-Struktur aller zukünftigen E2E-Tests — das bleibt den jeweiligen Specs; hier nur **Rahmen** (Kacheln, Auth-Pfad, Nutzung derselben Artikel-IDs/Handles).
+- A full interactive tutorial with wizards, gamification, or mandatory
+  checklists between steps (prefer an **optional, scrollable** intro in the
+  normal timeline).
+- Replacing all existing E2E scenarios in one go: migrate gradually; this
+  package provides **target state** and **priority** for E2E work.
+- Duplicate maintenance: onboarding copy should have **one** source (e.g. i18n
+  + server-provided “system articles”), not copy-paste drift from the help
+  page.
+- A detailed chapter plan for all future E2E tests — that stays in each
+  spec; here only the **frame** (cards, auth path, same article IDs/handles).
 
-## Abhängigkeiten
+## Dependencies
 
-- **Kontoanlage** und SRP-Login (bereits vorhanden); ggf. Erweiterung, wenn „erster Login“ getrackt werden soll (Flag `onboardingVersion` o.ä.).
-- **Serverseitige oder deterministische Referenz** auf **genau N** (z. B. **vier)** feste Artikel- oder Timeline-Einträge pro neuem User — Schema/Migration, `upsert` nach Registrierung, oder `User`-gebundene Einspeisung, gekoppelt an eine **definierte** `crawlKey`/Quelle „System/Welcome“.
-- **Lesbarkeits- / UI-Pakete** (Themes, Surfaces) nur als **inhaltliche** Verweise in den Kacheln; technische Abhängigkeit gering, solange Kartenfläche und Reader funktionieren.
-- Bestehende oder geplante Doku: [`shortcuts-help.md`](./shortcuts-help.md) (Kürzel-Inhalt soll mit Onboarding inhaltlich harmonieren).
+- **Account creation** and SRP sign-in (already there); possible extension if
+  “first login” should be tracked (flag `onboardingVersion` or similar).
+- **Server-side or deterministic reference** to **exactly N** (e.g. **four**)
+  fixed article or timeline entries per new user — schema/migration, `upsert`
+  after registration, or user-bound seeding tied to a defined `crawlKey` /
+  “System/Welcome” source.
+- **Readability / UI** work (themes, surfaces) only as **content** references
+  on the cards; low technical dependency as long as card and reader work.
+- Related docs: [`shortcuts-help.md`](./shortcuts-help.md) (shortcut copy
+  should stay consistent with onboarding).
 
-## Akzeptanzkriterien
+## Acceptance criteria
 
-1. **Vier sinnvoll getrennte Kacheln** (mindestens vier; Abgrenzung pro Thema, Reihenfolge definiert), die zusammen Einstieg, Shortcuts, Themes/Settings, Quellen/Funktionsweise abdecken — Text und Struktur in **DE/EN** (oder so im Paket vorgegeben, dass i18n klar ist).
-2. **Neue Nutzer** sehen diese Kacheln **in der eigenen** Timeline, ohne manuelles `devData` oder Feed-Subscriben (Mechanismus im Paket: z. B. `user_timeline` nach Sign-up, fester Inhalt, Versionierung).
-3. **E2E-Rahmen** dokumentiert: Specs, die authed Features testen, nutzen **Registrierung + Login** und wechseln auf **bekannte** `data-testid` / Artikel-IDs / feste Titel, die zu den Onboarding-Kacheln gehören; Lesbarkeits-Shortcuts o.ä. werden auf **dieser** Timeline ausgeführt, nicht auf zufälligen RSS-Artikeln.
-4. **Stabile Selektoren** für E2E: Kacheln müssen in Tests **zuverlässig** auffindbar sein (z. B. fester `article.id`, `data-testid` an `ArticleView`, oder slug pro Onboarding-Content).
-5. **Kein Bruch** für Power-User, die Inhalte ausblenden wollen: optional später „Onboarding abgeschlossen“ / Ausblendung; im MVP kann ein einfaches „erste Session nur“ o. dergl. reichen (im Paket festhalten, nicht vertuschen).
-6. **Definition of Done (DoD) für E2E-Migration (Teilziel):** mindestens ein authed E2E (z. B. Readability-Shortcuts) läuft grün ausschließlich über Onboarding-Fixture + Auth, ohne vorgeschaltetes `devData`, sobald technisch freigeschaltet (dieses Paket beschreibt den Cutover; Umsetzung kann Teil desselben oder eines Folge-PR sein).
+1. **Four clearly separated cards** (at least four; theme and order
+   defined) covering intro, shortcuts, themes/settings, sources/behaviour —
+   copy and structure in **DE/EN** (or defined so i18n is unambiguous).
+2. **New users** see these cards **in their own** timeline, without manual
+   `devData` or subscribing to feeds (mechanism in the package, e.g.
+   `user_timeline` after sign-up, fixed content, versioning).
+3. **E2E frame** documented: specs that need auth use **sign-up + sign in**
+   and target **known** `data-testid` / article IDs / fixed titles for the
+   onboarding cards; readability shortcuts, etc. run on **this** timeline, not
+   random RSS articles.
+4. **Stable selectors** for E2E: cards must be **reliably** findable in tests
+   (e.g. fixed `article.id`, `data-testid` on `ArticleView`, or slug per
+   onboarding content).
+5. **No break** for power users who want to hide content: optional later
+   “onboarding done” / dismiss; MVP can be “first session only” or similar
+   (state explicitly, don’t hide the trade-off).
+6. **Definition of done (E2E migration slice):** at least one authed E2E (e.g.
+   readability shortcuts) is green using only onboarding fixture + auth, no
+   prerequisite `devData`, once enabled (this package describes the cutover;
+   implementation can be same or a follow-up PR).
 
-## Umsetzungshinweise
+## Implementation notes
 
-- **Inhalte:** pro Kacheln: eine klare Lern-Message; Verweis auf **Settings** für Darstellung; **Shortcuts** in Kurzform (vollständige Tabelle in Hilfe/Shortcuts-Paket).
-- **Vier Themen** (Vorschlag, im Detail zu schärfen): (1) Willkommen / Was ist die Timeline, (2) Tastatur & Lesbarkeit, (3) Themes & persönliche Anpassung in Settings, (4) Quellen hinzufügen & wie Artikel in die Timeline kommen.
-- **E2E:** Playwright-Projekte: Auth-Fixture aus **einem** frischen User pro Lauf (oder abgeschaltetes Parallellaufen für dieselbe E-Mail) vermeidet Kollisionen; ggf. zufällige E-Mail + gleiche Passwort-Policy wie Produktion. **devData** bzw. manuelle DB-Seeds bleiben bis dahin freiwillig für Entwickler; authed E2E ohne Onboarding hängt nicht von einem festen Playwright-Seed-Schritt ab.
-- **Risiko:** längere Timelines, wenn Onboarding + echte Feeds; Reihenfolge/„pin“ der Welcome-Artikel oben.
-- **Rollback:** Onboarding-Flags und eingefügte Artikel-Referenzen per Migration rückgängig machen; E2E bis zur Umstellung weiter mit Seed.
+- **Content:** per card, one clear learning message; pointer to **settings**
+  for appearance; **shortcuts** in short form (full table in the help/
+  shortcuts package).
+- **Four themes** (proposal, refine in detail): (1) welcome / what is the
+  timeline, (2) keyboard & readability, (3) themes & personalisation in
+  settings, (4) adding sources & how articles reach the timeline.
+- **E2E:** Playwright: auth fixture with **one** fresh user per run (or
+  disable parallel runs for the same email) to avoid collisions; random email +
+  same password policy as production if needed. **devData** and manual DB
+  seeds stay optional for developers; authed E2E without onboarding does not
+  depend on a fixed Playwright seed step.
+- **Risk:** long timelines when onboarding and real feeds combine; order /
+  “pin” welcome articles to the top.
+- **Rollback:** reverse onboarding flags and inserted article references via
+  migration; keep E2E on seeds until the switch.
 
-## E2E-Strategie (Zielbild)
+## E2E strategy (target)
 
-| Heute (Übergang) | Ziel (nach Paket) |
-|------------------|-------------------|
-| `devData` + feste Dreibenutzer-Timeline in einigen Läufen | Frischer User, nach Login nur **feste** Onboarding-Kacheln (IDs bekannt) |
-| Shortcuts-Tests hängen an `.article` + lokalem Zustand | Shortcuts an **Kachel N** mit stable selector + gleicher `ArticleView`-Logik |
-| Doppelte Sorge um `DEV_SRP_*` / Seeds | SRP-Registrierung im Test; Konsistenz mit `.env.e2e` bleibt für Server |
+| Today (transition) | Goal (after package) |
+|--------------------|------------------------|
+| `devData` + fixed three-user timeline in some runs | Fresh user, after login only **fixed** onboarding cards (known IDs) |
+| Shortcut tests tied to `.article` + local state | Shortcuts on **card N** with stable selector + same `ArticleView` logic |
+| Double handling of `DEV_SRP_*` / seeds | SRP sign-up in test; `.env.e2e` still consistent for the server |
 
 ## Links
 
-- PR: *(noch offen)*
-- Diskussion: Onboarding, Welcome-Content, E2E-Refit; ggf. [`shortcuts-help.md`](./shortcuts-help.md), [`../ROADMAP.md`](../ROADMAP.md)
+- PR: *(TBD)*
+- Discussion: onboarding, welcome content, E2E refit; see also
+  [`shortcuts-help.md`](./shortcuts-help.md), [`../ROADMAP.md`](../ROADMAP.md)

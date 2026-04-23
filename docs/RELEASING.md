@@ -1,42 +1,41 @@
 # Releases (GitHub)
 
-## Was passiert automatisch
+## What runs automatically
 
-- **`CI`** (`.github/workflows/ci.yml`) läuft bei jedem Push und PR auf
-  `main`: `npm ci`, `prisma generate`, `nuxt prepare`, Lint, Unit-Tests,
-  Typecheck.
-- **`Release`** (`.github/workflows/release.yml`) läuft, sobald ein **Tag**
-  wie `v0.2.0` **gepusht** wird: es wird ein **GitHub Release** mit
-  auto-generierten Release Notes (Commits/PRs seit dem vorherigen Tag)
-  erstellt.
+- **`CI`** (`.github/workflows/ci.yml`) runs on every push and PR to
+  `main`: `npm ci`, `prisma generate`, `nuxt prepare`, lint, unit tests,
+  typecheck.
+- **`Release`** (`.github/workflows/release.yml`) runs when a **tag** such as
+  `v0.2.0` is **pushed**: it creates a **GitHub Release** with
+  auto-generated release notes (commits/PRs since the previous tag).
 
-Es werden **keine** Build-Artefakte angehängt — infl0 wird typischerweise
-selbst gebaut (`npm run build`) und mit eigener `DATABASE_URL` deployed.
-Wenn ihr später z. B. `docker build`-Logs oder SBOMs anhängen wollt, erweitert
-den Release-Job.
+**No** build artifacts are attached — infl0 is typically built yourself
+(`npm run build`) and deployed with your own `DATABASE_URL`.
+If you later want to attach e.g. `docker build` logs or SBOMs, extend
+the release job.
 
-## Ersten (oder nächsten) Release auslösen
+## Cut a first (or next) release
 
-1. Auf `main` (oder dem Release-Branch) sicherstellen, dass **CI grün** ist.
-2. **`docs/CHANGELOG.md`** pflegen: unter `[Unreleased]` eintragen, was
-   Betreiber betrifft; für einen Release die Einträge unter eine neue
-   Überschrift **`## [0.x.y] — YYYY-MM-DD`** verschieben (Keep-a-Changelog-
-   Stil).
-3. Optional **`package.json`** → Feld **`version`** auf dieselbe Semver
-   setzen (ohne `v`-Präfix), damit Repo und Tag zusammenpassen.
-4. Tag setzen und pushen:
+1. On `main` (or a release branch), make sure **CI is green**.
+2. Maintain **`docs/CHANGELOG.md`**: add operator-relevant items under
+   `[Unreleased]`; for a release, move them under a new heading
+   **`## [0.x.y] — YYYY-MM-DD`** (Keep a Changelog style).
+3. Optionally set **`package.json`** → **`version`** to the same Semver
+   (without a `v` prefix) so the repo and tag stay aligned.
+4. Create and push the tag:
 
    ```bash
    git tag -a v0.2.0 -m "Release v0.2.0"
    git push origin v0.2.0
    ```
 
-5. Auf GitHub unter **Releases** prüfen; Text bei Bedarf manuell nachbearbeiten.
+5. Check **Releases** on GitHub; edit the text manually if needed.
 
-**Konvention:** Tag-Name = `v` + Semver aus `CHANGELOG` / `package.json`.
+**Convention:** tag name = `v` + Semver from `CHANGELOG` / `package.json`.
 
-## Berechtigungen
+## Permissions
 
-Für private Repos: Standard-`GITHUB_TOKEN` der Action reicht für Releases,
-solange die Workflow-Berechtigung **Read and write** für „Contents“ erlaubt
+For private repos: the default `GITHUB_TOKEN` in the action is enough for
+releases as long as the workflow permission is **Read and write** for
+“Contents”
 (Repository → Settings → Actions → General → Workflow permissions).

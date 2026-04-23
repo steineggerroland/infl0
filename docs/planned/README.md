@@ -1,34 +1,34 @@
-# Geplante Feature-Pakete
+# Planned feature packages
 
-Hier liegen **konkrete Umsetzungspakete**: abgrenzbarer Scope, Reihenfolge,
-Akzeptanzkriterien — getrennt von der großen Ideensammlung in
+This folder contains **concrete implementation packages**: bounded scope,
+order, acceptance criteria — separate from the large idea pool in
 [`../ROADMAP.md`](../ROADMAP.md).
 
-## Konvention
+## Convention
 
-- **Eine Datei pro Paket** (oder pro größerem Thema), z. B.
+- **One file per package** (or per larger theme), e.g.
   `shortcuts-help.md`, `onboarding-welcome-timeline.md`.
-- Oben: **Ziel**, **Nicht-Ziele**, **Abhängigkeiten**, optional **Schätzung /
-  Risiko**.
-- Unten: **User Stories** oder Checkliste, **Definition of Done**, Links zu
-  PRs/Issues wenn vorhanden.
-- Neues Paket: Kopie von [`_template.md`](./_template.md), Dateiname in
-  `kebab-case.md`.
+- At the top: **goal**, **non-goals**, **dependencies**, optional **estimate /
+  risk**.
+- At the bottom: **user stories** or a checklist, **definition of done**, links to
+  PRs/issues when available.
+- New package: copy [`_template.md`](./_template.md), use `kebab-case.md` for
+  the file name.
 
 ## Index
 
-| Paket | Kurzbeschreibung | Status |
-|-------|------------------|--------|
-| [`shortcuts-help.md`](./shortcuts-help.md) | Hilfetext + zentrale Shortcuts-Übersicht (v. a. Lesbarkeits- und App-Kürzel) | Entwurf |
-| [`onboarding-welcome-timeline.md`](./onboarding-welcome-timeline.md) | Willkommen per festen Kacheln (Shortcuts, Themes, Quellen, App-Logik), Grundlage für E2E mit Registrierung+Login | Entwurf |
+| Package | Summary | Status |
+|--------|--------|--------|
+| [`shortcuts-help.md`](./shortcuts-help.md) | Help copy + central shortcuts reference (incl. readability and app shortcuts) | Draft |
+| [`onboarding-welcome-timeline.md`](./onboarding-welcome-timeline.md) | Welcome content via fixed cards (shortcuts, themes, sources, app behaviour); basis for E2E with sign-up + login | Draft |
 
-*(Weitere Pakete: Zeile hinzufügen, wenn ein neues Markdown angelegt wird.)*
+*(Add a row when a new package markdown is created.)*
 
-## Reihenfolge (Vorschlag, nicht verbindlich)
+## Suggested order (non-binding)
 
-1. Shortcuts / Hilfe (`shortcuts-help.md`) und ggf. Onboarding-
-   Einführung (`onboarding-welcome-timeline.md`) — wenig
-   Seiteneffekte, verbessert Auffindbarkeit und Testbarkeit.
-2. Später: explizites „Capture“ (Sammlung / Wissen) **ohne** LLM, dann
-   größere Produktblöcke (Wissen-Menü, Suche, …) je eigenes Paket (siehe
+1. Shortcuts / help (`shortcuts-help.md`) and, as needed, onboarding
+   (`onboarding-welcome-timeline.md`) — few side effects, improves
+   discoverability and testability.
+2. Later: explicit “capture” (collection / knowledge) **without** an LLM, then
+   larger product areas (knowledge menu, search, …) as separate packages (see
    `ROADMAP.md`).

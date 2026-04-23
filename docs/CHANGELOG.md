@@ -11,104 +11,96 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+### Documentation
+
+- All markdown under `docs/`, `docs/RELEASING.md`, and the archived readability
+  package spec (`docs/archive/26-04-24-readability-settings.md`) is
+  maintained in **English** (in-app copy remains available in `en` and `de` via
+  i18n).
+
 ## [0.2.0] — 2026-04-24
 
-**Darstellung und Lesbarkeit:** UI-Präferenzen (Theme, Motion, Schrift und
-Farben pro Oberfläche) werden serverseitig persistiert; self-hosted
-Schriftdateien inkl. OFL; Tastaturkürzel in der Timeline; Doku und
-`planned/`-Fokus für Folgepakete.
+Appearance and readability: UI preferences (theme, motion, fonts, and colors per surface) are persisted server-side; self-hosted font files included with OFL licensing; keyboard shortcuts available in the timeline; documentation and a planned/ focus for follow-up work.
 
 ### Breaking
 
-- **Datenbank (erforderlich):** Nach Deployment `npx prisma migrate deploy` ausführen  
-  (u. a. Migration `20260422120000_ui_prefs`), damit UI-Präferenzen persistiert werden können.
-- **API (neu):** `GET` und `PATCH /api/me/ui-prefs` (auth erforderlich)  
-  Shape siehe `utils/ui-prefs.ts` (`v`, Surfaces, Theme, Motion, ggf. `seenFeatureAnnouncements`).  
-  Bestehende Gästeseiten bleiben unverändert.
+- **Database (required):** Run `npx prisma migrate deploy` after deployment  
+  (including migration `20260422120000_ui_prefs`) so user UI preferences can be persisted.
+- **API (new):** `GET` and `PATCH /api/me/ui-prefs` require authentication.  
+  Response and patch shape live in `utils/ui-prefs.ts` (`v`, surfaces, theme, motion, and optionally `seenFeatureAnnouncements`).  
+  Existing guest-only app usage remains unchanged.
 
 ### Added
 
-- **Einstellungen → Darstellung** (`/settings`)
-  - Appearance: hell / dunkel / System  
-  - Farbpaletten: Pastell / Warm, Hoher Kontrast, **eigene Farben**  
-  - Motion: wie System / reduziert / Standard  
-  - Pro Oberfläche (Front, Back, Reader):
-    - Schriftart (self-hosted)
-    - Textgröße
-    - Zeilenabstand
-    - bei Custom: Hintergrund / Textfarbe  
-  - Live-Vorschau + serverseitige Synchronisierung
+- **Settings → Appearance** (`/settings`)
+  - Appearance: light / dark / system
+  - Color palettes: Pastel / Warm, High Contrast, **custom colors**
+  - Motion: system / reduced / standard
+  - Per surface (front, back, reader):
+    - font family (self-hosted)
+    - font size
+    - line height
+    - custom background / text color
+  - Live preview + server-side preference sync
 
-- **Tastatur (Timeline, aktive Kachel)**
-  - `+` / `=` / `-` / `0`: Schriftgröße (größer / kleiner / Standard)
-  - `Shift+K` / `Shift+L`: Schriftart wechseln
-  - berücksichtigt Shortcut-Hygiene (keine Eingabefelder, klare Modifier-Regeln)
+- **Keyboard shortcuts in the timeline** (active card)
+  - `+` / `=` / `-` / `0`: font size larger / smaller / reset
+  - `Shift+K` / `Shift+L`: cycle font family
+  - respects shortcut hygiene: no editable targets, explicit modifier handling
 
-- **Self-hosted Schriften**
-  - lokale `woff2` unter `public/assets/fonts/`
-  - keine externen CDNs
-  - Lizenz: SIL OFL 1.1 → `public/assets/fonts/NOTICE.md` und je Familie
-    `public/assets/fonts/<familie>/OFL.txt` (vollständiger upstream-Text)
+- **Self-hosted fonts**
+  - local `woff2` files under `public/assets/fonts/`
+  - no external font CDNs
+  - license notice: SIL OFL 1.1 → [`public/assets/fonts/NOTICE.md`](../public/assets/fonts/NOTICE.md)
 
-- **Fallback bei unleserlichen Einstellungen**
-  - „Standard für diesen Bereich“ pro Oberfläche
-  - feste, kontrastreiche Darstellung (theme-unabhängig)
-  - setzt Werte auf App-Defaults zurück
+- **Recovery from unreadable settings**
+  - “Default for this surface” button per surface
+  - fixed high-contrast styling, independent of theme variables
+  - resets the surface to app defaults
 
-- **Dev-Daten (`scripts/dev-data.ts`)**
-  - erstellt Demo-Kacheln und Feeds
-  - nutzt `DEV_SRP_SALT_HEX` / `DEV_SRP_VERIFIER_HEX`, falls gesetzt
-  - kompatibel mit `prisma db seed` / `.env.e2e`
+- **Dev data (`scripts/dev-data.ts`)**
+  - can still create three demo cards and feeds
+  - uses `DEV_SRP_SALT_HEX` / `DEV_SRP_VERIFIER_HEX` when present
+  - compatible with `prisma db seed` / `.env.e2e`
 
 ### Changed
 
-- **Dev-Daten (`npm run devData`)**
-  - nutzt SRP-Variablen aus `process.env`, falls vorhanden
-  - sonst Fallback wie bisher (`dev@localhost` / Passwort `dev`)
-  - siehe README „Local seed data“
+- **Local dev data (`npm run devData`)**
+  - prefers SRP values from `process.env` when set
+  - otherwise keeps previous fallback behavior (`dev@localhost` / password `dev`)
+  - see README “Local seed data”
 
-- **Dokumentation / Navigation**
-  - flachere `/settings`-Struktur
-  - Footer-Kontext angepasst
-  - Details in `DEVELOPING.md` und `README.md`
+- **Documentation / navigation**
+  - flatter `/settings` structure
+  - footer context updates
+  - details in [`DEVELOPING.md`](./DEVELOPING.md) and [`README.md`](../README.md)
 
 ### Removed
 
-- **E2E-Test (Lesbarkeits-Shortcuts, Timeline)**
-  - experimenteller Playwright-Spec entfernt
-  - wird ersetzt durch stabilere Onboarding-basierte E2E-Strategie
-  - bestehende Settings-/Feeds-Smokes bleiben unverändert
+- **E2E test: readability shortcuts on the timeline**
+  - removed experimental Playwright spec
+  - to be replaced by the planned onboarding-based E2E strategy
+  - existing settings / feeds authenticated smokes remain unchanged
 
 ### Documentation
 
-- **Aktualisiert**
+- **Updated**
   - `CHANGELOG.md`
-  - `docs/DEVELOPING.md`
-  - `README.md`
-  - `docs/planned/README.md`
-  - **Paket Lesbarkeit / Darstellung (Archiv):** historische Paket-Spezifikation
-    unter `docs/archive/26-04-24-readability-settings.md` (kein aktives
-    `planned/`-Dokument mehr)
+  - [`docs/DEVELOPING.md`](./DEVELOPING.md)
+  - [`README.md`](../README.md)
+  - [`docs/planned/README.md`](./planned/README.md)
 
-- **Geplante Follow-ups**
-  - zentrale Shortcut-Hilfe → `planned/shortcuts-help.md`
-  - Onboarding + Welcome-Timeline → `planned/onboarding-welcome-timeline.md`
-
-- **Dieses CHANGELOG** (strukturierter Unreleased-Block), [`docs/DEVELOPING.md`](./DEVELOPING.md) (E2E, `devData`, DB-Merge, Verweis Onboarding), [`README.md`](../README.md), [`docs/planned/README.md`](./planned/README.md).
-- **Geplante Follow-ups (separat umsetzbar):** zentrale **Shortcuts-Hilfe** — [shortcuts-help.md](./planned/shortcuts-help.md); **E2E/Onboarding** mit Registrierung und festen Willkommens-Kacheln — [onboarding-welcome-timeline.md](./planned/onboarding-welcome-timeline.md).
-
----
+- **Planned follow-ups**
+  - central shortcuts help → [`planned/shortcuts-help.md`](./planned/shortcuts-help.md)
+  - onboarding + welcome timeline → [`planned/onboarding-welcome-timeline.md`](./planned/onboarding-welcome-timeline.md)
 
 ## [0.1.0] — 2026-04-22
 
-Erster **getaggter** Release zur Orientierung für Betreiber und
-Integratoren. Umfasst den Stand der App mit persönlicher RSS-Timeline,
-SRP-Auth, Prisma, Nuxt 3, Playwright-A11y-Smoke, JSON-Konventionen für
-`/api/*`, sowie die dokumentierte Barrierefreiheits-Baseline (Landmarks,
-Fokus, reduzierte Bewegung).
+First **tagged** release intended as a reference point for operators and integrators.  
+Covers the state of the app with personal RSS timeline, SRP authentication, Prisma, Nuxt 3, Playwright A11y smoke tests, JSON conventions for `/api/*`, and the documented accessibility baseline (landmarks, focus handling, reduced motion).
 
-Detaillierte Vorarbeit vor diesem Tag bleibt im Abschnitt
-**Archive — 2026-04-21** nachvollziehbar.
+Detailed work leading up to this date remains traceable in  
+**Archive — 2026-04-21**.
 
 ---
 

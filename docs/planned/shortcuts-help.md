@@ -1,36 +1,50 @@
-# Paket: Tastaturkürzel, Hilfe & Übersicht
+# Package: keyboard shortcuts, help & reference
 
 ## Status
 
-Entwurf — folgt auf die **gelieferte** Darstellungs- und Lesbarkeitsfunktion
-in der App; Details und Akzeptanzkriterien werden separat abgestimmt.
+Draft — follows the **shipped** appearance and readability behaviour in
+the app; details and acceptance criteria to be agreed separately.
 
-## Ziel
+## Goal
 
-Lesbarkeits- und App-Kürzel sind **für Nutzerinnen nachvollziehbar** dokumentiert: wo sie gelten, welche Taste was tut, und wie sie in der (oder den) zentralen **Shortcuts-/Hilfe-Oberfläche(n)** erscheinen. Das schließt die Lücke zur bisherigen Hilfeseite (dort: Timeline-Kürzel, aber noch keine vollständige Lesbarkeits-Matrix) — **hier** liegt die Konsolidierung.
+Readability and app shortcuts are **documented in plain language** for
+users: where they apply, which key does what, and how they show up in the
+central **shortcut / help** surface(s). This closes the gap with the
+current help page (timeline shortcuts there, but not a full readability
+matrix) — **this** package is where that consolidation lives.
 
-## Nicht-Ziele
+## Non-goals
 
-- Eine vollständige, produktweite Tastatur-Map aller künftigen Aktionen (kann iterativ wachsen).
-- Änderung der `defineShortcuts`- oder Fokus-Regeln — bleibt im jeweiligen Feature-/Refactoring-Kontext.
+- A complete, app-wide keyboard map of all future actions (can grow
+  iteratively).
+- Changing `defineShortcuts` or focus rules — that stays in each feature or
+  refactor.
 
-## Abhängigkeiten
+## Dependencies
 
-- Stabilisierung der in der **App** eingeführten Lesbarkeits-Tasten (`ArticleView`, `useShortcuts`), soweit noch nachgezogen.
-- Entscheidung, ob **eine** zentrale Hilfeseite, ein Modal oder ein eigenes Untermenü die „Shortcuts-Übersicht“ trägt.
+- Stabilise readability shortcuts already in the **app** (`ArticleView`,
+  `useShortcuts`) where follow-up is still needed.
+- Decide whether **one** central help page, a modal, or a submenu holds the
+  “shortcuts reference”.
 
-## Akzeptanzkriterien
+## Acceptance criteria
 
-1. Kürzel für Lesbarkeit (Schriftgröße, Schriftart wechseln, o.ä., wie in der App umgesetzt) sind an **einem** vereinbarten Ort in der Hilfe beschrieben.
-2. Tastenbelegungen und Einschränkungen (z. B. nur bei fokussierter/gewählter Kachel, kein Triggern in Eingabefeldern) sind für Nutzerinnen **in Klartext** erkennbar.
-3. (Optional) E2E-Smoke prüft lediglich, dass der Hilfepfad/Anker **lädt** und die dokumentierte Sektion **vorhanden** ist — ohne die gesamte Shortcut-Matrix in Playwright abzubilden.
+1. Readability shortcuts (font size, font family, etc., as implemented) are
+   described in **one** agreed place in help.
+2. Key bindings and constraints (e.g. only with a focused/selected card, no
+   firing in text fields) are understandable **in plain language** for users.
+3. (Optional) E2E smoke only checks that the help path/anchor **loads** and
+   the described section **exists** — not the full shortcut matrix in
+   Playwright.
 
-## Umsetzungshinweise
+## Implementation notes
 
-- Relevante Pfade: `pages/help.vue`, `composables/useShortcuts.ts`, ggf. i18n.
-- Risiko: doppelte oder veraltete Listen — eine Quelle (z. B. geteilte Konstanten oder generierte Tabelle) ist langfristig sinnvoll, nicht Teil dieses Entwurfs.
+- Relevant paths: `pages/help.vue`, `composables/useShortcuts.ts`, i18n as
+  needed.
+- Risk: duplicate or stale lists — a single long-term source (e.g. shared
+  constants or a generated table) is sensible, not part of this draft.
 
 ## Links
 
-- PR: *(noch offen)*
-- Diskussion: `ROADMAP.md`, `planned/README.md`
+- PR: *(TBD)*
+- Discussion: `ROADMAP.md`, `planned/README.md`

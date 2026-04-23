@@ -1,250 +1,223 @@
-# Paket: Lesbarkeit, Themes, Motion
+# Package: readability, themes, motion
 
-Aus [`ROADMAP.md`](../ROADMAP.md) herausgezogen (Feld
-**E. Lesbarkeit, Reizniveau, persönliche Arbeitsweise**): Lesbarkeits-Paket,
-Theme-System, App-seitige reduzierte Bewegung, ruhige visuelle Akzente.
-Einzelne Punkte aus **A. Lesen, Fokus, Orientierung** (Shortcut) werden hier
-mitbedient, soweit sie unmittelbar zur Lesbarkeit gehören.
+Pulled from [`ROADMAP.md`](../ROADMAP.md) (field
+**E. Readability, stimulation level, personal workflow**): readability
+package, theme system, in-app reduced motion, calm visual accents. Items from
+**A. Reading, focus, orientation** (shortcuts) are included here where they tie
+directly to readability.
 
 ## Status
 
-**Abgeschlossen** (MVP, Stand 2026-04). Kernaussagen des Pakets (drei Surfaces, self-hosted Fonts, OFL, Live-Vorschau in den Settings, Persistenz, Motion, Tastaturkürzel) sind umgesetzt. Abweichungen vom ursprünglichen Wortlaut, Review-Beschlüsse und weitere Follow-ups: [unten](#abweichungen-vom-pakettext-mvp-und-follow-ups).
+**Done** (MVP, as of 2026-04). Core deliverables of the package (three surfaces, self-hosted fonts, OFL, live preview in settings, persistence, motion, keyboard shortcuts) are implemented. Deviations from the original wording, review decisions, and further follow-ups: [below](#deviations-from-the-mvp-package-and-follow-ups).
 
-## Abweichungen vom Pakettext (MVP) und Follow-ups
+## Deviations from the package text (MVP) and follow-ups
 
-Liste für **Release-Planung** und Reviews (kein Qualitätsurteil pro Zeile).
+A checklist for **release planning** and reviews (not a per-line quality
+judgement).
 
-1. **Pfade & Lizenzen (Schriften):** Dateien liegen unter `public/assets/fonts/<familie>/` (nicht `public/fonts/`). Kanonische OFL-1.1 in `public/assets/fonts/NOTICE.md`, ergänzt um **pro Familie** eine upstream-`OFL.txt` (Copyright, Reserved Font Names) neben den `woff2`-Dateien.
-2. **Schriftkatalog:** Kein **JetBrains Mono** in dieser Lieferung; stattdessen u. a. System-Stacks plus Inter, Source Sans 3, Source Serif 4, Lexend, IBM Plex Sans, Fraunces, Atkinson Hyperlegible, OpenDyslexic. **Subset „Latin-Extended“** als separater Build-Schritt ist nicht ausgewiesen; es werden die mitgelieferten variablen `woff2`-Artefakte (Google Fonts bzw. OpenDyslexic-Upstream) verwendet.
-3. **„Gelesene anzeigen“:** Das Paket beschrieb die **Verlagerung in Settings**; das Review erlaubte, den **User-Menü-Quicklink** bis zum Shortcut-Follow-up zu behalten. **Umsetzung:** Der Toggle steht weiterhin in der **Timeline** und im **User-Menü**; **kein** paralleler Block unter Settings. Nächster Schritt: mit `shortcuts-help.md` / Shortcut-Paket abstimmen, dann ggf. Umzug oder Konsolidierung.
-4. **Hilfe & Akzeptanzkriterium 5:** `/help` dokumentiert v. a. **Timeline-Kürzel** (Pfeile, W/S, E, Q, R, Escape). **Lesbarkeits-Kürzel** (Schriftgröße, Schriftart) sind in der Hilfe **noch nicht** in gleichem Detaillierungsgrad gepflegt. Die **zentrale Shortcuts-Übersicht** bleibt in [`../planned/shortcuts-help.md`](../planned/shortcuts-help.md).
-5. **E2E:** Keine Playwright-Abdeckung der Lesbarkeits-Shortcuts in der Timeline in diesem Paket; früherer Experimentalspec entfernt (siehe `CHANGELOG.md`). Stabilere E2E → [`../planned/onboarding-welcome-timeline.md`](../planned/onboarding-welcome-timeline.md).
-6. **Feature-Toast** (neue Surfaces / Farbknoten, Akzeptanzkriterium 11) und die zugehörige **einmalige Ankündigung** (`seenFeatureAnnouncements`) sind **kein** Teil der abgeschlossenen MVP-Lieferung.
-7. **Live-Vorschau-Layout:** Statt einzelner „drei Karten nebeneinander“-Miniblock sind die drei Surfaces in den Settings **untereinander** in einem Darstellungs-Panel; Live-Wirkung auf Vorschau und App entspricht dem Ziel (ohne Wartezeit / Neuladen).
+1. **Paths & licenses (fonts):** Files live under `public/assets/fonts/<family>/` (not `public/fonts/`). Canonical OFL-1.1 in `public/assets/fonts/NOTICE.md`, plus per family an upstream `OFL.txt` (copyright, reserved font names) next to the `woff2` files.
+2. **Font set:** No **JetBrains Mono** in this delivery; instead system stacks plus Inter, Source Sans 3, Source Serif 4, Lexend, IBM Plex Sans, Fraunces, Atkinson Hyperlegible, OpenDyslexic. A separate **“Latin-Extended” subset** build step is not called out; we ship the variable `woff2` artifacts from Google Fonts and the OpenDyslexic upstream.
+3. **“Show read items”:** The package described **moving the toggle to settings**; the review allowed keeping the **user-menu quick link** until the shortcut follow-up ships. **As implemented:** the toggle remains on the **timeline** and in the **user menu**; **no** duplicate block in settings. Next step: align with `shortcuts-help.md` / shortcut package, then possible move or consolidation.
+4. **Help & acceptance criterion 5:** `/help` documents **timeline** shortcuts (arrows, W/S, E, Q, R, Escape) in the main. **Readability** shortcuts (font size, family) are **not** yet documented to the same level. The **central shortcuts reference** stays in [`../planned/shortcuts-help.md`](../planned/shortcuts-help.md).
+5. **E2E:** No Playwright coverage for readability shortcuts on the timeline in this package; the experimental spec was removed (see `CHANGELOG.md`). More stable E2E → [`../planned/onboarding-welcome-timeline.md`](../planned/onboarding-welcome-timeline.md).
+6. **Feature toast** (new surfaces / colour nodes, acceptance criterion 11) and the related **one-time announcement** (`seenFeatureAnnouncements`) are **not** part of the completed MVP.
+7. **Live preview layout:** Instead of a three-up mini preview, the three surfaces are stacked in one appearance panel in settings; live effect on preview and app matches the goal (no wait / no full reload).
 
-## Entscheidungen aus externem Review
+## Decisions from external review
 
-Ein externes Review schlug unter anderem vor, das Paket in kleinere
-Iterationen zu schneiden und „Gelesene anzeigen“ als Quick-Toggle im
-User-Menü zu belassen. Dazu dieser Stand:
+An external review suggested splitting the package into smaller iterations
+and keeping “show read” as a quick toggle in the user menu. The resulting
+stance:
 
-- **Paket-Scope bleibt.** Der Kernnutzen dieses Pakets (Live-Preview über
-  drei Surfaces, frei wählbare Farben, Motion-Setting, geräteübergreifende
-  Persistenz) hängt inhaltlich zusammen; ein weiteres Aufspalten bringt
-  mehr Umbau als Mehrwert.
-- **„Gelesene anzeigen“ zieht trotzdem in Settings um**, bekommt aber
-  einen **Tastaturkürzel** als schnellen Arbeitsmodus. Das Shortcut-Paket
-  folgt direkt im Anschluss und führt den Toggle in der kommenden
-  Shortcuts-Übersicht mit. Der User-Menü-Eintrag bleibt erhalten, bis
-  dieses Shortcut-Paket gelandet ist — so entsteht keine Lücke.
-- **Motion behält drei Werte (`system | reduced | standard`).** Default
-  ist `system`; `reduced` senkt Motion auch gegen das OS, `standard`
-  erlaubt Motion auch gegen die OS-Einstellung. Der a11y-Einwand, dass
-  `standard` die OS-Präferenz überstimmt, ist gesehen: genau deshalb ist
-  es nie der Default und wird als bewusste Nutzerentscheidung im UI
-  beschrieben, nicht als „Motion an“-Schalter.
+- **Package scope stays.** The core value (live preview across three surfaces, free colour choice, motion setting, cross-device persistence) fits together; further splitting would add churn without much benefit.
+- **“Show read” still moves to settings** but also gets a **keyboard
+  shortcut** as a fast workflow. The shortcut package follows right after
+  and will list the toggle in the shortcuts reference. The user menu entry
+  stays until that shortcut package lands — no gap in workflow.
+- **Motion keeps three values (`system | reduced | standard`).** Default
+  is `system`; `reduced` forces reduced motion even against the OS; `standard`
+  allows motion even when the OS requests reduced. The a11y concern that
+  `standard` overrides OS preference is accepted: that is why it is never
+  the default and is described in the UI as a deliberate user choice, not
+  as “turn motion on”.
 
-## Ziel
+## Goal
 
-Nutzerinnen haben **gerätübergreifend** Kontrolle über die Darstellung, die
-sie beim Lesen tatsächlich spürt:
+Users have **cross-device** control over the presentation they actually feel
+when reading:
 
-- **Schriftgröße**, **Zeilenabstand**, **Schriftart** für
-  **Kachelvorderseite**, **Kachelrückseite** und **Volltextansicht**
-  (jeweils eigene Kombination, weil die Anforderungen sehr verschieden sind).
-- **Hintergrundfarbe** und **Schriftfarbe** für diese drei Oberflächen.
-  Nutzerinnen wählen frei oder greifen auf Presets („Themes“) zu.
-- **Reduzierte Bewegung** als App-Einstellung, zusätzlich zum
-  System-`prefers-reduced-motion`.
+- **Font size**, **line height**, **font family** for **card front**, **card
+  back**, and **reader** (separate combinations because needs differ).
+- **Background** and **text** colour for those three surfaces. Users pick
+  freely or use presets (“themes”).
+- **Reduced motion** as an app setting, in addition to
+  `prefers-reduced-motion`.
 
-Die Einstellungsoberfläche zeigt die Änderung **live** und ohne Neuladen.
-Für Schriftgröße gibt es **Tastaturkürzel**, damit man sie beim Lesen
-schnell korrigieren kann, wenn ein Kacheltext nicht hineinpasst.
+The settings UI shows changes **live** without reload. Font size has
+**keyboard shortcuts** so you can nudge it while reading if card text
+doesn’t fit.
 
-## Warum das Paket (Nutzen)
+## Why this package (value)
 
-- Menschen lesen auf sehr unterschiedlichen Geräten und Augen — die App soll
-  sich anpassen, nicht umgekehrt.
-- Kartenvorder-, Kartenrück- und Volltextansicht haben sehr unterschiedliche
-  Platzverhältnisse; ein globales „bigger/smaller“ reicht nicht.
-- Settings, die man erst nach Seitenwechsel sieht, werden nicht sinnvoll
-  benutzt. **Live-Preview in der Settings-Seite** ist Kern des Werts.
+- People read on very different devices and with different eyes — the app
+  should adapt, not the other way around.
+- Card front, back, and reader have very different space; a single global
+  “bigger/smaller” is not enough.
+- Settings you only see after navigation are not used well. **Live preview
+  on the settings page** is central to the value.
 
-## Nicht-Ziele
+## Non-goals
 
-- **Keine Drittanbieter-Fonts von Google Fonts / CDN**. Alle Schriften
-  werden mit der App ausgeliefert und selbst gehostet (Datenschutz,
-  Offline-Tauglichkeit, keine externe Fingerabdruckquelle).
-- Kein vollständiges Design-System-Redesign. Farben wirken zuerst über
-  **Oberflächen-Tokens** (Hintergrund, Text, evtl. Akzent), nicht über
-  Buttons/Logos/Feature-Farben.
-- Keine WYSIWYG-Theme-Designer-UI (Palette-Picker, Farbverlauf-Editor). Für
-  den Einstieg reichen **Farbfelder pro Surface** + **diskrete Schrift-
-  und Abstandsstufen**.
-- Keine pro-Artikel-Einstellungen; alles gilt global pro Oberfläche.
+- **No third-party fonts from Google Fonts / a CDN.** All fonts ship with
+  the app, self-hosted (privacy, offline, no third-party fingerprinting).
+- No full design-system redesign. Colours go through **surface tokens**
+  (background, text, maybe accent) first, not buttons/logos/marketing.
+- No WYSIWYG theme designer (gradient editor, etc.). For v1, **per-surface
+  colour fields** + **discrete type and spacing steps** are enough.
+- No per-article settings; everything is global per surface.
 
-## Scope / Oberflächen
+## Scope / surfaces
 
-Wir pflegen **drei Präsentationsflächen** und lassen Einstellungen dort
-getrennt zu:
+We maintain **three presentation surfaces** with separate settings:
 
-| Surface | Wo | Typischer Bedarf |
-|---------|----|------------------|
-| `card-front` | Kachelvorderseite in der Timeline | kompakt, klare Hierarchie |
-| `card-back` | Kachelrückseite (Metadaten / Aktionen) | ruhig, gut scanbar |
-| `reader` | Volltextansicht (Modal / Reader) | große Lesefläche, lange Lektüre |
+| Surface | Where | Typical need |
+|---------|--------|----------------|
+| `card-front` | Front of card in timeline | compact, clear hierarchy |
+| `card-back` | Back of card (metadata / actions) | calm, scannable |
+| `reader` | Full text (modal / reader) | large reading area, long sessions |
 
-Pro Surface konfigurierbar:
+Per surface, configurable:
 
 - `backgroundColor`
 - `textColor`
-- `fontFamily` (ein kurzer, gut lesbarer System-Stack als Standard + eine
-  kleine Auswahl)
-- `fontSize` (**ganze Pixel, numerisch einstellbar pro Surface**, geklammert
-  auf einen sicheren Bereich — siehe unten)
-- `lineHeight` (diskrete Stufen, z. B. `tight / normal / relaxed`)
+- `fontFamily` (short, readable system stack as default + a small selection)
+- `fontSize` (**whole pixels, per surface**, clamped to a safe range — see
+  below)
+- `lineHeight` (discrete steps, e.g. `tight / normal / relaxed`)
 
-### Schriftgröße: numerisch, pro Surface
+### Font size: numeric, per surface
 
-Keine `xs/sm/md/lg/xl`-Stufen. Stattdessen pflegt jede Surface ihren eigenen
-`fontSize`-Wert in ganzen **Pixeln**. Das macht die Live-Vorschau ehrlich
-(was konfiguriert ist, ist genau das, was ich sehe) und den Shortcut
-nutzbar: wenn ein Kartentext gerade nicht reinpasst, schiebe ich `card-front`
-um 1 px herunter, ohne dabei den Reader mitzuziehen.
+No `xs/sm/md/lg/xl` steps. Each surface keeps its own `fontSize` in whole
+**pixels**. That makes live preview honest (what you set is what you see)
+and shortcuts useful: nudge `card-front` by 1 px when card copy overflows
+without pulling the reader along.
 
-- Einheit: **px** (kanonisch im Storage; das UI darf zusätzlich eine
-  pt-Anzeige anbieten, 1 pt ≈ 1.333 px bei 96 dpi).
-- Wertebereich: `10 px … 32 px`, ganzzahlig. Werte außerhalb werden beim
-  Parse/Patch geklammert, non-finite Werte auf den aktuellen bzw.
-  Default-Wert zurückgesetzt.
-- Defaults: `card-front` und `card-back` = `16 px`, `reader` = `18 px`.
-- Eingabe im UI: Slider **und** nummerisches Eingabefeld pro Surface,
-  damit Tastatur- und Mausnutzerinnen denselben Komfort haben.
+- Unit: **px** (canonical in storage; the UI may show pt, ~1.333 px at 96 dpi).
+- Range: `10 … 32` px, integers. Out-of-range values are clamped on
+  parse/patch; non-finite values fall back to current or default.
+- Defaults: `card-front` and `card-back` = `16 px`, `reader` = `18 px`.
+- UI: slider **and** numeric field per surface for keyboard and mouse users.
 
-Themes sind **Presets** dieser Werte für alle drei Surfaces gleichzeitig
-(z. B. „Hell ruhig“, „Dunkel warm“, „Kontrastreich“).
+Themes are **presets** of these values for all three surfaces at once (e.g.
+“calm light”, “warm dark”, “high contrast”).
 
-## Schriftarten
+## Fonts
 
-Wir liefern einen kleinen, **selbst gehosteten** Satz an Schriften unter
-einer freien Lizenz (SIL OFL oder äquivalent) aus. Keine Einbindung über
-Google Fonts oder andere Drittanbieter-CDNs.
+We ship a small **self-hosted** set under a free license (SIL OFL or
+equivalent). No loading via Google Fonts or other third-party CDNs.
 
-Auswahlprinzip:
+Selection principles:
 
-- Eine **Variable-Font-Datei pro Familie** als `woff2`, `font-display: swap`,
-  `font-display`-Fallback auf den System-Stack derselben Gattung.
-- **Subset** für Latin-Extended-A, damit Umlaute und gängige europäische
-  Zeichen abgedeckt sind, ohne dass ein voller Unicode-Block geladen wird.
-- Präferenz für Schriften mit **expliziten Lesbarkeits-Empfehlungen** (z. B.
-  WebAIM, BDA). Konkrete Kandidaten, die wir beim Umsetzen prüfen:
-  - **Atkinson Hyperlegible** (OFL, von Braille Institute; speziell für
-    Schwachsichtige entworfen) — guter Sans-Serif-Standard.
-  - **Inter** (OFL) als zweite Sans-Option für kompakte UI-Flächen.
-  - **IBM Plex Serif** oder **Source Serif 4** (OFL / SIL) als Serif-Option
-    für lange Lesestrecken im Reader.
-  - **JetBrains Mono** (OFL) für monospaced Darstellung (Code im
-    Volltext).
-  - **OpenDyslexic** (OFL) oder alternativ **Atkinson Hyperlegible** als
-    dezidiert dyslexie-geeignete Auswahl. OpenDyslexic bevorzugen, wenn
-    Rückmeldung aus Nutzertests das bestätigt; sonst Atkinson behalten.
-- Bei jeder Option steht im UI **kurz dabei, wofür sie empfohlen ist**
-  („leseschwach“, „lange Texte“, „kompakte Kacheln“, „Code/Monospace“).
+- **One variable font file per family** as `woff2`, `font-display: swap`,
+  with fallback to a system stack of the same class.
+- **Subset** for Latin Extended-A so umlauts and common European characters
+  are covered without shipping full Unicode.
+- Preference for faces with **explicit readability guidance** (e.g. WebAIM,
+  BDA). Candidates to validate at implementation:
+  - **Atkinson Hyperlegible** (OFL, Braille Institute; low-vision) — good
+    default sans.
+  - **Inter** (OFL) as a second sans for compact UI.
+  - **IBM Plex Serif** or **Source Serif 4** (OFL) as serif for long reading
+    in the reader.
+  - **JetBrains Mono** (OFL) for monospace (code in body text).
+  - **OpenDyslexic** (OFL) or **Atkinson Hyperlegible** as a dyslexia-focused
+    choice. Prefer OpenDyslexic if user testing agrees; else keep Atkinson.
+- Each option should show **brief UI copy** for what it is for (“low
+  vision”, “long reads”, “compact cards”, “code/monospace”).
 
-Lizenzdateien: erledigt — siehe `public/assets/fonts/NOTICE.md` und je Familie
-`OFL.txt` neben den Font-Dateien.
+License files: done — see `public/assets/fonts/NOTICE.md` and per family
+`OFL.txt` next to the font files.
 
-## Reduzierte Bewegung
+## Reduced motion
 
-- Setting `motion: system | reduced | standard` (Standardwert `system`).
-- Wirkt über ein Root-Flag (z. B. Klasse `motion-reduce` am `<html>`), das
-  im CSS dieselben Pfade trifft wie `@media (prefers-reduced-motion: reduce)`.
-- Setting `reduced` **zwingt** die reduzierte Variante, Setting `standard`
-  erlaubt Motion selbst wenn das OS Reduced Motion meldet (bewusste
-  Nutzerentscheidung).
+- Setting `motion: system | reduced | standard` (default `system`).
+- Applied via a root flag (e.g. class on `<html>`) that hits the same CSS
+  paths as `@media (prefers-reduced-motion: reduce)`.
+- `reduced` **forces** reduced paths; `standard` **allows** motion even when
+  the OS requests reduced (explicit user choice).
 
-## Navigation / neuer Menüpunkt „Settings“
+## Navigation / new “Settings” entry
 
-Wir führen einen **dedizierten Top-Level-Eintrag „Settings“** ein, der
-die bisherigen `/settings/*`-Unterseiten (Personalisierung,
-Timeline-Gewichtung, Datenschutz) zusammenhält und den neuen Bereich
-**„Darstellung“** (dieses Paket) als eigene Unterseite aufnimmt.
+We add a **dedicated top-level “Settings”** item that groups existing
+`/settings/*` (personalisation, timeline weighting, privacy) and adds the
+new **“Appearance”** area (this package) on its own subpage.
 
-Im Zuge dessen **zieht „Gelesene anzeigen“ aus dem User-Menü** (aktuell
-`AppUserMenu.vue`, `useTimelinePreferences`) **in den Settings-Bereich
-um**. Begründung: Es ist eine persistente Darstellungspräferenz, keine
-einmalige Aktion, und gehört zu anderen „so will ich meine Timeline
-sehen“-Einstellungen.
+In that move, **“show read” leaves the user menu** (today `AppUserMenu.vue`,
+`useTimelinePreferences`) **for the settings area**. Rationale: it is a
+persistent display preference, not a one-off action, and belongs with other
+“how I want my timeline to look” settings.
 
-Externes Feedback merkte zu Recht an, dass „Gelesene anzeigen“ heute auch
-als **schneller Arbeitsmodus** in der Timeline fungiert und der Wegfall aus
-dem User-Menü deshalb ein Rückschritt ist, wenn kein gleichwertig schneller
-Zugriff existiert. Entschärfung:
+External feedback correctly noted that “show read” is also a **fast
+workflow** on the timeline, and removing it from the menu without a
+similarly fast path would be a regression. Mitigation:
 
-- „Gelesene anzeigen“ bekommt ein **Tastaturkürzel**, das jederzeit auf der
-  Timeline greift (kein Navigieren in Settings, kein Menü aufklappen nötig).
-- Der konkrete Bind und die Umsetzung gehören in das **Shortcuts-Paket
-  direkt im Anschluss** an dieses Paket. Hier wird nur das Erfordernis
-  festgehalten; die Shortcuts-Übersicht soll den Toggle mitführen.
-- Bis dieses Shortcut-Paket gelandet ist, bleibt der bisherige Quick-Toggle
-  im User-Menü bestehen. Er verschwindet **gleichzeitig** mit dem Landen des
-  Shortcuts, nicht vorher. Damit gibt es keine Lücke im Arbeitsmodus der
-  Stammnutzerinnen.
+- “Show read” gets a **keyboard shortcut** that works on the timeline any
+  time (no trip to settings, no menu to open).
+- The exact binding ships in the **shortcuts package right after** this
+  one. This package only records the requirement; the shortcuts reference
+  should list the toggle.
+- Until the shortcut package lands, the existing quick toggle in the user
+  menu **stays**. It is removed **together with** the shortcut feature, not
+  before, so there is no workflow gap for regular users.
 
-Migrationsplan:
+Migration plan:
 
-- `useTimelinePreferences` bleibt als Composable erhalten.
-- `localStorage`-Key bleibt (Kompatibilität), zusätzlich wird der Wert
-  in `useUiPrefs()` serverseitig gespiegelt, sobald die UI-Prefs-API
-  existiert.
-- Wenn der User-Menü-Eintrag wegfällt, bleibt als Fallback ein kleiner
-  „zu den Einstellungen“-Link, damit Nutzerinnen, die das Toggle kennen,
-  nicht im Leeren suchen. Mit gelandetem Shortcut ist das aber nur noch
-  eine Entdeckungshilfe, nicht der primäre Weg.
+- `useTimelinePreferences` stays as a composable.
+- `localStorage` key stays (compatibility); the value is also mirrored
+  server-side in `useUiPrefs()` once the UI prefs API exists.
+- When the user menu entry goes away, a small “open settings” fallback can
+  remain for users who knew the toggle; with the shortcut in place, that is
+  discovery only, not the main path.
 
-## Tastaturkürzel
+## Keyboard shortcuts
 
-- Schriftgröße erhöhen: `=` / `+` (**+1 px**)
-- Schriftgröße verkleinern: `-` (**-1 px**)
-- Standardgröße wiederherstellen: `0` (Surface-Default: 16 bzw. 18 px)
-- Zielen auf die **aktuell sichtbare Surface** (Timeline → Kartenvorderseite;
-  Volltext offen → Reader). Rückseite wird nur in Settings verändert, dort
-  aber mit Live-Preview.
-- An den Klammergrenzen (10 px / 32 px) wird kein Fehler angezeigt; der
-  Shortcut ist dann schlicht wirkungslos.
-- `Shift+K` / `Shift+L`: vorige bzw. nächste **Schriftart** in der
-  konfigurierbaren Liste (kein nacktes `K`/`L`, u. a. wegen
-  macOS-Systembelegung von `Alt+L`).
-- Alle Kürzel gehorchen der `defineShortcuts`-Hygiene (kein Auslösen bei
-  Fokus in Eingabefeldern; `alt+…` / `shift+…` nur als explizite Einträge;
-  unmodifizierte Kürzel ohne Cmd/Ctrl/Meta, siehe `composables/useShortcuts.ts`).
+- Increase font size: `=` / `+` (**+1 px**)
+- Decrease: `-` (**−1 px**)
+- Reset to default: `0` (surface default: 16 or 18 px)
+- Target the **currently visible surface** (timeline → card front; reader
+  open → reader). Back of card is only changed in settings, with live
+  preview there.
+- At clamp bounds (10 / 32 px) show no error; the shortcut is simply a
+  no-op.
+- `Shift+K` / `Shift+L`: previous / next **font** in the configurable list
+  (not bare `K`/`L`, partly due to macOS `Alt+L` binding).
+- All shortcuts follow `defineShortcuts` hygiene (no fire in text fields;
+  `alt+…` / `shift+…` as explicit entries; unmodified keys without
+  Cmd/Ctrl/Meta, see `composables/useShortcuts.ts`).
 
 ### Follow-up: E2E (Playwright)
 
-Die Kürzel sind in der **Timeline** bisher **nicht** durch Playwright
-abgedeckt — Abdeckung über Vitest (`useShortcuts`, `useUiPrefs`). **Offen:**
-mindestens ein authed E2E-Smoke, der z. B. `+` / `0` / `Shift+L` sendet
-und prüft, dass Prefs-Stand oder Wirkung (z. B. `localStorage` / API /
-sichtbares Token) dem erwarteten Schritt entspricht. Mit der späteren
-Shortcuts-Hilfeseite gemeinsam sinnvoll.
+Shortcuts on the **timeline** are **not** covered by Playwright today —
+covered in Vitest (`useShortcuts`, `useUiPrefs`). **Open:** at least one
+authed E2E smoke that sends e.g. `+` / `0` / `Shift+L` and checks prefs or
+visible tokens. Sensible to ship with the later shortcuts help page.
 
-## Persistenz (Architektur)
+## Persistence (architecture)
 
-- **Gerätübergreifend in der Datenbank**, analog zu Timeline-Score-Prefs und
-  Engagement-Tracking-Prefs:
-  - Spalte am `User` (oder eigener Typ) mit den Präferenzen als JSON.
-  - Zwei neue Endpunkte (Namen angelehnt an bestehende Konvention):
+- **Cross-device in the database**, like timeline score prefs and
+  engagement tracking prefs:
+  - Column on `User` (or separate type) with JSON preferences.
+  - Two new endpoints (names aligned with existing convention):
     - `GET /api/me/ui-prefs`
     - `PATCH /api/me/ui-prefs`
-  - Composable `useUiPrefs()` im Nuxt-Client mit **Server-State-Fetch beim
-    ersten Zugriff**, `PATCH`-Debounce beim Ändern.
-- **Fallback** für ausgeloggte oder frisch geladene Sessions: sofortige
-  Anwendung aus `localStorage`, spätere Reconciliation mit dem Serverwert
-  nach Login. Keine doppelten Schreiber.
-- Wenn wir den Eindruck „Einstellung springt zurück“ vermeiden wollen:
-  **optimistisches Update** in der UI, Server-Antwort gewinnt bei Konflikt.
+  - `useUiPrefs()` composable on the Nuxt client with **server fetch on
+    first use**, debounced `PATCH` on change.
+- **Fallback** for signed-out or cold sessions: apply from `localStorage`
+  immediately, reconcile with the server after sign-in. No double writers.
+- To avoid the feeling of “settings snap back”: **optimistic** UI, server
+  wins on conflict.
 
-### Datenform (Vorschlag)
+### Data shape (proposal)
 
 ```json
 {
@@ -265,160 +238,142 @@ Shortcuts-Hilfeseite gemeinsam sinnvoll.
 }
 ```
 
-Migrationsregel: unbekannte Felder werden ignoriert, fehlende Felder fallen
-auf den Default zurück; `version` bleibt bestehen, bis ein Breaking Change in
-der Form notwendig wird (dann `version: 2` + Migration).
+Migration rule: ignore unknown fields, missing fields fall back to
+defaults; `version` stays until a breaking form change (then `version: 2` +
+migration).
 
-## Live-Preview in den Settings
+## Live preview in settings
 
-Die Settings-Seite zeigt alle drei Surfaces **gleichzeitig** als Mini-
-Vorschau: rechts (oder auf Mobile darunter) ein kleines Beispiel für
-`card-front`, `card-back`, `reader`. Änderungen wirken sofort auf Vorschau
-**und** auf die gesamte App (nicht nur auf die Vorschau), damit man Wirkung
-im echten Kontext sehen kann.
+The settings page shows all three surfaces **at once** as mini preview:
+to the right (or below on mobile) small examples for `card-front`,
+`card-back`, `reader`. Changes apply immediately to the preview **and** the
+whole app (not preview-only) so you see real impact.
 
-## Fokus-Ring
+## Focus ring
 
-Der globale Fokus-Ring in `assets/css/tailwind.css` nutzt bereits
-`outline: 2px solid currentColor` mit `outline-offset: 2px`. Damit folgt
-der Ring automatisch der **aktuellen Textfarbe** der fokussierten
-Oberfläche — also ohne Sonderlogik auch dann, wenn die Nutzerin Farben
-pro Surface frei wählt.
+The global focus ring in `assets/css/tailwind.css` already uses
+`outline: 2px solid currentColor` with `outline-offset: 2px`, so the ring
+follows the **current text colour** of the focused surface — even when users
+pick per-surface colours.
 
-Anforderungen an dieses Paket:
+Requirements for this package:
 
-- Keine Regression an diesem Baseline-Verhalten; `tests/unit/focus-visible-baseline.test.ts`
-  bleibt grün.
-- Die Kontrastwarnung (siehe unten) prüft **Text vs. Hintergrund**; da
-  der Ring `currentColor` ist, ist sein Kontrast automatisch mit abgedeckt.
-- Wenn ein späteres Preset oder eine Nutzerfarbe Text so wählt, dass der
-  Ring unsichtbar würde, greift dieselbe Warnung — wir brauchen keinen
-  zweiten Kontrast-Check nur für den Ring.
+- No regression of that baseline; `tests/unit/focus-visible-baseline.test.ts`
+  stays green.
+- Contrast warning (below) checks **text vs. background**; with `currentColor`
+  on the ring, contrast is covered in the same check.
+- If a preset or user colour makes the ring hard to see, the same warning
+  applies — no second contrast pass only for the ring.
 
-## Umgang mit Struktur- und Feature-Änderungen
+## Structural and feature changes
 
-Leitlinie:
+Guideline:
 
-- **Rein strukturelle Refactors** (z. B. eine Karte wird neu aufgeteilt,
-  aber ihre Surface bleibt „card-front“): Custom-Farben und Schrift der
-  Nutzerin bleiben **unverändert** sichtbar, weil weiterhin dieselbe
-  Surface-Variable trifft.
-- **Neue Surface / neuer Farbknoten** (z. B. eine zusätzliche
-  „card-accent“-Fläche oder eine Knowledge-Timeline-Kachel mit eigenem
-  Hintergrund): bekommt beim ersten Release einen **sinnvollen Default
-  aus dem aktiven Preset**. Die Nutzerin erhält einen dezenten **Toast**
-  mit dem Hinweis „Neue Darstellungsoption verfügbar“ und einem
-  direkten Link zu der neuen Einstellung unter `/settings/darstellung`.
-- Toasts dieser Art **einmal pro Nutzerin pro Feature**, getrackt über
-  `useUiPrefs()` (z. B. `seenFeatureAnnouncements: string[]`), damit sie
-  nicht erneut erscheinen, wenn die Nutzerin den Punkt ignoriert.
+- **Purely structural refactors** (e.g. splitting a card while the surface
+  stays `card-front`): user colours and type stay **visible** because the
+  same surface variable still applies.
+- **New surface / new colour node** (e.g. `card-accent` or a knowledge tile
+  with its own background): on first release, get a **sensible default
+  from the active preset**. The user gets a light **toast**: “New display
+  option available” with a link to the new control under
+  `/settings` (appearance).
+- Such toasts **once per user per feature**, tracked in `useUiPrefs()`
+  (e.g. `seenFeatureAnnouncements: string[]`), so they do not repeat if
+  ignored.
 
-## Akzeptanzkriterien (MVP)
+## Acceptance criteria (MVP)
 
-1. **Drei Surfaces**: Nutzerin kann `backgroundColor`, `textColor`,
-   `fontFamily`, `fontSize`, `lineHeight` pro Surface wählen; Presets
-   schalten alle drei Surfaces in einem Schritt um.
-2. **Freie Farben**: Farbauswahl per Color-Input; Kontrastwarnung, wenn
-   Text-Hintergrund-Kontrast unter der WCAG-AA-Schwelle liegt. Wir blocken
-   nicht, wir warnen und benennen eine sichere Alternative.
-3. **Live-Preview**: Änderungen in Settings wirken innerhalb **<200 ms**
-   ohne Neuladen, sowohl in der Preview als auch in der App.
-4. **Persistenz**: Einstellungen werden in der Datenbank gespeichert und
-   sind nach Login auf einem zweiten Gerät vorhanden. `localStorage` wird
-   ausschließlich als Fallback genutzt.
-5. **Shortcut**: `+`, `-`, `0` verändern Schriftgröße der sichtbaren
-   Surface; die Kürzel sind in der Hilfeseite und der kommenden
-   Shortcuts-Übersicht aufgeführt.
-6. **Motion**: `motion: reduced` erzwingt dieselben Pfade wie die
-   Media-Query; `motion: standard` setzt diese auch bei aktiver Media-Query
-   außer Kraft — bewusst dokumentierte Nutzerentscheidung.
-7. **A11y**: Keine Regression der Playwright-/axe-Smokes; Fokus-Ring bleibt
-   sichtbar in allen Presets; Kontrastwarnung hat Textalternative.
-8. **Kein FOUC**: Beim ersten Seitenaufruf wird das Theme **vor** dem ersten
-   Paint angewendet (Server-Render oder Inline-Bootstrap-Script) für alle
-   Surface-Variablen.
-9. **Self-hosted Fonts**: keine Netzwerkaufrufe an Drittanbieter; die
-   angebotenen Schriften (inkl. mindestens einer dyslexie-freundlichen
-   Option) liegen unter `public/assets/fonts/` mit `NOTICE.md` und
-   pro Familie `OFL.txt`.
-10. **Settings-Navigation**: Top-Level-Eintrag „Settings“ existiert; der
-    neue Bereich „Darstellung“ ist erreichbar; „Gelesene anzeigen“ ist
-    aus dem User-Menü in Settings gewandert und das Verhalten bleibt
-    über bestehende `localStorage`-Nutzerinnen hinweg erhalten.
-11. **Feature-Hinweis**: Wird in einem späteren Release eine neue Surface
-    oder ein neuer Farbknoten eingeführt, sieht die Nutzerin einen
-    einmaligen Toast mit Link auf die betroffene Settings-Seite.
+1. **Three surfaces:** user can set `backgroundColor`, `textColor`,
+   `fontFamily`, `fontSize`, `lineHeight` per surface; presets switch all
+   three in one step.
+2. **Free colours:** colour inputs; contrast warning if text/background
+   falls below WCAG AA. We do not block; we warn and suggest a safe
+   alternative.
+3. **Live preview:** changes in settings apply within **<200 ms** without
+   reload, in preview and app.
+4. **Persistence:** stored in the database; after sign-in, available on a
+   second device. `localStorage` is fallback only.
+5. **Shortcut:** `+`, `-`, `0` change font size for the visible surface;
+   shortcuts are listed on the help page and the upcoming shortcuts
+   reference.
+6. **Motion:** `motion: reduced` forces the same paths as the media query;
+   `motion: standard` can override the media query — documented user
+   choice.
+7. **A11y:** no regression in Playwright/axe smokes; focus ring visible in
+   all presets; contrast warning has a text alternative.
+8. **No FOUC:** on first load, theme is applied **before** first paint
+   (server render or inline bootstrap) for all surface variables.
+9. **Self-hosted fonts:** no third-party font requests; shipped fonts
+   (including at least one dyslexia-friendly option) under
+   `public/assets/fonts/` with `NOTICE.md` and per-family `OFL.txt`.
+10. **Settings navigation:** top-level “Settings” exists; “Appearance” is
+    reachable; “show read” was to move from the user menu to settings with
+    behaviour preserved for existing `localStorage` users (see deviations
+    above for actual menu placement).
+11. **Feature hint:** if a new surface or colour node ships later, the
+    user gets a one-time toast with a link to the relevant settings.
 
-## Technische Bausteine (grobe Skizze)
+## Technical building blocks (sketch)
 
-- **CSS-Variablen** pro Surface: z. B. `--front-bg`, `--front-fg`,
-  `--front-font-family`, `--front-font-size-step`, `--reader-…`. Tailwind /
-  DaisyUI-Klassen greifen diese Variablen statt Hardcodes.
-- **Root-Datenattribute**: `<html data-infl0-theme="…" data-motion="…"
-  data-surface-preview="card-front">` — Preset-IDs kommen in `data-infl0-theme`
-  (DaisyUI nutzt `data-theme` separat, aktuell fest `data-theme="light"`);
-  `data-surface-preview` optional für die Preview.
-- **Composable** `useUiPrefs()` stellt reaktive Werte bereit; Setter
-  aktualisieren CSS-Variablen + optimistisch den Zustand, senden dann
-  `PATCH`.
-- **Hilfe-Eintrag** in `pages/help.vue` erklären, was die Surfaces sind und
-  was die Shortcuts tun.
+- **CSS variables** per surface, e.g. `--front-bg`, `--front-fg`,
+  `--front-font-family`, `--reader-…`. Tailwind / DaisyUI classes use these
+  instead of hardcoded values.
+- **Root data attributes:** `<html data-infl0-theme="…" data-motion="…"
+  data-surface-preview="card-front">` — preset IDs in `data-infl0-theme`
+  (DaisyUI uses `data-theme` separately, currently fixed `data-theme="light"`);
+  `data-surface-preview` optional for preview.
+- **Composable** `useUiPrefs()` with reactive values; setters update CSS
+  variables and optimistic state, then `PATCH`.
+- **Help** entry in `pages/help.vue` explains surfaces and shortcuts.
 
-## Entschiedene Punkte (für Umsetzung)
+## Decided items (for implementation)
 
-- **Schriftarten**: Self-hosted, OFL-lizensiert. Mindestens eine
-  dyslexie-freundliche Option (Atkinson Hyperlegible und/oder
-  OpenDyslexic). Kein Google-Fonts / CDN.
-- **Fokus-Ring**: Bleibt `currentColor`-basiert, passt sich damit
-  automatisch an die Schriftfarbe an. Kein zweiter Kontrast-Check nötig.
-- **Navigation**: Top-Level-Eintrag „Settings“ mit Unterseite
-  „Darstellung“. „Gelesene anzeigen“ zieht aus dem User-Menü dorthin um.
-- **Strukturelle Änderungen**: Custom-Farben bleiben unberührt, solange
-  die Surface dieselbe bleibt. Neue Farben/Surfaces bekommen einen
-  Preset-Default und werden via einmaligem Toast angekündigt.
+- **Fonts:** self-hosted, OFL. At least one dyslexia-friendly option
+  (Atkinson and/or OpenDyslexic). No Google Fonts / CDN.
+- **Focus ring:** stays `currentColor`-based; no second contrast check.
+- **Navigation:** top-level “Settings” with “Appearance” subpage. “Show
+  read” moves from the user menu (see deviations for ship order).
+- **Structural changes:** custom colours stay as long as the surface id
+  stays. New colours/surfaces get preset defaults and a one-time toast.
 
-## Offene Fragen
+## Open questions
 
-- Welche konkrete dyslexie-freundliche Schrift nehmen wir als Default —
-  Atkinson Hyperlegible (geprüfte Lesbarkeit, modernes Design) oder
-  OpenDyslexic (explizit für Dyslexie)? Tendenz: beide anbieten,
-  Atkinson als Default.
-- Soll der Toast für neue Darstellungsoptionen **auf jeder Seite**
-  erscheinen oder nur beim nächsten Besuch der Timeline, damit er nicht
-  bei Artikel-Tiefenlektüre stört?
-- Wie stark wollen wir Serif-/Monospace-Optionen pro Surface erzwingen
-  (z. B. Reader standardmäßig Serif anbieten), oder bleibt alles frei
-  wählbar ohne Empfehlung?
+- Default dyslexia-friendly font: Atkinson Hyperlegible (readability, modern)
+  or OpenDyslexic (explicitly for dyslexia)? Tendency: offer both, Atkinson as
+  default.
+- Should the “new display option” toast appear on every page or only on the
+  next timeline visit so deep reading is not interrupted?
+- How much do we steer serif/monospace per surface (e.g. reader defaults to
+  serif) vs. leave everything user-chosen with light recommendations only?
 
-## Risiken
+## Risks
 
-- **Zu viele Regler** → Settings fühlen sich technisch an. Gegenmittel:
-  Presets als Default, Feintuning sichtbar aber nicht dominant.
-- **Schlechter Kontrast** durch freie Farben. Gegenmittel: Warnung plus
-  sichere Alternative vorschlagen.
-- **FOUC** beim Theme-Wechsel. Gegenmittel: Theme-Werte SSR-freundlich
-  setzen, Transitions bewusst auf reduced motion rücksichtnehmen lassen.
+- **Too many controls** → settings feel technical. Counter: presets as
+  default, advanced tuning visible but not dominant.
+- **Poor contrast** from free colours. Counter: warning + safe alternative.
+- **FOUC** on theme change. Counter: SSR-friendly token setup; respect
+  reduced motion in transitions.
 
-## Reihenfolge (Vorschlag)
+## Suggested order
 
-1. Datenform, Composable, Endpunkte, Server-Persistenz, localStorage-Fallback.
-2. CSS-Variablen-Baseline für die drei Surfaces; bestehende Komponenten auf
-   Variablen umstellen (minimaler Umfang: Hintergrund, Text, Schriftgröße).
-3. Self-hosted Fonts einbinden (`public/fonts/` + `@font-face`-CSS +
-   Lizenzen) und als Dropdown-Optionen verfügbar machen.
-4. Settings-Top-Level-Eintrag + Unterseite „Darstellung“; „Gelesene
-   anzeigen“ in diesen Bereich migrieren.
-5. Settings-Seite mit Live-Preview und Presets.
-6. Freie Farben und Kontrastwarnung.
-7. Shortcuts (`+`, `-`, `0`) und Hilfetext.
-8. Motion-Einstellung und Integration in vorhandene Motion-Pfade.
-9. Toast-Ankündigungsmechanik für neue Darstellungsoptionen.
-10. A11y-Review, Kontrast-Smokes in Playwright ergänzen.
+1. Data shape, composable, endpoints, server persistence, `localStorage`
+   fallback.
+2. CSS variable baseline for three surfaces; migrate components to variables
+   (minimal: background, text, font size).
+3. Self-hosted fonts (`public/…` + `@font-face` + licenses) in dropdowns.
+4. Top-level settings + “Appearance”; migrate “show read” into that area
+   (per review / deviations).
+5. Settings page with live preview and presets.
+6. Free colours and contrast warning.
+7. Shortcuts (`+`, `-`, `0`) and help copy.
+8. Motion setting and integration with existing motion paths.
+9. Toast mechanism for new display options.
+10. A11y review; add contrast smokes in Playwright.
 
 ## Links
 
-- Produktkontext: `docs/ROADMAP.md` — Feld **E. Lesbarkeit, Reizniveau,
-  persönliche Arbeitsweise**.
-- Inhaltliche / A11y-Regeln: `docs/CONTENT_AND_A11Y.md`.
-- Nach Umsetzung: Eintrag unter `docs/CHANGELOG.md` → `[Unreleased]` (siehe dort
-  unter *Lesbarkeit / Darstellung*).
+- Product context: `docs/ROADMAP.md` — field **E. Readability, stimulation
+  level, personal workflow**.
+- Editorial / a11y: `docs/CONTENT_AND_A11Y.md`.
+- After shipping: entry in `docs/CHANGELOG.md` → `[Unreleased]` (see
+  appearance / readability section).

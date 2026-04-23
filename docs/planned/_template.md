@@ -1,31 +1,31 @@
-# Paket: (Kurztitel)
+# Package: (short title)
 
 ## Status
 
-Entwurf | In Arbeit | Erledigt *(Datum / PR)*
+Draft | In progress | Done *(date / PR)*
 
-## Ziel
+## Goal
 
-*Was soll für Nutzerinnen und Betreiberinnen nachher besser sein?*
+*What should be better for users and operators when this is shipped?*
 
-## Nicht-Ziele
+## Non-goals
 
-*Was bewusst ausgelassen wird (Scope-Begrenzung).*
+*What is intentionally out of scope.*
 
-## Abhängigkeiten
+## Dependencies
 
-- Datenbank / API / Design / …
+- Database / API / design / …
 
-## Akzeptanzkriterien
+## Acceptance criteria
 
 1. …
 2. …
 
-## Umsetzungshinweise
+## Implementation notes
 
-- Relevante Pfade, Risiken, Rollback.
+- Relevant paths, risks, rollback.
 
 ## Links
 
 - PR:
-- Diskussion:
+- Discussion:
