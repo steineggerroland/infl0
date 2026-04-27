@@ -50,6 +50,9 @@ for hosting options.
 
 **Upgrading** an existing deployment (DB URL, Docker, Prisma 7, Nuxt 4): follow
 the **Unreleased → Breaking** checklist in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
+If you operate infl0 behind **ModSecurity + OWASP CRS**, also review
+[`infl0-exclusion.conf`](infl0-exclusion.conf) and the operator notes in
+[`docs/DEVELOPING.md`](docs/DEVELOPING.md#modsecurity--crs-operators).
 
 ## Contributor guides
 
