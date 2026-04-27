@@ -11,6 +11,11 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Docker / `npm ci --omit=dev`:** **`dotenv`** is a **runtime** dependency again.  
+  `prisma.config.ts` imports **`dotenv/config`**; `postinstall` runs **`prisma generate`**, which loads that config. With `dotenv` only under `devDependencies`, production installs failed to resolve the module.
+
 ### Breaking
 
 Stack upgrade (**Nuxt 4**, **Prisma 7**, **Tailwind 4**, **daisyUI 5**, etc.).  
