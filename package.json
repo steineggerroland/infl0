@@ -48,7 +48,7 @@
     "prisma": "^7.8.0",
     "tailwindcss": "^4.1.0",
     "tssrp6a": "^3.0.0",
-    "vue": "^3.5.0",
+    "vue": "^3.5.33",
     "vue-chartjs": "^5.3.3",
     "vue-router": "^5.0.0"
   },
@@ -58,7 +58,7 @@
     "@playwright/test": "^1.59.1",
     "@types/node": "^22.15.0",
     "@types/pg": "^8.15.0",
-    "@vitejs/plugin-vue": "^6.0.0",
+    "@vitejs/plugin-vue": "^6.0.6",
     "@vue/test-utils": "^2.4.8",
     "dotenv": "^16.6.1",
     "dotenv-cli": "^8.0.0",

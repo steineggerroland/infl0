@@ -48,6 +48,9 @@ npm run preview     # serves the production build locally
 See the [Nuxt deployment docs](https://nuxt.com/docs/getting-started/deployment)
 for hosting options.
 
+**Upgrading** an existing deployment (DB URL, Docker, Prisma 7, Nuxt 4): follow
+the **Unreleased → Breaking** checklist in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
+
 ## Contributor guides
 
 - [`docs/DEVELOPING.md`](docs/DEVELOPING.md) — lint, tests, CI, Node setup,

@@ -3,8 +3,8 @@
 ## What runs automatically
 
 - **`CI`** (`.github/workflows/ci.yml`) runs on every push and PR to
-  `main`: `npm ci`, `prisma generate`, `nuxt prepare`, lint, unit tests,
-  typecheck.
+  `main`: `npm ci` (which runs **`postinstall`**: `prisma generate` then
+  `nuxt prepare`), lint, unit tests, typecheck.
 - **`Release`** (`.github/workflows/release.yml`) runs when a **tag** such as
   `v0.2.0` is **pushed**: it creates a **GitHub Release** with
   auto-generated release notes (commits/PRs since the previous tag).

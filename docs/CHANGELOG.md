@@ -11,8 +11,34 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+### Breaking
+
+**Upgrading a running instance (checklist)** — pull this revision, then:
+
+1. **Node** — Stay on the version in **`.nvmrc`** (Node **22+**; repo currently pins **24**). Prisma ORM 7 expects a recent Node; below 22 is unsupported.
+2. **Install / build** — From the app root, with the correct Node version:
+   - `npm ci` (or `npm install` in dev). **`postinstall`** runs **`prisma generate`** then **`nuxt prepare`**; a missing **`.env`** with `DATABASE_URL` is OK for generate (CLI uses a placeholder when unset).
+   - `npm run build` before deploy (or your image build). **Runtime** still requires a valid **`DATABASE_URL`** for any code path that opens the DB (Nitro API, scripts).
+3. **Prisma ORM 7**
+   - **Schema:** `datasource` no longer contains `url`; connection for **migrations / CLI** is in repo-root **`prisma.config.ts`** (must be present in the deploy artifact — same directory as `package.json`).
+   - **Client:** generated to **`generated/prisma/`** (gitignored). Regenerate with **`npx prisma generate`** or rely on **`npm ci`** / **`postinstall`**. Production Docker images run **`npx prisma generate`** after install so the folder exists inside the image.
+   - **Runtime driver:** the app uses **`@prisma/adapter-pg`** with **`pg`**. Use a **direct TCP** Postgres URL in **`DATABASE_URL`** (e.g. `postgresql://…`). **Prisma Accelerate** URLs (`prisma://` / `prisma+postgres://`) are not wired to `PrismaPg`; switching to Accelerate would need a separate client setup.
+   - **Migrations on deploy:** keep **`npx prisma migrate deploy`** (or your equivalent). Prisma 7 does **not** auto-run **`prisma generate`** after migrate/push; this repo’s **`db:migrate`**, **`db:push`**, and **`db:migrate:deploy`** scripts append **`prisma generate`** for you.
+   - **Seeding:** `prisma migrate dev` / `db push` no longer auto-seed; run **`npx prisma db seed`** explicitly when you need seed data.
+   - **SSL:** managed Postgres with previously “ignored” certificate issues may now fail validation (node-pg). Fix certs or configure SSL explicitly (see [Prisma upgrade guide](https://www.prisma.io/docs/orm/more/upgrade-guides/upgrading-versions/upgrading-to-prisma-7)).
+4. **Docker / OCI** — If you build from this repo’s **`Dockerfile`**: it now copies **`prisma/`** and **`prisma.config.ts`** **before** `npm ci`, and the production stage runs **`npx prisma generate`** after `npm ci --omit=dev`. Rebuild images from this tree; do not omit **`prisma.config.ts`** from the build context.
+5. **Nuxt 4 + Tailwind CSS 4 + daisyUI 5** — No extra env vars. If you maintain **forked CSS** or **custom Tailwind theme** files, re-read [Tailwind v4 upgrade](https://tailwindcss.com/docs/upgrade-guide) and [daisyUI for Nuxt](https://daisyui.com/docs/install/nuxt/); stock infl0 uses **`@tailwindcss/vite`** and plugins in **`assets/css/tailwind.css`**.
+
+### Changed
+
+- **Framework / tooling:** **Nuxt 4**, **Vue 3.5.x**, **Vue Router 5**, **Tailwind CSS 4** (via **`@tailwindcss/vite`**), **daisyUI 5**, **Prisma ORM 7** (Rust-free client + **pg** adapter), **Vitest 4**, **ESLint 10**, **marked** 15.x; **`@nuxt/content`** and **`@nuxtjs/i18n`** remain on their current **latest** majors compatible with Nuxt 4.
+- **Vue + Vite (dev):** **`vue`** and **`@vitejs/plugin-vue`** pinned to current patch minors for Vitest component tests.
+
 ### Documentation
 
+- **Updated** [`DEVELOPING.md`](./DEVELOPING.md) (postinstall = `prisma generate` + `nuxt prepare`, Prisma 7 explicit seed, ESLint 10).
+- **Updated** [`RELEASING.md`](./RELEASING.md) (CI: single `npm ci` via `postinstall`).
+- **Updated** [`README.md`](../README.md) (pointer to upgrade checklist).
 - All markdown under `docs/`, `docs/RELEASING.md`, and the archived readability
   package spec (`docs/archive/26-04-24-readability-settings.md`) is
   maintained in **English** (in-app copy remains available in `en` and `de` via
