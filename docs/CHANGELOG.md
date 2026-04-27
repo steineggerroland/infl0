@@ -13,21 +13,42 @@ new entries accrue under **Unreleased**.
 
 ### Breaking
 
-**Upgrading a running instance (checklist)** — pull this revision, then:
+Stack upgrade (**Nuxt 4**, **Prisma 7**, **Tailwind 4**, **daisyUI 5**, etc.).  
+For a normal Postgres install, **pull → install → migrate → run** is enough.  
+You do **not** need to run `postinstall` by itself after **`npm ci`** or **`npm install`** — npm runs it automatically.
 
-1. **Node** — Stay on the version in **`.nvmrc`** (Node **22+**; repo currently pins **24**). Prisma ORM 7 expects a recent Node; below 22 is unsupported.
-2. **Install / build** — From the app root, with the correct Node version:
-   - `npm ci` (or `npm install` in dev). **`postinstall`** runs **`prisma generate`** then **`nuxt prepare`**; a missing **`.env`** with `DATABASE_URL` is OK for generate (CLI uses a placeholder when unset).
-   - `npm run build` before deploy (or your image build). **Runtime** still requires a valid **`DATABASE_URL`** for any code path that opens the DB (Nitro API, scripts).
-3. **Prisma ORM 7**
-   - **Schema:** `datasource` no longer contains `url`; connection for **migrations / CLI** is in repo-root **`prisma.config.ts`** (must be present in the deploy artifact — same directory as `package.json`).
-   - **Client:** generated to **`generated/prisma/`** (gitignored). Regenerate with **`npx prisma generate`** or rely on **`npm ci`** / **`postinstall`**. Production Docker images run **`npx prisma generate`** after install so the folder exists inside the image.
-   - **Runtime driver:** the app uses **`@prisma/adapter-pg`** with **`pg`**. Use a **direct TCP** Postgres URL in **`DATABASE_URL`** (e.g. `postgresql://…`). **Prisma Accelerate** URLs (`prisma://` / `prisma+postgres://`) are not wired to `PrismaPg`; switching to Accelerate would need a separate client setup.
-   - **Migrations on deploy:** keep **`npx prisma migrate deploy`** (or your equivalent). Prisma 7 does **not** auto-run **`prisma generate`** after migrate/push; this repo’s **`db:migrate`**, **`db:push`**, and **`db:migrate:deploy`** scripts append **`prisma generate`** for you.
-   - **Seeding:** `prisma migrate dev` / `db push` no longer auto-seed; run **`npx prisma db seed`** explicitly when you need seed data.
-   - **SSL:** managed Postgres with previously “ignored” certificate issues may now fail validation (node-pg). Fix certs or configure SSL explicitly (see [Prisma upgrade guide](https://www.prisma.io/docs/orm/more/upgrade-guides/upgrading-versions/upgrading-to-prisma-7)).
-4. **Docker / OCI** — If you build from this repo’s **`Dockerfile`**: it now copies **`prisma/`** and **`prisma.config.ts`** **before** `npm ci`, and the production stage runs **`npx prisma generate`** after `npm ci --omit=dev`. Rebuild images from this tree; do not omit **`prisma.config.ts`** from the build context.
-5. **Nuxt 4 + Tailwind CSS 4 + daisyUI 5** — No extra env vars. If you maintain **forked CSS** or **custom Tailwind theme** files, re-read [Tailwind v4 upgrade](https://tailwindcss.com/docs/upgrade-guide) and [daisyUI for Nuxt](https://daisyui.com/docs/install/nuxt/); stock infl0 uses **`@tailwindcss/vite`** and plugins in **`assets/css/tailwind.css`**.
+#### Local dev
+
+1. **Node** — Use the version in **`.nvmrc`** (see [README](../README.md)).
+2. **`DATABASE_URL`** — Use a normal **TCP** Postgres URL, e.g.  
+   `postgresql://USER:PASSWORD@HOST:5432/DATABASE?schema=public`  
+   (adjust user, password, host, db name). If auth fails after upgrade, double-check the URL and that Postgres accepts connections from your machine.
+3. From the repo root:
+
+   ```bash
+   nvm use                    # or match .nvmrc another way
+   npm ci                     # or: npm install — runs prisma generate + nuxt prepare
+   npm run db:migrate:deploy  # applies migrations + prisma generate
+   npm run dev
+   ```
+
+   Optional sanity check (same as CI after install): **`npm run verify`** (lint + tests + typecheck).
+
+#### Docker (this repo’s `Dockerfile`)
+
+1. Set **`DATABASE_URL`** at **runtime** (same TCP `postgresql://…` shape as above).
+2. **Rebuild** the image from this revision (build context must include **`prisma/`** and **`prisma.config.ts`** — the Dockerfile expects them).
+3. **Start** the container: the default **`CMD`** runs **`npx prisma migrate deploy`** then **`node .output/server/index.mjs`**. No extra migrate step if you use that entrypoint unchanged.
+
+If you use **Compose** or another image, mirror the same idea: install from lockfile, generate Prisma client, ship **`prisma.config.ts`**, run **`migrate deploy`** before or on app start, with **`DATABASE_URL`** set.
+
+#### Details (only if something is non-standard)
+
+- **Prisma 7:** DB URL for the CLI lives in **`prisma.config.ts`** at the repo root; the client is generated under **`generated/prisma/`** (gitignored, recreated by install / **`prisma generate`**). **`npm run db:migrate:deploy`** (and other `db:*` scripts) already append **`prisma generate`** where needed.
+- **Direct Postgres only** in this tree: **`DATABASE_URL`** must not be a Prisma Accelerate-only URL (`prisma://` / `prisma+postgres://`) unless you add a separate Accelerate client path yourself.
+- **Seed:** migrations no longer auto-seed; run **`npx prisma db seed`** when you still want seed data.
+- **SSL:** stricter TLS is possible with **node-pg**; fix CA / connection options if a hoster used to “work anyway”.
+- **Forked UI/CSS:** if you override Tailwind or daisyUI heavily, see [Tailwind v4 upgrade](https://tailwindcss.com/docs/upgrade-guide) and [daisyUI + Nuxt](https://daisyui.com/docs/install/nuxt/).
 
 ### Changed
 
