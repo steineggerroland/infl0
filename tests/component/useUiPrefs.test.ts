@@ -28,7 +28,7 @@ function installRequestFetch(fn: (() => RelaxedFetch) | undefined) {
 }
 
 const { useUiPrefs } = await import('../../composables/useUiPrefs')
-const { UI_PREFS_STORAGE_KEY, defaultUiPrefs } = await import('../../utils/ui-prefs')
+const { UI_PREFS_STORAGE_KEY, defaultUiPrefs, toStoredUiPrefs } = await import('../../utils/ui-prefs')
 
 function mountHarness() {
   const Harness = defineComponent({
@@ -121,6 +121,54 @@ describe('useUiPrefs', () => {
     wrapper.unmount()
   })
 
+  it('prefers localStorage over an all-default server row and schedules resync PATCH', async () => {
+    vi.useFakeTimers()
+    const serverDefaults = toStoredUiPrefs(defaultUiPrefs())
+    const hydrateSpy = vi.fn().mockResolvedValue(serverDefaults)
+    installRequestFetch(() => hydrateSpy as unknown as RelaxedFetch)
+
+    const local = {
+      ...serverDefaults,
+      surfaces: {
+        ...serverDefaults.surfaces,
+        'card-front': { ...serverDefaults.surfaces['card-front'], fontSize: 38 },
+      },
+    }
+    window.localStorage.setItem(UI_PREFS_STORAGE_KEY, JSON.stringify(local))
+
+    const patchSpy = vi.fn(async (_url: string, _init?: unknown) => ({
+      ...local,
+      v: 1,
+    }))
+    installFetch(patchSpy as unknown as RelaxedFetch)
+
+    const wrapper = mountHarness()
+    await vi.advanceTimersByTimeAsync(0)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    const vm = wrapper.vm as unknown as ExposedVm
+    expect(vm.prefs.surfaces['card-front'].fontSize).toBe(38)
+
+    await vi.advanceTimersByTimeAsync(500)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(patchSpy).toHaveBeenCalled()
+    const [, opts] = patchSpy.mock.calls[0] as [string, { body: unknown; method: string }]
+    expect(opts.method).toBe('PATCH')
+    expect(opts.body).toMatchObject({
+      theme: local.theme,
+      motion: local.motion,
+      appearance: local.appearance,
+      surfaces: {
+        'card-front': expect.objectContaining({ fontSize: 38 }),
+      },
+    })
+
+    wrapper.unmount()
+  })
+
   it('falls back to localStorage when the server rejects', async () => {
     window.localStorage.setItem(
       UI_PREFS_STORAGE_KEY,
@@ -209,7 +257,7 @@ describe('useUiPrefs', () => {
     expect(mirroredOptimistic?.surfaces['card-front'].backgroundColor).toBe('#111111')
     expect(patchSpy).not.toHaveBeenCalled()
 
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(500)
     await Promise.resolve()
     await Promise.resolve()
 
@@ -265,7 +313,7 @@ describe('useUiPrefs', () => {
     vmB.update({ surfaces: { 'card-front': { backgroundColor: '#112233' } } })
     expect(patchSpy).not.toHaveBeenCalled()
 
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(500)
     await Promise.resolve()
     await Promise.resolve()
 

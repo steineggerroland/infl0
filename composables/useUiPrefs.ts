@@ -5,13 +5,14 @@ import {
   defaultUiPrefs,
   parseUiPrefsFromJson,
   toStoredUiPrefs,
+  uiPrefsEffectiveCustomization,
   type UiPrefs,
   type UiPrefsPatch,
   type UiPrefsStored,
 } from '~/utils/ui-prefs'
 
 /** PATCH debounce (merged patches); same for Settings and Lesbarkeits-Tastatur. */
-const SYNC_DEBOUNCE_MS = 1000
+const SYNC_DEBOUNCE_MS = 500
 
 /**
  * Non-reactive bookkeeping for the singleton. Lives behind the same
@@ -33,6 +34,8 @@ interface UiPrefsControl {
   flushPromise: Promise<void> | null
   /** Active component instances — the last one leaving flushes pending edits. */
   mountCount: number
+  /** `pagehide` flush registered while at least one consumer is mounted. */
+  pagehideListenerBound: boolean
 }
 
 function createControl(): UiPrefsControl {
@@ -43,6 +46,7 @@ function createControl(): UiPrefsControl {
     pendingPatch: null,
     flushPromise: null,
     mountCount: 0,
+    pagehideListenerBound: false,
   }
 }
 
@@ -50,7 +54,9 @@ function createControl(): UiPrefsControl {
  * Client-side access to UI preferences (readability / theme / motion).
  *
  * Source-of-truth order:
- *   1. Server (`GET /api/me/ui-prefs`) when signed in.
+ *   1. Server (`GET /api/me/ui-prefs`) when signed in — unless the response
+ *      is still the all-default snapshot while `localStorage` holds a
+ *      customized copy (then local wins once and a full PATCH resyncs the DB).
  *   2. `localStorage` fallback — same shape — for first paint and offline.
  *   3. `defaultUiPrefs()` when nothing is stored anywhere yet.
  *
@@ -107,6 +113,49 @@ export function useUiPrefs() {
     }
   }
 
+  /** Full patch so a stale server row can be overwritten after we prefer localStorage. */
+  function prefsToFullResyncPatch(p: UiPrefs): UiPrefsPatch {
+    return {
+      theme: p.theme,
+      motion: p.motion,
+      appearance: p.appearance,
+      surfaces: {
+        'card-front': { ...p.surfaces['card-front'] },
+        'card-back': { ...p.surfaces['card-back'] },
+        reader: { ...p.surfaces.reader },
+      },
+      seenFeatureAnnouncements: [...p.seenFeatureAnnouncements],
+    }
+  }
+
+  /**
+   * Best-effort PATCH when the tab may be killed before `sendPatch` runs
+   * (debounce timer or in-flight `$fetch`). Uses `fetch(..., { keepalive })`
+   * so the browser is more likely to deliver the body during unload.
+   */
+  function flushPendingPatchSync() {
+    if (!isClient) return
+    const c = control.value
+    if (c.syncTimer != null) {
+      clearTimeout(c.syncTimer)
+      c.syncTimer = null
+    }
+    const payload = c.pendingPatch
+    c.pendingPatch = null
+    if (!payload) return
+    try {
+      void fetch('/api/me/ui-prefs', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'include',
+        keepalive: true,
+      })
+    } catch {
+      /* ignore */
+    }
+  }
+
   function schedulePatch(patch: UiPrefsPatch) {
     if (!isClient) return
     const c = control.value
@@ -139,8 +188,19 @@ export function useUiPrefs() {
         const fromServer = await requestFetch<UiPrefsStored>('/api/me/ui-prefs')
         const resolved = parseUiPrefsFromJson(fromServer)
         if (resolved) {
-          prefs.value = resolved
-          persistLocal()
+          const fromLocal = readLocal()
+          const preferLocal =
+            fromLocal != null &&
+            uiPrefsEffectiveCustomization(fromLocal) &&
+            !uiPrefsEffectiveCustomization(resolved)
+          if (preferLocal) {
+            prefs.value = fromLocal
+            persistLocal()
+            schedulePatch(prefsToFullResyncPatch(fromLocal))
+          } else {
+            prefs.value = resolved
+            persistLocal()
+          }
           return
         }
       } catch {
@@ -202,23 +262,47 @@ export function useUiPrefs() {
     })
   }
 
+  function onPageHide() {
+    flushPendingPatchSync()
+  }
+
   if (isClient && getCurrentInstance()) {
     onMounted(() => {
-      control.value.mountCount += 1
+      const c = control.value
+      c.mountCount += 1
+      if (!c.pagehideListenerBound) {
+        window.addEventListener('pagehide', onPageHide)
+        c.pagehideListenerBound = true
+      }
       void hydrate()
     })
-    onBeforeUnmount(() => {
+    onBeforeUnmount(async () => {
       const c = control.value
       c.mountCount = Math.max(0, c.mountCount - 1)
       // Only the last consumer leaving should flush the debounced patch —
       // otherwise a transient unmount (tab switch, partial re-render) would
       // kill the debounce while another component is still editing.
-      if (c.mountCount === 0 && c.syncTimer != null) {
-        clearTimeout(c.syncTimer)
-        c.syncTimer = null
-        const payload = c.pendingPatch
-        c.pendingPatch = null
-        if (payload) void sendPatch(payload).catch(() => {})
+      if (c.mountCount === 0) {
+        if (c.pagehideListenerBound) {
+          window.removeEventListener('pagehide', onPageHide)
+          c.pagehideListenerBound = false
+        }
+        if (c.syncTimer != null) {
+          clearTimeout(c.syncTimer)
+          c.syncTimer = null
+          const payload = c.pendingPatch
+          c.pendingPatch = null
+          if (payload) {
+            c.flushPromise = sendPatch(payload)
+              .catch(() => {
+                /* offline / 401 */
+              })
+              .finally(() => {
+                c.flushPromise = null
+              })
+            await c.flushPromise
+          }
+        }
       }
     })
   } else if (isClient) {
