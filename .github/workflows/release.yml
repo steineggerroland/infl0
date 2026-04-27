@@ -19,9 +19,33 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Extract changelog entry
+        run: |
+          node <<'EOF'
+          const fs = require('node:fs')
+
+          const tag = process.env.GITHUB_REF_NAME
+          const version = tag.replace(/^v/, '')
+          const changelog = fs.readFileSync('docs/CHANGELOG.md', 'utf8')
+          const heading = `## [${version}]`
+          const start = changelog.indexOf(heading)
+
+          if (start === -1) {
+            throw new Error(`No changelog entry found for ${tag}`)
+          }
+
+          const next = changelog.indexOf('\n## [', start + heading.length)
+          const entry = changelog
+            .slice(start, next === -1 ? undefined : next)
+            .replace(/^## \[[^\]]+\][^\n]*\n+/, '')
+            .trim()
+
+          fs.writeFileSync('release-notes.md', `infl0 ${tag}\n\n${entry}\n`)
+          EOF
+
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          generate_release_notes: true
+          body_path: release-notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

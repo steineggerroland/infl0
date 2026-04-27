@@ -11,6 +11,12 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-04-27
+
+Major stack upgrade and production hardening release: Nuxt/Prisma/Tailwind and
+tooling were upgraded, install/deploy paths were updated, and several
+production, Docker, reader, WAF, and CI fixes landed after `v0.2.0`.
+
 ### Fixed
 
 - **GitHub Actions CI workflow:** quoted the install step name containing `:`
@@ -38,7 +44,7 @@ You do **not** need to run `postinstall` by itself after **`npm ci`** or **`npm 
 
    ```bash
    nvm use                    # or match .nvmrc another way
-   npm ci                     # or: npm install — runs prisma generate + nuxt prepare
+   npm ci                     # or: npm install — runs nuxt prepare + prisma generate
    npm run db:migrate:deploy  # applies migrations + prisma generate
    npm run dev
    ```
@@ -70,7 +76,7 @@ If you use **Compose** or another image, mirror the same idea: install from lock
 
 ### Documentation
 
-- **Updated** [`DEVELOPING.md`](./DEVELOPING.md) (postinstall = `prisma generate` + `nuxt prepare`, Prisma 7 explicit seed, ESLint 10).
+- **Updated** [`DEVELOPING.md`](./DEVELOPING.md) (postinstall = `nuxt prepare` + `prisma generate`, Prisma 7 explicit seed, ESLint 10).
 - **Updated** [`RELEASING.md`](./RELEASING.md) (CI: single `npm ci` via `postinstall`).
 - **Updated** [`README.md`](../README.md) (pointer to upgrade checklist).
 - **Added operator note for ModSecurity/CRS:** new helper config
