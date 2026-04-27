@@ -4,19 +4,18 @@ import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt(
   {
-    ignores: ['public/**', '.data/**', '.output/**', '**/prisma/migrations/**'],
+    ignores: [
+      'public/**',
+      '.data/**',
+      '.output/**',
+      '**/prisma/migrations/**',
+      'generated/**',
+    ],
   },
   {
     rules: {
       // Tighten the codebase gradually; warn instead of blocking CI
       '@typescript-eslint/no-explicit-any': 'warn',
-    },
-  },
-  {
-    files: ['tailwind.config.ts'],
-    rules: {
-      // Tailwind + DaisyUI still use require() in a CommonJS-style config
-      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 )

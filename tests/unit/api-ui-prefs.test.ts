@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Prisma } from '~/generated/prisma/client'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import getHandler from '../../server/api/me/ui-prefs.get'
 import patchHandler from '../../server/api/me/ui-prefs.patch'
@@ -146,7 +146,7 @@ describe('/api/me/ui-prefs', () => {
 
       const res = await patchHandler(mockEvent())
       expect(prisma.user.update).toHaveBeenCalledOnce()
-      const updateCall = vi.mocked(prisma.user.update).mock.calls[0][0]
+      const updateCall = vi.mocked(prisma.user.update).mock.calls[0]![0]
       expect(updateCall.where).toEqual({ id: 'u1' })
       expect(updateCall.data.uiPrefs).toMatchObject({
         v: 1,
@@ -180,7 +180,7 @@ describe('/api/me/ui-prefs', () => {
       vi.mocked(prisma.user.update).mockResolvedValue({} as never)
 
       const res = await patchHandler(mockEvent())
-      const updateCall = vi.mocked(prisma.user.update).mock.calls[0][0]
+      const updateCall = vi.mocked(prisma.user.update).mock.calls[0]![0]
       expect(updateCall.data.uiPrefs).toBe(Prisma.JsonNull)
       const defaults = defaultUiPrefs()
       expect(res).toMatchObject({

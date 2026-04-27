@@ -17,14 +17,8 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
 
-      - name: Install
+      - name: Install (runs postinstall: prisma generate + nuxt prepare)
         run: npm ci
-
-      - name: Prisma client
-        run: npx prisma generate
-
-      - name: Prepare Nuxt (generates .nuxt/eslint.config.mjs)
-        run: npx nuxt prepare
 
       - name: Lint
         run: npm run lint

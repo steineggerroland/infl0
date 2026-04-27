@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from '@prisma/client'
+import type { Prisma, PrismaClient } from '~/generated/prisma/client'
 import { isArticleEngagementSegment } from '../../../utils/article-engagement'
 import { pointsForEngagementEvent } from './engagement-points'
 
@@ -73,7 +73,9 @@ export async function rebuildEngagementAggregates(db: PrismaClient): Promise<{
       },
     })
     if (batch.length === 0) break
-    cursorId = batch[batch.length - 1].id
+    const lastEvent = batch[batch.length - 1]
+    if (!lastEvent) break
+    cursorId = lastEvent.id
     events += batch.length
 
     const articleIds = [...new Set(batch.map((e) => e.articleId))] as string[]
@@ -108,19 +110,25 @@ export async function rebuildEngagementAggregates(db: PrismaClient): Promise<{
     }
   }
 
+  const splitAggKey = (k: string): [string, string] => {
+    const sep = k.indexOf('::')
+    if (sep === -1) throw new Error(`invalid aggregate key: ${k}`)
+    return [k.slice(0, sep), k.slice(sep + 2)]
+  }
+
   const feedRows: Prisma.UserFeedEngagementCreateManyInput[] = []
   for (const [k, v] of feedAgg.entries()) {
-    const [userId, crawlKey] = k.split('::', 2)
+    const [userId, crawlKey] = splitAggKey(k)
     feedRows.push({ userId, crawlKey, posPoints: v.posPoints, negPoints: v.negPoints })
   }
   const categoryRows: Prisma.UserCategoryEngagementCreateManyInput[] = []
   for (const [k, v] of categoryAgg.entries()) {
-    const [userId, category] = k.split('::', 2)
+    const [userId, category] = splitAggKey(k)
     categoryRows.push({ userId, category, posPoints: v.posPoints, negPoints: v.negPoints })
   }
   const tagRows: Prisma.UserTagEngagementCreateManyInput[] = []
   for (const [k, v] of tagAgg.entries()) {
-    const [userId, tag] = k.split('::', 2)
+    const [userId, tag] = splitAggKey(k)
     tagRows.push({ userId, tag, posPoints: v.posPoints, negPoints: v.negPoints })
   }
 

@@ -7,12 +7,12 @@
  * Optional:
  *   RECOMPUTE_TIMELINE_AFTER_BACKFILL=1 npm run backfillEngagementAggregates
  */
-import { PrismaClient } from '@prisma/client'
+import { createScriptPrismaClient } from '../prisma/prisma-client'
 import { rebuildEngagementAggregates } from '../server/domain/engagement/engagement-aggregates-backfill.js'
 import { recomputeTimelineScoresForAllUsers } from '../server/utils/recompute-timeline-scores.js'
 
 async function main() {
-  const db = new PrismaClient()
+  const db = createScriptPrismaClient()
   try {
     const rebuilt = await rebuildEngagementAggregates(db)
     let recomputed: { users: number; items: number } | null = null

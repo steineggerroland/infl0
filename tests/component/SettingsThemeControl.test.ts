@@ -83,7 +83,7 @@ describe('SettingsThemeControl', () => {
     const wrapper = mountControl()
     await wrapper.get('[data-testid="theme-swatch-pastel-green"]').trigger('click')
     expect(updateSpy).toHaveBeenCalledTimes(1)
-    expect(updateSpy.mock.calls[0][0]).toEqual({ theme: 'pastel:green' })
+    expect(updateSpy.mock.calls[0]![0]).toEqual({ theme: 'pastel:green' })
   })
 
   it('sends { theme } when the user picks a warm swatch', async () => {
@@ -96,7 +96,7 @@ describe('SettingsThemeControl', () => {
     const wrapper = mountControl()
     await wrapper.get('[data-testid="theme-option-high-contrast"]').setValue(true)
     expect(updateSpy).toHaveBeenCalledTimes(1)
-    expect(updateSpy.mock.calls[0][0]).toEqual({ theme: 'high-contrast' })
+    expect(updateSpy.mock.calls[0]![0]).toEqual({ theme: 'high-contrast' })
   })
 
   it('sends { theme: "custom" } when the user picks own colors', async () => {

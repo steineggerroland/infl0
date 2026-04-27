@@ -1,12 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import tailwindcss from '@tailwindcss/vite'
+
 export default defineNuxtConfig({
   app: {
     head: {
       title: 'infl0',
     },
   },
-  modules: ['@nuxt/eslint', '@nuxtjs/i18n', '@nuxt/content', '@nuxtjs/tailwindcss'],
-  compatibilityDate: '2024-11-01',
+  modules: ['@nuxt/eslint', '@nuxtjs/i18n', '@nuxt/content'],
+  compatibilityDate: '2025-07-15',
   i18n: {
     vueI18n: './i18n.config.ts',
     locales: [
@@ -36,6 +38,9 @@ export default defineNuxtConfig({
     timelineScoreCronSecret: '',
   },
   devtools: { enabled: true },
+  vite: {
+    plugins: [tailwindcss()],
+  },
   /**
    * Compatibility redirects.
    *
@@ -53,16 +58,10 @@ export default defineNuxtConfig({
   },
   // `fonts.css` = @font-face only; woff2 files live under `public/assets/fonts/`.
   css: ['@/assets/css/fonts.css', '@/assets/css/tailwind.css'],
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {}
-    }
-  },
   imports: {
     dirs: ['composables']
   },
-  /** Nuxt 3.21+ generated tsconfig uses types: []; Node globals need @types/node for server/scripts. */
+  /** Nuxt generated tsconfig uses types: []; Node globals need @types/node for server/scripts. */
   typescript: {
     tsConfig: {
       compilerOptions: {

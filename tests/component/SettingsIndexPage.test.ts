@@ -144,7 +144,7 @@ describe('SettingsIndex page', () => {
     const wrapper = mountPage()
     const h1s = wrapper.findAll('h1')
     expect(h1s).toHaveLength(1)
-    expect(h1s[0].text()).toBe('Settings')
+    expect(h1s[0]!.text()).toBe('Settings')
   })
 
   it('exposes an Appearance section with a theme block, three surface groups, and motion', () => {
