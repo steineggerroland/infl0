@@ -11,6 +11,36 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+### Added
+
+- **Central keyboard-shortcut reference on `/help`.** A new
+  `#shortcuts-reference` section lists every app shortcut in three
+  groups (timeline, reading an article, comfort & readability), each row
+  showing its key combo as `<kbd>` tokens plus a plain-language
+  description. Sourced from a single catalog in code
+  (`utils/app-shortcuts.ts`) so the visible list cannot drift out of
+  sync with the actual `defineShortcuts` call sites; copy lives under
+  `help.shortcutsReference.*` in DE and EN. The existing
+  `help.items.shortcuts` FAQ entry was rewritten to point at the new
+  reference.
+
+- **Drift guard for the shortcut catalog.** A new Vitest spec
+  (`tests/unit/shortcuts-coverage.test.ts`) scans every
+  `defineShortcuts({...})` call in `pages/`, `components/`, and
+  `composables/` via `import.meta.glob` and asserts that every
+  registered key is either listed in `SHORTCUT_GROUPS`
+  (`utils/app-shortcuts.ts`) or on an explicit
+  `KNOWN_UNDOCUMENTED_KEYS` allow-list with a non-empty reason. The
+  inverse direction is checked too: dead rows / typos in the catalog
+  fail the test loudly. Adding a shortcut without documenting it can
+  no longer "rutsch durch" review.
+
+### Documentation
+
+- **Closed package** [`docs/archive/26-04-27-shortcuts-help.md`](./archive/26-04-27-shortcuts-help.md)
+  (was [`docs/planned/shortcuts-help.md`](./planned/README.md)) with the
+  shipped scope, deviations, and follow-ups.
+
 ## [0.3.0] — 2026-04-27
 
 Major stack upgrade and production hardening release: Nuxt/Prisma/Tailwind and
