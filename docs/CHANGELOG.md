@@ -57,8 +57,9 @@ If you use **Compose** or another image, mirror the same idea: install from lock
 
 ### Changed
 
+- **Article reader modal:** Opens only when the article has **`rawMarkdown`** from the database (ingested **`content_md`**). File-based fallback via **`@nuxt/content`** was removed with the module.
 - **`dotenv`** **16 → 17** (runtime; used by **`prisma.config.ts`** / `import 'dotenv/config'`). No app code changes required for our usage.
-- **Framework / tooling:** **Nuxt 4**, **Vue 3.5.x**, **Vue Router 5**, **Tailwind CSS 4** (via **`@tailwindcss/vite`**), **daisyUI 5**, **Prisma ORM 7** (Rust-free client + **pg** adapter), **Vitest 4**, **ESLint 10**, **marked** 15.x; **`@nuxt/content`** and **`@nuxtjs/i18n`** remain on their current **latest** majors compatible with Nuxt 4.
+- **Framework / tooling:** **Nuxt 4**, **Vue 3.5.x**, **Vue Router 5**, **Tailwind CSS 4** (via **`@tailwindcss/vite`**), **daisyUI 5**, **Prisma ORM 7** (Rust-free client + **pg** adapter), **Vitest 4**, **ESLint 10**, **marked** 15.x; **`@nuxtjs/i18n`** remains on a **latest** major compatible with Nuxt 4. **`@nuxt/content`** was removed (articles load from Postgres only).
 - **Vue + Vite (dev):** **`vue`** and **`@vitejs/plugin-vue`** pinned to current patch minors for Vitest component tests.
 
 ### Documentation

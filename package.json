@@ -31,12 +31,11 @@
     "typecheck": "nuxi typecheck"
   },
   "dependencies": {
-    "@nuxt/content": "^3.13.0",
     "@nuxtjs/i18n": "^10.3.0",
     "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "^7.8.0",
-    "@tailwindcss/vite": "^4.1.0",
     "@tailwindcss/typography": "^0.5.19",
+    "@tailwindcss/vite": "^4.1.0",
     "chart.js": "^4.5.1",
     "daisyui": "^5.0.0",
     "date-fns": "^4.1.0",
