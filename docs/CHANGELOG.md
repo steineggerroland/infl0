@@ -68,6 +68,9 @@ If you use **Compose** or another image, mirror the same idea: install from lock
 - **Updated** [`DEVELOPING.md`](./DEVELOPING.md) (postinstall = `prisma generate` + `nuxt prepare`, Prisma 7 explicit seed, ESLint 10).
 - **Updated** [`RELEASING.md`](./RELEASING.md) (CI: single `npm ci` via `postinstall`).
 - **Updated** [`README.md`](../README.md) (pointer to upgrade checklist).
+- **Added operator note for ModSecurity/CRS:** new helper config
+  [`infl0-exclusion.conf`](../infl0-exclusion.conf) and where to include it
+  (`REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf`).
 - All markdown under `docs/`, `docs/RELEASING.md`, and the archived readability
   package spec (`docs/archive/26-04-24-readability-settings.md`) is
   maintained in **English** (in-app copy remains available in `en` and `de` via

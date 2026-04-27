@@ -91,6 +91,19 @@ user-facing component.
 - **`npm ci` in the Dockerfile** needs a `package-lock.json` committed from a compatible **npm** version. The image runs **`npm install -g npm@11`** so `npm ci` matches lockfiles produced by npm 11 locally; do not run `npm install` before `npm ci` in the Dockerfile (that does not repair an out-of-sync lock and hides the real fix).
 - If Compose warns **`The "z" variable is not set`**, a value (often `POSTGRES_PASSWORD`) likely contains **`$z`** (or similar). Use a password without `$`, URL-encode it in a single `DATABASE_URL` in `.env`, or adjust Compose per [variable interpolation](https://docs.docker.com/compose/environment-variables/variable-interpolation/).
 
+## ModSecurity / CRS (operators)
+
+- If you run infl0 behind **ModSecurity + OWASP CRS**, review
+  [`infl0-exclusion.conf`](../infl0-exclusion.conf).
+- Include it from your **before-CRS** include point (typically
+  `REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf`).
+- The host matcher in the helper uses `example.com` on purpose; replace it
+  with your real public infl0 hostname (optionally with `(?::\d+)?` for ports).
+- The helper is intentionally narrow: it fixes method policy for infl0 API
+  routes (`PATCH` / `DELETE`) and documents how to add endpoint-scoped
+  `REQUEST_BODY` exclusions for rich-content ingestion (`/api/crawler/ingest`)
+  using concrete audit-log rule IDs.
+
 ## Documentation map
 
 | Doc | Role |

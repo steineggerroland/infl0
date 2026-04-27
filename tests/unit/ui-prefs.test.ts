@@ -12,6 +12,7 @@ import {
   parseUiPrefsFromJson,
   resolveUiPrefs,
   toStoredUiPrefs,
+  uiPrefsEffectiveCustomization,
 } from '../../utils/ui-prefs'
 
 describe('ui-prefs data layer', () => {
@@ -50,6 +51,24 @@ describe('ui-prefs data layer', () => {
       expect(d.surfaces['card-front'].fontSize).toBe(45)
       expect(d.surfaces['card-back'].fontSize).toBe(22)
       expect(d.surfaces.reader.fontSize).toBe(20)
+    })
+  })
+
+  describe('uiPrefsEffectiveCustomization', () => {
+    it('is false for defaultUiPrefs', () => {
+      expect(uiPrefsEffectiveCustomization(defaultUiPrefs())).toBe(false)
+    })
+
+    it('is true when a surface font size differs from defaults', () => {
+      const p = defaultUiPrefs()
+      p.surfaces['card-front'].fontSize = 38
+      expect(uiPrefsEffectiveCustomization(p)).toBe(true)
+    })
+
+    it('is true when theme differs from defaults', () => {
+      const p = defaultUiPrefs()
+      p.theme = 'warm:yellow'
+      expect(uiPrefsEffectiveCustomization(p)).toBe(true)
     })
   })
 

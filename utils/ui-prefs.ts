@@ -269,6 +269,31 @@ export function defaultUiPrefs(): UiPrefs {
   }
 }
 
+function surfacePrefsEqual(a: SurfacePrefs, b: SurfacePrefs): boolean {
+  return (
+    a.backgroundColor === b.backgroundColor &&
+    a.textColor === b.textColor &&
+    a.fontFamily === b.fontFamily &&
+    a.fontSize === b.fontSize &&
+    a.lineHeight === b.lineHeight
+  )
+}
+
+/**
+ * Whether prefs differ from {@link defaultUiPrefs} in any persisted field.
+ * Used on hydration to detect a stale server snapshot (e.g. PATCH never
+ * reached the DB) while localStorage still holds the user's real choices.
+ */
+export function uiPrefsEffectiveCustomization(prefs: UiPrefs): boolean {
+  const d = defaultUiPrefs()
+  if (prefs.theme !== d.theme || prefs.motion !== d.motion || prefs.appearance !== d.appearance) return true
+  if (prefs.seenFeatureAnnouncements.length > 0) return true
+  for (const id of SURFACE_IDS) {
+    if (!surfacePrefsEqual(prefs.surfaces[id], d.surfaces[id])) return true
+  }
+  return false
+}
+
 function parseSurface(raw: unknown, surface: SurfaceId): SurfacePrefs {
   const base = defaultSurfacePrefs(surface)
   if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) return base
