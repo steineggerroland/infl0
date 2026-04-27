@@ -15,6 +15,8 @@ new entries accrue under **Unreleased**.
 
 - **GitHub Actions CI workflow:** quoted the install step name containing `:`
   so `.github/workflows/ci.yml` parses as valid YAML again.
+- **Postinstall order:** run `nuxt prepare` before `prisma generate` so
+  `./.nuxt/tsconfig.json` exists when Prisma CLI loads TS config in CI.
 - **Article `Q` shortcut:** With no in-app reader body (`rawMarkdown`), pressing **`Q`** no longer leaves the global modal stack stuck (background shortcuts muted until reload).
 - **Docker / `npm ci --omit=dev`:** **`dotenv`** is a **runtime** dependency again.  
   `prisma.config.ts` imports **`dotenv/config`**; `postinstall` runs **`prisma generate`**, which loads that config. With `dotenv` only under `devDependencies`, production installs failed to resolve the module.

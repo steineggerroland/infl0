@@ -42,7 +42,7 @@ To rotate the dev password: `SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp
 
 **E2E troubleshooting:** If **`auth.setup.ts`** fails with **Prisma “credentials … are not valid”**, Nitro’s **`DATABASE_URL`** (from **`.env`** if set there — it wins over **`.env.e2e`**) does not match your running Postgres. Align **`.env`** (or remove `DATABASE_URL` there so **`.env.e2e`** applies), then **`npx prisma migrate deploy`** and merge-seed as in step 2.
 
-**Note:** `eslint.config.mjs` imports `./.nuxt/eslint.config.mjs`. That file is created by **`nuxt prepare`**, which runs at the end of **`postinstall`** (`prisma generate && nuxt prepare`). Without a prior **`npm ci`** / **`npm install`**, `npm run lint` fails — that is expected.
+**Note:** `eslint.config.mjs` imports `./.nuxt/eslint.config.mjs`. That file is created by **`nuxt prepare`**, which runs as part of **`postinstall`** (`nuxt prepare && prisma generate`). Without a prior **`npm ci`** / **`npm install`**, `npm run lint` fails — that is expected.
 
 ## Resetting the dev server
 
@@ -50,7 +50,7 @@ If you delete `.nuxt/` to troubleshoot a stale cache, always regenerate
 Nuxt's virtual modules before starting the dev server:
 
 ```bash
-./scripts/with-nvm.sh npm run postinstall   # runs `prisma generate` then `nuxt prepare`
+./scripts/with-nvm.sh npm run postinstall   # runs `nuxt prepare` then `prisma generate`
 ./scripts/with-nvm.sh npm run dev
 ```
 
