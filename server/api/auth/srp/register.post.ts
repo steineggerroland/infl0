@@ -1,6 +1,6 @@
 import { createError, readBody } from 'h3'
 import { timingSafeEqual } from 'node:crypto'
-import { Prisma } from '@prisma/client'
+import { Prisma } from '~/generated/prisma/client'
 import { prisma } from '../../../utils/prisma'
 import { createSessionToken, setAuthCookie } from '../../../utils/auth-session'
 import { hexToBigint } from '../../../utils/srp'

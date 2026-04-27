@@ -1,4 +1,4 @@
-import type { Article, ArticleEnrichment, Prisma } from '@prisma/client'
+import type { Article, ArticleEnrichment, Prisma } from '~/generated/prisma/client'
 import { createError, getQuery } from 'h3'
 import { prisma } from '../utils/prisma'
 import { getSessionUserId } from '../utils/auth-session'

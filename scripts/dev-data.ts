@@ -14,10 +14,10 @@
  * Refuses to run in production unless ALLOW_DEV_DATA=1 (not recommended).
  */
 import { createHash } from 'node:crypto'
-import { PrismaClient } from '@prisma/client'
 import { normalizeFeedUrl } from '../server/utils/feed-url.js'
+import { createScriptPrismaClient } from '../prisma/prisma-client'
 
-const prisma = new PrismaClient()
+const prisma = createScriptPrismaClient()
 
 const DEV_EMAIL = 'dev@localhost'
 const DEV_NAME = 'Dev User'
@@ -154,8 +154,8 @@ async function main() {
 
   const now = new Date()
   for (let i = 0; i < ARTICLE_SPECS.length; i++) {
-    const spec = ARTICLE_SPECS[i]
-    const crawlKey = feedKeys[spec.crawlKeyIndex]
+    const spec = ARTICLE_SPECS[i]!
+    const crawlKey = feedKeys[spec.crawlKeyIndex]!
     const publishedAt = new Date(now.getTime() - (ARTICLE_SPECS.length - i) * 86_400_000)
     const hash = contentHashFor(spec.md)
 

@@ -1,6 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+@plugin 'daisyui';
+@config '../../tailwind.config.mjs';
+
+/* Height-based breakpoints (Tailwind v4: @custom-variant replaces theme.screens `raw`). */
+@custom-variant smh (@media (min-height: 500px));
+@custom-variant mdh (@media (min-height: 640px));
 
 /*
  * Design tokens: self-hosted families (see `assets/css/fonts.css`) + a11y

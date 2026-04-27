@@ -139,9 +139,11 @@ describe('deriveInfl0TokensFromSource', () => {
       'light',
     )
     const lightPrimary = deriveInfl0TokensFromSource(pastelBlueLight)
-    expect(relativeLuminance(darkPrimary['--infl0-app-bg'])).toBeLessThan(
-      relativeLuminance(lightPrimary['--infl0-app-bg']!),
-    )
+    const darkAppBg = darkPrimary['--infl0-app-bg']
+    const lightAppBg = lightPrimary['--infl0-app-bg']
+    expect(darkAppBg).toBeDefined()
+    expect(lightAppBg).toBeDefined()
+    expect(relativeLuminance(darkAppBg!)).toBeLessThan(relativeLuminance(lightAppBg!))
   })
 
   it('chrome surface matches the same mix as derive (white + primary)', () => {

@@ -9,6 +9,9 @@ dist
 # Node dependencies
 node_modules
 
+# Prisma 7 generated client (regenerate with `npx prisma generate`)
+/generated
+
 # Logs
 logs
 *.log

@@ -77,7 +77,7 @@ describe('SettingsMotionControl', () => {
       .setValue(true)
 
     expect(updateSpy).toHaveBeenCalledTimes(1)
-    expect(updateSpy.mock.calls[0][0]).toEqual({ motion: 'reduced' satisfies MotionMode })
+    expect(updateSpy.mock.calls[0]![0]).toEqual({ motion: 'reduced' satisfies MotionMode })
   })
 
   it('does not re-send a patch when the user re-selects the already-active option', async () => {

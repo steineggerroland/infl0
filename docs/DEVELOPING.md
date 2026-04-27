@@ -15,7 +15,7 @@ nvm install   # once, if that version is missing
 nvm use
 ```
 
-Without a suitable Node version, ESLint plugins or `postinstall` can fail (e.g. Node 16 lacks `Object.groupBy`, which ESLint 9 tooling expects).
+Without a suitable Node version, ESLint plugins or `postinstall` can fail (e.g. Node 16 lacks `Object.groupBy`, which modern ESLint tooling expects).
 
 ## Commands
 
@@ -35,14 +35,14 @@ Without a suitable Node version, ESLint plugins or `postinstall` can fail (e.g. 
 End-to-end tests use a **committed** `.env.e2e` with `DATABASE_URL`, `AUTH_JWT_SECRET`, SRP salt/verifier for **`dev@localhost`**, and `E2E_LOGIN_PASSWORD` (matches the verifier; default password string is documented in `.env.e2e`).
 
 1. Start Postgres (e.g. Docker Compose from `.env.example`) and ensure `DATABASE_URL` in `.env.e2e` matches.
-2. Apply schema and seed: `npx prisma migrate deploy` (or `db:push` in dev), then seed with **`DEV_SRP_*`** from **`.env.e2e`** merged in (e.g. **`dotenv -e .env -e .env.e2e -- npx prisma db seed`** — same merge as E2E: `.env` wins on conflicts, `.env.e2e` fills missing keys). Plain **`npx prisma db seed`** only loads **`.env`**, so you miss **`DEV_*`** unless they are copied into **`.env`**.
+2. Apply schema and seed: `npx prisma migrate deploy` (or `db:push` in dev), then **`npx prisma db seed`** when you need seed data. For E2E, merge **`.env.e2e`** so **`DEV_SRP_*`** are present (e.g. **`dotenv -e .env -e .env.e2e -- npx prisma db seed`** — `.env` wins on conflicts, `.env.e2e` fills missing keys). Plain **`npx prisma db seed`** only loads **`.env`**, so you miss **`DEV_*`** unless they are copied into **`.env`**. Prisma 7 does not auto-run seed after migrate; seed is always explicit.
 3. Run **`npm run test:e2e`**. `dotenv-cli` injects env for `nuxt build`, the Nitro server, and Playwright (same merge as **`tests/e2e/load-e2e-env.ts`**). The Playwright project **`setup`** runs **`tests/e2e/auth.setup.ts`**, performs SRP login, and writes **`tests/e2e/.auth/dev.json`** (gitignored). The **`chromium-authed`** project depends on **`setup`**. The **`chromium`** project (public a11y smokes) does not, so **`playwright test --project chromium`** does not need Postgres. Full **`test:e2e`**, including authed projects, needs **`DATABASE_URL`**, a reachable DB, and merge-seeded **`dev@localhost`**. For a non-empty **timeline** in manual or authed tests, run **`npm run devData`** (see [README](../README.md) "Local seed data") before or alongside E2E; a dedicated E2E fixture path is planned in [`docs/planned/onboarding-welcome-timeline.md`](./planned/onboarding-welcome-timeline.md).
 
 To rotate the dev password: `SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp-env.ts dev@localhost` (prints `DEV_SRP_*`), update `.env.e2e` and `E2E_LOGIN_PASSWORD`, then re-seed.
 
 **E2E troubleshooting:** If **`auth.setup.ts`** fails with **Prisma “credentials … are not valid”**, Nitro’s **`DATABASE_URL`** (from **`.env`** if set there — it wins over **`.env.e2e`**) does not match your running Postgres. Align **`.env`** (or remove `DATABASE_URL` there so **`.env.e2e`** applies), then **`npx prisma migrate deploy`** and merge-seed as in step 2.
 
-**Note:** `eslint.config.mjs` imports `./.nuxt/eslint.config.mjs`. That file is created by **`nuxt prepare`** (runs on `npm install` as `postinstall`). Without a prior `npm install`, `npm run lint` fails — that is expected.
+**Note:** `eslint.config.mjs` imports `./.nuxt/eslint.config.mjs`. That file is created by **`nuxt prepare`**, which runs at the end of **`postinstall`** (`prisma generate && nuxt prepare`). Without a prior **`npm ci`** / **`npm install`**, `npm run lint` fails — that is expected.
 
 ## Resetting the dev server
 
@@ -50,7 +50,7 @@ If you delete `.nuxt/` to troubleshoot a stale cache, always regenerate
 Nuxt's virtual modules before starting the dev server:
 
 ```bash
-./scripts/with-nvm.sh npm run postinstall   # runs `nuxt prepare`
+./scripts/with-nvm.sh npm run postinstall   # runs `prisma generate` then `nuxt prepare`
 ./scripts/with-nvm.sh npm run dev
 ```
 
@@ -84,7 +84,7 @@ user-facing component.
 
 ## Nuxt ESLint module
 
-[`@nuxt/eslint`](https://eslint.nuxt.com/) generates a project-specific **flat config** (ESLint 9). Add rules or ignores in **`eslint.config.mjs`** via `withNuxt(...)`.
+[`@nuxt/eslint`](https://eslint.nuxt.com/) generates a project-specific **flat config** (ESLint 10 in this repo). Add rules or ignores in **`eslint.config.mjs`** via `withNuxt(...)`.
 
 ## Docker / Compose
 

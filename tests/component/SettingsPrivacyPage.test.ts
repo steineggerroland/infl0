@@ -57,7 +57,7 @@ describe('SettingsPrivacy page (info-only)', () => {
     const wrapper = mountPage()
     const h1s = wrapper.findAll('h1')
     expect(h1s).toHaveLength(1)
-    expect(h1s[0].text()).toBe('Privacy')
+    expect(h1s[0]!.text()).toBe('Privacy')
   })
 
   it('does not render an engagement-tracking toggle — that control lives on /settings', () => {

@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Prisma } from '~/generated/prisma/client'
 import { createError, readBody } from 'h3'
 import { TIMELINE_SCORE_VERSION, clampContentLengthPreference, clampWeight } from '../../../utils/timeline-score-factors'
 import {

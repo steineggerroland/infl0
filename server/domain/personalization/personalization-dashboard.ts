@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from '@prisma/client'
+import type { Prisma, PrismaClient } from '~/generated/prisma/client'
 import { TIMELINE_SCORE_VERSION } from '../../../utils/timeline-score-factors'
 import { resolveTimelineScorePrefs } from '../../../utils/timeline-score-prefs-merge'
 import {

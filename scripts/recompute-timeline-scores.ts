@@ -5,11 +5,11 @@
  *
  *   nvm use && npm run recomputeTimelineScores
  */
-import { PrismaClient } from '@prisma/client'
+import { createScriptPrismaClient } from '../prisma/prisma-client'
 import { recomputeTimelineScoresForAllUsers } from '../server/utils/recompute-timeline-scores.js'
 
 async function main() {
-  const prisma = new PrismaClient()
+  const prisma = createScriptPrismaClient()
   try {
     const r = await recomputeTimelineScoresForAllUsers(prisma)
     console.log(JSON.stringify(r, null, 2))
