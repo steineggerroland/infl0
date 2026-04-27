@@ -196,7 +196,20 @@ onMounted(() => {
                             class="grid gap-1 sm:grid-cols-[minmax(8.5rem,auto)_1fr] sm:items-start sm:gap-x-4"
                             :data-testid="`help-shortcut-${entry.id}`"
                         >
-                            <span class="flex flex-wrap items-center gap-1.5">
+                            <!--
+                              Keys cluster has its own stable testid so
+                              behavioural tests can assert "this row
+                              shows the visible label W" without
+                              pinning a specific element (`<kbd>` vs.
+                              `<span>` etc.). The row's own testid
+                              would be too coarse — single-letter
+                              labels like "S" appear in descriptions
+                              too.
+                            -->
+                            <span
+                                class="flex flex-wrap items-center gap-1.5"
+                                :data-testid="`help-shortcut-${entry.id}-keys`"
+                            >
                                 <template
                                     v-for="(combo, comboIndex) in entry.keys"
                                     :key="`${entry.id}-${combo}`"

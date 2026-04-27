@@ -69,7 +69,7 @@ export function extractDefineShortcutsKeys(
 
 function extractScriptBlocks(source: string): string {
     const blocks: string[] = []
-    const re = /<script\b[^>]*>([\s\S]*?)<\/script>/g
+    const re = /<script\b[^>]*>([\s\S]*?)<\/script(?:\s[^>]*)?>/gi
     let m: RegExpExecArray | null
     while ((m = re.exec(source)) !== null) blocks.push(m[1] ?? '')
     return blocks.join('\n')

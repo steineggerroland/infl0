@@ -3,27 +3,39 @@ import { extractDefineShortcutsKeys } from '../_helpers/parse-define-shortcuts'
 import { SHORTCUT_GROUPS } from '../../utils/app-shortcuts'
 
 /**
- * Drift guard for the central keyboard-shortcut reference.
+ * Architectural / coupling test — explicitly the "technical test"
+ * carve-out in `docs/.cursor/rules/clean-code-ddd-behavioral-tests.mdc`:
+ * the constraint we want to enforce is "no `defineShortcuts(...)`
+ * registration may exist without an entry on the help page (or a
+ * documented exception)". That cannot be expressed as a single
+ * user-visible behaviour — by construction, the failure mode it
+ * guards against *is* an absent UI row, i.e. a behaviour that does
+ * not happen. So we do scan source files, but minimally and through
+ * a single, explicit parser, with the constraint stated up front.
  *
- * Goal: a `defineShortcuts(...)` registration must not silently
- * "rutsch durch" — every key that the app actually listens for is
- * either listed in the user-facing catalog at
- * `utils/app-shortcuts.ts` (and therefore on `/help#shortcuts-reference`),
- * **or** it is on the `KNOWN_UNDOCUMENTED_KEYS` allow-list below with
- * a written reason. Adding the second option is a feature, not a
- * loophole: some shortcuts are infrastructure (e.g. an internal
- * `Escape` dismissal in a dialog component) that maps onto a single
- * user-facing row, and forcing them all into the catalog would just
- * produce duplicates and false confidence.
+ * Why structural (not behavioural):
  *
- * The allow-list keeps those decisions visible at review time. A new
- * entry must come with a reason string — empty / missing strings fail
- * the test.
+ *   - There is no DOM the user sees that says "look, a shortcut is
+ *     missing". The only place that knowledge exists is the union
+ *     of every `defineShortcuts(...)` call in the codebase.
+ *   - Mounting every page/component to enumerate registered keys at
+ *     runtime would be both slower and more brittle than reading the
+ *     three known caller files; it would also drag SSR / Nuxt
+ *     specifics into a unit test for no extra signal.
  *
- * The test also runs the inverse direction: every combo declared in
- * the catalog must be registered somewhere. That catches dead rows
- * and typos in `SHORTCUT_GROUPS` (e.g. `'shift+k'` vs `'Shift+K'`)
- * that would otherwise render in the help page but never fire.
+ * What the guard does, in user-language:
+ *
+ *   1. Every key the app listens for is either listed in the
+ *      user-facing catalog at `utils/app-shortcuts.ts` (and therefore
+ *      on `/help#shortcuts-reference`) **or** on the
+ *      `KNOWN_UNDOCUMENTED_KEYS` allow-list below with a written
+ *      reason — some shortcuts are infrastructure (e.g. an internal
+ *      `Escape` dismissal) that maps to a single user-facing row,
+ *      and forcing them all into the catalog would just produce
+ *      duplicates.
+ *   2. Every combo declared in the catalog is registered somewhere
+ *      — catches dead rows and typos in `SHORTCUT_GROUPS` that
+ *      would render on the help page but never fire.
  */
 
 /**

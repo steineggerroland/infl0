@@ -21,12 +21,6 @@ order, acceptance criteria — separate from the large idea pool in
 |--------|--------|--------|
 | [`onboarding-welcome-timeline.md`](./onboarding-welcome-timeline.md) | Welcome content via fixed cards (shortcuts, themes, sources, app behaviour); basis for E2E with sign-up + login | Draft |
 
-Recently archived (now shipped):
-
-- [`../archive/26-04-27-shortcuts-help.md`](../archive/26-04-27-shortcuts-help.md) — central
-  keyboard-shortcut reference at `/help#shortcuts-reference` (driven by
-  `utils/app-shortcuts.ts`).
-
 *(Add a row when a new package markdown is created.)*
 
 ## Suggested order (non-binding)

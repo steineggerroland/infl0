@@ -11,25 +11,30 @@ import {
 } from '../../utils/app-shortcuts'
 
 /**
- * `pages/help.vue` carries the **central shortcuts reference** promised
- * by `docs/planned/shortcuts-help.md`. The behaviour the package
- * guarantees is:
+ * `pages/help.vue` carries the **central shortcuts reference**
+ * (archived spec: `docs/archive/26-04-27-shortcuts-help.md`). These
+ * tests protect the *user-visible* behaviour of that surface:
  *
- *   - The reference lives at a stable anchor (`#shortcuts-reference`)
- *     so deep links from elsewhere keep working.
- *   - Every `defineShortcuts` group declared in
- *     `utils/app-shortcuts.ts` shows up exactly once, with all its
- *     entries — the catalog drives the UI, not the other way round.
- *   - The reference reads in plain language: each entry surfaces the
- *     translated label, description, and renders the key combos via
- *     `<kbd>` tokens humans can recognise (`R`, `Shift`, `↑`, `Esc`).
+ *   - The reference is reachable at a stable anchor
+ *     (`#shortcuts-reference`) so deep links stay valid.
+ *   - For every catalog entry the user sees a row that contains the
+ *     plain-language label, the description, and a recognisable
+ *     visible name for every key combo (`R`, `Shift … L`, `↑`, `Esc`).
  *   - The scope rules ("no shortcut while typing", "no chords", …)
  *     are listed in the same surface, in both EN and DE.
  *
- * We do not pin the *visual* shape (CSS classes, Tailwind tokens). The
- * test reads the rendered DOM through stable `data-testid` hooks — that
- * survives layout/styling refactors as long as the contract above
- * holds.
+ * Anything more specific is implementation:
+ *
+ *   - We do **not** pin the element used to render a key
+ *     (`<kbd>` vs. `<span role="img">` vs. anything else); a refactor
+ *     that keeps the visible labels intact must keep this test green.
+ *   - We do **not** pin CSS classes, Tailwind tokens, or the order of
+ *     ancestor wrappers around a row.
+ *
+ * The `data-testid` hooks (`help-shortcuts-reference`,
+ * `help-shortcut-<entry>`) are explicit contracts the page exposes
+ * for tests and other deep-linkers; they survive layout/styling
+ * changes as long as the behavioural promise above holds.
  */
 
 vi.stubGlobal('definePageMeta', () => {})
@@ -109,23 +114,29 @@ describe('help page · shortcuts reference', () => {
         wrapper.unmount()
     })
 
-    it('renders each key combo as one or more <kbd> tokens', () => {
+    it('shows a recognisable visible label for every key in every combo', () => {
+        // Behaviour: in the keys cluster of the row for "previous
+        // article", the user must see "W" and "↑". How those labels
+        // are rendered (`<kbd>`, `<span>` with kbd-like styling, an
+        // inline image, …) is implementation — the test reads only
+        // the visible text of the keys cluster (`*-keys` testid) and
+        // does not pin a specific element.
         const wrapper = mountHelp()
 
         for (const group of SHORTCUT_GROUPS) {
             for (const entry of group.entries) {
-                const row = wrapper.get(
-                    `[data-testid="help-shortcut-${entry.id}"]`,
-                )
-                const labels = row.findAll('kbd').map((k) => k.text())
+                const keysText = wrapper
+                    .get(`[data-testid="help-shortcut-${entry.id}-keys"]`)
+                    .text()
 
-                const expected: string[] = []
                 for (const combo of entry.keys) {
                     for (const token of tokenizeShortcutKey(combo)) {
-                        expected.push(token.label)
+                        expect(
+                            keysText,
+                            `row "${entry.id}" should show visible label "${token.label}" for combo "${combo}"`,
+                        ).toContain(token.label)
                     }
                 }
-                expect(labels).toEqual(expected)
             }
         }
 
