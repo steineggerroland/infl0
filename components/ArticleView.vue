@@ -28,7 +28,7 @@ const props = defineProps({
       publishedAt: string
       category?: string[]
       source_type: string
-      /** When set (e.g. from DB), Nuxt Content markdown file is not required */
+      /** Full article body from DB (`content_md`); drives the in-app reader modal */
       rawMarkdown?: string
       tld?: string
       author?: string
@@ -54,11 +54,13 @@ function toggleDetailView() {
 const modalVisible = ref(false)
 
 function showOriginalArticle() {
+  if (!hasReaderModal.value) return
   modal.value?.showModal()
   modalVisible.value = true
 }
 
 function toggleOriginalArticle() {
+  if (!hasReaderModal.value) return
   if (modal.value?.open) {
     modal.value.close()
   } else {
@@ -70,8 +72,16 @@ function onDialogClose() {
   modalVisible.value = false
 }
 
-const matchingPage = ref<{ _inline?: boolean } | Record<string, unknown> | null>(null)
 const modal = ref()
+
+/** In-app reader modal (sanitized markdown from DB). */
+const hasReaderModal = computed(
+  () => props.article.rawMarkdown != null && props.article.rawMarkdown.trim() !== '',
+)
+
+watch(hasReaderModal, (ok) => {
+  if (!ok && modalVisible.value) modalVisible.value = false
+})
 
 /** DB-sourced markdown: parse + sanitize (client only — DOMPurify needs DOM). */
 const renderedRawMarkdown = computed(() => {
@@ -85,26 +95,6 @@ const renderedRawMarkdown = computed(() => {
     return ''
   }
 })
-
-async function loadRawArticle() {
-  const md = props.article.rawMarkdown
-  if (md != null && md !== '') {
-    matchingPage.value = { _inline: true }
-    return
-  }
-  const id =
-    props.article.id.split('/').pop()?.replace(/\.json$/u, '') ?? props.article.id
-  const page = await queryCollection('rawArticles').path(`/raw/articles/${id}`).first()
-  matchingPage.value =
-    page == null ? null : (page as unknown as Record<string, unknown>)
-}
-
-watch(
-  () => props.article.id,
-  () => {
-    loadRawArticle()
-  },
-)
 
 const engagement = useEngagementTrackingPrefs()
 
@@ -145,7 +135,6 @@ function onVisibilityForEngagement() {
 }
 
 onMounted(async () => {
-  loadRawArticle()
   await engagement.ensureLoaded()
   if (import.meta.client) {
     document.addEventListener('visibilitychange', onVisibilityForEngagement)
@@ -181,7 +170,10 @@ defineShortcuts(
 )
 
 defineShortcuts({
-  'q': () => { if (props.isSelected) toggleOriginalArticle() },
+  'q': () => {
+    if (!props.isSelected || !hasReaderModal.value) return
+    toggleOriginalArticle()
+  },
 })
 
 const { prefs, update } = useUiPrefs()
@@ -320,7 +312,7 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
           </p>
           <p class="m-0 w-full shrink-0 pt-1 text-end text-[0.88em] text-[var(--infl0-article-back-fg-mute)]">
             <a
-              v-if="matchingPage"
+              v-if="hasReaderModal"
               :href="article.link"
               target="_blank"
               class="article-back-link font-bold"
@@ -359,7 +351,7 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
       <FlipArrow class="action-flip-back" direction="back" @click="toggleDetailView" />
     </div>
     <dialog
-      v-if="matchingPage"
+      v-if="hasReaderModal"
       ref="modal"
       class="modal"
       @close="onDialogClose"
@@ -374,13 +366,9 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
         <div
           class="max-h-[80vh] h-full w-full min-w-0 overflow-y-auto infl0-surface-reader infl0-surface-typo-reader prose max-w-none md:p-2 text-[var(--infl0-surface-reader-text)] prose-headings:font-semibold prose-headings:text-[var(--infl0-surface-reader-text)] prose-p:text-[var(--infl0-surface-reader-text)] prose-li:marker:text-[var(--infl0-reader-prose-muted)] prose-a:text-[var(--infl0-reader-link)] prose-pre:rounded-lg prose-pre:bg-[var(--infl0-reader-code-bg)] prose-pre:text-[var(--infl0-reader-code-fg)] prose-code:text-[var(--infl0-reader-code-fg)] prose-code:bg-[var(--infl0-reader-code-bg)] prose-code:px-1 prose-code:py-0.5 prose-code:rounded"
         >
-          <ContentRenderer
-            v-if="modalVisible && matchingPage && !('_inline' in matchingPage && matchingPage._inline)"
-            :value="matchingPage"
-          />
           <!-- eslint-disable vue/no-v-html -- Markdown sanitized with DOMPurify -->
           <div
-            v-else-if="modalVisible && article.rawMarkdown && renderedRawMarkdown"
+            v-if="modalVisible && article.rawMarkdown && renderedRawMarkdown"
             class="article-markdown"
             v-html="renderedRawMarkdown"
           />

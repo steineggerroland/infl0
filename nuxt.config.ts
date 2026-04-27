@@ -7,7 +7,7 @@ export default defineNuxtConfig({
       title: 'infl0',
     },
   },
-  modules: ['@nuxt/eslint', '@nuxtjs/i18n', '@nuxt/content'],
+  modules: ['@nuxt/eslint', '@nuxtjs/i18n'],
   compatibilityDate: '2025-07-15',
   i18n: {
     vueI18n: './i18n.config.ts',
@@ -25,10 +25,6 @@ export default defineNuxtConfig({
       // locale on `/login` etc., not only after visiting `/`.
       redirectOn: 'no prefix',
     },
-  },
-  /** Node 22.5+ built-in SQLite — avoids better-sqlite3 prompt and native builds (CI/Docker). */
-  content: {
-    experimental: { sqliteConnector: 'native' },
   },
   runtimeConfig: {
     crawlerApiKey: '',
