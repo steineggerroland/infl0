@@ -77,6 +77,18 @@ matrix).
     with the real `de` and `en` JSON locales and asserts the contract
     above (anchor + heading, every group + entry rendered, `<kbd>` tokens
     match the catalog, scope rules listed, `de` mirrors `en`).
+  - `tests/unit/shortcuts-coverage.test.ts` is the **drift guard**: it
+    scans every `defineShortcuts(...)` call in `pages/`, `components/`,
+    and `composables/` (via `import.meta.glob` + a small parser in
+    `tests/_helpers/parse-define-shortcuts.ts`) and asserts that every
+    registered key is either listed in `SHORTCUT_GROUPS` or on a
+    `KNOWN_UNDOCUMENTED_KEYS` allow-list with a required, non-empty
+    reason. The inverse direction is checked too: every catalog combo
+    must be registered somewhere — dead rows / typos like `'shift+m'`
+    fail the test loudly. The list of expected caller files
+    (`pages/index.vue`, `components/ArticleView.vue`,
+    `components/InfoPopover.vue`) is soft-pinned, so a future shortcut
+    in a new location forces a conscious update of the test.
 
 ## Deviations from the original draft
 

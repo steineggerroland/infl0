@@ -24,6 +24,17 @@ new entries accrue under **Unreleased**.
   `help.items.shortcuts` FAQ entry was rewritten to point at the new
   reference.
 
+- **Drift guard for the shortcut catalog.** A new Vitest spec
+  (`tests/unit/shortcuts-coverage.test.ts`) scans every
+  `defineShortcuts({...})` call in `pages/`, `components/`, and
+  `composables/` via `import.meta.glob` and asserts that every
+  registered key is either listed in `SHORTCUT_GROUPS`
+  (`utils/app-shortcuts.ts`) or on an explicit
+  `KNOWN_UNDOCUMENTED_KEYS` allow-list with a non-empty reason. The
+  inverse direction is checked too: dead rows / typos in the catalog
+  fail the test loudly. Adding a shortcut without documenting it can
+  no longer "rutsch durch" review.
+
 ### Documentation
 
 - **Closed package** [`docs/archive/26-04-27-shortcuts-help.md`](./archive/26-04-27-shortcuts-help.md)

@@ -237,6 +237,17 @@ regress any of it.
   `/help#shortcuts-reference`. The FAQ entry under
   `help.items.shortcuts` is the short pointer for the question-style
   help; the reference is the canonical table.
+- The drift guard `tests/unit/shortcuts-coverage.test.ts` enforces
+  that every `defineShortcuts({...})` registration in `pages/`,
+  `components/`, or `composables/` is either listed in the catalog or
+  on `KNOWN_UNDOCUMENTED_KEYS` with a written reason — and conversely
+  that every catalog combo is actually registered somewhere. If the
+  test fails, the message names the offending key and file; either
+  add a catalog row (preferred) or, if the shortcut is intentionally
+  not surfaced as its own row (e.g. a dialog-internal `Escape` that
+  is documented globally as "Close overlay"), add it to
+  `KNOWN_UNDOCUMENTED_KEYS` with a one-line reason that survives
+  review.
 - Shortcuts are registered with `defineShortcuts` from
   `composables/useShortcuts.ts`. The composable enforces three
   invariants for every call site:
