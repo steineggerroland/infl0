@@ -22,9 +22,10 @@ function getClient(): PrismaClient {
     return globalForPrisma.prisma
   }
   const client = createPrismaClient()
-  if (process.env.NODE_ENV !== 'production') {
-    globalForPrisma.prisma = client
-  }
+  // Always cache on globalThis (including production). The lazy Proxy calls
+  // getClient() on every root property access (`prisma.user`, `prisma.x`, …);
+  // without caching in production, each access opened a new pg Pool → "too many clients".
+  globalForPrisma.prisma = client
   return client
 }
 

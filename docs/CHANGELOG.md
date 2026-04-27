@@ -16,6 +16,7 @@ new entries accrue under **Unreleased**.
 - **Article `Q` shortcut:** With no in-app reader body (`rawMarkdown`), pressing **`Q`** no longer leaves the global modal stack stuck (background shortcuts muted until reload).
 - **Docker / `npm ci --omit=dev`:** **`dotenv`** is a **runtime** dependency again.  
   `prisma.config.ts` imports **`dotenv/config`**; `postinstall` runs **`prisma generate`**, which loads that config. With `dotenv` only under `devDependencies`, production installs failed to resolve the module.
+- **Production Postgres “too many clients”:** the lazy **`prisma`** singleton was only stored on **`globalThis`** when **`NODE_ENV !== 'production'`**. In production, **every** access to `prisma.*` created a **new** **`PrismaClient`** and **`pg.Pool`**. The client is now always cached on **`globalThis`** (one pool per Nitro worker).
 
 ### Breaking
 
