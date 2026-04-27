@@ -348,6 +348,80 @@
     "simpleHeading": "Kurz erklärt",
     "detailsHeading": "Details für Interessierte",
     "backToApp": "Zurück zur Timeline",
+    "shortcutsReference": {
+      "tocLabel": "Tastenkürzel",
+      "title": "Tastenkürzel",
+      "intro": "Alle Tastenkürzel an einem Ort. Jede Zeile sagt, wo das Kürzel wirkt und was es tut. Drücke die Tasten ohne Strg, Cmd oder Alt – diese Kombinationen gehören dem Browser oder Betriebssystem.",
+      "scopeHeading": "Wann die Kürzel aktiv sind",
+      "scopeIntro": "Einige Tasten wirken nur, solange eine bestimmte Oberfläche sichtbar ist – so bleibt das Lesen ruhig und ein Tastendruck landet dort, wo du es erwartest.",
+      "scopeRules": {
+        "noEditable": "Kein Kürzel reagiert, während du in einem Text-, Such- oder anderen Eingabefeld tippst.",
+        "noModalBg": "Wenn ein Originalartikel oder ein Info-Fenster offen ist, pausieren die Timeline-Tasten und der Lese-Schalter – damit der Hintergrund nicht heimlich weiterspringt.",
+        "selectedCard": "Artikel-Tasten (E, Q) wirken nur auf die Karte, die du gerade ansiehst – die, die den größten Teil des Bildschirms füllt.",
+        "noChords": "Strg, Cmd oder Alt gewinnen immer für den Browser. Cmd+R lädt also weiterhin die Seite neu und schaltet keine gelesenen Artikel um."
+      },
+      "keysSeparator": "oder",
+      "groups": {
+        "timeline": {
+          "title": "Timeline",
+          "summary": "Zwischen Artikeln wechseln und entscheiden, ob gelesene Artikel angezeigt werden."
+        },
+        "article": {
+          "title": "Einen Artikel lesen",
+          "summary": "Die fokussierte Karte umdrehen, das Original öffnen oder eine Überlagerung schließen."
+        },
+        "readability": {
+          "title": "Komfort & Lesbarkeit",
+          "summary": "Schriftgröße und Schriftart anpassen – für die Fläche, die du gerade siehst (Kartenvorderseite, Rückseite oder Volltext)."
+        }
+      },
+      "entries": {
+        "navigatePrev": {
+          "label": "Vorheriger Artikel",
+          "description": "Holt die vorherige Karte deiner Timeline in den Fokus."
+        },
+        "navigateNext": {
+          "label": "Nächster Artikel",
+          "description": "Holt die nächste Karte deiner Timeline in den Fokus."
+        },
+        "toggleShowRead": {
+          "label": "Gelesene Artikel ein- oder ausblenden",
+          "description": "Schaltet denselben Schalter wie der Eintrag „Gelesene Artikel anzeigen“ im Benutzer­menü und auf der leeren Timeline."
+        },
+        "flipCard": {
+          "label": "Fokussierte Karte umdrehen",
+          "description": "Wechselt zwischen Vorderseite (Überschrift und Teaser) und Rückseite (längere Zusammenfassung). Wirkt nur auf die Karte, die du gerade ansiehst."
+        },
+        "openOriginal": {
+          "label": "Originalartikel öffnen",
+          "description": "Öffnet den vollständigen Originaltext in einer Lese-Überlagerung – wenn einer für den Artikel verfügbar ist."
+        },
+        "closeSurface": {
+          "label": "Überlagerung schließen",
+          "description": "Schließt den Originalartikel, ein Info-Fenster oder eine andere Überlagerung – der Fokus springt zurück auf das, was darunter liegt."
+        },
+        "fontBigger": {
+          "label": "Größere Schrift",
+          "description": "Vergrößert den Text der gerade sichtbaren Fläche um eine Stufe. Stoppt am größten Wert, der noch in die Karte passt."
+        },
+        "fontSmaller": {
+          "label": "Kleinere Schrift",
+          "description": "Verkleinert den Text der gerade sichtbaren Fläche um eine Stufe. Stoppt an der kleinsten gut lesbaren Größe."
+        },
+        "fontReset": {
+          "label": "Schriftgröße zurücksetzen",
+          "description": "Setzt die Schriftgröße der jeweiligen Fläche auf den Standard zurück (Vorder­seite, Rückseite oder Volltext)."
+        },
+        "fontFamilyPrev": {
+          "label": "Vorherige Schriftart",
+          "description": "Geht eine Schriftart zurück in der für die Fläche verfügbaren Liste."
+        },
+        "fontFamilyNext": {
+          "label": "Nächste Schriftart",
+          "description": "Geht eine Schriftart vor in der für die Fläche verfügbaren Liste."
+        }
+      }
+    },
     "items": {
       "passwordSafety": {
         "title": "Wie ist mein Passwort geschützt?",
@@ -376,8 +450,8 @@
       },
       "shortcuts": {
         "title": "Welche Tastenkürzel gibt es?",
-        "simple": "Du kannst mit den Pfeiltasten oder W/S zwischen Artikeln wechseln. E öffnet die ausführliche Ansicht, Q öffnet den Originalartikel, Escape schließt die Detailansicht. R blendet gelesene Artikel ein oder aus.",
-        "details": "Die Kürzel sind in der Timeline aktiv, wenn kein Eingabefeld fokussiert ist und keine gleichzeitige Taste (Strg, Cmd oder Alt) gedrückt wird. Wenn ein Originalartikel oder ein Info-Fenster geöffnet ist, pausieren W/S, Pfeiltasten und R – damit der Hintergrund nicht wechselt, während du liest. Escape schließt das geöffnete Fenster. Wir arbeiten daran, eine sichtbare Übersicht direkt in der App anzuzeigen."
+        "simple": "Ja – die vollständige Liste findest du oben auf dieser Seite unter „Tastenkürzel“. Das Wichtigste in Kürze: W/S oder die Pfeiltasten wechseln zwischen Artikeln, E dreht die fokussierte Karte um, Q öffnet den Originalartikel, Escape schließt eine Überlagerung, und R blendet gelesene Artikel ein oder aus.",
+        "details": "Die Kürzel sind in der Timeline aktiv, wenn kein Eingabefeld fokussiert ist und keine gleichzeitige Taste (Strg, Cmd oder Alt) gedrückt wird. Wenn ein Originalartikel oder ein Info-Fenster geöffnet ist, pausieren W/S, Pfeiltasten und R – damit der Hintergrund nicht wechselt, während du liest. Escape schließt das geöffnete Fenster. Die vollständige Liste, einschließlich der Lesbarkeits-Kürzel (Schriftgröße und Schriftart), steht jetzt im Abschnitt „Tastenkürzel“ weiter oben."
       }
     }
   }

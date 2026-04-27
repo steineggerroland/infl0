@@ -348,6 +348,80 @@
     "simpleHeading": "In plain language",
     "detailsHeading": "Details for the curious",
     "backToApp": "Back to timeline",
+    "shortcutsReference": {
+      "tocLabel": "Keyboard shortcuts",
+      "title": "Keyboard shortcuts",
+      "intro": "All keyboard shortcuts in one place. Each row says where it works and what it does. Press the keys without holding Ctrl, Cmd, or Alt — those chords belong to your browser or operating system.",
+      "scopeHeading": "When shortcuts are active",
+      "scopeIntro": "Some keys only do something while a particular surface is on screen — that keeps reading calm and makes sure your taps land where you expect.",
+      "scopeRules": {
+        "noEditable": "No shortcut fires while you are typing in a text field, search box, or other input.",
+        "noModalBg": "While a longer original article or an info popover is open, the timeline and read-toggle keys pause so the article behind doesn't drift away.",
+        "selectedCard": "Article keys (E, Q) only act on the card you're currently looking at — the one that fills most of the screen.",
+        "noChords": "Holding Ctrl, Cmd, or Alt always wins for the browser. So Cmd+R still reloads the page; it never toggles read articles."
+      },
+      "keysSeparator": "or",
+      "groups": {
+        "timeline": {
+          "title": "Timeline",
+          "summary": "Move between articles and decide whether already-read items are shown."
+        },
+        "article": {
+          "title": "Reading an article",
+          "summary": "Flip the focused card, open the original, or close whatever overlay is on top."
+        },
+        "readability": {
+          "title": "Comfort & readability",
+          "summary": "Nudge text size and typeface for the surface you are looking at — front of card, back of card, or the full-text reader."
+        }
+      },
+      "entries": {
+        "navigatePrev": {
+          "label": "Previous article",
+          "description": "Scrolls the previous card into focus on your timeline."
+        },
+        "navigateNext": {
+          "label": "Next article",
+          "description": "Scrolls the next card into focus on your timeline."
+        },
+        "toggleShowRead": {
+          "label": "Show or hide read articles",
+          "description": "Flips the same switch as the “Show read articles” option in the user menu and the empty-state card."
+        },
+        "flipCard": {
+          "label": "Flip the focused card",
+          "description": "Switches between the front of the card (headline + teaser) and the back (longer summary). Only acts on the card you're currently looking at."
+        },
+        "openOriginal": {
+          "label": "Open the original article",
+          "description": "Opens the full original text in a reading overlay, when one is available for that article."
+        },
+        "closeSurface": {
+          "label": "Close overlay",
+          "description": "Closes the original article, info popover, or any other overlay on top — and returns focus to whatever was below."
+        },
+        "fontBigger": {
+          "label": "Bigger text",
+          "description": "Grows the text on the surface you're looking at by one step. Stops at the maximum that still fits the card."
+        },
+        "fontSmaller": {
+          "label": "Smaller text",
+          "description": "Shrinks the text on the surface you're looking at by one step. Stops at the smallest comfortable size."
+        },
+        "fontReset": {
+          "label": "Reset text size",
+          "description": "Restores the default text size for that surface (front of card, back, or reader)."
+        },
+        "fontFamilyPrev": {
+          "label": "Previous typeface",
+          "description": "Cycles back through the typefaces available for that surface."
+        },
+        "fontFamilyNext": {
+          "label": "Next typeface",
+          "description": "Cycles forward through the typefaces available for that surface."
+        }
+      }
+    },
     "items": {
       "passwordSafety": {
         "title": "How is my password protected?",
@@ -376,8 +450,8 @@
       },
       "shortcuts": {
         "title": "Are there any keyboard shortcuts?",
-        "simple": "Use the arrow keys or W/S to move between articles. E opens the detailed view, Q opens the original article, Escape closes the detail view. R shows or hides articles you have already read.",
-        "details": "Shortcuts are active in the timeline as long as no input field is focused and no modifier key (Ctrl, Cmd, Alt) is held down. While an original article or info popover is open, W/S, the arrow keys and R pause – the background will not change while you are reading. Escape closes the open surface. We plan to show a visible cheat sheet directly inside the app."
+        "simple": "Yes — there's a full list further up on this page under “Keyboard shortcuts”. The basics: W/S or the arrow keys move between articles, E flips the focused card, Q opens the original article, Escape closes whatever overlay is on top, and R shows or hides articles you've already read.",
+        "details": "Shortcuts are active in the timeline as long as no input field is focused and no modifier key (Ctrl, Cmd, Alt) is held down. While an original article or info popover is open, W/S, the arrow keys and R pause – the background will not change while you are reading. Escape closes the open surface. The full list, including readability shortcuts (text size and typeface), now lives in the “Keyboard shortcuts” section above."
       }
     }
   }

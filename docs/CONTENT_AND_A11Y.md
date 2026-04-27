@@ -229,8 +229,14 @@ regress any of it.
   - Programmatic focus targets (`tabindex="-1"`, e.g. our `<main>`)
     are excluded from the baseline – they're not controls.
 - Global shortcuts (`w/s/e/q`, arrow keys) must not fire while a form
-  control has focus. When adding new shortcuts, document them in
-  `help.items.shortcuts` and show them in a future on-screen cheat sheet.
+  control has focus. When adding a new shortcut, register it in the
+  central catalog at `utils/app-shortcuts.ts`, add its
+  plain-language label and description under
+  `help.shortcutsReference.entries.<id>` in **both** `de.json` and
+  `en.json`, and the new row will appear automatically on
+  `/help#shortcuts-reference`. The FAQ entry under
+  `help.items.shortcuts` is the short pointer for the question-style
+  help; the reference is the canonical table.
 - Shortcuts are registered with `defineShortcuts` from
   `composables/useShortcuts.ts`. The composable enforces three
   invariants for every call site:

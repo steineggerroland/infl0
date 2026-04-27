@@ -11,6 +11,25 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+### Added
+
+- **Central keyboard-shortcut reference on `/help`.** A new
+  `#shortcuts-reference` section lists every app shortcut in three
+  groups (timeline, reading an article, comfort & readability), each row
+  showing its key combo as `<kbd>` tokens plus a plain-language
+  description. Sourced from a single catalog in code
+  (`utils/app-shortcuts.ts`) so the visible list cannot drift out of
+  sync with the actual `defineShortcuts` call sites; copy lives under
+  `help.shortcutsReference.*` in DE and EN. The existing
+  `help.items.shortcuts` FAQ entry was rewritten to point at the new
+  reference.
+
+### Documentation
+
+- **Closed package** [`docs/archive/26-04-27-shortcuts-help.md`](./archive/26-04-27-shortcuts-help.md)
+  (was [`docs/planned/shortcuts-help.md`](./planned/README.md)) with the
+  shipped scope, deviations, and follow-ups.
+
 ## [0.3.0] — 2026-04-27
 
 Major stack upgrade and production hardening release: Nuxt/Prisma/Tailwind and

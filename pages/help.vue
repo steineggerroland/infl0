@@ -9,7 +9,20 @@
  * back-link is a simple, neutral link to the timeline (`/`); if the user
  * is not signed in, the global auth middleware forwards them to `/login`
  * from there. See docs/CONTENT_AND_A11Y.md for the editorial guidelines.
+ *
+ * Two content blocks live on this page:
+ *
+ * 1. **Keyboard shortcuts reference** (anchor `#shortcuts-reference`):
+ *    structured table sourced from `utils/app-shortcuts.ts` so the
+ *    visible reference cannot drift out of sync with the actual
+ *    `defineShortcuts` call sites. See `docs/planned/shortcuts-help.md`.
+ *
+ * 2. **FAQ items** (anchor `#<itemId>`): the historical "frequently
+ *    asked questions" list, fully driven by the `help.items.*` i18n
+ *    block. New questions need no template change.
  */
+
+import { SHORTCUT_GROUPS, tokenizeShortcutKey } from '~/utils/app-shortcuts'
 
 definePageMeta({
     layout: false,
@@ -43,6 +56,26 @@ const items = computed<HelpItem[]>(() => {
         }
     })
 })
+
+/**
+ * Stable id used both as the URL anchor (`/help#shortcuts-reference`)
+ * and in the table of contents above the FAQ list. Anchors are part of
+ * the page contract — security badges and other deep links may rely
+ * on them.
+ */
+const SHORTCUTS_REFERENCE_ANCHOR = 'shortcuts-reference'
+
+/**
+ * Static rules describing **when** shortcuts fire. Listed under
+ * `help.shortcutsReference.scopeRules.*`; ordering is the order users
+ * read them.
+ */
+const SCOPE_RULES = [
+    'noEditable',
+    'noModalBg',
+    'selectedCard',
+    'noChords',
+] as const
 
 onMounted(() => {
     const hash = route.hash?.replace('#', '')
@@ -86,6 +119,14 @@ onMounted(() => {
 
             <nav aria-label="help topics" class="infl0-raised mt-6 p-4">
                 <ul class="space-y-1 text-sm">
+                    <li>
+                        <a
+                            :href="`#${SHORTCUTS_REFERENCE_ANCHOR}`"
+                            class="infl0-help-toclink block rounded px-2 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                        >
+                            {{ t('help.shortcutsReference.tocLabel') }}
+                        </a>
+                    </li>
                     <li v-for="item in items" :key="`toc-${item.id}`">
                         <a
                             :href="`#${item.id}`"
@@ -96,6 +137,94 @@ onMounted(() => {
                     </li>
                 </ul>
             </nav>
+
+            <section
+                :id="SHORTCUTS_REFERENCE_ANCHOR"
+                class="infl0-raised-card scroll-mt-24 mt-8"
+                :aria-labelledby="`${SHORTCUTS_REFERENCE_ANCHOR}-heading`"
+                data-testid="help-shortcuts-reference"
+            >
+                <h2
+                    :id="`${SHORTCUTS_REFERENCE_ANCHOR}-heading`"
+                    class="text-lg font-semibold"
+                >
+                    {{ t('help.shortcutsReference.title') }}
+                </h2>
+                <p class="mt-2 text-sm leading-relaxed">
+                    {{ t('help.shortcutsReference.intro') }}
+                </p>
+
+                <h3
+                    class="infl0-canvas-muted mt-5 text-xs font-semibold uppercase tracking-wide"
+                >
+                    {{ t('help.shortcutsReference.scopeHeading') }}
+                </h3>
+                <p class="mt-1 text-sm leading-relaxed">
+                    {{ t('help.shortcutsReference.scopeIntro') }}
+                </p>
+                <ul class="mt-3 list-disc space-y-1 ps-5 text-sm leading-relaxed">
+                    <li v-for="rule in SCOPE_RULES" :key="rule">
+                        {{ t(`help.shortcutsReference.scopeRules.${rule}`) }}
+                    </li>
+                </ul>
+
+                <div
+                    v-for="group in SHORTCUT_GROUPS"
+                    :key="group.id"
+                    class="mt-6"
+                    :data-testid="`help-shortcut-group-${group.id}`"
+                >
+                    <h3 class="text-base font-semibold">
+                        {{ t(`help.shortcutsReference.groups.${group.id}.title`) }}
+                    </h3>
+                    <p class="infl0-canvas-muted mt-1 text-sm">
+                        {{ t(`help.shortcutsReference.groups.${group.id}.summary`) }}
+                    </p>
+                    <ul class="mt-3 space-y-3">
+                        <li
+                            v-for="entry in group.entries"
+                            :key="`${group.id}-${entry.id}`"
+                            class="grid gap-1 sm:grid-cols-[minmax(8.5rem,auto)_1fr] sm:items-start sm:gap-x-4"
+                            :data-testid="`help-shortcut-${entry.id}`"
+                        >
+                            <span class="flex flex-wrap items-center gap-1.5">
+                                <template
+                                    v-for="(combo, comboIndex) in entry.keys"
+                                    :key="`${entry.id}-${combo}`"
+                                >
+                                    <span
+                                        v-if="comboIndex > 0"
+                                        class="infl0-canvas-muted px-0.5 text-xs"
+                                    >
+                                        {{ t('help.shortcutsReference.keysSeparator') }}
+                                    </span>
+                                    <span class="inline-flex flex-wrap items-center gap-0.5">
+                                        <template
+                                            v-for="(token, tokenIndex) in tokenizeShortcutKey(combo)"
+                                            :key="`${entry.id}-${combo}-${tokenIndex}`"
+                                        >
+                                            <span
+                                                v-if="tokenIndex > 0"
+                                                aria-hidden="true"
+                                                class="infl0-canvas-muted text-xs"
+                                            >+</span>
+                                            <kbd class="infl0-shortcut-key">{{ token.label }}</kbd>
+                                        </template>
+                                    </span>
+                                </template>
+                            </span>
+                            <span class="block">
+                                <span class="font-medium">
+                                    {{ t(`help.shortcutsReference.entries.${entry.id}.label`) }}
+                                </span>
+                                <span class="infl0-canvas-muted block text-sm">
+                                    {{ t(`help.shortcutsReference.entries.${entry.id}.description`) }}
+                                </span>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
 
             <ol class="mt-8 space-y-6">
                 <li
@@ -122,3 +251,21 @@ onMounted(() => {
         </main>
     </div>
 </template>
+
+<style scoped>
+.infl0-shortcut-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 0.35rem;
+    border: 1px solid var(--infl0-raised-border);
+    background-color: var(--infl0-help-nested-bg);
+    color: var(--infl0-raised-fg);
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 0.78rem;
+    line-height: 1;
+    box-shadow: 0 1px 0 var(--infl0-raised-border);
+}
+</style>

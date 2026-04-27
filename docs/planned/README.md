@@ -19,16 +19,21 @@ order, acceptance criteria — separate from the large idea pool in
 
 | Package | Summary | Status |
 |--------|--------|--------|
-| [`shortcuts-help.md`](./shortcuts-help.md) | Help copy + central shortcuts reference (incl. readability and app shortcuts) | Draft |
 | [`onboarding-welcome-timeline.md`](./onboarding-welcome-timeline.md) | Welcome content via fixed cards (shortcuts, themes, sources, app behaviour); basis for E2E with sign-up + login | Draft |
+
+Recently archived (now shipped):
+
+- [`../archive/26-04-27-shortcuts-help.md`](../archive/26-04-27-shortcuts-help.md) — central
+  keyboard-shortcut reference at `/help#shortcuts-reference` (driven by
+  `utils/app-shortcuts.ts`).
 
 *(Add a row when a new package markdown is created.)*
 
 ## Suggested order (non-binding)
 
-1. Shortcuts / help (`shortcuts-help.md`) and, as needed, onboarding
-   (`onboarding-welcome-timeline.md`) — few side effects, improves
-   discoverability and testability.
+1. Onboarding (`onboarding-welcome-timeline.md`) — wires up an authed E2E
+   foundation that the now-shipped shortcuts reference will plug into for
+   on-page smoke coverage.
 2. Later: explicit “capture” (collection / knowledge) **without** an LLM, then
    larger product areas (knowledge menu, search, …) as separate packages (see
    `ROADMAP.md`).
