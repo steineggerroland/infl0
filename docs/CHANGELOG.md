@@ -11,6 +11,11 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Docker / `npm ci --omit=dev`:** **`dotenv`** is a **runtime** dependency again.  
+  `prisma.config.ts` imports **`dotenv/config`**; `postinstall` runs **`prisma generate`**, which loads that config. With `dotenv` only under `devDependencies`, production installs failed to resolve the module.
+
 ### Breaking
 
 Stack upgrade (**Nuxt 4**, **Prisma 7**, **Tailwind 4**, **daisyUI 5**, etc.).  
@@ -52,6 +57,7 @@ If you use **Compose** or another image, mirror the same idea: install from lock
 
 ### Changed
 
+- **`dotenv`** **16 → 17** (runtime; used by **`prisma.config.ts`** / `import 'dotenv/config'`). No app code changes required for our usage.
 - **Framework / tooling:** **Nuxt 4**, **Vue 3.5.x**, **Vue Router 5**, **Tailwind CSS 4** (via **`@tailwindcss/vite`**), **daisyUI 5**, **Prisma ORM 7** (Rust-free client + **pg** adapter), **Vitest 4**, **ESLint 10**, **marked** 15.x; **`@nuxt/content`** and **`@nuxtjs/i18n`** remain on their current **latest** majors compatible with Nuxt 4.
 - **Vue + Vite (dev):** **`vue`** and **`@vitejs/plugin-vue`** pinned to current patch minors for Vitest component tests.
 
