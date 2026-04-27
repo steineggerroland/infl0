@@ -118,7 +118,16 @@ onMounted(() => {
             <p class="infl0-canvas-muted mt-2 text-sm">{{ t('help.intro') }}</p>
 
             <nav aria-label="help topics" class="infl0-raised mt-6 p-4">
-                <ul class="space-y-1 text-sm">
+                <!--
+                  Global `@layer base` styles in `assets/css/tailwind.css` add
+                  `list-style-type: disc` plus an indent to every `ul`. The
+                  table of contents already styles each entry as a full-width
+                  link block (focus ring, hover background) — extra bullets
+                  next to those blocks read as visual noise, so the TOC opts
+                  out of the marker via `list-none` and removes the marker
+                  indent via `ps-0`.
+                -->
+                <ul class="list-none ps-0 space-y-1 text-sm">
                     <li>
                         <a
                             :href="`#${SHORTCUTS_REFERENCE_ANCHOR}`"
