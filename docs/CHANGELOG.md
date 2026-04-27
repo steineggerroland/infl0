@@ -13,6 +13,7 @@ new entries accrue under **Unreleased**.
 
 ### Fixed
 
+- **Article `Q` shortcut:** With no in-app reader body (`rawMarkdown`), pressing **`Q`** no longer leaves the global modal stack stuck (background shortcuts muted until reload).
 - **Docker / `npm ci --omit=dev`:** **`dotenv`** is a **runtime** dependency again.  
   `prisma.config.ts` imports **`dotenv/config`**; `postinstall` runs **`prisma generate`**, which loads that config. With `dotenv` only under `devDependencies`, production installs failed to resolve the module.
 

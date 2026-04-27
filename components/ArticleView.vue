@@ -54,11 +54,13 @@ function toggleDetailView() {
 const modalVisible = ref(false)
 
 function showOriginalArticle() {
+  if (!hasReaderModal.value) return
   modal.value?.showModal()
   modalVisible.value = true
 }
 
 function toggleOriginalArticle() {
+  if (!hasReaderModal.value) return
   if (modal.value?.open) {
     modal.value.close()
   } else {
@@ -76,6 +78,10 @@ const modal = ref()
 const hasReaderModal = computed(
   () => props.article.rawMarkdown != null && props.article.rawMarkdown.trim() !== '',
 )
+
+watch(hasReaderModal, (ok) => {
+  if (!ok && modalVisible.value) modalVisible.value = false
+})
 
 /** DB-sourced markdown: parse + sanitize (client only — DOMPurify needs DOM). */
 const renderedRawMarkdown = computed(() => {
@@ -164,7 +170,10 @@ defineShortcuts(
 )
 
 defineShortcuts({
-  'q': () => { if (props.isSelected) toggleOriginalArticle() },
+  'q': () => {
+    if (!props.isSelected || !hasReaderModal.value) return
+    toggleOriginalArticle()
+  },
 })
 
 const { prefs, update } = useUiPrefs()
