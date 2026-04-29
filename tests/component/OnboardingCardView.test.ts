@@ -9,6 +9,7 @@ import { createI18n, useI18n as vueUseI18n } from 'vue-i18n'
 import enLocale from '../../i18n/locales/en.json'
 import deLocale from '../../i18n/locales/de.json'
 import { useCoarsePointer } from '../../composables/useCoarsePointer'
+import { defineShortcuts } from '../../composables/useShortcuts'
 
 // In production these are auto-imported by Nuxt. The `OnboardingCardView`
 // component reads them via the auto-import alias; tests inject the real
@@ -16,6 +17,17 @@ import { useCoarsePointer } from '../../composables/useCoarsePointer'
 // happy-dom + Vitest.
 vi.stubGlobal('useI18n', () => vueUseI18n())
 vi.stubGlobal('useCoarsePointer', useCoarsePointer)
+vi.stubGlobal('defineShortcuts', defineShortcuts)
+vi.stubGlobal('useUiPrefs', () => ({
+    prefs: ref({
+        surfaces: {
+            'card-front': { fontSize: 21, fontFamily: 'system-sans' },
+            'card-back': { fontSize: 19, fontFamily: 'system-sans' },
+            reader: { fontSize: 18, fontFamily: 'system-sans' },
+        },
+    }),
+    update: vi.fn(),
+}))
 
 const NuxtLinkStub = {
     name: 'NuxtLink',
@@ -74,7 +86,7 @@ describe('OnboardingCardView', () => {
         document.body.innerHTML = ''
     })
 
-    it('renders the desktop body for the intro card on a fine pointer', async () => {
+    it('renders the desktop front copy for the intro card on a fine pointer', async () => {
         stubMatchMedia(false)
         const i18n = makeI18n('en')
         const OnboardingCardView = await loadComponent()
@@ -86,13 +98,13 @@ describe('OnboardingCardView', () => {
         await flushPromises()
         expect(wrapper.find('[data-testid="onboarding-card"]').exists()).toBe(true)
         expect(wrapper.attributes('data-onboarding-topic')).toBe('intro')
-        const body = wrapper.find('[data-onboarding-body="intro"]')
-        expect(body.exists()).toBe(true)
-        expect(body.text()).toContain('W and S')
+        const front = wrapper.find('[data-onboarding-front="intro"]')
+        expect(front.exists()).toBe(true)
+        expect(front.text()).toContain('click the card or use the "E" keyboard shortcut')
         expect(wrapper.find('[data-testid="onboarding-card-body-skeleton"]').exists()).toBe(false)
     })
 
-    it('renders the mobile body for the intro card on a coarse pointer', async () => {
+    it('renders the mobile front copy for the intro card on a coarse pointer', async () => {
         stubMatchMedia(true)
         const i18n = makeI18n('en')
         const OnboardingCardView = await loadComponent()
@@ -102,9 +114,9 @@ describe('OnboardingCardView', () => {
             attachTo: document.body,
         })
         await flushPromises()
-        const body = wrapper.find('[data-onboarding-body="intro"]')
-        expect(body.exists()).toBe(true)
-        expect(body.text()).toContain('back-to-front button')
+        const front = wrapper.find('[data-onboarding-front="intro"]')
+        expect(front.exists()).toBe(true)
+        expect(front.text()).toContain('flip this card once')
     })
 
     it('shows the skeleton until matchMedia resolves for variant cards', async () => {
@@ -119,10 +131,10 @@ describe('OnboardingCardView', () => {
         })
         const skeleton = wrapper.find('[data-testid="onboarding-card-body-skeleton"]')
         expect(skeleton.exists()).toBe(true)
-        expect(wrapper.find('[data-onboarding-body="intro"]').exists()).toBe(false)
+        expect(wrapper.find('[data-onboarding-front="intro"]').exists()).toBe(false)
     })
 
-    it('renders a single body for variant-less cards regardless of pointer', async () => {
+    it('renders a single front copy for variant-less cards regardless of pointer', async () => {
         stubMatchMedia(true)
         const i18n = makeI18n('en')
         const OnboardingCardView = await loadComponent()
@@ -136,7 +148,7 @@ describe('OnboardingCardView', () => {
             attachTo: document.body,
         })
         await flushPromises()
-        expect(wrapper.find('[data-onboarding-body="sources"]').exists()).toBe(true)
+        expect(wrapper.find('[data-onboarding-front="sources"]').exists()).toBe(true)
         expect(wrapper.find('[data-testid="onboarding-card-body-skeleton"]').exists()).toBe(false)
     })
 

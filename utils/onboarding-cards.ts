@@ -91,7 +91,7 @@ export const ONBOARDING_CARDS: readonly OnboardingCard[] = [
         topic: 'scoring',
         ordinal: 2,
         hasDeviceVariants: false,
-        cta: { labelKey: 'onboarding.scoring.cta', href: '/settings/privacy' },
+        cta: { labelKey: 'onboarding.scoring.cta', href: '/settings#settings-sorting-heading' },
     },
     {
         topic: 'themes',

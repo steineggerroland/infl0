@@ -295,26 +295,47 @@
   },
   "onboarding": {
     "skipIntro": "Skip introduction",
+    "flipCard": "Flip card",
+    "flipBack": "Back to front",
+    "openFullText": "Open full text (Q)",
+    "helpLinkLabel": "Open help page",
     "intro": {
       "title": "Welcome to infl0",
-      "body": {
-        "desktop": "infl0 shows news and blog posts as cards. The front of each card is the headline; flip it to read a teaser, and open the original to read the full text. Use W and S (or the arrow keys) to move between cards. Press R to bring back articles you have already read.",
-        "mobile": "infl0 shows news and blog posts as cards. The front of each card is the headline; tap the back-to-front button to flip it to a teaser, and tap the read-original button to read the full text. To bring back articles you have already read, open the menu in the top-right corner."
+      "front": {
+        "desktop": "Welcome to your calm news timeline. infl0 turns articles into flip cards: essence on the front, context on the back. Try it now: click the card or use the \"E\" keyboard shortcut.",
+        "mobile": "Welcome to your calm news timeline. infl0 turns articles into flip cards: essence on the front, context on the back. Try it right away and flip this card once."
+      },
+      "back": {
+        "desktop": "Nice, you reached the back side. Use W/S or arrow keys for the next and previous card. Press Q to open the current card's full text.",
+        "mobile": "Nice, you reached the back side. Use W/S or arrow keys to move between cards. Press Q to open the current card's full text."
+      },
+      "full": {
+        "desktop": "Shortcut moment: Q opens the selected card's full text and Q or Esc closes it again.\n\nYou can find the full shortcut reference on the help page.\n\nClose this view now and jump to the next welcome card with W/S or arrow keys.",
+        "mobile": "Shortcut moment: Q opens the selected card's full text and Q or Esc closes it again.\n\nYou can find the full shortcut reference on the help page.\n\nClose this view now and continue with the next welcome card."
       }
     },
     "sources": {
       "title": "Where the cards come from",
-      "body": "Cards arrive from sources you add (RSS or Atom feeds). infl0 checks each source on a regular schedule, so a freshly added source does not appear immediately — give it a few minutes. Add a few you trust to start with; you can always remove or rename them later.",
+      "front": "Your timeline grows with your sources. A few strong RSS or Atom feeds are enough for infl0 to deliver fresh, relevant cards every day.",
+      "back": "Each source is checked on a schedule, and new entries become cards in your inflow automatically. Start with your favorite feeds, then grow from there.",
+      "full": "Sources are your editorial foundation in infl0. You add RSS or Atom feeds, infl0 collects updates in the background, and those updates appear as cards.\n\nOpen source management now, add at least one source, then come back to your timeline.",
       "cta": "Add a source"
     },
     "scoring": {
       "title": "Why this card is on top",
-      "body": "infl0 sorts your cards by a score, not by date. The score combines freshness, your sliders for what matters, and — only if you turn it on — how long you actually read each card. Tracking is off by default. You decide whether reading time helps the sort, and you can turn it off again at any time.",
-      "cta": "See privacy settings"
+      "front": "You know it as \"the algorithm\" from TikTok or Twitter. In infl0, the algorithm is there to sort your timeline in a way you can understand and tune.",
+      "back": "The score blends freshness, your sliders, and optionally reading behavior. Important: this algorithm is transparent - and you can control it yourself in settings. If you enable tracking, infl0 can usually improve your timeline much more.",
+      "full": "In infl0, \"the algorithm\" is not a black box: you can see which factors build the score and adjust their weights yourself.\n\nWhenever you save your sorting sliders, your timeline scores are recalculated. That keeps the order aligned with your current preferences.\n\nIf you also enable tracking, infl0 can factor in real reading behavior - which often improves personal relevance noticeably.\n\nIn \"Why at the top?\" you can inspect, card by card, which signals pushed ranking up or down.\n\nOpen sorting, tracking, or \"Why at the top?\" now and see the transparency in action.",
+      "cta": "Adjust sorting",
+      "linkTimeline": "Open Adjust sorting",
+      "linkTracking": "Open Tracking",
+      "linkWhyTop": "Open Why at the top?"
     },
     "themes": {
       "title": "Make infl0 yours",
-      "body": "Pick a colour palette, fonts, and how much motion you want. The settings cover the front of cards, their back, and the longer reader view separately, so each surface can stay calm and legible for you.",
+      "front": "Now for your final polish: colors, fonts, and motion controls let infl0 feel truly yours.",
+      "back": "You can style card front, card back, and full-text reader independently - so every surface stays clear in every lighting condition. Use + or - to adjust text size, and Shift+K / Shift+L to cycle through typefaces.",
+      "full": "In settings you can fine-tune themes, typography, and motion preferences permanently. That keeps infl0 calm, high-contrast, and comfortable whether you skim quickly or read deeply.\n\nWhen you're ready, close this full text and add your first real source.",
       "cta": "Open settings"
     }
   },

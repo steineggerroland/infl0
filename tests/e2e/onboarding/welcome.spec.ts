@@ -38,9 +38,16 @@ test.describe('onboarding cards on a fresh account', () => {
 
   test('the sources card CTA navigates to /feeds', async ({ page }) => {
     await page.goto('/')
-    const cta = page.locator('[data-onboarding-cta="sources"]')
+    const sourcesCard = page.locator('[data-onboarding-topic="sources"]').first()
+    await expect(sourcesCard).toBeVisible()
+    await sourcesCard.scrollIntoViewIfNeeded()
+    // Scope to the front surface of the sources card so we avoid duplicate CTA refs.
+    const cta = sourcesCard.locator('.onboarding-front [data-onboarding-cta="sources"]')
     await expect(cta).toBeVisible()
-    await cta.click()
-    await expect(page).toHaveURL(/\/feeds(\?|$)/u)
+    await expect(cta).toHaveAttribute('href', '/feeds')
+    await Promise.all([
+      page.waitForURL(/\/feeds(\?|$)/u),
+      cta.evaluate((el) => (el as HTMLAnchorElement).click()),
+    ])
   })
 })

@@ -295,26 +295,47 @@
   },
   "onboarding": {
     "skipIntro": "Einführung überspringen",
+    "flipCard": "Karte drehen",
+    "flipBack": "Zur Vorderseite",
+    "openFullText": "Volltext öffnen (Q)",
+    "helpLinkLabel": "Zur Hilfeseite",
     "intro": {
       "title": "Willkommen bei infl0",
-      "body": {
-        "desktop": "infl0 zeigt Nachrichten und Blog-Beiträge als Karten. Vorne steht die Überschrift; drehe die Karte um, um den Anreißer zu lesen, oder öffne den Originaltext. Mit W und S (oder den Pfeiltasten) wechselst du zwischen Karten. Mit R holst du bereits gelesene Artikel zurück.",
-        "mobile": "infl0 zeigt Nachrichten und Blog-Beiträge als Karten. Vorne steht die Überschrift; tippe auf den Zurück-Knopf, um die Karte umzudrehen und den Anreißer zu lesen, und auf „Original anzeigen“, um den vollständigen Text zu öffnen. Bereits gelesene Artikel kannst du im Menü oben rechts wieder einblenden."
+      "front": {
+        "desktop": "Willkommen in deiner ruhigen News-Timeline. infl0 bringt Artikel als drehbare Karten auf den Punkt: vorne die Essenz, hinten der Kontext. Probiere es aus und klick auf die Karte oder benutze den Shortcut \"E\" auf der Tastatur.",
+        "mobile": "Willkommen in deiner ruhigen News-Timeline. infl0 bringt Artikel als drehbare Karten auf den Punkt: vorne die Essenz, hinten der Kontext. Probiere es direkt aus und drehe diese Karte einmal um."
+      },
+      "back": {
+        "desktop": "Stark, jetzt bist du auf der Rückseite. Mit W/S oder den Pfeiltasten gehst du zur nächsten oder vorherigen Karte. Mit Q öffnest du den Volltext der aktuellen Karte.",
+        "mobile": "Stark, jetzt bist du auf der Rückseite. Wechsle mit W/S oder den Pfeiltasten zwischen Karten. Mit Q öffnest du den Volltext der aktuellen Karte."
+      },
+      "full": {
+        "desktop": "Shortcut-Moment: Q öffnet den Volltext der ausgewählten Karte und Q oder Esc schließt ihn wieder.\n\nAuf der Hilfeseite findest du alle Kürzel im Überblick.\n\nSchließe diese Ansicht jetzt und springe mit W/S oder den Pfeiltasten direkt zur nächsten Einführungskarte.",
+        "mobile": "Shortcut-Moment: Q öffnet den Volltext der ausgewählten Karte und Q oder Esc schließt ihn wieder.\n\nAuf der Hilfeseite findest du alle Kürzel im Überblick.\n\nSchließe diese Ansicht jetzt und geh zur nächsten Einführungskarte."
       }
     },
     "sources": {
       "title": "Woher die Karten kommen",
-      "body": "Karten kommen aus Quellen, die du hinzufügst (RSS- oder Atom-Feeds). infl0 prüft jede Quelle in einem festen Takt — eine frisch hinzugefügte Quelle erscheint also nicht sofort, gib ihr einen Moment. Beginne mit ein paar Quellen, denen du vertraust; entfernen oder umbenennen kannst du sie jederzeit.",
+      "front": "Deine Timeline lebt von deinen Quellen. Schon wenige gute RSS- oder Atom-Feeds reichen, damit infl0 dir täglich frische, relevante Karten zeigt.",
+      "back": "Jede Quelle wird regelmäßig geprüft, neue Inhalte landen danach automatisch als Karten in deinem Inflow. Starte mit deinen Lieblingsquellen und erweitere dann Schritt für Schritt.",
+      "full": "Quellen sind deine redaktionelle Basis in infl0. Du fügst RSS- oder Atom-Feeds hinzu, infl0 sammelt neue Beiträge im Hintergrund und stellt sie als Karten bereit.\n\nÖffne jetzt die Quellen-Verwaltung, füge mindestens eine Quelle hinzu und kehre danach zur Timeline zurück.",
       "cta": "Quelle hinzufügen"
     },
     "scoring": {
       "title": "Warum diese Karte oben liegt",
-      "body": "infl0 sortiert deine Karten nach einem Score, nicht nach Datum. Der Score kombiniert Aktualität, deine Schieberegler und — nur wenn du es einschaltest — wie lange du eine Karte tatsächlich liest. Standardmäßig ist diese Auswertung aus. Du entscheidest, ob die Lesezeit in die Sortierung einfließt, und kannst es jederzeit wieder abschalten.",
-      "cta": "Zu den Privatsphäre-Einstellungen"
+      "front": "Du kennst es als \"der Algorithmus\" von TikTok oder Twitter. Bei infl0 ist der Algorithmus dafür da, deine Timeline nachvollziehbar und anpassbar zu sortieren.",
+      "back": "Der Score kombiniert Frische, deine Regler und optional Leseverhalten. Wichtig: Dieser Algorithmus ist transparent - und du kannst ihn in den Einstellungen selbst steuern. Wenn du Tracking aktivierst, kann infl0 deine Timeline meist deutlich besser auf dich zuschneiden.",
+      "full": "Bei infl0 bleibt \"der Algorithmus\" kein Geheimnis: Du siehst offen, welche Faktoren den Score bilden, und kannst ihre Gewichtung selbst festlegen.\n\nSobald du deine Sortierungs-Regler speicherst, werden die Scores deiner Timeline neu berechnet. Dadurch entspricht die Reihenfolge direkt deinen aktuellen Einstellungen.\n\nWenn du zusätzlich Tracking aktivierst, kann infl0 echtes Leseverhalten in die Sortierung einbeziehen - das verbessert die persönliche Relevanz oft spürbar.\n\nIm Bereich \"Warum oben?\" siehst du pro Karte, welche Signale den Platz nach oben oder unten beeinflusst haben.\n\nÖffne jetzt Sortierung, Tracking oder \"Warum oben?\" und schau dir die Transparenz live an.",
+      "cta": "Sortierung anpassen",
+      "linkTimeline": "Zu Sortierung anpassen",
+      "linkTracking": "Zu Tracking",
+      "linkWhyTop": "Zu Warum oben?"
     },
     "themes": {
       "title": "Mach dir infl0 zu eigen",
-      "body": "Wähle eine Farbpalette, Schriften und wie viel Bewegung du möchtest. Die Einstellungen decken Vorderseite, Rückseite und den Lesemodus getrennt ab, damit jede Fläche für dich ruhig und gut lesbar bleibt.",
+      "front": "Jetzt kommt dein Feinschliff: Farben, Schriften und Bewegungen lassen sich so einstellen, dass infl0 sich wirklich nach dir anfühlt.",
+      "back": "Du kannst Vorderseite, Rückseite und Volltext getrennt gestalten - für maximale Lesbarkeit auf jeder Fläche und in jeder Lichtsituation. Mit + oder - änderst du die Schriftgröße, mit Shift+K und Shift+L wechselst du durch Schriftarten.",
+      "full": "Im Einstellungsbereich kannst du Themes, Typografie und Bewegungsgrad dauerhaft anpassen. So bleibt die App ruhig, kontrastreich und bequem lesbar - egal ob kurz im Alltag oder lang am Abend.\n\nWenn du bereit bist, schließe den Volltext und starte mit deiner ersten echten Quelle.",
       "cta": "Einstellungen öffnen"
     }
   },

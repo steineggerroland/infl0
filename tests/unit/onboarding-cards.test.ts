@@ -34,7 +34,9 @@ type LocaleFile = {
         OnboardingTopic,
         {
             title: string
-            body: string | { desktop: string; mobile: string }
+            front: string | { desktop: string; mobile: string }
+            back: string | { desktop: string; mobile: string }
+            full: string | { desktop: string; mobile: string }
             cta?: string
         }
     >
@@ -129,15 +131,19 @@ function describeForCard(card: OnboardingCard) {
                 })
 
                 if (card.hasDeviceVariants) {
-                    it('has both desktop and mobile body variants', () => {
-                        expect(typeof block?.body, 'body must be an object').toBe('object')
-                        const body = block?.body as { desktop: unknown; mobile: unknown }
-                        expect(nonEmptyString(body?.desktop), 'desktop variant').toBe(true)
-                        expect(nonEmptyString(body?.mobile), 'mobile variant').toBe(true)
+                    it('has desktop and mobile variants for each copy surface', () => {
+                        for (const key of ['front', 'back', 'full'] as const) {
+                            expect(typeof block?.[key], `${key} must be an object`).toBe('object')
+                            const value = block?.[key] as { desktop: unknown; mobile: unknown }
+                            expect(nonEmptyString(value?.desktop), `${key}.desktop variant`).toBe(true)
+                            expect(nonEmptyString(value?.mobile), `${key}.mobile variant`).toBe(true)
+                        }
                     })
                 } else {
-                    it('has a single flat body string', () => {
-                        expect(nonEmptyString(block?.body as unknown)).toBe(true)
+                    it('has flat front/back/full strings', () => {
+                        expect(nonEmptyString(block?.front as unknown), 'front').toBe(true)
+                        expect(nonEmptyString(block?.back as unknown), 'back').toBe(true)
+                        expect(nonEmptyString(block?.full as unknown), 'full').toBe(true)
                     })
                 }
 
