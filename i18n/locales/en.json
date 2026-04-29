@@ -44,7 +44,11 @@
     "trackingHeading": "Reading-behaviour analysis",
     "trackingIntro": "Off by default. You decide whether we may use your reading behaviour for sorting. You can switch it off at any time — no new data will be stored after that.",
     "trackingLabel": "Use reading behaviour for better sorting",
-    "trackingHint": "When on, we remember how long you look at the headline, the teaser or the longer text. Articles you look at for around two seconds or longer count as read."
+    "trackingHint": "When on, we remember how long you look at the headline, the teaser or the longer text. Articles you look at for around two seconds or longer count as read.",
+    "onboardingHeading": "Welcome cards",
+    "onboardingIntro": "Show or hide the four welcome cards that introduce navigation, sources, scoring, and themes. They sit at the top of your inflow when on.",
+    "onboardingLabel": "Show welcome cards",
+    "onboardingHint": "Off when you have already seen them. Turn it back on at any time to revisit the introduction."
   },
   "settingsDisplay": {
     "heading": "Display",
