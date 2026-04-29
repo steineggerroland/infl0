@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import type { OnboardingTopic, OnboardingCardCta } from '~/utils/onboarding-cards'
+
 definePageMeta({
     layout: 'app',
 })
 
-type TimelineArticle = {
+type InflowArticle = {
+    type: 'article'
     id: string
     title: string
     teaser: string
@@ -12,7 +15,7 @@ type TimelineArticle = {
     publishedAt: string
     /** Crawler fetch time (ISO); for score normalization */
     fetchedAt?: string
-    /** When the item entered this user’s timeline (ISO) */
+    /** When the item entered this user’s inflow (ISO) */
     insertedAt?: string
     readAt?: string | null
     category?: string[]
@@ -22,6 +25,17 @@ type TimelineArticle = {
     author?: string
     rawMarkdown?: string
 }
+
+type InflowOnboarding = {
+    type: 'onboarding'
+    id: string
+    topic: OnboardingTopic
+    ordinal: number
+    hasDeviceVariants: boolean
+    cta?: OnboardingCardCta
+}
+
+type InflowItem = InflowArticle | InflowOnboarding
 
 type UserFeedRow = {
     id: string
@@ -37,46 +51,53 @@ const PAGE_SIZE = 20
 /** Load next page when the user is this many pixels from the bottom (prefetch). */
 const SCROLL_PRELOAD_PX = 520
 
-// Shared across timeline + `AppUserMenu`; persistence is handled by the
+// Shared across inflow + `AppUserMenu`; persistence is handled by the
 // composable, so this page only reacts to changes to refetch.
 const { showRead, toggleShowRead } = useTimelinePreferences()
 
-const articles = ref<TimelineArticle[]>([])
-const timelineHasMore = ref(true)
-const timelinePending = ref(false)
-const timelineScrollEl = ref<HTMLElement | null>(null)
-const timelineStats = ref({ total: 0, unread: 0 })
+// Skip-button on the intro card and the settings toggle both write
+// `uiPrefs.onboardingHidden`. Hide cards optimistically the moment the
+// user clicks *Skip introduction*; the PATCH happens via `useUiPrefs`.
+const { prefs: uiPrefs, update: updateUiPrefs } = useUiPrefs()
+
+const items = ref<InflowItem[]>([])
+const inflowHasMore = ref(true)
+const inflowPending = ref(false)
+const inflowScrollEl = ref<HTMLElement | null>(null)
+const inflowStats = ref({ total: 0, unread: 0 })
 
 /** SSR: forward `Cookie` from the incoming request to internal API calls (plain `$fetch` does not). */
 const requestFetch = useRequestFetch()
 
-async function loadTimelinePage(reset: boolean) {
-    if (timelinePending.value) return
-    if (!reset && !timelineHasMore.value) return
-    timelinePending.value = true
+async function loadInflowPage(reset: boolean) {
+    if (inflowPending.value) return
+    if (!reset && !inflowHasMore.value) return
+    inflowPending.value = true
     try {
-        const offset = reset ? 0 : articles.value.length
+        const articleOffset = reset ? 0 : items.value.filter((i) => i.type === 'article').length
         const res = await requestFetch<{
-            items: TimelineArticle[]
+            items: InflowItem[]
             hasMore: boolean
             stats: { total: number; unread: number }
-        }>('/api/timeline', {
+        }>('/api/inflow', {
             credentials: 'include',
             query: {
                 limit: PAGE_SIZE,
-                offset,
+                offset: articleOffset,
                 ...(showRead.value ? { showRead: '1' } : {}),
             },
         })
         if (res.stats) {
-            timelineStats.value = res.stats
+            inflowStats.value = res.stats
         }
         if (reset) {
-            articles.value = res.items
+            items.value = res.items
         } else if (res.items.length > 0) {
-            articles.value.push(...res.items)
+            // Subsequent pages contain article rows only — onboarding cards are
+            // emitted on the first page exclusively (server contract).
+            items.value.push(...res.items)
         }
-        timelineHasMore.value = res.hasMore
+        inflowHasMore.value = res.hasMore
     } catch (e: unknown) {
         const { statusCode, message } = parseFetchError(e)
         if (statusCode === 401) {
@@ -98,41 +119,41 @@ async function loadTimelinePage(reset: boolean) {
                     {
                         label: t('common.retry'),
                         onClick: () => {
-                            void retryTimeline()
+                            void retryInflow()
                         },
                     },
                 ],
             })
         }
     } finally {
-        timelinePending.value = false
+        inflowPending.value = false
     }
 }
 
-async function retryTimeline() {
-    await loadTimelinePage(true)
+async function retryInflow() {
+    await loadInflowPage(true)
     await nextTick()
-    await fillTimelineUntilScrollableOrDone()
+    await fillInflowUntilScrollableOrDone()
 }
 
-async function fillTimelineUntilScrollableOrDone() {
+async function fillInflowUntilScrollableOrDone() {
     for (;;) {
-        const el = timelineScrollEl.value
-        if (!el || timelinePending.value || !timelineHasMore.value) return
+        const el = inflowScrollEl.value
+        if (!el || inflowPending.value || !inflowHasMore.value) return
         if (el.scrollHeight > el.clientHeight + SCROLL_PRELOAD_PX) return
-        await loadTimelinePage(false)
+        await loadInflowPage(false)
         await nextTick()
     }
 }
 
 watch(showRead, () => {
-    void loadTimelinePage(true).then(async () => {
+    void loadInflowPage(true).then(async () => {
         await nextTick()
-        await fillTimelineUntilScrollableOrDone()
+        await fillInflowUntilScrollableOrDone()
     })
 })
 
-await loadTimelinePage(true)
+await loadInflowPage(true)
 
 const feedsData = ref<{ feeds: UserFeedRow[] } | null>(null)
 const feedsError = ref<unknown>(null)
@@ -175,30 +196,42 @@ watch(
 )
 
 const feedList = computed(() => feedsData.value?.feeds ?? [])
-const fromDatabase = computed(() => timelineStats.value.total > 0)
-const showOnboarding = computed(() => !fromDatabase.value && feedList.value.length === 0)
-const showWaiting = computed(() => !fromDatabase.value && feedList.value.length > 0)
+const articleItems = computed(() =>
+    items.value.filter((i): i is InflowArticle => i.type === 'article'),
+)
+const onboardingItems = computed(() =>
+    items.value.filter((i): i is InflowOnboarding => i.type === 'onboarding'),
+)
+const hasArticles = computed(() => inflowStats.value.total > 0)
+const hasOnboarding = computed(() => onboardingItems.value.length > 0)
+const showOnboardingEmpty = computed(
+    () => !hasArticles.value && feedList.value.length === 0 && !hasOnboarding.value,
+)
+const showWaiting = computed(
+    () => !hasArticles.value && feedList.value.length > 0 && !hasOnboarding.value,
+)
 const showAllReadEmpty = computed(
     () =>
-        fromDatabase.value &&
-        timelineStats.value.unread === 0 &&
-        !showRead.value,
+        hasArticles.value &&
+        inflowStats.value.unread === 0 &&
+        !showRead.value &&
+        !hasOnboarding.value,
 )
 
 async function refreshAll() {
     await refreshFeeds()
-    await loadTimelinePage(true)
+    await loadInflowPage(true)
     await nextTick()
-    await fillTimelineUntilScrollableOrDone()
+    await fillInflowUntilScrollableOrDone()
 }
 
 const currentIndex = ref(0)
 
 watch(
-    () => articles.value.length,
+    () => items.value.length,
     (len) => {
-        if (articleContainers.value.length > len) {
-            articleContainers.value.length = len
+        if (cardContainers.value.length > len) {
+            cardContainers.value.length = len
         }
         if (currentIndex.value >= len) {
             currentIndex.value = Math.max(0, len - 1)
@@ -206,45 +239,45 @@ watch(
     },
 )
 
-const articleContainers = ref<(HTMLElement | null)[]>([])
+const cardContainers = ref<(HTMLElement | null)[]>([])
 
-function setArticleEl(el: unknown, index: number) {
-    while (articleContainers.value.length <= index) {
-        articleContainers.value.push(null)
+function setCardEl(el: unknown, index: number) {
+    while (cardContainers.value.length <= index) {
+        cardContainers.value.push(null)
     }
-    articleContainers.value[index] = el instanceof HTMLElement ? el : null
+    cardContainers.value[index] = el instanceof HTMLElement ? el : null
 }
 
-function onTimelineScroll() {
-    const el = timelineScrollEl.value
+function onInflowScroll() {
+    const el = inflowScrollEl.value
     if (!el) return
 
-    if (!timelinePending.value && timelineHasMore.value) {
+    if (!inflowPending.value && inflowHasMore.value) {
         if (el.scrollTop + el.clientHeight >= el.scrollHeight - SCROLL_PRELOAD_PX) {
-            void loadTimelinePage(false)
+            void loadInflowPage(false)
         }
     }
 
-    const currentEl = articleContainers.value.find((node) => node && isMoreThan50PercentVisible(node))
+    const currentEl = cardContainers.value.find((node) => node && isMoreThan50PercentVisible(node))
     currentIndex.value =
-        currentEl !== undefined ? articleContainers.value.indexOf(currentEl) : -1
+        currentEl !== undefined ? cardContainers.value.indexOf(currentEl) : -1
 }
 
-function gotoNextArticle(event: KeyboardEvent) {
+function gotoNextCard(event: KeyboardEvent) {
     event.stopPropagation()
-    if (!fromDatabase.value) return
-    if (currentIndex.value < articles.value.length - 1) {
-        articleContainers.value[currentIndex.value + 1]?.scrollIntoView({
+    if (items.value.length === 0) return
+    if (currentIndex.value < items.value.length - 1) {
+        cardContainers.value[currentIndex.value + 1]?.scrollIntoView({
             behavior: 'smooth',
         })
     }
 }
 
-function gotoPreviousArticle(event: KeyboardEvent) {
+function gotoPreviousCard(event: KeyboardEvent) {
     event.stopPropagation()
-    if (!fromDatabase.value) return
+    if (items.value.length === 0) return
     if (currentIndex.value > 0) {
-        articleContainers.value[currentIndex.value - 1]?.scrollIntoView({
+        cardContainers.value[currentIndex.value - 1]?.scrollIntoView({
             behavior: 'smooth',
         })
     }
@@ -257,7 +290,18 @@ function isMoreThan50PercentVisible(element: HTMLElement): boolean {
     return visibleHeight > rect.height / 2
 }
 
-// Timeline navigation and the global `r` toggle must yield to any open
+async function onSkipOnboarding() {
+    // Optimistic: drop onboarding rows from the rendered list immediately so
+    // the user sees the cards disappear before the PATCH round-trip lands.
+    items.value = items.value.filter((i) => i.type !== 'onboarding')
+    if (currentIndex.value >= items.value.length) {
+        currentIndex.value = Math.max(0, items.value.length - 1)
+    }
+    if (uiPrefs.value.onboardingHidden) return
+    updateUiPrefs({ onboardingHidden: true })
+}
+
+// Inflow navigation and the global `r` toggle must yield to any open
 // modal-like surface (full-text article, InfoPopover). Without this
 // guard the background article silently changed while a modal was on
 // screen, so the content no longer matched what the user was reading.
@@ -265,10 +309,10 @@ const { anyOpen: anyModalOpen } = useModalStack()
 
 defineShortcuts(
     {
-        arrowup: gotoPreviousArticle,
-        w: gotoPreviousArticle,
-        arrowdown: gotoNextArticle,
-        s: gotoNextArticle,
+        arrowup: gotoPreviousCard,
+        w: gotoPreviousCard,
+        arrowdown: gotoNextCard,
+        s: gotoNextCard,
         r: (event) => {
             event.preventDefault()
             toggleShowRead()
@@ -279,14 +323,14 @@ defineShortcuts(
 
 onMounted(async () => {
     await nextTick()
-    await fillTimelineUntilScrollableOrDone()
+    await fillInflowUntilScrollableOrDone()
 })
 </script>
 
 <template>
     <div class="h-dvh w-full flex justify-center items-center relative text-[var(--infl0-canvas-fg)]">
         <div
-            v-if="showOnboarding"
+            v-if="showOnboardingEmpty"
             class="relative z-10 mx-auto w-full max-w-md px-4 py-8"
         >
             <div class="infl0-panel p-8 text-center">
@@ -370,25 +414,34 @@ onMounted(async () => {
 
         <div
             v-else
-            ref="timelineScrollEl"
+            ref="inflowScrollEl"
             class="scroll-container relative h-dvh w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory"
-            @scroll.passive="onTimelineScroll"
+            @scroll.passive="onInflowScroll"
         >
             <div
-                v-for="(article, index) in articles"
-                :key="article.id"
-                :ref="(el) => setArticleEl(el, index)"
+                v-for="(item, index) in items"
+                :key="item.id"
+                :ref="(el) => setCardEl(el, index)"
                 class="my-1 max-w-full landscape:aspect-smartphone landscape:h-[95%] portrait:h-full snap-start mx-auto snap-always"
             >
                 <ArticleView
-                    v-if="article"
+                    v-if="item.type === 'article'"
                     class="article rounded-xl"
-                    :article="article"
+                    :article="item"
                     :is-selected="index === currentIndex"
+                />
+                <OnboardingCardView
+                    v-else
+                    class="article rounded-xl"
+                    :topic="item.topic"
+                    :cta="item.cta"
+                    :has-device-variants="item.hasDeviceVariants"
+                    :is-selected="index === currentIndex"
+                    @skip="onSkipOnboarding"
                 />
             </div>
             <div
-                v-if="timelinePending && articles.length > 0 && timelineHasMore"
+                v-if="inflowPending && articleItems.length > 0 && inflowHasMore"
                 class="h-24 w-full shrink-0 flex items-center justify-center opacity-40 pointer-events-none"
                 aria-hidden="true"
             >

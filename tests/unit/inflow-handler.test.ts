@@ -14,6 +14,10 @@
  *   shape `ArticleView` consumes today.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { prisma } from '../../server/utils/prisma'
+import { loadInflowPage } from '../../server/utils/inflow-handler'
+import { defaultUiPrefs, toStoredUiPrefs } from '../../utils/ui-prefs'
+import { ONBOARDING_CARDS } from '../../utils/onboarding-cards'
 
 vi.mock('../../server/utils/prisma', () => ({
   prisma: {
@@ -25,11 +29,6 @@ vi.mock('../../server/utils/prisma', () => ({
     },
   },
 }))
-
-import { prisma } from '../../server/utils/prisma'
-import { loadInflowPage } from '../../server/utils/inflow-handler'
-import { defaultUiPrefs, toStoredUiPrefs } from '../../utils/ui-prefs'
-import { ONBOARDING_CARDS } from '../../utils/onboarding-cards'
 
 const mocked = {
   user: vi.mocked(prisma.user.findUnique),
