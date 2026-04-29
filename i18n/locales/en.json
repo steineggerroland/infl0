@@ -289,6 +289,31 @@
     "allReadBody": "Every article on your timeline is marked as read. Turn on the switch below to show read articles again.",
     "showReadLabel": "Show read articles"
   },
+  "onboarding": {
+    "skipIntro": "Skip introduction",
+    "intro": {
+      "title": "Welcome to infl0",
+      "body": {
+        "desktop": "infl0 shows news and blog posts as cards. The front of each card is the headline; flip it to read a teaser, and open the original to read the full text. Use W and S (or the arrow keys) to move between cards. Press R to bring back articles you have already read.",
+        "mobile": "infl0 shows news and blog posts as cards. The front of each card is the headline; tap the back-to-front button to flip it to a teaser, and tap the read-original button to read the full text. To bring back articles you have already read, open the menu in the top-right corner."
+      }
+    },
+    "sources": {
+      "title": "Where the cards come from",
+      "body": "Cards arrive from sources you add (RSS or Atom feeds). infl0 checks each source on a regular schedule, so a freshly added source does not appear immediately — give it a few minutes. Add a few you trust to start with; you can always remove or rename them later.",
+      "cta": "Add a source"
+    },
+    "scoring": {
+      "title": "Why this card is on top",
+      "body": "infl0 sorts your cards by a score, not by date. The score combines freshness, your sliders for what matters, and — only if you turn it on — how long you actually read each card. Tracking is off by default. You decide whether reading time helps the sort, and you can turn it off again at any time.",
+      "cta": "See privacy settings"
+    },
+    "themes": {
+      "title": "Make infl0 yours",
+      "body": "Pick a colour palette, fonts, and how much motion you want. The settings cover the front of cards, their back, and the longer reader view separately, so each surface can stay calm and legible for you.",
+      "cta": "Open settings"
+    }
+  },
   "feeds": {
     "title": "Sources",
     "intro": "Add or remove news or blog sources. Your timeline only shows articles from sources you listed here.",

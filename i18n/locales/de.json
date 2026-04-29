@@ -289,6 +289,31 @@
     "allReadBody": "Alle Artikel in deiner Timeline sind als gelesen markiert. Schalte den Schalter ein, um gelesene Artikel wieder anzuzeigen.",
     "showReadLabel": "Gelesene anzeigen"
   },
+  "onboarding": {
+    "skipIntro": "Einführung überspringen",
+    "intro": {
+      "title": "Willkommen bei infl0",
+      "body": {
+        "desktop": "infl0 zeigt Nachrichten und Blog-Beiträge als Karten. Vorne steht die Überschrift; drehe die Karte um, um den Anreißer zu lesen, oder öffne den Originaltext. Mit W und S (oder den Pfeiltasten) wechselst du zwischen Karten. Mit R holst du bereits gelesene Artikel zurück.",
+        "mobile": "infl0 zeigt Nachrichten und Blog-Beiträge als Karten. Vorne steht die Überschrift; tippe auf den Zurück-Knopf, um die Karte umzudrehen und den Anreißer zu lesen, und auf „Original anzeigen“, um den vollständigen Text zu öffnen. Bereits gelesene Artikel kannst du im Menü oben rechts wieder einblenden."
+      }
+    },
+    "sources": {
+      "title": "Woher die Karten kommen",
+      "body": "Karten kommen aus Quellen, die du hinzufügst (RSS- oder Atom-Feeds). infl0 prüft jede Quelle in einem festen Takt — eine frisch hinzugefügte Quelle erscheint also nicht sofort, gib ihr einen Moment. Beginne mit ein paar Quellen, denen du vertraust; entfernen oder umbenennen kannst du sie jederzeit.",
+      "cta": "Quelle hinzufügen"
+    },
+    "scoring": {
+      "title": "Warum diese Karte oben liegt",
+      "body": "infl0 sortiert deine Karten nach einem Score, nicht nach Datum. Der Score kombiniert Aktualität, deine Schieberegler und — nur wenn du es einschaltest — wie lange du eine Karte tatsächlich liest. Standardmäßig ist diese Auswertung aus. Du entscheidest, ob die Lesezeit in die Sortierung einfließt, und kannst es jederzeit wieder abschalten.",
+      "cta": "Zu den Privatsphäre-Einstellungen"
+    },
+    "themes": {
+      "title": "Mach dir infl0 zu eigen",
+      "body": "Wähle eine Farbpalette, Schriften und wie viel Bewegung du möchtest. Die Einstellungen decken Vorderseite, Rückseite und den Lesemodus getrennt ab, damit jede Fläche für dich ruhig und gut lesbar bleibt.",
+      "cta": "Einstellungen öffnen"
+    }
+  },
   "feeds": {
     "title": "Quellen",
     "intro": "Füge Nachrichten- oder Blogquellen hinzu oder entferne sie. Deine Timeline zeigt nur Artikel aus den hier eingetragenen Quellen.",
