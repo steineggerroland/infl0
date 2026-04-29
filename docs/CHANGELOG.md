@@ -13,6 +13,42 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Onboarding cards on a polymorphic inflow.** A new account lands on
+  four prefabricated welcome cards (`intro`, `sources`, `scoring`,
+  `themes`) that introduce navigation, where cards come from, what
+  the score does, and where to tune theme / fonts / motion. The cards
+  sit at the top of the inflow and are produced server-side from a
+  static catalog (`utils/onboarding-cards.ts`); copy lives under
+  `onboarding.*` in DE and EN. The `intro` card carries device-specific
+  copy (keyboard navigation on desktop, button-driven flip on mobile)
+  selected client-side via `matchMedia('(pointer: coarse)')`, with a
+  DaisyUI skeleton placeholder shown until the query resolves so the
+  wrong copy never flickers in. A *Skip introduction* button on
+  `intro` and a matching toggle in `/settings` (Welcome cards section)
+  share state through `User.uiPrefs.onboardingHidden`. Drift between
+  catalog, i18n, and CTA hrefs is pinned by
+  `tests/unit/onboarding-cards.test.ts`.
+
+- **`GET /api/inflow` with discriminated card types.** The inflow
+  endpoint now returns `{ items: Array<{ type: 'article' | 'onboarding', ... }>, hasMore, stats }`.
+  `Article` rows keep the shape `ArticleView` already consumes;
+  `onboarding` rows are locale-free structural data (`topic`,
+  `ordinal`, optional `cta`, `hasDeviceVariants`). Onboarding cards
+  do not participate in `R` (show-read), engagement-tracking
+  (dwell), or rank scoring — those mechanisms stay exclusive to
+  article cards. `stats.total` / `stats.unread` continue to count
+  article rows only.
+
+- **`chromium-onboarding` Playwright project.** A new project alongside
+  `chromium` and `chromium-authed` registers a fresh
+  `regression-test-<unique>@neurospicy.icu` account per worker via the
+  existing SRP register handler and asserts the four onboarding cards
+  on `/`. Production-shaped path (no `devData` dependency) for E2E
+  follow-ups planned in
+  [`docs/planned/e2e-strategy.md`](./planned/e2e-strategy.md). The
+  legacy `chromium-authed` project keeps logging `dev@localhost` in
+  for specs that need the deterministic seeded data.
+
 - **Central keyboard-shortcut reference on `/help`.** A new
   `#shortcuts-reference` section lists every app shortcut in three
   groups (timeline, reading an article, comfort & readability), each row
@@ -34,6 +70,19 @@ new entries accrue under **Unreleased**.
   inverse direction is checked too: dead rows / typos in the catalog
   fail the test loudly. Adding a shortcut without documenting it can
   no longer "rutsch durch" review.
+
+### Changed
+
+- **`/api/timeline` is now a deprecated alias.** Both `/api/timeline`
+  and the new `/api/inflow` endpoint forward to the same handler in
+  `server/utils/inflow-handler.ts` for one release. External callers
+  and any cached client should migrate to `/api/inflow`; the alias
+  is removed in the next minor release. The response shape changed
+  from `Article[]` to `Array<{ type: 'article' | 'onboarding', ... }>`
+  in both endpoints; if you consume `/api/timeline` from a script,
+  filter by `type === 'article'` (or send the new
+  `/settings` toggle off via `PATCH /api/me/ui-prefs` with
+  `{ "onboardingHidden": true }`).
 
 ### Documentation
 
