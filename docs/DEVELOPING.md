@@ -28,7 +28,25 @@ Without a suitable Node version, ESLint plugins or `postinstall` can fail (e.g. 
 | `npm run verify` | Lint + tests + typecheck (recommended before push; matches CI) |
 | `npm run typecheck` | Nuxt / TypeScript check |
 | `npm run test:e2e` | Production build + Nitro on `127.0.0.1:4275` + Playwright (`dotenv-cli`: `.env` then `.env.e2e`, **no `--override`**) — duplicate keys keep **`.env`**; committed Playwright values in **`.env.e2e`** apply only for keys **not** set in **`.env`** |
+| `npm run test:bdd` | Production-like BDD run (build + Nitro startup + Cucumber feature execution) |
+| `npm run test:bdd:local` | Run Cucumber scenarios against an already-running local app |
 | `npm run backfillEngagementAggregates` | Rebuild engagement aggregate tables from raw events (manual/heavy) |
+
+## Test strategy by layer
+
+We treat tests as three explicit layers with different ownership:
+
+- **Unit/component (`npm run test`)**: domain behavior, helper invariants, architectural boundaries, and isolated component interaction contracts.
+- **E2E smoke (`npm run test:e2e`)**: app boot, page reachability, setup/auth plumbing, and high-signal integration smoke checks only.
+- **BDD (`npm run test:bdd`)**: user-facing feature behavior and guided journeys as the primary executable product specification.
+
+Practical coverage targets:
+
+- **Unit/helpers**: aim for 90-100% on encapsulated utility/domain helpers.
+- **E2E smoke/API infrastructure**: aim for 90-100% on smoke-critical routes and setup paths.
+- **BDD feature journeys**: aim for 90-100% coverage of supported user-facing core flows.
+
+Use `tests/bdd/README.md` for BDD authoring conventions and `docs/TEST_COVERAGE_MATRIX.md` for the current feature-to-layer map and prioritized BDD gaps.
 
 ### Playwright / E2E auth (`dev@localhost`)
 
@@ -36,7 +54,7 @@ End-to-end tests use a **committed** `.env.e2e` with `DATABASE_URL`, `AUTH_JWT_S
 
 1. Start Postgres (e.g. Docker Compose from `.env.example`) and ensure `DATABASE_URL` in `.env.e2e` matches.
 2. Apply schema and seed: `npx prisma migrate deploy` (or `db:push` in dev), then **`npx prisma db seed`** when you need seed data. For E2E, merge **`.env.e2e`** so **`DEV_SRP_*`** are present (e.g. **`dotenv -e .env -e .env.e2e -- npx prisma db seed`** — `.env` wins on conflicts, `.env.e2e` fills missing keys). Plain **`npx prisma db seed`** only loads **`.env`**, so you miss **`DEV_*`** unless they are copied into **`.env`**. Prisma 7 does not auto-run seed after migrate; seed is always explicit.
-3. Run **`npm run test:e2e`**. `dotenv-cli` injects env for `nuxt build`, the Nitro server, and Playwright (same merge as **`tests/e2e/load-e2e-env.ts`**). The Playwright project **`setup`** runs **`tests/e2e/auth.setup.ts`**, performs SRP login, and writes **`tests/e2e/.auth/dev.json`** (gitignored). The **`chromium-authed`** project depends on **`setup`**. The **`chromium`** project (public a11y smokes) does not, so **`playwright test --project chromium`** does not need Postgres. Full **`test:e2e`**, including authed projects, needs **`DATABASE_URL`**, a reachable DB, and merge-seeded **`dev@localhost`**. For a non-empty **timeline** in manual or authed tests, run **`npm run devData`** (see [README](../README.md) "Local seed data") before or alongside E2E; a dedicated E2E fixture path is planned in [`docs/planned/onboarding-welcome-timeline.md`](./planned/onboarding-welcome-timeline.md).
+3. Run **`npm run test:e2e`**. `dotenv-cli` injects env for `nuxt build`, the Nitro server, and Playwright (same merge as **`tests/e2e/load-e2e-env.ts`**). The Playwright project **`setup`** runs **`tests/e2e/auth.setup.ts`**, performs SRP login, and writes **`tests/e2e/.auth/dev.json`** (gitignored). The **`chromium-authed`** project depends on **`setup`**. The **`chromium`** project (public a11y smokes) does not, so **`playwright test --project chromium`** does not need Postgres. Full **`test:e2e`**, including authed projects, needs **`DATABASE_URL`**, a reachable DB, and merge-seeded **`dev@localhost`**. For a non-empty **timeline** in manual or authed tests, run **`npm run devData`** (see [README](../README.md) "Local seed data") before or alongside E2E; onboarding fixture background is documented in [`docs/archive/26-04-30-onboarding-welcome-timeline.md`](./archive/26-04-30-onboarding-welcome-timeline.md).
 
 To rotate the dev password: `SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp-env.ts dev@localhost` (prints `DEV_SRP_*`), update `.env.e2e` and `E2E_LOGIN_PASSWORD`, then re-seed.
 
@@ -112,6 +130,7 @@ user-facing component.
 | [`CHANGELOG.md`](./CHANGELOG.md) | Shipped work (features, fixes, breaking changes) |
 | [`planned/README.md`](./planned/README.md) | Feature packages for implementation planning |
 | [`RELEASING.md`](./RELEASING.md) | GitHub Actions CI + tagging a release |
+| [`TEST_COVERAGE_MATRIX.md`](./TEST_COVERAGE_MATRIX.md) | Feature-to-test-layer map and BDD expansion backlog |
 
 ## Dependencies and security
 

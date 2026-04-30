@@ -107,6 +107,14 @@ export type UiPrefs = {
    * toast-based "new surface / new color available" notification.
    */
   seenFeatureAnnouncements: string[]
+  /**
+   * When `true`, the inflow API stops prepending onboarding cards for this
+   * user. Toggled by the *Skip introduction* button on the first onboarding
+   * card and the matching toggle in `/settings`. Default `false` for new
+   * and existing accounts; users see onboarding until they explicitly
+   * dismiss it (see `docs/planned/onboarding-and-inflow-cards.md`).
+   */
+  onboardingHidden: boolean
 }
 
 /**
@@ -266,6 +274,7 @@ export function defaultUiPrefs(): UiPrefs {
       reader: defaultSurfacePrefs('reader'),
     },
     seenFeatureAnnouncements: [],
+    onboardingHidden: false,
   }
 }
 
@@ -288,6 +297,7 @@ export function uiPrefsEffectiveCustomization(prefs: UiPrefs): boolean {
   const d = defaultUiPrefs()
   if (prefs.theme !== d.theme || prefs.motion !== d.motion || prefs.appearance !== d.appearance) return true
   if (prefs.seenFeatureAnnouncements.length > 0) return true
+  if (prefs.onboardingHidden !== d.onboardingHidden) return true
   for (const id of SURFACE_IDS) {
     if (!surfacePrefsEqual(prefs.surfaces[id], d.surfaces[id])) return true
   }
@@ -384,6 +394,7 @@ export function parseUiPrefsFromJson(json: unknown): UiPrefs | null {
     appearance,
     surfaces,
     seenFeatureAnnouncements: parseAnnouncementIds(j.seenFeatureAnnouncements),
+    onboardingHidden: typeof j.onboardingHidden === 'boolean' ? j.onboardingHidden : false,
   }
 }
 
@@ -401,6 +412,7 @@ export function toStoredUiPrefs(prefs: UiPrefs): UiPrefsStored {
     appearance: prefs.appearance,
     surfaces: prefs.surfaces,
     seenFeatureAnnouncements: prefs.seenFeatureAnnouncements,
+    onboardingHidden: prefs.onboardingHidden,
   }
 }
 
@@ -415,6 +427,7 @@ export type UiPrefsPatch = {
   appearance?: AppearanceMode
   surfaces?: Partial<Record<SurfaceId, Partial<SurfacePrefs>>>
   seenFeatureAnnouncements?: string[]
+  onboardingHidden?: boolean
 }
 
 /**
@@ -460,6 +473,9 @@ export function applyUiPrefsPatch(base: UiPrefs, patch: UiPrefsPatch): UiPrefs {
   }
   if (Array.isArray(patch.seenFeatureAnnouncements)) {
     next.seenFeatureAnnouncements = parseAnnouncementIds(patch.seenFeatureAnnouncements)
+  }
+  if (typeof patch.onboardingHidden === 'boolean') {
+    next.onboardingHidden = patch.onboardingHidden
   }
   return next
 }

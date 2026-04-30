@@ -7,7 +7,7 @@ order, acceptance criteria — separate from the large idea pool in
 ## Convention
 
 - **One file per package** (or per larger theme), e.g.
-  `shortcuts-help.md`, `onboarding-welcome-timeline.md`.
+  `some-feature-package.md`.
 - At the top: **goal**, **non-goals**, **dependencies**, optional **estimate /
   risk**.
 - At the bottom: **user stories** or a checklist, **definition of done**, links to
@@ -19,15 +19,21 @@ order, acceptance criteria — separate from the large idea pool in
 
 | Package | Summary | Status |
 |--------|--------|--------|
-| [`onboarding-welcome-timeline.md`](./onboarding-welcome-timeline.md) | Welcome content via fixed cards (shortcuts, themes, sources, app behaviour); basis for E2E with sign-up + login | Draft |
+| [`return-context-and-onboarding-completion.md`](./return-context-and-onboarding-completion.md) | Define stable return-to-context behavior and explicit onboarding completion model | Draft |
+| [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Add first BDD scenario wave for new-user, privacy-sensitive, and power-user personas | Draft |
+| [`ci-remote-e2e-smoke-strategy.md`](./ci-remote-e2e-smoke-strategy.md) | Decide and document remote CI strategy for smoke E2E gates | Draft |
 
 *(Add a row when a new package markdown is created.)*
 
 ## Suggested order (non-binding)
 
-1. Onboarding (`onboarding-welcome-timeline.md`) — wires up an authed E2E
-   foundation that the now-shipped shortcuts reference will plug into for
-   on-page smoke coverage.
-2. Later: explicit “capture” (collection / knowledge) **without** an LLM, then
-   larger product areas (knowledge menu, search, …) as separate packages (see
-   `ROADMAP.md`).
+1. `return-context-and-onboarding-completion.md`
+2. `bdd-persona-coverage-wave-1.md`
+3. `ci-remote-e2e-smoke-strategy.md`
+4. Next package: explicit “capture” (collection / knowledge) **without** an
+   LLM, then larger product areas (knowledge menu, search, …) as separate
+   packages (see `ROADMAP.md`).
+
+## Recently archived
+
+- [`../archive/26-04-30-onboarding-welcome-timeline.md`](../archive/26-04-30-onboarding-welcome-timeline.md)

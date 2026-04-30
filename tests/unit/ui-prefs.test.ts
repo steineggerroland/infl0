@@ -36,6 +36,7 @@ describe('ui-prefs data layer', () => {
       expect(d.appearance).toBe('auto')
       expect(Object.keys(d.surfaces).sort()).toEqual(['card-back', 'card-front', 'reader'])
       expect(d.seenFeatureAnnouncements).toEqual([])
+      expect(d.onboardingHidden).toBe(false)
     })
 
     it('gives the reader surface a longer-read default (serif, relaxed line height)', () => {
@@ -68,6 +69,12 @@ describe('ui-prefs data layer', () => {
     it('is true when theme differs from defaults', () => {
       const p = defaultUiPrefs()
       p.theme = 'warm:yellow'
+      expect(uiPrefsEffectiveCustomization(p)).toBe(true)
+    })
+
+    it('is true when onboarding has been hidden', () => {
+      const p = defaultUiPrefs()
+      p.onboardingHidden = true
       expect(uiPrefsEffectiveCustomization(p)).toBe(true)
     })
   })
@@ -302,6 +309,26 @@ describe('ui-prefs data layer', () => {
         seenFeatureAnnouncements: ['a', 'a', '', '   ', 'b', 'c', 42 as never, 'c'],
       })
       expect(next.seenFeatureAnnouncements).toEqual(['a', 'b', 'c'])
+    })
+
+    it('round-trips onboardingHidden through patch + parse + stored shape', () => {
+      const base = defaultUiPrefs()
+      expect(base.onboardingHidden).toBe(false)
+      const flipped = applyUiPrefsPatch(base, { onboardingHidden: true })
+      expect(flipped.onboardingHidden).toBe(true)
+      const reparsed = parseUiPrefsFromJson(toStoredUiPrefs(flipped))
+      expect(reparsed?.onboardingHidden).toBe(true)
+      const rolledBack = applyUiPrefsPatch(flipped, { onboardingHidden: false })
+      expect(rolledBack.onboardingHidden).toBe(false)
+    })
+
+    it('ignores non-boolean onboardingHidden patches', () => {
+      const base = defaultUiPrefs()
+      const next = applyUiPrefsPatch(
+        base,
+        { onboardingHidden: 'yes' as unknown as boolean },
+      )
+      expect(next.onboardingHidden).toBe(false)
     })
   })
 

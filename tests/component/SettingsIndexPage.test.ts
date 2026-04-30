@@ -59,6 +59,25 @@ vi.stubGlobal('useEngagementTrackingPrefs', () => ({
   setEnabled: setEnabledSpy,
 }))
 
+// useUiPrefs is consumed for the onboarding-visible toggle. Provide
+// a reactive stand-in whose value can be tweaked per test.
+const stubUiPrefs = ref({
+  version: 1,
+  theme: 'pastel:blue',
+  motion: 'system',
+  appearance: 'auto',
+  surfaces: {} as Record<string, unknown>,
+  seenFeatureAnnouncements: [] as string[],
+  onboardingHidden: false,
+})
+const updateUiPrefsSpy = vi.fn()
+vi.stubGlobal('useUiPrefs', () => ({
+  prefs: stubUiPrefs,
+  update: updateUiPrefsSpy,
+  reset: vi.fn(),
+  markAnnouncementSeen: vi.fn(),
+}))
+
 const SettingsIndex = (await import('../../pages/settings/index.vue')).default
 
 function makeI18n() {
@@ -71,6 +90,10 @@ function makeI18n() {
       trackingIntro: 'Off by default.',
       trackingLabel: 'Use reading behaviour for sorting',
       trackingHint: 'Articles seen for 2s+ count as read.',
+      onboardingHeading: 'Welcome cards',
+      onboardingIntro: 'Show or hide the welcome cards.',
+      onboardingLabel: 'Show welcome cards',
+      onboardingHint: 'Off when you have seen them.',
     },
     settingsDisplay: {
       heading: 'Display',
@@ -189,5 +212,54 @@ describe('SettingsIndex page', () => {
   it('does not render its own footer — the shortcut footer comes from the layout', () => {
     const wrapper = mountPage()
     expect(wrapper.find('footer').exists()).toBe(false)
+  })
+
+  describe('Onboarding cards toggle', () => {
+    it('exposes a section labelled "Welcome cards" with the expected toggle', () => {
+      const wrapper = mountPage()
+      const section = wrapper.find('section#onboarding')
+      expect(section.exists()).toBe(true)
+      const heading = section.find('#settings-onboarding-heading')
+      expect(heading.exists()).toBe(true)
+      expect(heading.element.tagName.toLowerCase()).toBe('h2')
+      expect(heading.text()).toBe('Welcome cards')
+      const toggle = wrapper.find('[data-testid="onboarding-visible-toggle"]')
+      expect(toggle.exists()).toBe(true)
+      expect((toggle.element as HTMLInputElement).type).toBe('checkbox')
+    })
+
+    it('reflects the current uiPrefs.onboardingHidden state (inverted to "show")', () => {
+      stubUiPrefs.value = { ...stubUiPrefs.value, onboardingHidden: false }
+      let wrapper = mountPage()
+      expect(
+        (wrapper.find('[data-testid="onboarding-visible-toggle"]').element as HTMLInputElement)
+          .checked,
+      ).toBe(true)
+
+      stubUiPrefs.value = { ...stubUiPrefs.value, onboardingHidden: true }
+      wrapper = mountPage()
+      expect(
+        (wrapper.find('[data-testid="onboarding-visible-toggle"]').element as HTMLInputElement)
+          .checked,
+      ).toBe(false)
+    })
+
+    it('PATCHes onboardingHidden via useUiPrefs when the toggle changes', async () => {
+      stubUiPrefs.value = { ...stubUiPrefs.value, onboardingHidden: false }
+      updateUiPrefsSpy.mockClear()
+      const wrapper = mountPage()
+      const input = wrapper.find('[data-testid="onboarding-visible-toggle"]')
+      ;(input.element as HTMLInputElement).checked = false
+      await input.trigger('change')
+      expect(updateUiPrefsSpy).toHaveBeenCalledWith({ onboardingHidden: true })
+
+      stubUiPrefs.value = { ...stubUiPrefs.value, onboardingHidden: true }
+      updateUiPrefsSpy.mockClear()
+      const wrapper2 = mountPage()
+      const input2 = wrapper2.find('[data-testid="onboarding-visible-toggle"]')
+      ;(input2.element as HTMLInputElement).checked = true
+      await input2.trigger('change')
+      expect(updateUiPrefsSpy).toHaveBeenCalledWith({ onboardingHidden: false })
+    })
   })
 })

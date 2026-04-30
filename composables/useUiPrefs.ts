@@ -125,6 +125,7 @@ export function useUiPrefs() {
         reader: { ...p.surfaces.reader },
       },
       seenFeatureAnnouncements: [...p.seenFeatureAnnouncements],
+      onboardingHidden: p.onboardingHidden,
     }
   }
 
@@ -329,5 +330,7 @@ function mergePatches(a: UiPrefsPatch, b: UiPrefsPatch): UiPrefsPatch {
   if (b.seenFeatureAnnouncements) {
     out.seenFeatureAnnouncements = b.seenFeatureAnnouncements
   }
+  // `out` already inherits `onboardingHidden` via the spread above when only
+  // one of the patches sets it. The spread keeps b's value when both set it.
   return out
 }

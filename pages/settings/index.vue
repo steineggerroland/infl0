@@ -59,6 +59,18 @@ async function onTrackingToggle(e: Event) {
     trackingBusy.value = false
   }
 }
+
+// Onboarding cards visibility — single boolean on uiPrefs, kept in
+// lock-step with the *Skip introduction* button on the intro card via
+// the same useUiPrefs reactive state. The toggle is "show", so the
+// internal `onboardingHidden` value is inverted for the checkbox.
+const { prefs: uiPrefs, update: updateUiPrefs } = useUiPrefs()
+const onboardingVisible = computed(() => !uiPrefs.value.onboardingHidden)
+
+function onOnboardingToggle(e: Event) {
+  const checked = (e.target as HTMLInputElement).checked
+  updateUiPrefs({ onboardingHidden: !checked })
+}
 </script>
 
 <template>
@@ -99,6 +111,47 @@ async function onTrackingToggle(e: Event) {
           <div class="border-t border-[var(--infl0-panel-border)] pt-5">
             <SettingsMotionControl />
           </div>
+        </div>
+      </section>
+
+      <!--
+        Onboarding cards toggle: same state as the *Skip introduction*
+        button on the intro card. Single boolean on uiPrefs.onboardingHidden,
+        rendered as a "show" toggle here for consistency with the other
+        on/off settings.
+      -->
+      <section
+        id="onboarding"
+        aria-labelledby="settings-onboarding-heading"
+        class="mb-10"
+      >
+        <header class="mb-4 text-center">
+          <h2 id="settings-onboarding-heading" class="infl0-canvas-fg text-lg font-semibold">
+            {{ t('settingsIndex.onboardingHeading') }}
+          </h2>
+          <p class="infl0-canvas-muted mt-1 text-sm">
+            {{ t('settingsIndex.onboardingIntro') }}
+          </p>
+        </header>
+
+        <div class="infl0-panel p-5">
+          <label class="flex cursor-pointer items-start gap-4">
+            <input
+              type="checkbox"
+              class="toggle toggle-primary mt-0.5 shrink-0"
+              :checked="onboardingVisible"
+              data-testid="onboarding-visible-toggle"
+              @change="onOnboardingToggle"
+            >
+            <span class="min-w-0 text-[var(--infl0-panel-text)]">
+              <span class="block text-sm font-medium">{{
+                t('settingsIndex.onboardingLabel')
+              }}</span>
+              <span class="infl0-panel-muted mt-1 block text-xs leading-snug">{{
+                t('settingsIndex.onboardingHint')
+              }}</span>
+            </span>
+          </label>
         </div>
       </section>
 

@@ -44,7 +44,11 @@
     "trackingHeading": "Leseverhalten auswerten",
     "trackingIntro": "Standardmäßig aus. Du entscheidest, ob wir dein Leseverhalten für die Sortierung nutzen dürfen. Du kannst jederzeit wieder abschalten – dann werden keine neuen Daten mehr gespeichert.",
     "trackingLabel": "Leseverhalten für bessere Sortierung nutzen",
-    "trackingHint": "Wenn aktiv, merken wir uns, wie lange du Überschrift, Teaser oder den längeren Text ansiehst. Artikel, die du rund zwei Sekunden oder länger betrachtest, gelten als gelesen."
+    "trackingHint": "Wenn aktiv, merken wir uns, wie lange du Überschrift, Teaser oder den längeren Text ansiehst. Artikel, die du rund zwei Sekunden oder länger betrachtest, gelten als gelesen.",
+    "onboardingHeading": "Willkommenskarten",
+    "onboardingIntro": "Blende die vier Willkommenskarten ein oder aus, die in Navigation, Quellen, Scoring und Themes einführen. Wenn aktiv, stehen sie ganz vorne in deinem Inflow.",
+    "onboardingLabel": "Willkommenskarten anzeigen",
+    "onboardingHint": "Aus, wenn du sie bereits gesehen hast. Schalte sie jederzeit wieder ein, um die Einführung erneut anzuschauen."
   },
   "settingsDisplay": {
     "heading": "Darstellung",
@@ -288,6 +292,52 @@
     "allReadTitle": "Alles gelesen",
     "allReadBody": "Alle Artikel in deiner Timeline sind als gelesen markiert. Schalte den Schalter ein, um gelesene Artikel wieder anzuzeigen.",
     "showReadLabel": "Gelesene anzeigen"
+  },
+  "onboarding": {
+    "skipIntro": "Einführung überspringen",
+    "flipCard": "Karte drehen",
+    "flipBack": "Zur Vorderseite",
+    "openFullText": "Volltext öffnen",
+    "helpLinkLabel": "Zur Hilfeseite",
+    "intro": {
+      "title": "Willkommen bei infl0",
+      "front": {
+        "desktop": "Willkommen in deiner ruhigen News-Timeline. infl0 bringt Artikel als drehbare Karten auf den Punkt: vorne die Essenz, hinten der Kontext. Probiere es aus und klick auf die Karte oder benutze den Shortcut \"E\" auf der Tastatur.",
+        "mobile": "Willkommen in deiner ruhigen News-Timeline. infl0 bringt Artikel als drehbare Karten auf den Punkt: vorne die Essenz, hinten der Kontext. Probiere es direkt aus und drehe diese Karte einmal um - tippe dafür auf den Text, den Pfeil unten links oder die Ecke oben rechts."
+      },
+      "back": {
+        "desktop": "Stark, jetzt bist du auf der Rückseite. Mit W/S oder den Pfeiltasten gehst du zur nächsten oder vorherigen Karte. Mit Q öffnest du den Volltext der aktuellen Karte.",
+        "mobile": "Stark, jetzt bist du auf der Rückseite. Wechsel jetzt einfach zur nächsten Karte, indem du in der Timeline weiter nach unten scrollst. Den Volltext dieser Karte öffnest du mit dem Link unten auf der Karte."
+      },
+      "full": {
+        "desktop": "Shortcut-Moment: Q öffnet den Volltext der ausgewählten Karte und Q oder Esc schließt ihn wieder.\n\nAuf der Hilfeseite findest du alle Kürzel im Überblick.\n\nSchließe diese Ansicht jetzt und springe mit W/S oder den Pfeiltasten direkt zur nächsten Einführungskarte.",
+        "mobile": "Hier siehst du den längeren Text zur Karte. Schließe die Ansicht mit dem Schließen-Button und geh dann zur nächsten Einführungskarte.\n\nWenn du infl0 am Desktop nutzt, kannst du zusätzlich Tastenkürzel wie Q und Esc verwenden.\n\nAuf der Hilfeseite findest du alle Kürzel im Überblick."
+      }
+    },
+    "sources": {
+      "title": "Woher die Karten kommen",
+      "front": "Deine Timeline lebt von deinen Quellen. Schon wenige gute RSS- oder Atom-Feeds reichen, damit infl0 dir täglich frische, relevante Karten zeigt.",
+      "back": "Jede Quelle wird regelmäßig geprüft, neue Inhalte landen danach automatisch als Karten in deinem Inflow. Starte mit deinen Lieblingsquellen und erweitere dann Schritt für Schritt.",
+      "full": "Quellen sind deine redaktionelle Basis in infl0. Du fügst RSS- oder Atom-Feeds hinzu, infl0 sammelt neue Beiträge im Hintergrund und stellt sie als Karten bereit.\n\nÖffne jetzt die Quellen-Verwaltung, füge mindestens eine Quelle hinzu und kehre danach zur Timeline zurück.",
+      "cta": "Quelle hinzufügen"
+    },
+    "scoring": {
+      "title": "Warum diese Karte oben liegt",
+      "front": "Du kennst es als \"der Algorithmus\" von TikTok oder Twitter. Bei infl0 ist der Algorithmus dafür da, deine Timeline nachvollziehbar und anpassbar zu sortieren.",
+      "back": "Der Score kombiniert Frische, deine Regler und optional Leseverhalten. Wichtig: Dieser Algorithmus ist transparent - und du kannst ihn in den Einstellungen selbst steuern. Wenn du Tracking aktivierst, kann infl0 deine Timeline meist deutlich besser auf dich zuschneiden.",
+      "full": "Bei infl0 bleibt \"der Algorithmus\" kein Geheimnis: Du siehst offen, welche Faktoren den Score bilden, und kannst ihre Gewichtung selbst festlegen.\n\nSobald du deine Sortierungs-Regler speicherst, werden die Scores deiner Timeline neu berechnet. Dadurch entspricht die Reihenfolge direkt deinen aktuellen Einstellungen.\n\nWenn du zusätzlich Tracking aktivierst, kann infl0 echtes Leseverhalten in die Sortierung einbeziehen - das verbessert die persönliche Relevanz oft spürbar.\n\nIm Bereich \"Warum oben?\" siehst du pro Karte, welche Signale den Platz nach oben oder unten beeinflusst haben.\n\nÖffne jetzt Sortierung, Tracking oder \"Warum oben?\" und schau dir die Transparenz live an.",
+      "cta": "Sortierung anpassen",
+      "linkTimeline": "Zu Sortierung anpassen",
+      "linkTracking": "Zu Tracking",
+      "linkWhyTop": "Zu Warum oben?"
+    },
+    "themes": {
+      "title": "Mach dir infl0 zu eigen",
+      "front": "Jetzt kommt dein Feinschliff: Farben, Schriften und Bewegungen lassen sich so einstellen, dass infl0 sich wirklich nach dir anfühlt.",
+      "back": "Du kannst Vorderseite, Rückseite und Volltext getrennt gestalten - für maximale Lesbarkeit auf jeder Fläche und in jeder Lichtsituation. Auf dem Smartphone passt du das direkt in den Einstellungen an. Am Desktop kannst du zusätzlich mit + oder - die Schriftgröße ändern und mit Shift+K oder Shift+L durch Schriftarten wechseln.",
+      "full": "Im Einstellungsbereich kannst du Themes, Typografie und Bewegungsgrad dauerhaft anpassen. So bleibt die App ruhig, kontrastreich und bequem lesbar - egal ob kurz im Alltag oder lang am Abend.\n\nWenn du bereit bist, schließe den Volltext und starte mit deiner ersten echten Quelle.",
+      "cta": "Einstellungen öffnen"
+    }
   },
   "feeds": {
     "title": "Quellen",

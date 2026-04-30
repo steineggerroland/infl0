@@ -173,6 +173,18 @@ describe('/api/me/ui-prefs', () => {
       expect(res.surfaces['card-back'].backgroundColor).toBeNull()
     })
 
+    it('persists onboardingHidden across a partial patch', async () => {
+      vi.mocked(getSessionUserId).mockResolvedValue('u1')
+      vi.mocked(prisma.user.findUnique).mockResolvedValue({ uiPrefs: null } as never)
+      vi.mocked(readBody).mockResolvedValueOnce({ onboardingHidden: true })
+      vi.mocked(prisma.user.update).mockResolvedValue({} as never)
+
+      const res = await patchHandler(mockEvent())
+      const updateCall = vi.mocked(prisma.user.update).mock.calls[0]![0]
+      expect(updateCall.data.uiPrefs).toMatchObject({ v: 1, onboardingHidden: true })
+      expect(res.onboardingHidden).toBe(true)
+    })
+
     it('resets stored prefs to null on { reset: true }', async () => {
       vi.mocked(getSessionUserId).mockResolvedValue('u1')
       vi.mocked(prisma.user.findUnique).mockResolvedValue({ uiPrefs: {} } as never)

@@ -13,6 +13,48 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Onboarding cards on a polymorphic inflow.** A new account lands on
+  four prefabricated welcome cards (`intro`, `sources`, `scoring`,
+  `themes`) that introduce navigation, where cards come from, what
+  the score does, and where to tune theme / fonts / motion. The cards
+  sit at the top of the inflow and are produced server-side from a
+  static catalog (`utils/onboarding-cards.ts`); copy lives under
+  `onboarding.*` in DE and EN. The `intro` card carries device-specific
+  copy (keyboard navigation on desktop, button-driven flip on mobile)
+  selected client-side via `matchMedia('(pointer: coarse)')`, with a
+  DaisyUI skeleton placeholder shown until the query resolves so the
+  wrong copy never flickers in. A *Skip introduction* button on
+  `intro` and a matching toggle in `/settings` (Welcome cards section)
+  share state through `User.uiPrefs.onboardingHidden`. Drift between
+  catalog, i18n, and CTA hrefs is pinned by
+  `tests/unit/onboarding-cards.test.ts`.
+
+- **`GET /api/inflow` with discriminated card types.** The inflow
+  endpoint now returns `{ items: Array<{ type: 'article' | 'onboarding', ... }>, hasMore, stats }`.
+  `Article` rows keep the shape `ArticleView` already consumes;
+  `onboarding` rows are locale-free structural data (`topic`,
+  `ordinal`, optional `cta`, `hasDeviceVariants`). Onboarding cards
+  do not participate in `R` (show-read), engagement-tracking
+  (dwell), or rank scoring — those mechanisms stay exclusive to
+  article cards. `stats.total` / `stats.unread` continue to count
+  article rows only.
+
+- **`chromium-onboarding` Playwright project.** A new project alongside
+  `chromium` and `chromium-authed` registers a fresh
+  `regression-test-<unique>@neurospicy.icu` account per worker via the
+  existing SRP register handler and asserts the four onboarding cards
+  on `/`. Production-shaped path (no `devData` dependency) for E2E
+  follow-ups now tracked in planned package docs under
+  [`docs/planned/README.md`](./planned/README.md). The
+  legacy `chromium-authed` project keeps logging `dev@localhost` in
+  for specs that need the deterministic seeded data.
+
+- **BDD suite aligned with Cucumber defaults.** Behavior features and
+  glue now live under `features/**/*.feature` and `features/**/*.js`
+  (including shared/auth/onboarding steps and world setup), replacing
+  the previous `tests/bdd/**` layout. Cucumber scripts now run with
+  quoted globs so step discovery is stable in shell and CI contexts.
+
 - **Central keyboard-shortcut reference on `/help`.** A new
   `#shortcuts-reference` section lists every app shortcut in three
   groups (timeline, reading an article, comfort & readability), each row
@@ -35,11 +77,43 @@ new entries accrue under **Unreleased**.
   fail the test loudly. Adding a shortcut without documenting it can
   no longer "rutsch durch" review.
 
+### Changed
+
+- **`/api/timeline` is now a deprecated alias.** Both `/api/timeline`
+  and the new `/api/inflow` endpoint forward to the same handler in
+  `server/utils/inflow-handler.ts` for one release. External callers
+  and any cached client should migrate to `/api/inflow`; the alias
+  is removed in the next minor release. The response shape changed
+  from `Article[]` to `Array<{ type: 'article' | 'onboarding', ... }>`
+  in both endpoints; if you consume `/api/timeline` from a script,
+  filter by `type === 'article'` (or send the new
+  `/settings` toggle off via `PATCH /api/me/ui-prefs` with
+  `{ "onboardingHidden": true }`).
+
+- **Onboarding E2E narrowed to smoke-level behavior.** The onboarding
+  Playwright spec now validates timeline load and onboarding render
+  presence only; user-facing flow assertions moved to BDD scenarios.
+
+- **Auth BDD logout flow hardened.** Logout steps now open the user menu
+  explicitly before clicking the action, support localized button labels
+  (`Log out` / `Abmelden`), and URL assertions accept optional query/hash
+  suffixes (e.g. `/login?redirect=/`) for stable return-navigation checks.
+
 ### Documentation
 
 - **Closed package** [`docs/archive/26-04-27-shortcuts-help.md`](./archive/26-04-27-shortcuts-help.md)
   (was [`docs/planned/shortcuts-help.md`](./planned/README.md)) with the
   shipped scope, deviations, and follow-ups.
+
+- **Closed and archived onboarding package** to
+  [`docs/archive/26-04-30-onboarding-welcome-timeline.md`](./archive/26-04-30-onboarding-welcome-timeline.md),
+  with cross-doc links updated from planned → archive references.
+
+- **Added test strategy and coverage planning docs**:
+  - [`docs/TEST_COVERAGE_MATRIX.md`](./TEST_COVERAGE_MATRIX.md)
+  - [`docs/planned/return-context-and-onboarding-completion.md`](./planned/return-context-and-onboarding-completion.md)
+  - [`docs/planned/bdd-persona-coverage-wave-1.md`](./planned/bdd-persona-coverage-wave-1.md)
+  - [`docs/planned/ci-remote-e2e-smoke-strategy.md`](./planned/ci-remote-e2e-smoke-strategy.md)
 
 ## [0.3.0] — 2026-04-27
 
@@ -199,7 +273,7 @@ Appearance and readability: UI preferences (theme, motion, fonts, and colors per
 
 - **Planned follow-ups**
   - central shortcuts help → [`planned/shortcuts-help.md`](./planned/shortcuts-help.md)
-  - onboarding + welcome timeline → [`planned/onboarding-welcome-timeline.md`](./planned/onboarding-welcome-timeline.md)
+  - onboarding + welcome timeline → [`archive/26-04-30-onboarding-welcome-timeline.md`](./archive/26-04-30-onboarding-welcome-timeline.md)
 
 ## [0.1.0] — 2026-04-22
 
