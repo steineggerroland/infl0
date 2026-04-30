@@ -297,21 +297,21 @@
     "skipIntro": "Einführung überspringen",
     "flipCard": "Karte drehen",
     "flipBack": "Zur Vorderseite",
-    "openFullText": "Volltext öffnen (Q)",
+    "openFullText": "Volltext öffnen",
     "helpLinkLabel": "Zur Hilfeseite",
     "intro": {
       "title": "Willkommen bei infl0",
       "front": {
         "desktop": "Willkommen in deiner ruhigen News-Timeline. infl0 bringt Artikel als drehbare Karten auf den Punkt: vorne die Essenz, hinten der Kontext. Probiere es aus und klick auf die Karte oder benutze den Shortcut \"E\" auf der Tastatur.",
-        "mobile": "Willkommen in deiner ruhigen News-Timeline. infl0 bringt Artikel als drehbare Karten auf den Punkt: vorne die Essenz, hinten der Kontext. Probiere es direkt aus und drehe diese Karte einmal um."
+        "mobile": "Willkommen in deiner ruhigen News-Timeline. infl0 bringt Artikel als drehbare Karten auf den Punkt: vorne die Essenz, hinten der Kontext. Probiere es direkt aus und drehe diese Karte einmal um - tippe dafür auf den Text, den Pfeil unten links oder die Ecke oben rechts."
       },
       "back": {
         "desktop": "Stark, jetzt bist du auf der Rückseite. Mit W/S oder den Pfeiltasten gehst du zur nächsten oder vorherigen Karte. Mit Q öffnest du den Volltext der aktuellen Karte.",
-        "mobile": "Stark, jetzt bist du auf der Rückseite. Wechsle mit W/S oder den Pfeiltasten zwischen Karten. Mit Q öffnest du den Volltext der aktuellen Karte."
+        "mobile": "Stark, jetzt bist du auf der Rückseite. Wechsel jetzt einfach zur nächsten Karte, indem du in der Timeline weiter nach unten scrollst. Den Volltext dieser Karte öffnest du mit dem Link unten auf der Karte."
       },
       "full": {
         "desktop": "Shortcut-Moment: Q öffnet den Volltext der ausgewählten Karte und Q oder Esc schließt ihn wieder.\n\nAuf der Hilfeseite findest du alle Kürzel im Überblick.\n\nSchließe diese Ansicht jetzt und springe mit W/S oder den Pfeiltasten direkt zur nächsten Einführungskarte.",
-        "mobile": "Shortcut-Moment: Q öffnet den Volltext der ausgewählten Karte und Q oder Esc schließt ihn wieder.\n\nAuf der Hilfeseite findest du alle Kürzel im Überblick.\n\nSchließe diese Ansicht jetzt und geh zur nächsten Einführungskarte."
+        "mobile": "Hier siehst du den längeren Text zur Karte. Schließe die Ansicht mit dem Schließen-Button und geh dann zur nächsten Einführungskarte.\n\nWenn du infl0 am Desktop nutzt, kannst du zusätzlich Tastenkürzel wie Q und Esc verwenden.\n\nAuf der Hilfeseite findest du alle Kürzel im Überblick."
       }
     },
     "sources": {
@@ -334,7 +334,7 @@
     "themes": {
       "title": "Mach dir infl0 zu eigen",
       "front": "Jetzt kommt dein Feinschliff: Farben, Schriften und Bewegungen lassen sich so einstellen, dass infl0 sich wirklich nach dir anfühlt.",
-      "back": "Du kannst Vorderseite, Rückseite und Volltext getrennt gestalten - für maximale Lesbarkeit auf jeder Fläche und in jeder Lichtsituation. Mit + oder - änderst du die Schriftgröße, mit Shift+K und Shift+L wechselst du durch Schriftarten.",
+      "back": "Du kannst Vorderseite, Rückseite und Volltext getrennt gestalten - für maximale Lesbarkeit auf jeder Fläche und in jeder Lichtsituation. Auf dem Smartphone passt du das direkt in den Einstellungen an. Am Desktop kannst du zusätzlich mit + oder - die Schriftgröße ändern und mit Shift+K oder Shift+L durch Schriftarten wechseln.",
       "full": "Im Einstellungsbereich kannst du Themes, Typografie und Bewegungsgrad dauerhaft anpassen. So bleibt die App ruhig, kontrastreich und bequem lesbar - egal ob kurz im Alltag oder lang am Abend.\n\nWenn du bereit bist, schließe den Volltext und starte mit deiner ersten echten Quelle.",
       "cta": "Einstellungen öffnen"
     }

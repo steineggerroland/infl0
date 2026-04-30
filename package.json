@@ -26,6 +26,8 @@
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:bdd": "dotenv -e .env -e .env.e2e -- sh -c 'npm run build && npx start-server-and-test \"NITRO_HOST=127.0.0.1 NITRO_PORT=4275 node .output/server/index.mjs\" http://127.0.0.1:4275/help \"cucumber-js \\\"features/**/*.feature\\\" --import \\\"features/**/*.js\\\" --format progress --parallel 1\"'",
+    "test:bdd:local": "dotenv -e .env -e .env.e2e -- cucumber-js \"features/**/*.feature\" --import \"features/**/*.js\" --format progress --parallel 1",
     "test:e2e": "dotenv -e .env -e .env.e2e -- sh -c 'npm run build && npx start-server-and-test \"NITRO_HOST=127.0.0.1 NITRO_PORT=4275 node .output/server/index.mjs\" http://127.0.0.1:4275/help \"playwright test\"'",
     "verify": "npm run lint && npm run test && npm run typecheck",
     "typecheck": "nuxi typecheck"
@@ -54,6 +56,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.2",
+    "@cucumber/cucumber": "^12.8.2",
     "@nuxt/eslint": "^1.15.0",
     "@playwright/test": "^1.59.1",
     "@types/node": "^22.15.0",

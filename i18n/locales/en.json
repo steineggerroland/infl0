@@ -297,21 +297,21 @@
     "skipIntro": "Skip introduction",
     "flipCard": "Flip card",
     "flipBack": "Back to front",
-    "openFullText": "Open full text (Q)",
+    "openFullText": "Open full text",
     "helpLinkLabel": "Open help page",
     "intro": {
       "title": "Welcome to infl0",
       "front": {
         "desktop": "Welcome to your calm news timeline. infl0 turns articles into flip cards: essence on the front, context on the back. Try it now: click the card or use the \"E\" keyboard shortcut.",
-        "mobile": "Welcome to your calm news timeline. infl0 turns articles into flip cards: essence on the front, context on the back. Try it right away and flip this card once."
+        "mobile": "Welcome to your calm news timeline. infl0 turns articles into flip cards: essence on the front, context on the back. Try it right away and flip this card once - tap the text, the arrow at the bottom left, or the top-right corner."
       },
       "back": {
         "desktop": "Nice, you reached the back side. Use W/S or arrow keys for the next and previous card. Press Q to open the current card's full text.",
-        "mobile": "Nice, you reached the back side. Use W/S or arrow keys to move between cards. Press Q to open the current card's full text."
+        "mobile": "Nice, you reached the back side. Move to the next card by scrolling down in your timeline. Open this card's longer text with the link at the bottom of the card."
       },
       "full": {
         "desktop": "Shortcut moment: Q opens the selected card's full text and Q or Esc closes it again.\n\nYou can find the full shortcut reference on the help page.\n\nClose this view now and jump to the next welcome card with W/S or arrow keys.",
-        "mobile": "Shortcut moment: Q opens the selected card's full text and Q or Esc closes it again.\n\nYou can find the full shortcut reference on the help page.\n\nClose this view now and continue with the next welcome card."
+        "mobile": "This is the longer card text view. Close it with the close button, then continue to the next welcome card.\n\nWhen you use infl0 on desktop, you can also use shortcuts like Q and Esc.\n\nYou can find the full shortcut reference on the help page."
       }
     },
     "sources": {
@@ -334,7 +334,7 @@
     "themes": {
       "title": "Make infl0 yours",
       "front": "Now for your final polish: colors, fonts, and motion controls let infl0 feel truly yours.",
-      "back": "You can style card front, card back, and full-text reader independently - so every surface stays clear in every lighting condition. Use + or - to adjust text size, and Shift+K / Shift+L to cycle through typefaces.",
+      "back": "You can style card front, card back, and full-text reader independently - so every surface stays clear in every lighting condition. On mobile, adjust everything directly in settings. On desktop, you can also use + or - for text size and Shift+K / Shift+L to cycle through typefaces.",
       "full": "In settings you can fine-tune themes, typography, and motion preferences permanently. That keeps infl0 calm, high-contrast, and comfortable whether you skim quickly or read deeply.\n\nWhen you're ready, close this full text and add your first real source.",
       "cta": "Open settings"
     }
