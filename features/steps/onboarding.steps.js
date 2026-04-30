@@ -200,7 +200,7 @@ When('I press {string}', async function (shortcut) {
   this.fontFamilyAfter = await readFontFamily(target)
 })
 
-Then('the font size for {string} should change accordingly', async function (_surface) {
+Then('the font size for {string} should change accordingly', async function () {
   expect(this.fontSizeAfter).not.toBeNull()
   expect(this.fontSizeBefore).not.toBeNull()
   const shortcut = this.lastShortcut
