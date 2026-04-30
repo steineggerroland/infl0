@@ -248,7 +248,7 @@ Appearance and readability: UI preferences (theme, motion, fonts, and colors per
 
 - **Planned follow-ups**
   - central shortcuts help → [`planned/shortcuts-help.md`](./planned/shortcuts-help.md)
-  - onboarding + welcome timeline → [`planned/onboarding-welcome-timeline.md`](./planned/onboarding-welcome-timeline.md)
+  - onboarding + welcome timeline → [`archive/26-04-30-onboarding-welcome-timeline.md`](./archive/26-04-30-onboarding-welcome-timeline.md)
 
 ## [0.1.0] — 2026-04-22
 

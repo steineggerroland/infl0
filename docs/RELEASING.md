@@ -14,22 +14,40 @@
 If you later want to attach e.g. `docker build` logs or SBOMs, extend
 the release job.
 
+## Test gates before tagging
+
+Current CI gate on PR/push includes lint, unit/component tests, and typecheck.
+BDD and E2E smoke are currently treated as release-readiness gates run before tagging:
+
+- `npm run test:bdd`
+- `npm run test:e2e`
+
+If you decide to promote BDD to a mandatory CI gate, add `npm run test:bdd`
+to `.github/workflows/ci.yml` (same Node/env merge assumptions as local runs).
+
 ## Cut a first (or next) release
 
 1. On `main` (or a release branch), make sure **CI is green**.
-2. Maintain **`docs/CHANGELOG.md`**: add operator-relevant items under
+2. Run release-readiness behavior checks:
+
+   ```bash
+   npm run test:bdd
+   npm run test:e2e
+   ```
+
+3. Maintain **`docs/CHANGELOG.md`**: add operator-relevant items under
    `[Unreleased]`; for a release, move them under a new heading
    **`## [0.x.y] — YYYY-MM-DD`** (Keep a Changelog style).
-3. Optionally set **`package.json`** → **`version`** to the same Semver
+4. Optionally set **`package.json`** → **`version`** to the same Semver
    (without a `v` prefix) so the repo and tag stay aligned.
-4. Create and push the tag:
+5. Create and push the tag:
 
    ```bash
    git tag -a v0.2.0 -m "Release v0.2.0"
    git push origin v0.2.0
    ```
 
-5. Check **Releases** on GitHub; edit the text manually if needed.
+6. Check **Releases** on GitHub; edit the text manually if needed.
 
 **Convention:** tag name = `v` + Semver from `CHANGELOG` / `package.json`.
 

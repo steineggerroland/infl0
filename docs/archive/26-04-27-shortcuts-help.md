@@ -47,7 +47,7 @@ matrix).
 3. **(Optional) E2E smoke** that the help path/anchor loads and the
    described section exists — not the full shortcut matrix in Playwright
    (deferred; tracked under
-   [`onboarding-welcome-timeline.md`](../planned/onboarding-welcome-timeline.md)
+   [`26-04-30-onboarding-welcome-timeline.md`](./26-04-30-onboarding-welcome-timeline.md)
    so an authed test can land on a stable timeline first).
 
 ## Implementation summary
@@ -129,4 +129,4 @@ matrix).
 
 - PR: *(set after merge)*
 - Discussion: `ROADMAP.md`, `planned/README.md`,
-  [`onboarding-welcome-timeline.md`](../planned/onboarding-welcome-timeline.md)
+  [`26-04-30-onboarding-welcome-timeline.md`](./26-04-30-onboarding-welcome-timeline.md)
