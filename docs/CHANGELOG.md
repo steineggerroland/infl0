@@ -44,10 +44,16 @@ new entries accrue under **Unreleased**.
   `regression-test-<unique>@neurospicy.icu` account per worker via the
   existing SRP register handler and asserts the four onboarding cards
   on `/`. Production-shaped path (no `devData` dependency) for E2E
-  follow-ups planned in
-  [`docs/planned/e2e-strategy.md`](./planned/e2e-strategy.md). The
+  follow-ups now tracked in planned package docs under
+  [`docs/planned/README.md`](./planned/README.md). The
   legacy `chromium-authed` project keeps logging `dev@localhost` in
   for specs that need the deterministic seeded data.
+
+- **BDD suite aligned with Cucumber defaults.** Behavior features and
+  glue now live under `features/**/*.feature` and `features/**/*.js`
+  (including shared/auth/onboarding steps and world setup), replacing
+  the previous `tests/bdd/**` layout. Cucumber scripts now run with
+  quoted globs so step discovery is stable in shell and CI contexts.
 
 - **Central keyboard-shortcut reference on `/help`.** A new
   `#shortcuts-reference` section lists every app shortcut in three
@@ -84,11 +90,30 @@ new entries accrue under **Unreleased**.
   `/settings` toggle off via `PATCH /api/me/ui-prefs` with
   `{ "onboardingHidden": true }`).
 
+- **Onboarding E2E narrowed to smoke-level behavior.** The onboarding
+  Playwright spec now validates timeline load and onboarding render
+  presence only; user-facing flow assertions moved to BDD scenarios.
+
+- **Auth BDD logout flow hardened.** Logout steps now open the user menu
+  explicitly before clicking the action, support localized button labels
+  (`Log out` / `Abmelden`), and URL assertions accept optional query/hash
+  suffixes (e.g. `/login?redirect=/`) for stable return-navigation checks.
+
 ### Documentation
 
 - **Closed package** [`docs/archive/26-04-27-shortcuts-help.md`](./archive/26-04-27-shortcuts-help.md)
   (was [`docs/planned/shortcuts-help.md`](./planned/README.md)) with the
   shipped scope, deviations, and follow-ups.
+
+- **Closed and archived onboarding package** to
+  [`docs/archive/26-04-30-onboarding-welcome-timeline.md`](./archive/26-04-30-onboarding-welcome-timeline.md),
+  with cross-doc links updated from planned → archive references.
+
+- **Added test strategy and coverage planning docs**:
+  - [`docs/TEST_COVERAGE_MATRIX.md`](./TEST_COVERAGE_MATRIX.md)
+  - [`docs/planned/return-context-and-onboarding-completion.md`](./planned/return-context-and-onboarding-completion.md)
+  - [`docs/planned/bdd-persona-coverage-wave-1.md`](./planned/bdd-persona-coverage-wave-1.md)
+  - [`docs/planned/ci-remote-e2e-smoke-strategy.md`](./planned/ci-remote-e2e-smoke-strategy.md)
 
 ## [0.3.0] — 2026-04-27
 
