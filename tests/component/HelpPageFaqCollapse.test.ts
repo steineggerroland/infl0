@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils'
 import { createI18n, useI18n as vueUseI18n } from 'vue-i18n'
 
 import enMessages from '../../i18n/locales/en.json'
+import deMessages from '../../i18n/locales/de.json'
 
 vi.stubGlobal('definePageMeta', () => {})
 vi.stubGlobal('useI18n', () => vueUseI18n())
@@ -16,7 +17,7 @@ const makeI18n = () =>
         legacy: false,
         locale: 'en',
         fallbackLocale: 'en',
-        messages: { en: enMessages },
+        messages: { en: enMessages, de: deMessages },
     })
 
 function mountHelp() {
