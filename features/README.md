@@ -10,6 +10,8 @@ This folder contains executable user-facing behavior specifications using Cucumb
   - onboarding behavior in `features/steps/onboarding.steps.js`
   - reader return-context behavior in `features/steps/reader.steps.js`
   - registration/login behavior in `features/steps/auth.steps.js`
+  - settings hub / tracking / personalization in `features/steps/settings.steps.js`
+  - feeds (sources) in `features/steps/feeds.steps.js`
 - Browser locale is forced to English in `features/support/world.js` so scenario wording and assertions stay EN-consistent.
 
 ## Authoring rules
@@ -23,28 +25,28 @@ This folder contains executable user-facing behavior specifications using Cucumb
 
 ## Test gaps
 
-Covered since the reader/read-state work: **`reader_return_context.feature`** (reader
-start, resume/jump, calm URLs, read feedback, read without behaviour tracking, read
-shortcut). Registration/login journeys stay in **`auth_registration_login.feature`**;
-Daisy fieldset/alert markup there is an implementation detail unless we add negative
-paths (e.g. invalid credentials → visible error).
+Covered in BDD today:
 
-Still sensible BDD candidates for recent product surface (see git range after
-`6d5a4b9` on `main`):
+- **`reader_return_context.feature`** — reader start, resume, URLs, read feedback,
+  read without behaviour tracking, read shortcut.
+- **`auth_registration_login.feature`** — register, sign-in, sign-out journeys.
+- **`settings_hub_navigation.feature`** — `/settings` deep links and a hub sidebar
+  jump (wide viewport); not yet the narrow **Sections** drawer control.
+- **`settings_tracking_and_personalization.feature`** — `#tracking` affordance and
+  one toggle flip; **`/settings/personalization`** title + algorithm snapshot heading.
+- **`feeds_sources.feature`** — add a source from `/feeds`, list row, remove, empty
+  state again.
 
-- **Settings hub:** drawer/sidebar navigation and deep links (`/settings#…`,
-  including `#display-*` and sorting sub-anchors); optional narrow-viewport “Sections”
-  control. High user impact; not yet a dedicated feature file.
-- **Feed/source management:** add/remove feed and visible outcome (listed here before;
-  still no `features/*.feature` for `/feeds`).
-- **Privacy-sensitive tracking journey:** disabled/enabled tracking and explanation
-  affordances on `/settings` (copy + toggle), still uncovered at BDD layer.
-- **Power-user personalization journey:** `/settings/personalization` score framing
-  and expectation copy (still uncovered at BDD layer).
-- **Returning-user onboarding completion:** post-skip / post-complete behavior across
-  sessions where not already expressed in reader scenarios.
-- **Help FAQ:** optional regression for expandable FAQ rows (Daisy `collapse` on
-  `<details>`); lower priority than settings/feeds if component tests stay green.
+Still sensible follow-ups:
+
+- **Narrow viewport settings:** open **Sections** (`settingsNav.openSections`), pick
+  a link, assert hash + visible block (mobile drawer).
+- **Auth negative path:** invalid credentials → visible **`alert`** (optional).
+- **Tracking copy:** assert intro/label strings remain visible after toggling (optional).
+- **Personalization depth:** expand a timeline row, assert rank strip (optional).
+- **Returning-user onboarding completion** across sessions (where not already in
+  reader scenarios).
+- **Help FAQ** expand/collapse regression (optional; component tests already exist).
 
 ## Run commands
 

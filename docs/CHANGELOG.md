@@ -13,6 +13,11 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Cucumber coverage** for `/settings` hub deep links and a sidebar jump, reading-behaviour
+  (`#tracking`) toggle flip, `/settings/personalization` snapshot headings, and `/feeds`
+  add/remove (`features/settings_hub_navigation.feature`,
+  `features/settings_tracking_and_personalization.feature`, `features/feeds_sources.feature`).
+
 - **Deliberate reader start with resume option.** Once onboarding is
   hidden, opening `/` shows a quiet reader start screen instead of
   rendering article cards immediately. This prevents passive visits from
