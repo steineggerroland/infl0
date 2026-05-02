@@ -62,7 +62,7 @@ export type InflowItem = InflowArticleItem | InflowOnboardingItem
 export interface InflowResponse {
   items: InflowItem[]
   hasMore: boolean
-  stats: { total: number; unread: number }
+  stats: { total: number; unread: number; newSinceLastReaderSession: number }
 }
 
 function mapArticle(a: ArticleWithEnrichment): Omit<InflowArticleItem, 'type' | 'insertedAt' | 'readAt'> {
@@ -148,9 +148,20 @@ export async function loadInflowPage(opts: {
     ? { userId }
     : { userId, readAt: null }
 
-  const [totalCount, unreadCount, anyScored] = await Promise.all([
+  const lastReaderSessionStartedAt = prefs.lastReaderSessionStartedAt
+    ? new Date(prefs.lastReaderSessionStartedAt)
+    : null
+  const newSinceLastReaderSessionWhere: Prisma.UserTimelineItemWhereInput = {
+    userId,
+    ...(lastReaderSessionStartedAt && Number.isFinite(lastReaderSessionStartedAt.getTime())
+      ? { insertedAt: { gt: lastReaderSessionStartedAt } }
+      : {}),
+  }
+
+  const [totalCount, unreadCount, newSinceLastReaderSession, anyScored] = await Promise.all([
     prisma.userTimelineItem.count({ where: { userId } }),
     prisma.userTimelineItem.count({ where: { userId, readAt: null } }),
+    prisma.userTimelineItem.count({ where: newSinceLastReaderSessionWhere }),
     prisma.userTimelineItem.findFirst({
       where: { ...listWhere, rankScore: { not: null } },
       select: { id: true },
@@ -187,7 +198,7 @@ export async function loadInflowPage(opts: {
   return {
     items,
     hasMore,
-    stats: { total: totalCount, unread: unreadCount },
+    stats: { total: totalCount, unread: unreadCount, newSinceLastReaderSession },
   }
 }
 

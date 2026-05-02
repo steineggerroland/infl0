@@ -74,7 +74,7 @@ afterEach(() => {
 describe('loadInflowPage', () => {
   it('prepends onboarding cards on the first page when not hidden', async () => {
     mocked.user.mockResolvedValue(fakeUser(false) as never)
-    mocked.count.mockResolvedValueOnce(2).mockResolvedValueOnce(2)
+    mocked.count.mockResolvedValueOnce(2).mockResolvedValueOnce(2).mockResolvedValueOnce(2)
     mocked.findFirst.mockResolvedValue(null)
     mocked.findMany.mockResolvedValue([fakeArticleRow('a1'), fakeArticleRow('a2')] as never)
 
@@ -91,24 +91,24 @@ describe('loadInflowPage', () => {
     const firstArticleIdx = res.items.findIndex((i) => i.type === 'article')
     expect(firstArticleIdx).toBe(onboarding.length)
     // Stats count articles only.
-    expect(res.stats).toEqual({ total: 2, unread: 2 })
+    expect(res.stats).toEqual({ total: 2, unread: 2, newSinceLastReaderSession: 2 })
   })
 
   it('omits onboarding cards entirely when onboardingHidden is true', async () => {
     mocked.user.mockResolvedValue(fakeUser(true) as never)
-    mocked.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0)
+    mocked.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0).mockResolvedValueOnce(0)
     mocked.findFirst.mockResolvedValue(null)
     mocked.findMany.mockResolvedValue([] as never)
 
     const res = await loadInflowPage({ userId: 'u1', limit: 20, offset: 0, showRead: false })
 
     expect(res.items).toHaveLength(0)
-    expect(res.stats).toEqual({ total: 0, unread: 0 })
+    expect(res.stats).toEqual({ total: 0, unread: 0, newSinceLastReaderSession: 0 })
   })
 
   it('does not re-emit onboarding cards on subsequent pages', async () => {
     mocked.user.mockResolvedValue(fakeUser(false) as never)
-    mocked.count.mockResolvedValueOnce(50).mockResolvedValueOnce(50)
+    mocked.count.mockResolvedValueOnce(50).mockResolvedValueOnce(50).mockResolvedValueOnce(5)
     mocked.findFirst.mockResolvedValue({ id: 'x' } as never)
     mocked.findMany.mockResolvedValue([fakeArticleRow('a3')] as never)
 
@@ -117,9 +117,40 @@ describe('loadInflowPage', () => {
     expect(res.items.every((i) => i.type === 'article')).toBe(true)
   })
 
+  it('counts articles inserted after the last explicit reader session', async () => {
+    const user = fakeUser(true)
+    user.uiPrefs.lastReaderSessionStartedAt = '2026-05-02T08:00:00.000Z'
+    mocked.user.mockResolvedValue(user as never)
+    mocked.count.mockResolvedValueOnce(10).mockResolvedValueOnce(8).mockResolvedValueOnce(3)
+    mocked.findFirst.mockResolvedValue(null)
+    mocked.findMany.mockResolvedValue([] as never)
+
+    const res = await loadInflowPage({ userId: 'u1', limit: 20, offset: 0, showRead: false })
+
+    expect(res.stats.newSinceLastReaderSession).toBe(3)
+    expect(mocked.count).toHaveBeenNthCalledWith(3, {
+      where: {
+        userId: 'u1',
+        insertedAt: { gt: new Date('2026-05-02T08:00:00.000Z') },
+      },
+    })
+  })
+
+  it('counts all articles as new before the first explicit reader session', async () => {
+    mocked.user.mockResolvedValue(fakeUser(true) as never)
+    mocked.count.mockResolvedValueOnce(10).mockResolvedValueOnce(8).mockResolvedValueOnce(10)
+    mocked.findFirst.mockResolvedValue(null)
+    mocked.findMany.mockResolvedValue([] as never)
+
+    const res = await loadInflowPage({ userId: 'u1', limit: 20, offset: 0, showRead: false })
+
+    expect(res.stats.newSinceLastReaderSession).toBe(10)
+    expect(mocked.count).toHaveBeenNthCalledWith(3, { where: { userId: 'u1' } })
+  })
+
   it('sets type=article and exposes the existing article shape', async () => {
     mocked.user.mockResolvedValue(fakeUser(true) as never)
-    mocked.count.mockResolvedValueOnce(1).mockResolvedValueOnce(1)
+    mocked.count.mockResolvedValueOnce(1).mockResolvedValueOnce(1).mockResolvedValueOnce(1)
     mocked.findFirst.mockResolvedValue(null)
     mocked.findMany.mockResolvedValue([fakeArticleRow('a1')] as never)
 
@@ -147,7 +178,7 @@ describe('loadInflowPage', () => {
 
   it('reports hasMore correctly when the database returns limit+1', async () => {
     mocked.user.mockResolvedValue(fakeUser(true) as never)
-    mocked.count.mockResolvedValueOnce(10).mockResolvedValueOnce(10)
+    mocked.count.mockResolvedValueOnce(10).mockResolvedValueOnce(10).mockResolvedValueOnce(10)
     mocked.findFirst.mockResolvedValue(null)
     const rows = Array.from({ length: 21 }, (_, i) => fakeArticleRow(`a${i}`))
     mocked.findMany.mockResolvedValue(rows as never)

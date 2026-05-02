@@ -28,3 +28,9 @@ Feature: Onboarding journey guides a new user through infl0
     When I open full text on the "intro" onboarding card
     Then I should see a link to "/help"
     And the copy should ask me to continue to the next onboarding card
+
+  Scenario: Reload keeps my place in the onboarding journey
+    When I focus the "scoring" onboarding card
+    Then the URL should point to the "scoring" onboarding card
+    And I reload the timeline
+    Then the "scoring" onboarding card should be restored as my current place

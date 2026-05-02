@@ -46,7 +46,7 @@ Practical coverage targets:
 - **E2E smoke/API infrastructure**: aim for 90-100% on smoke-critical routes and setup paths.
 - **BDD feature journeys**: aim for 90-100% coverage of supported user-facing core flows.
 
-Use `tests/bdd/README.md` for BDD authoring conventions and `docs/TEST_COVERAGE_MATRIX.md` for the current feature-to-layer map and prioritized BDD gaps.
+Use `features/README.md` for BDD authoring conventions and the current prioritized BDD gaps.
 
 ### Playwright / E2E auth (`dev@localhost`)
 
@@ -130,7 +130,6 @@ user-facing component.
 | [`CHANGELOG.md`](./CHANGELOG.md) | Shipped work (features, fixes, breaking changes) |
 | [`planned/README.md`](./planned/README.md) | Feature packages for implementation planning |
 | [`RELEASING.md`](./RELEASING.md) | GitHub Actions CI + tagging a release |
-| [`TEST_COVERAGE_MATRIX.md`](./TEST_COVERAGE_MATRIX.md) | Feature-to-test-layer map and BDD expansion backlog |
 
 ## Dependencies and security
 

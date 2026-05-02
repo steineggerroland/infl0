@@ -126,6 +126,7 @@ export function useUiPrefs() {
       },
       seenFeatureAnnouncements: [...p.seenFeatureAnnouncements],
       onboardingHidden: p.onboardingHidden,
+      lastReaderSessionStartedAt: p.lastReaderSessionStartedAt,
     }
   }
 

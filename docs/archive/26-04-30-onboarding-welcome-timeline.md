@@ -80,5 +80,5 @@ Key implemented notes:
   agreement).
 - Related docs:
   - `docs/DEVELOPING.md`
-  - `docs/TEST_COVERAGE_MATRIX.md`
+  - `features/README.md`
   - `docs/archive/26-04-27-shortcuts-help.md`

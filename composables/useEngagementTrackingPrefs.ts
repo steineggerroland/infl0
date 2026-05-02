@@ -39,18 +39,24 @@ export function useEngagementTrackingPrefs() {
     enabled.value = d.enabled
   }
 
-  async function reportDwell(articleId: string, segment: ArticleEngagementSegment, durationMs: number) {
-    if (!loaded.value || !enabled.value) return
-    if (durationMs < ARTICLE_ENGAGEMENT_MIN_DWELL_MS) return
+  async function reportDwell(
+    articleId: string,
+    segment: ArticleEngagementSegment,
+    durationMs: number,
+  ): Promise<{ readMarked: boolean } | null> {
+    if (!loaded.value || !enabled.value) return null
+    if (durationMs < ARTICLE_ENGAGEMENT_MIN_DWELL_MS) return null
     const durationSec = Math.round((durationMs / 1000) * 100) / 100
     try {
-      await $fetch('/api/me/article-engagement', {
+      const res = await $fetch<{ readMarked?: boolean }>('/api/me/article-engagement', {
         method: 'POST',
         body: { articleId, segment, durationSec },
         credentials: 'include',
       })
+      return { readMarked: res.readMarked === true }
     } catch {
       /* offline / 401 */
+      return null
     }
   }
 

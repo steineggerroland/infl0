@@ -15,6 +15,30 @@ async function focusTopic(world, topic) {
   return card
 }
 
+async function waitForStoredTopic(world, topic) {
+  await expect
+    .poll(async () => {
+      const raw = await world.page.evaluate(() => window.localStorage.getItem('infl0.inflow.returnContext.v1'))
+      if (!raw) return ''
+      try {
+        return JSON.parse(raw).anchor?.id ?? ''
+      } catch {
+        return ''
+      }
+    })
+    .toBe(`onboarding/${topic}`)
+}
+
+async function visibleRatio(locator) {
+  return locator.evaluate((el) => {
+    const rect = el.getBoundingClientRect()
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+    const visibleHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0)
+    if (rect.height <= 0) return 0
+    return Math.max(0, Math.min(visibleHeight, rect.height)) / rect.height
+  })
+}
+
 async function ensureSurface(world, surface) {
   const topic = world.currentTopic
   const card = topicCard(world, topic)
@@ -69,6 +93,13 @@ When('I focus the {string} onboarding card', async function (topic) {
   await focusTopic(this, topic)
 })
 
+When('I reload the timeline', async function () {
+  if (this.currentTopic) {
+    await waitForStoredTopic(this, this.currentTopic)
+  }
+  await this.page.reload({ waitUntil: 'networkidle' })
+})
+
 Then('I should see onboarding cards before regular articles', async function () {
   const firstItemIsOnboarding = await this.page
     .locator('.scroll-container > div')
@@ -84,6 +115,16 @@ Then('the onboarding topics should be ordered as:', async function (table) {
     .locator('[data-testid="onboarding-card"]')
     .evaluateAll((els) => els.map((el) => el.getAttribute('data-onboarding-topic')))
   expect(topics).toEqual(expected)
+})
+
+Then('the {string} onboarding card should be restored as my current place', async function (topic) {
+  const card = topicCard(this, topic)
+  await expect(card).toBeVisible()
+  await expect.poll(async () => visibleRatio(card)).toBeGreaterThan(0.5)
+})
+
+Then('the URL should point to the {string} onboarding card', async function (topic) {
+  await expect(this.page).toHaveURL(new RegExp(`/inflow/onboarding/${topic}$`, 'u'))
 })
 
 Then('I should see the intro headline', async function () {
@@ -200,7 +241,8 @@ When('I press {string}', async function (shortcut) {
   this.fontFamilyAfter = await readFontFamily(target)
 })
 
-Then('the font size for {string} should change accordingly', async function () {
+Then('the font size for {string} should change accordingly', async function (_surface) {
+  void _surface
   expect(this.fontSizeAfter).not.toBeNull()
   expect(this.fontSizeBefore).not.toBeNull()
   const shortcut = this.lastShortcut
