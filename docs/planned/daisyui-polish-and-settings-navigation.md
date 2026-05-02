@@ -92,7 +92,7 @@ The structure must work well on mobile and desktop.
 2. ~~Convert feed/source rows to DaisyUI `list`.~~ (`/feeds`: `fieldset` / `fieldset-legend`, `label` + inputs, `list` + `list-row` / `list-col-grow`, inline `alert` for errors / empty.)
 3. ~~Convert personalization summary numbers to `stats` / `stat`.~~ (algorithm priors/blend row + expandable rank Stored/Live/Delta strip)
 4. ~~Improve form grouping with `fieldset` / `label`.~~ (`/login`, `/register`: fieldset + Daisy `label`, `alert` for errors.)
-5. Audit inline empty/error states for `alert`.
+5. ~~Audit inline empty/error states for `alert`.~~ (`/` timeline empty, preparing, reader start, all-read; `/feeds` empty list — `alert-*` + `alert-soft`, `role="status"`, test ids.)
 6. Consider FAQ `collapse` only after Settings is done.
 
 ## Links

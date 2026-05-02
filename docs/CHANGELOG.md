@@ -134,6 +134,14 @@ new entries accrue under **Unreleased**.
   the opener `aria-label` reflects whether the menu is open or closed (`menu.close` /
   `menu.open`).
 
+- **Timeline empty and info surfaces (`/`).** Onboarding-empty, preparing, reader-start,
+  and all-read-empty copy use DaisyUI **`alert`** with **`alert-soft`**: informational
+  states **`alert-info`**, “everything read” **`alert-warning`**, with **`role="status"`**
+  (preparing also **`aria-live="polite"`**) and stable **`data-testid`** hooks for tests.
+
+- **Feeds empty list.** Replaced the plain bordered bar with **`alert alert-info alert-soft`**
+  ([Alert](https://daisyui.com/components/alert/)), `data-testid="feeds-empty-alert"`.
+
 - **Auth entry forms (`/login`, `/register`).** DaisyUI **`fieldset`** (screen-reader legend)
   + **`label` / `label-text`** for each control; inline errors use **`alert alert-error`**
   ([Fieldset](https://daisyui.com/components/fieldset/)). Stable hooks `login-error` /

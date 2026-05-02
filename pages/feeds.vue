@@ -245,8 +245,13 @@ async function removeFeed(id: string) {
                 </ul>
             </section>
 
-            <div v-else class="alert border-[var(--infl0-panel-border)] bg-[var(--infl0-panel-bg)]" role="status">
-                <span class="text-sm text-[var(--infl0-panel-text)]">{{ $t('feeds.emptyList') }}</span>
+            <div
+                v-else
+                class="alert alert-info alert-soft shadow-sm"
+                role="status"
+                data-testid="feeds-empty-alert"
+            >
+                <span class="text-center text-sm text-[var(--color-base-content)]">{{ $t('feeds.emptyList') }}</span>
             </div>
         </div>
     </div>
