@@ -1,83 +1,106 @@
-import { onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue'
 
-/**
- * Sections on **`/settings`** only (appearance, onboarding, sorting, tracking).
- * “Why at the top?” and Privacy stay separate routes with their own menu entries.
- */
-export const SETTINGS_HUB_SECTION_IDS = [
+import { TIMELINE_SCORE_GROUP_ORDER } from '~/utils/timeline-score-factors'
+
+/** DOM ids used for `/settings` scroll position (finest granularity first). */
+export const SETTINGS_HUB_SCROLL_SPY_IDS = [
     'display',
     'onboarding',
     'sorting',
+    ...TIMELINE_SCORE_GROUP_ORDER.map((g) => `sorting-group-${g}`),
+    'sorting-formula',
     'tracking',
 ] as const
 
-export type SettingsHubSectionId = (typeof SETTINGS_HUB_SECTION_IDS)[number]
-
 /**
- * Highlights the hub section overlapping the viewport “reading band”.
- * Idle on other settings routes (`/settings/personalization`, `/settings/privacy`).
+ * Picks which settings hub block is “current”: last section whose top edge has
+ * passed a band under the sticky bars. Hash links do **not** pin the highlight,
+ * otherwise the sidebar stops updating while the fragment stays stale.
+ *
+ * Idle on `/settings/personalization` and `/settings/privacy`.
  */
-export function useSettingsNavSectionSpy(sectionIds: readonly string[]): {
+export function useSettingsNavSectionSpy(scrollIds: readonly string[]): {
     activeSectionId: Ref<string>
 } {
     const route = useRoute()
-    const activeSectionId = ref(sectionIds[0] ?? '')
-    let observer: IntersectionObserver | null = null
+    const activeSectionId = ref(scrollIds[0] ?? 'display')
+    let raf = 0
 
-    function syncHashToActive(): void {
-        if (route.path !== '/settings') return
-        const id = route.hash.replace(/^#/, '')
-        if (id && sectionIds.includes(id)) activeSectionId.value = id
+    function scrollBiasPx(): number {
+        if (typeof document === 'undefined') return 104
+        try {
+            const sticky = document.querySelector(
+                '.drawer-content .sticky.top-0',
+            ) as HTMLElement | null
+            const h = sticky?.getBoundingClientRect().height ?? 0
+            return Math.min(160, Math.max(80, Math.round(h + 56)))
+        } catch {
+            return 104
+        }
     }
 
-    watch(() => route.hash, syncHashToActive, { immediate: true })
+    function computeActiveFromDocument(): string {
+        if (route.path !== '/settings') return scrollIds[0] ?? 'display'
+        const bias = scrollBiasPx()
+        let active = scrollIds[0] ?? 'display'
+        let foundAny = false
+        for (const sid of scrollIds) {
+            const el = document.getElementById(sid)
+            if (!el) continue
+            foundAny = true
+            if (el.getBoundingClientRect().top <= bias) active = sid
+        }
+        if (!foundAny) {
+            const hid = route.hash.replace(/^#/, '')
+            if (hid && scrollIds.includes(hid)) return hid
+        }
+        return active
+    }
+
+    function scheduleUpdate(): void {
+        if (typeof window === 'undefined' || route.path !== '/settings') return
+        if (raf) cancelAnimationFrame(raf)
+        raf = requestAnimationFrame(() => {
+            raf = 0
+            activeSectionId.value = computeActiveFromDocument()
+        })
+    }
+
+    function onScrollOrResize(): void {
+        scheduleUpdate()
+    }
 
     watch(
         () => route.path,
         () => {
-            syncHashToActive()
-            bindObserver()
+            if (route.path === '/settings') scheduleUpdate()
+            else activeSectionId.value = scrollIds[0] ?? 'display'
         },
     )
 
-    function bindObserver(): void {
-        observer?.disconnect()
-        observer = null
-        if (!import.meta.client || route.path !== '/settings') return
+    watch(
+        () => route.hash,
+        () => {
+            if (route.path !== '/settings') return
+            void nextTick(() => {
+                scheduleUpdate()
+            })
+        },
+    )
 
-        observer = new IntersectionObserver(
-            (entries) => {
-                let bestIdx = Infinity
-                for (const e of entries) {
-                    if (!e.isIntersecting) continue
-                    const sid = (e.target as HTMLElement).id
-                    const idx = sectionIds.indexOf(sid)
-                    if (idx !== -1 && idx < bestIdx) bestIdx = idx
-                }
-                if (bestIdx !== Infinity) {
-                    activeSectionId.value = sectionIds[bestIdx]!
-                }
-            },
-            {
-                root: null,
-                rootMargin: '-42% 0px -42% 0px',
-                threshold: 0,
-            },
-        )
-
-        for (const sid of sectionIds) {
-            const el = document.getElementById(sid)
-            if (el) observer.observe(el)
-        }
-
-        queueMicrotask(syncHashToActive)
-    }
-
-    onMounted(() => bindObserver())
+    onMounted(() => {
+        if (typeof window === 'undefined') return
+        window.addEventListener('scroll', onScrollOrResize, { passive: true })
+        window.addEventListener('resize', onScrollOrResize, { passive: true })
+        if (route.path === '/settings') scheduleUpdate()
+    })
 
     onBeforeUnmount(() => {
-        observer?.disconnect()
-        observer = null
+        if (typeof window === 'undefined') return
+        window.removeEventListener('scroll', onScrollOrResize)
+        window.removeEventListener('resize', onScrollOrResize)
+        if (raf) cancelAnimationFrame(raf)
+        raf = 0
     })
 
     return { activeSectionId }

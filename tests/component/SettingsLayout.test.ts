@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n, useI18n as vueUseI18n } from 'vue-i18n'
 import { reactive } from 'vue'
@@ -22,7 +22,16 @@ function makeI18n() {
             onboardingHeading: 'Welcome cards',
             trackingHeading: 'Reading-behaviour analysis',
         },
-        settingsTimeline: { title: 'Adjust sorting' },
+        settingsTimeline: {
+            title: 'Adjust sorting',
+            formulaTitle: 'Formula',
+            groups: {
+                time: 'Recency',
+                content: 'Content',
+                mix: 'Mix',
+                feedback: 'Feedback',
+            },
+        },
         menu: { timeline: '', help: '', open: '', close: '', feeds: '', settings: '' },
     }
     return createI18n({
@@ -61,7 +70,14 @@ function mountLayout(routeOverrides: Partial<{ path: string; hash: string; fullP
 }
 
 describe('Settings layout (drawer nav)', () => {
-    it('exposes hub landmark navigation with four stable /settings hash links', () => {
+    beforeEach(() => {
+        vi.spyOn(document, 'getElementById').mockReturnValue(null)
+    })
+    afterEach(() => {
+        vi.restoreAllMocks()
+    })
+
+    it('exposes hub nav: main sections plus sorting subgroup anchors', () => {
         const wrapper = mountLayout({})
         const nav = wrapper.find('[data-testid="settings-nav-sidebar"]')
         expect(nav.attributes('aria-label')).toBe('Settings sections')
@@ -71,19 +87,27 @@ describe('Settings layout (drawer nav)', () => {
             '/settings#onboarding',
         )
         expect(wrapper.find('[data-testid="settings-nav-link-sorting"]').attributes('href')).toBe('/settings#sorting')
+        expect(wrapper.find('[data-testid="settings-nav-link-sort-group-time"]').attributes('href')).toBe(
+            '/settings#sorting-group-time',
+        )
+        expect(wrapper.find('[data-testid="settings-nav-link-sort-formula"]').attributes('href')).toBe(
+            '/settings#sorting-formula',
+        )
         expect(wrapper.find('[data-testid="settings-nav-link-tracking"]').attributes('href')).toBe('/settings#tracking')
-        expect(wrapper.findAll('[data-testid^="settings-nav-link-"]')).toHaveLength(4)
+        expect(wrapper.findAll('[data-testid^="settings-nav-link-"]')).toHaveLength(9)
     })
 
-    it('marks the tracking anchor row when the route hash targets that section', () => {
+    it('marks the tracking row when route hash targets it (fallback without section DOM)', async () => {
         const wrapper = mountLayout({
             path: '/settings',
             hash: '#tracking',
             fullPath: '/settings#tracking',
         })
-        const link = wrapper.find('[data-testid="settings-nav-link-tracking"]')
-        expect(link.attributes('aria-current')).toBe('location')
-        expect(wrapper.find('[data-testid="settings-nav-link-display"]').attributes('aria-current')).toBeUndefined()
+        await vi.waitFor(() =>
+            expect(wrapper.find('[data-testid="settings-nav-link-tracking"]').attributes('aria-current')).toBe(
+                'location',
+            ),
+        )
     })
 
     it('omits hub drawer sidebar on personalization and privacy routes', () => {

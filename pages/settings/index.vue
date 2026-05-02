@@ -9,6 +9,7 @@
  */
 import {
   TIMELINE_SCORE_FACTOR_DEFS,
+  TIMELINE_SCORE_GROUP_ORDER,
   type TimelineScoreFactorGroup,
 } from '~/utils/timeline-score-factors'
 import type { SurfaceId } from '~/utils/ui-prefs'
@@ -23,8 +24,6 @@ definePageMeta({
 const { t } = useI18n()
 
 const { weights, contentLengthPreference, resetWeights, formulaLines } = useTimelineScoreWeights()
-
-const GROUP_ORDER: TimelineScoreFactorGroup[] = ['time', 'content', 'mix', 'feedback']
 
 function factorsForGroup(g: TimelineScoreFactorGroup) {
   return TIMELINE_SCORE_FACTOR_DEFS.filter((d) => d.group === g)
@@ -175,9 +174,10 @@ function onOnboardingToggle(e: Event) {
         </header>
 
         <div
-          v-for="g in GROUP_ORDER"
+          v-for="g in TIMELINE_SCORE_GROUP_ORDER"
+          :id="`sorting-group-${g}`"
           :key="g"
-          class="infl0-panel mb-4 p-5"
+          class="infl0-panel mb-4 scroll-mt-28 p-5 lg:scroll-mt-24"
         >
           <h3 class="infl0-section-label mb-4 text-sm font-semibold uppercase tracking-wide">
             {{ t(`settingsTimeline.groups.${g}`) }}
@@ -242,7 +242,7 @@ function onOnboardingToggle(e: Event) {
           </ul>
         </div>
 
-        <div class="infl0-panel mb-4 p-5">
+        <div id="sorting-formula" class="infl0-panel mb-4 scroll-mt-28 p-5 lg:scroll-mt-24">
           <h3 class="infl0-section-label mb-2 text-sm font-semibold uppercase tracking-wide">
             {{ t('settingsTimeline.formulaTitle') }}
           </h3>

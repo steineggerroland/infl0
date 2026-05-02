@@ -4,8 +4,10 @@
  * hub). `/settings/personalization` and `/settings/privacy` render full-width
  * content without section anchor navigation.
  */
+import { TIMELINE_SCORE_GROUP_ORDER } from '~/utils/timeline-score-factors'
+
 import {
-    SETTINGS_HUB_SECTION_IDS,
+    SETTINGS_HUB_SCROLL_SPY_IDS,
     useSettingsNavSectionSpy,
 } from '~/composables/useSettingsNavSectionSpy'
 
@@ -13,6 +15,13 @@ const { t } = useI18n()
 const route = useRoute()
 
 const isSettingsHubPage = computed(() => route.path === '/settings')
+
+type HubNavEntry = {
+    hash: string
+    testId: string
+    labelKey: string
+    nested?: boolean
+}
 
 type FooterMeta = true | { containerMax?: 'lg' | '4xl'; testId?: string }
 
@@ -35,38 +44,61 @@ const footerTestId = computed<string>(() => {
     return 'app-footer-shortcuts'
 })
 
-const { activeSectionId } = useSettingsNavSectionSpy([...SETTINGS_HUB_SECTION_IDS])
+const { activeSectionId } = useSettingsNavSectionSpy([...SETTINGS_HUB_SCROLL_SPY_IDS])
 
-const hubNavSections = computed(() =>
-    (
-        [
-            {
-                hash: 'display',
-                testId: 'settings-nav-link-display',
-                labelKey: 'settingsDisplay.heading' as const,
-            },
-            {
-                hash: 'onboarding',
-                testId: 'settings-nav-link-onboarding',
-                labelKey: 'settingsIndex.onboardingHeading' as const,
-            },
-            {
-                hash: 'sorting',
-                testId: 'settings-nav-link-sorting',
-                labelKey: 'settingsTimeline.title' as const,
-            },
-            {
-                hash: 'tracking',
-                testId: 'settings-nav-link-tracking',
-                labelKey: 'settingsIndex.trackingHeading' as const,
-            },
-        ] as const
-    ).map((entry) => ({
-        ...entry,
-        to: `/settings#${entry.hash}` as const,
-        label: t(entry.labelKey),
-    })),
-)
+const hubNavEntries = computed<HubNavEntry[]>(() => {
+    const rows: HubNavEntry[] = [
+        {
+            hash: 'display',
+            testId: 'settings-nav-link-display',
+            labelKey: 'settingsDisplay.heading',
+        },
+        {
+            hash: 'onboarding',
+            testId: 'settings-nav-link-onboarding',
+            labelKey: 'settingsIndex.onboardingHeading',
+        },
+        {
+            hash: 'sorting',
+            testId: 'settings-nav-link-sorting',
+            labelKey: 'settingsTimeline.title',
+        },
+    ]
+    for (const g of TIMELINE_SCORE_GROUP_ORDER) {
+        rows.push({
+            hash: `sorting-group-${g}`,
+            testId: `settings-nav-link-sort-group-${g}`,
+            labelKey: `settingsTimeline.groups.${g}`,
+            nested: true,
+        })
+    }
+    rows.push({
+        hash: 'sorting-formula',
+        testId: 'settings-nav-link-sort-formula',
+        labelKey: 'settingsTimeline.formulaTitle',
+        nested: true,
+    })
+    rows.push({
+        hash: 'tracking',
+        testId: 'settings-nav-link-tracking',
+        labelKey: 'settingsIndex.trackingHeading',
+    })
+    return rows
+})
+
+function navLiActive(item: HubNavEntry): boolean {
+    if (route.path !== '/settings') return false
+    const cur = activeSectionId.value
+    if (item.hash === 'sorting') return cur === 'sorting'
+    return cur === item.hash
+}
+
+function navAriaCurrent(item: HubNavEntry): 'location' | undefined {
+    if (route.path !== '/settings') return undefined
+    const cur = activeSectionId.value
+    if (item.hash === 'sorting') return cur === 'sorting' ? 'location' : undefined
+    return cur === item.hash ? 'location' : undefined
+}
 
 function closeDrawerOnNarrow() {
     if (!import.meta.client) return
@@ -80,9 +112,6 @@ watch(
     () => closeDrawerOnNarrow(),
 )
 
-function sectionLinkActive(hash: string): boolean {
-    return route.path === '/settings' && activeSectionId.value === hash
-}
 </script>
 
 <template>
@@ -122,22 +151,30 @@ function sectionLinkActive(hash: string): boolean {
                         :aria-label="t('settingsNav.landmark')"
                         data-testid="settings-nav-sidebar"
                     >
-                        <ul class="menu menu-sm w-full rounded-box p-0">
+                        <ul class="settings-hub-sidebar-menu menu menu-sm w-full gap-0 rounded-box p-0">
                             <li
-                                v-for="item in hubNavSections"
+                                v-for="item in hubNavEntries"
                                 :key="item.hash"
-                                :class="{ active: sectionLinkActive(item.hash) }"
+                                :class="[
+                                    { active: navLiActive(item) },
+                                    item.nested
+                                        ? 'ms-0.5 border-s border-[var(--infl0-panel-border)] ps-2.5'
+                                        : '',
+                                ]"
                             >
                                 <NuxtLink
-                                    :to="item.to"
+                                    :to="`/settings#${item.hash}`"
                                     :data-testid="item.testId"
-                                    :aria-current="sectionLinkActive(item.hash) ? 'location' : undefined"
+                                    :aria-current="navAriaCurrent(item)"
                                     exact-active-class=""
                                     active-class=""
-                                    class="no-underline"
+                                    :class="[
+                                        'no-underline',
+                                        item.nested ? 'text-[0.8125rem] leading-snug' : '',
+                                    ]"
                                     @click="closeDrawerOnNarrow"
                                 >
-                                    {{ item.label }}
+                                    {{ t(item.labelKey) }}
                                 </NuxtLink>
                             </li>
                         </ul>

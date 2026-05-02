@@ -25,6 +25,14 @@ export type TimelineScoreFactorDef = {
   defaultWeight: number
 }
 
+/** Panel order in **Settings → Adjust sorting** (must match `pages/settings/index.vue`). */
+export const TIMELINE_SCORE_GROUP_ORDER: readonly TimelineScoreFactorGroup[] = [
+  'time',
+  'content',
+  'mix',
+  'feedback',
+]
+
 /** Display order in the settings UI */
 export const TIMELINE_SCORE_FACTOR_DEFS: TimelineScoreFactorDef[] = [
   { id: 'published_recency', group: 'time', defaultWeight: 100 },
