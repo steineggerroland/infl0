@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress (settings navigation drawer shipped in app; remaining items below)
+Complete — candidate backlog (items 1–6 below) shipped; revisit only if UX review finds gaps.
 
 ## Goal
 
