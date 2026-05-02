@@ -370,6 +370,7 @@
   "login": {
     "title": "infl0",
     "tagline": "Your calm news timeline",
+    "fieldsetLegend": "Sign-in credentials",
     "email": "Email",
     "password": "Password",
     "signIn": "Sign in",
@@ -379,6 +380,7 @@
   "register": {
     "title": "Create account",
     "tagline": "New here? Get started in under a minute.",
+    "fieldsetLegend": "Registration details",
     "inviteCode": "Invite code",
     "email": "Email",
     "nameOptional": "Name (optional)",

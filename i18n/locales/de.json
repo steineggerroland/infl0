@@ -370,6 +370,7 @@
   "login": {
     "title": "infl0",
     "tagline": "Deine ruhige Nachrichten-Timeline",
+    "fieldsetLegend": "Anmeldedaten",
     "email": "E-Mail",
     "password": "Passwort",
     "signIn": "Anmelden",
@@ -379,6 +380,7 @@
   "register": {
     "title": "Konto erstellen",
     "tagline": "Neu hier? Leg los in weniger als einer Minute.",
+    "fieldsetLegend": "Angaben zur Registrierung",
     "inviteCode": "Einladungscode",
     "email": "E-Mail",
     "nameOptional": "Name (optional)",

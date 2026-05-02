@@ -88,34 +88,54 @@ async function onSubmit() {
       <div class="mb-4 flex justify-center">
         <SecurityBadge align="center" />
       </div>
-      <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
-        <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
-          <span class="infl0-panel-muted">{{ $t('login.email') }}</span>
-          <input
-            v-model="email"
-            type="email"
-            autocomplete="username"
-            required
-            class="input input-bordered infl0-field w-full"
+      <form class="contents" @submit.prevent="onSubmit">
+        <!-- DaisyUI Fieldset + labels: https://daisyui.com/components/fieldset/ -->
+        <fieldset class="fieldset mt-1 gap-4 border-0 bg-transparent p-0">
+          <legend class="fieldset-legend sr-only">
+            {{ $t('login.fieldsetLegend') }}
+          </legend>
+
+          <div class="space-y-1">
+            <label class="label w-full pb-0" for="login-email">
+              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('login.email') }}</span>
+            </label>
+            <input
+              id="login-email"
+              v-model="email"
+              type="email"
+              autocomplete="username"
+              required
+              class="input input-bordered infl0-field w-full"
+            >
+          </div>
+          <div class="space-y-1">
+            <label class="label w-full pb-0" for="login-password">
+              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('login.password') }}</span>
+            </label>
+            <input
+              id="login-password"
+              v-model="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              class="input input-bordered infl0-field w-full"
+            >
+          </div>
+          <div
+            v-if="errorMsg"
+            role="alert"
+            class="alert alert-error py-3 text-sm"
+            data-testid="login-error"
           >
-        </label>
-        <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
-          <span class="infl0-panel-muted">{{ $t('login.password') }}</span>
-          <input
-            v-model="password"
-            type="password"
-            autocomplete="current-password"
-            required
-            class="input input-bordered infl0-field w-full"
-          >
-        </label>
-        <p v-if="errorMsg" class="text-sm text-red-400">{{ errorMsg }}</p>
-        <button type="submit" class="btn btn-primary w-full" :disabled="pending">
-          {{ pending ? $t('common.loading') : $t('login.signIn') }}
-        </button>
+            {{ errorMsg }}
+          </div>
+          <button type="submit" class="btn btn-primary w-full" :disabled="pending">
+            {{ pending ? $t('common.loading') : $t('login.signIn') }}
+          </button>
+        </fieldset>
         <NuxtLink
           to="/register"
-          class="infl0-panel-muted text-center text-sm underline-offset-2 hover:underline hover:text-[var(--infl0-panel-text)]"
+          class="infl0-panel-muted mt-4 block text-center text-sm underline-offset-2 hover:underline hover:text-[var(--infl0-panel-text)]"
         >
           {{ $t('login.createAccount') }}
         </NuxtLink>

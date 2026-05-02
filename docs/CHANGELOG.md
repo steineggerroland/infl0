@@ -134,6 +134,11 @@ new entries accrue under **Unreleased**.
   the opener `aria-label` reflects whether the menu is open or closed (`menu.close` /
   `menu.open`).
 
+- **Auth entry forms (`/login`, `/register`).** DaisyUI **`fieldset`** (screen-reader legend)
+  + **`label` / `label-text`** for each control; inline errors use **`alert alert-error`**
+  ([Fieldset](https://daisyui.com/components/fieldset/)). Stable hooks `login-error` /
+  `register-error`.
+
 - **Personalization metrics (`/settings/personalization`).** Algorithm snapshot
   (prior α/β + blend coefficients) and the per-card **stored / live / delta** rank strip
   use DaisyUI **`stats`** / **`stat`** ([Stat](https://daisyui.com/components/stat/)) with
