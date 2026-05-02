@@ -90,7 +90,7 @@ The structure must work well on mobile and desktop.
 
 1. ~~Settings navigation with responsive drawer/sidebar and section anchors.~~ (layout `settings`, ids `#display`, `#onboarding`, `#sorting`, `#tracking`, `#personalization`, `#privacy`)
 2. ~~Convert feed/source rows to DaisyUI `list`.~~ (`/feeds`: `fieldset` / `fieldset-legend`, `label` + inputs, `list` + `list-row` / `list-col-grow`, inline `alert` for errors / empty.)
-3. Convert personalization summary numbers to `stats` / `stat`.
+3. ~~Convert personalization summary numbers to `stats` / `stat`.~~ (algorithm priors/blend row + expandable rank Stored/Live/Delta strip)
 4. Improve form grouping with `fieldset` / `label`.
 5. Audit inline empty/error states for `alert`.
 6. Consider FAQ `collapse` only after Settings is done.

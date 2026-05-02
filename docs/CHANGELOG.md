@@ -134,6 +134,12 @@ new entries accrue under **Unreleased**.
   the opener `aria-label` reflects whether the menu is open or closed (`menu.close` /
   `menu.open`).
 
+- **Personalization metrics (`/settings/personalization`).** Algorithm snapshot
+  (prior α/β + blend coefficients) and the per-card **stored / live / delta** rank strip
+  use DaisyUI **`stats`** / **`stat`** ([Stat](https://daisyui.com/components/stat/)) with
+  left-aligned headings and monospace values; blend text wraps with **`!whitespace-normal`**
+  instead of Daisy’s default nowrap.
+
 - **Feeds / sources (`/feeds`).** Add-source form uses DaisyUI **`fieldset`** with
   **`fieldset-legend`**, stacked **`label` / `label-text`** pairs ([Fieldset](https://daisyui.com/components/fieldset/));
   submission errors use **`alert alert-error`**. Saved feeds render as DaisyUI **`list`**
