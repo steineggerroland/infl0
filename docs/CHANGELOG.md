@@ -134,6 +134,11 @@ new entries accrue under **Unreleased**.
   the opener `aria-label` reflects whether the menu is open or closed (`menu.close` /
   `menu.open`).
 
+- **Help FAQ details (`/help`).** Long FAQ answers expand with DaisyUI
+  **`collapse`** on native **`<details>` / `<summary>`** so browser find-in-page
+  still discovers the copy ([Collapse with details](https://daisyui.com/components/collapse/#-collapse-using-details-and-summary-tag)).
+  Chevron via **`collapse-arrow`**. Stable test hooks `help-faq-details-<itemId>`.
+
 - **Timeline empty and info surfaces (`/`).** Onboarding-empty, preparing, reader-start,
   and all-read-empty copy use DaisyUI **`alert`** with **`alert-soft`**: informational
   states **`alert-info`**, “everything read” **`alert-warning`**, with **`role="status"`**

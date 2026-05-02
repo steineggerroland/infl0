@@ -435,14 +435,6 @@ body {
   .infl0-help-toclink:hover {
     background-color: var(--infl0-help-nested-bg);
   }
-  .infl0-help-nested {
-    @apply mt-4 rounded-lg p-4;
-    background-color: var(--infl0-help-nested-bg);
-    color: var(--infl0-raised-fg-muted);
-  }
-  .infl0-help-nested summary {
-    color: var(--infl0-raised-fg);
-  }
   .infl0-nested-slab {
     border-radius: 0.5rem;
     padding: 0.75rem;
