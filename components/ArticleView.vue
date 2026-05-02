@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 import type { ArticleEngagementSegment } from '~/utils/article-engagement'
+import { ARTICLE_READ_VISIBILITY_MS } from '~/utils/read-state'
 import {
   clampFontSizePxForSurface,
   cycleFontFamilyId,
@@ -51,11 +52,16 @@ function formatDate(dateString: string) {
 const isDetailView = ref(false)
 const readAt = ref<string | null>(props.article.readAt ?? null)
 const articleIsRead = computed(() => readAt.value != null)
+const readStateBusy = ref(false)
+const readStatusTip = computed(() =>
+  articleIsRead.value ? t('article.markUnread') : t('article.markRead'),
+)
 
 watch(
   () => props.article.readAt,
   (next) => {
     readAt.value = next ?? null
+    syncReadVisibilityTimer()
   },
 )
 
@@ -112,9 +118,13 @@ const renderedRawMarkdown = computed(() => {
 })
 
 const engagement = useEngagementTrackingPrefs()
+const readState = useArticleReadState()
 
 let dwellStartMs: number | null = null
 let dwellSegment: ArticleEngagementSegment | null = null
+let readVisibilityTimer: ReturnType<typeof setTimeout> | null = null
+let readRequestId = 0
+let autoReadSuppressedForArticleId: string | null = null
 
 function resolveEngagementSegment(): ArticleEngagementSegment | null {
   if (!engagement.loaded.value || !engagement.enabled.value) return null
@@ -132,10 +142,7 @@ async function flushEngagementDwell() {
   const seg = dwellSegment
   dwellStartMs = null
   dwellSegment = null
-  const res = await engagement.reportDwell(props.article.id, seg, ms)
-  if (res?.readMarked) {
-    readAt.value = new Date().toISOString()
-  }
+  await engagement.reportDwell(props.article.id, seg, ms)
 }
 
 function syncEngagementDwell() {
@@ -150,6 +157,75 @@ function syncEngagementDwell() {
 
 function onVisibilityForEngagement() {
   syncEngagementDwell()
+  syncReadVisibilityTimer()
+}
+
+function clearReadVisibilityTimer() {
+  if (readVisibilityTimer == null) return
+  clearTimeout(readVisibilityTimer)
+  readVisibilityTimer = null
+}
+
+function canAutoMarkRead(): boolean {
+  if (import.meta.server) return false
+  if (!props.isSelected || articleIsRead.value) return false
+  if (autoReadSuppressedForArticleId === props.article.id) return false
+  if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return false
+  return true
+}
+
+async function setReadState(read: boolean, opts: { manual?: boolean } = {}) {
+  const previous = readAt.value
+  const optimisticReadAt = read ? new Date().toISOString() : null
+  const requestId = ++readRequestId
+
+  if (opts.manual && !read) {
+    autoReadSuppressedForArticleId = props.article.id
+  } else if (read) {
+    autoReadSuppressedForArticleId = null
+  }
+
+  readAt.value = optimisticReadAt
+  readStateBusy.value = true
+  syncReadVisibilityTimer()
+
+  try {
+    const res = await readState.setReadState(props.article.id, read)
+    if (requestId === readRequestId) {
+      readAt.value = res.readAt
+    }
+  } catch {
+    if (requestId === readRequestId) {
+      readAt.value = previous
+      if (opts.manual && !read) {
+        autoReadSuppressedForArticleId = null
+      }
+    }
+  } finally {
+    if (requestId === readRequestId) {
+      readStateBusy.value = false
+      syncReadVisibilityTimer()
+    }
+  }
+}
+
+function syncReadVisibilityTimer() {
+  const canMark = canAutoMarkRead()
+  if (readVisibilityTimer != null || !canMark) {
+    if (!canMark) clearReadVisibilityTimer()
+    return
+  }
+
+  readVisibilityTimer = setTimeout(() => {
+    readVisibilityTimer = null
+    if (canAutoMarkRead()) {
+      void setReadState(true)
+    }
+  }, ARTICLE_READ_VISIBILITY_MS)
+}
+
+function toggleReadState() {
+  void setReadState(!articleIsRead.value, { manual: true })
 }
 
 onMounted(async () => {
@@ -157,6 +233,7 @@ onMounted(async () => {
   if (import.meta.client) {
     document.addEventListener('visibilitychange', onVisibilityForEngagement)
     syncEngagementDwell()
+    syncReadVisibilityTimer()
   }
 })
 
@@ -165,12 +242,14 @@ onBeforeUnmount(() => {
     document.removeEventListener('visibilitychange', onVisibilityForEngagement)
   }
   void flushEngagementDwell()
+  clearReadVisibilityTimer()
 })
 
 watch(
   [isDetailView, modalVisible, () => props.isSelected, engagement.enabled, engagement.loaded],
   () => {
     syncEngagementDwell()
+    syncReadVisibilityTimer()
   },
   { flush: 'post' },
 )
@@ -180,12 +259,26 @@ watch(
   async (selected) => {
     if (!selected) {
       void flushEngagementDwell()
+      clearReadVisibilityTimer()
+      if (autoReadSuppressedForArticleId === props.article.id) {
+        autoReadSuppressedForArticleId = null
+      }
       return
     }
     await engagement.ensureLoaded()
     syncEngagementDwell()
+    syncReadVisibilityTimer()
   },
   { flush: 'post', immediate: true },
+)
+
+watch(
+  () => props.article.id,
+  () => {
+    clearReadVisibilityTimer()
+    autoReadSuppressedForArticleId = null
+    syncReadVisibilityTimer()
+  },
 )
 
 useModalStackRegistration(modalVisible)
@@ -195,6 +288,7 @@ const { anyOpen: anyModalOpen } = useModalStack()
 defineShortcuts(
   {
     'e': () => { if (props.isSelected) toggleDetailView() },
+    'm': () => { if (props.isSelected) toggleReadState() },
     'escape': () => { if (props.isSelected) { isDetailView.value = false } },
   },
   { when: () => !anyModalOpen.value },
@@ -325,16 +419,20 @@ v-if="article.publishedAt" class="ms-1 mdh:ms-3 tooltip"
 v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             :name="article.author"/>
           <span v-else class="ms-1 mdh:ms-3 h-[1em] w-[1em]"/>
-          <span
-            v-if="articleIsRead"
-            class="read-status tooltip ms-auto"
-            :data-tip="t('article.readStatus')"
-            :aria-label="t('article.readStatus')"
+          <button
+            type="button"
+            class="read-status badge badge-sm tooltip ms-auto"
+            :class="{ 'read-status--read': articleIsRead }"
+            :data-tip="readStatusTip"
+            :aria-label="readStatusTip"
+            :aria-pressed="articleIsRead ? 'true' : 'false'"
+            :disabled="readStateBusy"
             data-testid="article-read-status"
+            @click.stop="toggleReadState"
           >
             <span class="read-status-eye" aria-hidden="true" />
-            <span class="sr-only">{{ t('article.readStatus') }}</span>
-          </span>
+            <span class="sr-only">{{ readStatusTip }}</span>
+          </button>
         </div>
         <div v-if="article.category" class="mb-2 text-[var(--infl0-article-front-fg-mute)]">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
@@ -390,16 +488,20 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
               article?.author
             }}</div>
           </div>
-          <span
-            v-if="articleIsRead"
-            class="read-status tooltip ms-auto"
-            :data-tip="t('article.readStatus')"
-            :aria-label="t('article.readStatus')"
+          <button
+            type="button"
+            class="read-status badge badge-sm tooltip ms-auto"
+            :class="{ 'read-status--read': articleIsRead }"
+            :data-tip="readStatusTip"
+            :aria-label="readStatusTip"
+            :aria-pressed="articleIsRead ? 'true' : 'false'"
+            :disabled="readStateBusy"
             data-testid="article-read-status"
+            @click.stop="toggleReadState"
           >
             <span class="read-status-eye" aria-hidden="true" />
-            <span class="sr-only">{{ t('article.readStatus') }}</span>
-          </span>
+            <span class="sr-only">{{ readStatusTip }}</span>
+          </button>
         </div>
         <div v-if="article.category" class="mb-1 text-[var(--infl0-article-back-fg-mute)]">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
@@ -493,16 +595,34 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
 }
 
 .read-status {
+  appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.45em;
-  height: 1.45em;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  color: currentColor;
-  opacity: 0.72;
-  background: color-mix(in srgb, currentColor 10%, transparent);
+  min-width: 1.65rem;
+  width: 1.65rem;
+  height: 1.35rem;
+  padding: 0;
+  border: 2px solid currentColor;
+  color: var(--infl0-article-front-fg);
+  background: transparent;
+  cursor: pointer;
+  opacity: 1;
+}
+
+.read-status--read {
+  border-color: var(--infl0-article-front-fg);
+  color: var(--infl0-card-grad-a);
+  background: var(--infl0-article-front-fg);
+}
+
+.read-status:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.read-status:not(.read-status--read) .read-status-eye::after {
+  display: none;
 }
 
 .read-status-eye {

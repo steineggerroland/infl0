@@ -1,7 +1,6 @@
-import { createError, readBody } from 'h3'
+import { createError, defineEventHandler, readBody } from 'h3'
 import {
   ARTICLE_ENGAGEMENT_MAX_DURATION_SEC,
-  ARTICLE_READ_ENGAGED_SECONDS_THRESHOLD,
   isArticleEngagementSegment,
 } from '../../../utils/article-engagement'
 import { applicationEventBus } from '../../domain/events/application-events'
@@ -70,7 +69,7 @@ export default defineEventHandler(async (event) => {
     where: {
       userId_articleId: { userId, articleId },
     },
-    select: { id: true, readAt: true, engagedSeconds: true },
+    select: { id: true, engagedSeconds: true },
   })
   if (!timelineRow) {
     throw createError({ statusCode: 404, statusMessage: 'Article not on your timeline' })
@@ -91,9 +90,6 @@ export default defineEventHandler(async (event) => {
       where: { id: timelineRow.id },
       data: {
         engagedSeconds: newEngaged,
-        ...(timelineRow.readAt == null && newEngaged >= ARTICLE_READ_ENGAGED_SECONDS_THRESHOLD
-          ? { readAt: new Date() }
-          : {}),
       },
     }),
   ])
@@ -107,8 +103,5 @@ export default defineEventHandler(async (event) => {
     occurredAt: new Date(),
   })
 
-  return {
-    ok: true,
-    readMarked: timelineRow.readAt == null && newEngaged >= ARTICLE_READ_ENGAGED_SECONDS_THRESHOLD,
-  }
+  return { ok: true }
 })

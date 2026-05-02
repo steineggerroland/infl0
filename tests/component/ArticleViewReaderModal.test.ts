@@ -24,6 +24,11 @@ vi.stubGlobal('useEngagementTrackingPrefs', () => ({
   reportDwell: vi.fn(),
 }))
 
+const setReadState = vi.fn()
+vi.stubGlobal('useArticleReadState', () => ({
+  setReadState,
+}))
+
 vi.stubGlobal('useUiPrefs', () => ({
   prefs: ref(defaultUiPrefs()),
   update: vi.fn(),
@@ -37,6 +42,8 @@ function makeI18n() {
       cornerFold: 'Flip',
       originalArticle: 'Original',
       readStatus: 'Read',
+      markRead: 'Mark as read',
+      markUnread: 'Mark as unread',
       closeModal: 'Close',
       modalKeyboardHint: 'Esc',
     },
@@ -57,9 +64,12 @@ const baseArticle = {
 describe('ArticleView reader modal + modal stack', () => {
   beforeEach(() => {
     resetNuxtTestState()
+    setReadState.mockReset()
+    setReadState.mockResolvedValue({ ok: true, readAt: '2026-05-02T10:00:00.000Z' })
     document.body.innerHTML = ''
   })
   afterEach(() => {
+    vi.useRealTimers()
     document.body.innerHTML = ''
   })
 
@@ -149,7 +159,7 @@ describe('ArticleView reader modal + modal stack', () => {
     wrapper.unmount()
   })
 
-  it('shows a quiet read-status hint when the article is already read', async () => {
+  it('shows a read-status control when the article is already read', async () => {
     const i18n = makeI18n()
 
     const wrapper = mount(ArticleView, {
@@ -164,7 +174,82 @@ describe('ArticleView reader modal + modal stack', () => {
 
     const hints = wrapper.findAll('[data-testid="article-read-status"]')
     expect(hints.length).toBeGreaterThan(0)
-    expect(hints[0]?.attributes('aria-label')).toBe('Read')
+    expect(hints[0]?.attributes('aria-label')).toBe('Mark as unread')
+    expect(hints[0]?.attributes('aria-pressed')).toBe('true')
+    wrapper.unmount()
+  })
+
+  it('marks the selected article read after the visibility threshold without tracking', async () => {
+    vi.useFakeTimers()
+    const i18n = makeI18n()
+
+    const wrapper = mount(ArticleView, {
+      props: {
+        article: { ...baseArticle },
+        isSelected: true,
+      },
+      global: { plugins: [i18n] },
+      attachTo: document.body,
+    })
+    await flushPromises()
+
+    expect(setReadState).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(2000)
+    await flushPromises()
+
+    expect(setReadState).toHaveBeenCalledWith('a1', true)
+    expect(wrapper.find('[data-testid="article-read-status"]').attributes('aria-pressed')).toBe(
+      'true',
+    )
+    wrapper.unmount()
+  })
+
+  it('lets users mark a read article unread from the status control', async () => {
+    const i18n = makeI18n()
+    setReadState.mockResolvedValueOnce({ ok: true, readAt: null })
+
+    const wrapper = mount(ArticleView, {
+      props: {
+        article: { ...baseArticle, readAt: '2026-05-01T10:00:00.000Z' },
+        isSelected: true,
+      },
+      global: { plugins: [i18n] },
+      attachTo: document.body,
+    })
+    await flushPromises()
+
+    await wrapper.find('[data-testid="article-read-status"]').trigger('click')
+    await flushPromises()
+
+    expect(setReadState).toHaveBeenCalledWith('a1', false)
+    expect(wrapper.find('[data-testid="article-read-status"]').attributes('aria-pressed')).toBe(
+      'false',
+    )
+    wrapper.unmount()
+  })
+
+  it('lets users mark the selected article unread with the read-state shortcut', async () => {
+    const i18n = makeI18n()
+    setReadState.mockResolvedValueOnce({ ok: true, readAt: null })
+
+    const wrapper = mount(ArticleView, {
+      props: {
+        article: { ...baseArticle, readAt: '2026-05-01T10:00:00.000Z' },
+        isSelected: true,
+      },
+      global: { plugins: [i18n] },
+      attachTo: document.body,
+    })
+    await flushPromises()
+
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'm', bubbles: true }))
+    await flushPromises()
+
+    expect(setReadState).toHaveBeenCalledWith('a1', false)
+    expect(wrapper.find('[data-testid="article-read-status"]').attributes('aria-pressed')).toBe(
+      'false',
+    )
     wrapper.unmount()
   })
 })

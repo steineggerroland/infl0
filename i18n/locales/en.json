@@ -44,7 +44,7 @@
     "trackingHeading": "Reading-behaviour analysis",
     "trackingIntro": "Off by default. You decide whether we may use your reading behaviour for sorting. You can switch it off at any time — no new data will be stored after that.",
     "trackingLabel": "Use reading behaviour for better sorting",
-    "trackingHint": "When on, we remember how long you look at the headline, the teaser or the longer text. Articles you look at for around two seconds or longer count as read.",
+    "trackingHint": "When on, we remember how long you look at the headline, the teaser or the longer text. This helps sorting learn from your reading behaviour.",
     "onboardingHeading": "Welcome cards",
     "onboardingIntro": "Show or hide the four welcome cards that introduce navigation, sources, scoring, and themes. They sit at the top of your inflow when on.",
     "onboardingLabel": "Show welcome cards",
@@ -395,6 +395,8 @@
     "flipBack": "Flip back",
     "originalArticle": "Original article",
     "readStatus": "Read",
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
     "closeModal": "Close",
     "modalKeyboardHint": "Esc closes · use w/s after closing to navigate"
   },
@@ -413,7 +415,7 @@
       "scopeRules": {
         "noEditable": "No shortcut fires while you are typing in a text field, search box, or other input.",
         "noModalBg": "While a longer original article or an info popover is open, the timeline and read-toggle keys pause so the article behind doesn't drift away.",
-        "selectedCard": "Article keys (E, Q) only act on the card you're currently looking at — the one that fills most of the screen.",
+        "selectedCard": "Article keys (E, M, Q) only act on the card you're currently looking at — the one that fills most of the screen.",
         "noChords": "Holding Ctrl, Cmd, or Alt always wins for the browser. So Cmd+R still reloads the page; it never toggles read articles."
       },
       "keysSeparator": "or",
@@ -447,6 +449,10 @@
         "flipCard": {
           "label": "Flip the focused card",
           "description": "Switches between the front of the card (headline + teaser) and the back (longer summary). Only acts on the card you're currently looking at."
+        },
+        "toggleReadState": {
+          "label": "Mark read or unread",
+          "description": "Marks the focused article as read, or marks it unread again if it is already read."
         },
         "openOriginal": {
           "label": "Open the original article",

@@ -43,17 +43,17 @@ export function useEngagementTrackingPrefs() {
     articleId: string,
     segment: ArticleEngagementSegment,
     durationMs: number,
-  ): Promise<{ readMarked: boolean } | null> {
+  ): Promise<boolean | null> {
     if (!loaded.value || !enabled.value) return null
     if (durationMs < ARTICLE_ENGAGEMENT_MIN_DWELL_MS) return null
     const durationSec = Math.round((durationMs / 1000) * 100) / 100
     try {
-      const res = await $fetch<{ readMarked?: boolean }>('/api/me/article-engagement', {
+      await $fetch<{ ok?: boolean }>('/api/me/article-engagement', {
         method: 'POST',
         body: { articleId, segment, durationSec },
         credentials: 'include',
       })
-      return { readMarked: res.readMarked === true }
+      return true
     } catch {
       /* offline / 401 */
       return null
