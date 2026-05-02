@@ -36,6 +36,7 @@ function makeI18n() {
     article: {
       cornerFold: 'Flip',
       originalArticle: 'Original',
+      readStatus: 'Read',
       closeModal: 'Close',
       modalKeyboardHint: 'Esc',
     },
@@ -145,6 +146,25 @@ describe('ArticleView reader modal + modal stack', () => {
     await flushPromises()
 
     expect(anyOpen.value).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('shows a quiet read-status hint when the article is already read', async () => {
+    const i18n = makeI18n()
+
+    const wrapper = mount(ArticleView, {
+      props: {
+        article: { ...baseArticle, readAt: '2026-05-01T10:00:00.000Z' },
+        isSelected: true,
+      },
+      global: { plugins: [i18n] },
+      attachTo: document.body,
+    })
+    await flushPromises()
+
+    const hints = wrapper.findAll('[data-testid="article-read-status"]')
+    expect(hints.length).toBeGreaterThan(0)
+    expect(hints[0]?.attributes('aria-label')).toBe('Read')
     wrapper.unmount()
   })
 })

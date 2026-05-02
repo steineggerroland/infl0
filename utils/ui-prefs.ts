@@ -115,6 +115,11 @@ export type UiPrefs = {
    * dismiss it (see `docs/planned/onboarding-and-inflow-cards.md`).
    */
   onboardingHidden: boolean
+  /**
+   * Timestamp of the last explicit reader-session start. Opening the app does
+   * not update this; only deliberate reader entry actions do.
+   */
+  lastReaderSessionStartedAt: string | null
 }
 
 /**
@@ -275,6 +280,7 @@ export function defaultUiPrefs(): UiPrefs {
     },
     seenFeatureAnnouncements: [],
     onboardingHidden: false,
+    lastReaderSessionStartedAt: null,
   }
 }
 
@@ -298,6 +304,7 @@ export function uiPrefsEffectiveCustomization(prefs: UiPrefs): boolean {
   if (prefs.theme !== d.theme || prefs.motion !== d.motion || prefs.appearance !== d.appearance) return true
   if (prefs.seenFeatureAnnouncements.length > 0) return true
   if (prefs.onboardingHidden !== d.onboardingHidden) return true
+  if (prefs.lastReaderSessionStartedAt !== d.lastReaderSessionStartedAt) return true
   for (const id of SURFACE_IDS) {
     if (!surfacePrefsEqual(prefs.surfaces[id], d.surfaces[id])) return true
   }
@@ -395,6 +402,11 @@ export function parseUiPrefsFromJson(json: unknown): UiPrefs | null {
     surfaces,
     seenFeatureAnnouncements: parseAnnouncementIds(j.seenFeatureAnnouncements),
     onboardingHidden: typeof j.onboardingHidden === 'boolean' ? j.onboardingHidden : false,
+    lastReaderSessionStartedAt:
+      typeof j.lastReaderSessionStartedAt === 'string' &&
+      Number.isFinite(Date.parse(j.lastReaderSessionStartedAt))
+        ? new Date(j.lastReaderSessionStartedAt).toISOString()
+        : null,
   }
 }
 
@@ -413,6 +425,7 @@ export function toStoredUiPrefs(prefs: UiPrefs): UiPrefsStored {
     surfaces: prefs.surfaces,
     seenFeatureAnnouncements: prefs.seenFeatureAnnouncements,
     onboardingHidden: prefs.onboardingHidden,
+    lastReaderSessionStartedAt: prefs.lastReaderSessionStartedAt,
   }
 }
 
@@ -428,6 +441,7 @@ export type UiPrefsPatch = {
   surfaces?: Partial<Record<SurfaceId, Partial<SurfacePrefs>>>
   seenFeatureAnnouncements?: string[]
   onboardingHidden?: boolean
+  lastReaderSessionStartedAt?: string | null
 }
 
 /**
@@ -476,6 +490,13 @@ export function applyUiPrefsPatch(base: UiPrefs, patch: UiPrefsPatch): UiPrefs {
   }
   if (typeof patch.onboardingHidden === 'boolean') {
     next.onboardingHidden = patch.onboardingHidden
+  }
+  if ('lastReaderSessionStartedAt' in patch) {
+    next.lastReaderSessionStartedAt =
+      typeof patch.lastReaderSessionStartedAt === 'string' &&
+      Number.isFinite(Date.parse(patch.lastReaderSessionStartedAt))
+        ? new Date(patch.lastReaderSessionStartedAt).toISOString()
+        : null
   }
   return next
 }

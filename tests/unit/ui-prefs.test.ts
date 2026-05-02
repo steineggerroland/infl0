@@ -37,6 +37,7 @@ describe('ui-prefs data layer', () => {
       expect(Object.keys(d.surfaces).sort()).toEqual(['card-back', 'card-front', 'reader'])
       expect(d.seenFeatureAnnouncements).toEqual([])
       expect(d.onboardingHidden).toBe(false)
+      expect(d.lastReaderSessionStartedAt).toBeNull()
     })
 
     it('gives the reader surface a longer-read default (serif, relaxed line height)', () => {
@@ -77,6 +78,12 @@ describe('ui-prefs data layer', () => {
       p.onboardingHidden = true
       expect(uiPrefsEffectiveCustomization(p)).toBe(true)
     })
+
+    it('is true when a reader session timestamp is stored', () => {
+      const p = defaultUiPrefs()
+      p.lastReaderSessionStartedAt = '2026-05-02T10:00:00.000Z'
+      expect(uiPrefsEffectiveCustomization(p)).toBe(true)
+    })
   })
 
   describe('parseUiPrefsFromJson', () => {
@@ -111,6 +118,7 @@ describe('ui-prefs data layer', () => {
           'unknown-surface': { backgroundColor: '#000000' },
         },
         seenFeatureAnnouncements: ['reader-colors', '   ', 42, 'reader-colors', 'new-surface'],
+        lastReaderSessionStartedAt: '2026-05-02T10:00:00.000Z',
       })
       expect(parsed).not.toBeNull()
       expect(parsed?.theme).toBe('warm:blue')
@@ -120,6 +128,7 @@ describe('ui-prefs data layer', () => {
       expect(parsed?.surfaces['card-front'].fontSize).toBe(27)
       expect(parsed?.surfaces['card-front'].fontFamily).toBe('inter')
       expect(parsed?.seenFeatureAnnouncements).toEqual(['reader-colors', 'new-surface'])
+      expect(parsed?.lastReaderSessionStartedAt).toBe('2026-05-02T10:00:00.000Z')
     })
 
     it('defaults appearance to light when the stored blob omits it (legacy)', () => {
@@ -224,6 +233,7 @@ describe('ui-prefs data layer', () => {
       expect(parsed?.motion).toBe(d.motion)
       expect(parsed?.appearance).toBe('light')
       expect(parsed?.surfaces.reader).toEqual(d.surfaces.reader)
+      expect(parsed?.lastReaderSessionStartedAt).toBeNull()
     })
   })
 
@@ -250,6 +260,7 @@ describe('ui-prefs data layer', () => {
       const next = applyUiPrefsPatch(base, {
         motion: 'reduced',
         appearance: 'dark',
+        lastReaderSessionStartedAt: '2026-05-02T10:00:00.000Z',
         surfaces: {
           'card-front': { backgroundColor: '#abcdef', fontSize: 40 },
           reader: { lineHeight: 'tight' },
@@ -257,6 +268,7 @@ describe('ui-prefs data layer', () => {
       })
       expect(next.motion).toBe('reduced')
       expect(next.appearance).toBe('dark')
+      expect(next.lastReaderSessionStartedAt).toBe('2026-05-02T10:00:00.000Z')
       expect(next.surfaces['card-front'].backgroundColor).toBe('#abcdef')
       expect(next.surfaces['card-front'].fontSize).toBe(40)
       expect(next.surfaces['card-front'].textColor).toBe(base.surfaces['card-front'].textColor)

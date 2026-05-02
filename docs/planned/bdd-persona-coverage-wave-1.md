@@ -41,7 +41,7 @@ paths and complements existing smoke E2E checks.
 
 - Prefer scenario depth over raw scenario count.
 - Keep files organized by user goal/domain, not by UI component.
-- Track remaining gaps in `docs/TEST_COVERAGE_MATRIX.md`.
+- Track remaining BDD gaps in `features/README.md`.
 
 ## Links
 

@@ -30,6 +30,7 @@ const props = defineProps({
       source_type: string
       /** Full article body from DB (`content_md`); drives the in-app reader modal */
       rawMarkdown?: string
+      readAt?: string | null
       tld?: string
       author?: string
     },
@@ -38,12 +39,25 @@ const props = defineProps({
   isSelected: Boolean,
 })
 
+const emit = defineEmits<{
+  (e: 'commit'): void
+}>()
+
 function formatDate(dateString: string) {
   return format(new Date(dateString), 'PPP', { locale: dateLocale.value })
 }
 
 // State for toggling the detail view
 const isDetailView = ref(false)
+const readAt = ref<string | null>(props.article.readAt ?? null)
+const articleIsRead = computed(() => readAt.value != null)
+
+watch(
+  () => props.article.readAt,
+  (next) => {
+    readAt.value = next ?? null
+  },
+)
 
 function toggleDetailView() {
   isDetailView.value = !isDetailView.value
@@ -55,6 +69,7 @@ const modalVisible = ref(false)
 
 function showOriginalArticle() {
   if (!hasReaderModal.value) return
+  emit('commit')
   modal.value?.showModal()
   modalVisible.value = true
 }
@@ -111,19 +126,22 @@ function resolveEngagementSegment(): ArticleEngagementSegment | null {
   return 'teaser'
 }
 
-function flushEngagementDwell() {
+async function flushEngagementDwell() {
   if (dwellStartMs == null || dwellSegment == null) return
   const ms = performance.now() - dwellStartMs
   const seg = dwellSegment
   dwellStartMs = null
   dwellSegment = null
-  void engagement.reportDwell(props.article.id, seg, ms)
+  const res = await engagement.reportDwell(props.article.id, seg, ms)
+  if (res?.readMarked) {
+    readAt.value = new Date().toISOString()
+  }
 }
 
 function syncEngagementDwell() {
   const next = resolveEngagementSegment()
   if (next === dwellSegment && dwellStartMs != null) return
-  flushEngagementDwell()
+  void flushEngagementDwell()
   if (next != null) {
     dwellSegment = next
     dwellStartMs = performance.now()
@@ -146,7 +164,7 @@ onBeforeUnmount(() => {
   if (import.meta.client) {
     document.removeEventListener('visibilitychange', onVisibilityForEngagement)
   }
-  flushEngagementDwell()
+  void flushEngagementDwell()
 })
 
 watch(
@@ -155,6 +173,19 @@ watch(
     syncEngagementDwell()
   },
   { flush: 'post' },
+)
+
+watch(
+  () => props.isSelected,
+  async (selected) => {
+    if (!selected) {
+      void flushEngagementDwell()
+      return
+    }
+    await engagement.ensureLoaded()
+    syncEngagementDwell()
+  },
+  { flush: 'post', immediate: true },
 )
 
 useModalStackRegistration(modalVisible)
@@ -250,7 +281,14 @@ defineShortcuts(
 </script>
 
 <template>
-  <div :id="article.id" class="article-container" :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }">
+  <div
+    :id="article.id"
+    class="article-container"
+    :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView, 'article-read': articleIsRead }"
+    data-testid="article-card"
+    :data-article-id="article.id"
+    :data-reader-selected="isSelected ? 'true' : 'false'"
+  >
     <!-- Front: Short Summary -->
     <div class="article-content infl0-surface-front rounded-xl bg-front relative transition-all">
       <!-- Corner fold -->
@@ -287,6 +325,16 @@ v-if="article.publishedAt" class="ms-1 mdh:ms-3 tooltip"
 v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             :name="article.author"/>
           <span v-else class="ms-1 mdh:ms-3 h-[1em] w-[1em]"/>
+          <span
+            v-if="articleIsRead"
+            class="read-status tooltip ms-auto"
+            :data-tip="t('article.readStatus')"
+            :aria-label="t('article.readStatus')"
+            data-testid="article-read-status"
+          >
+            <span class="read-status-eye" aria-hidden="true" />
+            <span class="sr-only">{{ t('article.readStatus') }}</span>
+          </span>
         </div>
         <div v-if="article.category" class="mb-2 text-[var(--infl0-article-front-fg-mute)]">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
@@ -320,7 +368,7 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             >
               {{ t('article.originalArticle') }}
             </a>
-            <a v-else :href="article.link" target="_blank" class="article-back-link font-bold">
+            <a v-else :href="article.link" target="_blank" class="article-back-link font-bold" @click="emit('commit')">
               {{ t('article.originalArticle') }}
             </a>
           </p>
@@ -342,6 +390,16 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
               article?.author
             }}</div>
           </div>
+          <span
+            v-if="articleIsRead"
+            class="read-status tooltip ms-auto"
+            :data-tip="t('article.readStatus')"
+            :aria-label="t('article.readStatus')"
+            data-testid="article-read-status"
+          >
+            <span class="read-status-eye" aria-hidden="true" />
+            <span class="sr-only">{{ t('article.readStatus') }}</span>
+          </span>
         </div>
         <div v-if="article.category" class="mb-1 text-[var(--infl0-article-back-fg-mute)]">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
@@ -427,6 +485,45 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
 }
 .article-back-link:hover {
   color: var(--infl0-article-back-fg);
+}
+
+.article-read .article-content,
+.article-read .article-detail {
+  filter: saturate(0.9);
+}
+
+.read-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.45em;
+  height: 1.45em;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: currentColor;
+  opacity: 0.72;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.read-status-eye {
+  position: relative;
+  display: block;
+  width: 0.9em;
+  height: 0.52em;
+  border: 1.5px solid currentColor;
+  border-radius: 999px 999px;
+  transform: rotate(-8deg);
+}
+
+.read-status-eye::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 0.22em;
+  height: 0.22em;
+  border-radius: 999px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
 }
 
 /* SVG Icon shadow for visibility */

@@ -34,7 +34,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-    (e: 'skip'): void
+    (e: 'skip' | 'commit'): void
 }>()
 
 const { t } = useI18n()
@@ -97,6 +97,7 @@ const ctaSafe = computed<OnboardingCardCta | null>(() => {
 })
 
 function onSkipClick() {
+    emit('commit')
     emit('skip')
 }
 
@@ -106,6 +107,7 @@ function toggleDetailView() {
 
 function showFullText() {
     if (!fullText.value) return
+    emit('commit')
     readerDialog.value?.showModal()
     readerVisible.value = true
 }
@@ -269,6 +271,7 @@ defineShortcuts(
                         :to="ctaSafe.href"
                         class="btn btn-primary btn-sm"
                         :data-onboarding-cta="topic"
+                        @click="emit('commit')"
                     >
                         {{ t(ctaSafe.labelKey) }}
                     </NuxtLink>
@@ -335,6 +338,7 @@ defineShortcuts(
                         :to="ctaSafe.href"
                         class="btn btn-primary btn-sm"
                         :data-onboarding-cta="topic"
+                        @click="emit('commit')"
                     >
                         {{ t(ctaSafe.labelKey) }}
                     </NuxtLink>
@@ -370,6 +374,7 @@ defineShortcuts(
                             :key="link.to"
                             :to="link.to"
                             class="btn btn-sm btn-ghost border border-[var(--infl0-field-border)]"
+                            @click="emit('commit')"
                         >
                             {{ link.label }}
                         </NuxtLink>

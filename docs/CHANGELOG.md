@@ -13,6 +13,24 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Deliberate reader start with resume option.** Once onboarding is
+  hidden, opening `/` shows a quiet reader start screen instead of
+  rendering article cards immediately. This prevents passive visits from
+  starting dwell/read tracking. Users can choose **Start reading** to
+  begin at the current first inflow article or **Jump to last article**
+  to use the stored return context. `User.uiPrefs` now stores
+  `lastReaderSessionStartedAt`, and `/api/inflow` reports
+  `stats.newSinceLastReaderSession` for the start screen. The internal
+  `/inflow/article/:id` and `/inflow/onboarding/:topic` URLs keep the
+  browser location aligned with the current card, but they are not yet a
+  supported sharing/bookmarking feature.
+
+- **Reader return-context behavior specs.** New Cucumber scenarios cover
+  onboarding bypass, passive opening without read tracking, fresh reader
+  start, explicit resume to the stored article, missing resume context,
+  URL calmness before start, new-article count, and visible read-state
+  feedback.
+
 - **Onboarding cards on a polymorphic inflow.** A new account lands on
   four prefabricated welcome cards (`intro`, `sources`, `scoring`,
   `themes`) that introduce navigation, where cards come from, what
@@ -110,7 +128,6 @@ new entries accrue under **Unreleased**.
   with cross-doc links updated from planned → archive references.
 
 - **Added test strategy and coverage planning docs**:
-  - [`docs/TEST_COVERAGE_MATRIX.md`](./TEST_COVERAGE_MATRIX.md)
   - [`docs/planned/return-context-and-onboarding-completion.md`](./planned/return-context-and-onboarding-completion.md)
   - [`docs/planned/bdd-persona-coverage-wave-1.md`](./planned/bdd-persona-coverage-wave-1.md)
   - [`docs/planned/ci-remote-e2e-smoke-strategy.md`](./planned/ci-remote-e2e-smoke-strategy.md)

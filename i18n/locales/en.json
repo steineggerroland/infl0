@@ -289,6 +289,11 @@
     "emptyNoFeedsTitle": "No sources yet",
     "emptyNoFeedsBody": "Add news or blog sources so your timeline can show articles.",
     "emptyNoFeedsCta": "Add sources",
+    "readerStartKicker": "Your reader is ready",
+    "readerStartTitle": "Start a quiet reading session",
+    "readerStartBody": "{count} new articles since your last reading session.",
+    "readerStartCta": "Start reading",
+    "readerResumeCta": "Jump to last article",
     "allReadTitle": "You're all caught up",
     "allReadBody": "Every article on your timeline is marked as read. Turn on the switch below to show read articles again.",
     "showReadLabel": "Show read articles"
@@ -389,6 +394,7 @@
     "flipCard": "Flip card",
     "flipBack": "Flip back",
     "originalArticle": "Original article",
+    "readStatus": "Read",
     "closeModal": "Close",
     "modalKeyboardHint": "Esc closes · use w/s after closing to navigate"
   },

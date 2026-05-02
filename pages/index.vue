@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import type { OnboardingTopic, OnboardingCardCta } from '~/utils/onboarding-cards'
+import {
+    INFLOW_RETURN_CONTEXT_STORAGE_KEY,
+    parseInflowReturnContext,
+    serializeInflowReturnContext,
+    type InflowReturnAnchor,
+} from '~/utils/inflow-return-context'
+import { parseInflowAnchorPath, pathForInflowAnchor } from '~/utils/inflow-route'
 
 definePageMeta({
     layout: 'app',
@@ -46,6 +53,7 @@ type UserFeedRow = {
 
 const { t } = useI18n()
 const toast = useToast()
+const route = useRoute()
 
 const PAGE_SIZE = 20
 /** Load next page when the user is this many pixels from the bottom (prefetch). */
@@ -64,7 +72,9 @@ const items = ref<InflowItem[]>([])
 const inflowHasMore = ref(true)
 const inflowPending = ref(false)
 const inflowScrollEl = ref<HTMLElement | null>(null)
-const inflowStats = ref({ total: 0, unread: 0 })
+const inflowStats = ref({ total: 0, unread: 0, newSinceLastReaderSession: 0 })
+const readerSessionStarted = ref(false)
+const readerStartReady = ref(false)
 
 /** SSR: forward `Cookie` from the incoming request to internal API calls (plain `$fetch` does not). */
 const requestFetch = useRequestFetch()
@@ -78,7 +88,7 @@ async function loadInflowPage(reset: boolean) {
         const res = await requestFetch<{
             items: InflowItem[]
             hasMore: boolean
-            stats: { total: number; unread: number }
+            stats: { total: number; unread: number; newSinceLastReaderSession: number }
         }>('/api/inflow', {
             credentials: 'include',
             query: {
@@ -133,7 +143,9 @@ async function loadInflowPage(reset: boolean) {
 async function retryInflow() {
     await loadInflowPage(true)
     await nextTick()
-    await fillInflowUntilScrollableOrDone()
+    if (readerIsInteractive.value) {
+        await fillInflowUntilScrollableOrDone()
+    }
 }
 
 async function fillInflowUntilScrollableOrDone() {
@@ -149,7 +161,11 @@ async function fillInflowUntilScrollableOrDone() {
 watch(showRead, () => {
     void loadInflowPage(true).then(async () => {
         await nextTick()
-        await fillInflowUntilScrollableOrDone()
+        if (readerIsInteractive.value) {
+            await fillInflowUntilScrollableOrDone()
+            restoreAttempted.value = false
+            await restoreInflowContext()
+        }
     })
 })
 
@@ -217,15 +233,41 @@ const showAllReadEmpty = computed(
         !showRead.value &&
         !hasOnboarding.value,
 )
+const storedReturnContext = computed(() => {
+    if (!import.meta.client) return null
+    try {
+        return parseInflowReturnContext(
+            window.localStorage.getItem(INFLOW_RETURN_CONTEXT_STORAGE_KEY),
+        )
+    } catch {
+        return null
+    }
+})
+const canResumeReader = computed(() => storedReturnContext.value?.anchor.type === 'article')
+const showReaderStart = computed(
+    () =>
+        hasArticles.value &&
+        !hasOnboarding.value &&
+        !showOnboardingEmpty.value &&
+        !showWaiting.value &&
+        !showAllReadEmpty.value &&
+        !readerSessionStarted.value,
+)
+const readerIsInteractive = computed(() => readerSessionStarted.value || hasOnboarding.value)
 
 async function refreshAll() {
     await refreshFeeds()
     await loadInflowPage(true)
     await nextTick()
-    await fillInflowUntilScrollableOrDone()
+    if (readerSessionStarted.value) {
+        await fillInflowUntilScrollableOrDone()
+    }
 }
 
 const currentIndex = ref(0)
+const restoreAttempted = ref(false)
+const restoreInProgress = ref(false)
+let scrollCommitTimer: ReturnType<typeof setTimeout> | null = null
 
 watch(
     () => items.value.length,
@@ -261,15 +303,163 @@ function onInflowScroll() {
     const currentEl = cardContainers.value.find((node) => node && isMoreThan50PercentVisible(node))
     currentIndex.value =
         currentEl !== undefined ? cardContainers.value.indexOf(currentEl) : -1
+    scheduleScrollCommit()
+}
+
+function anchorForItem(item: InflowItem): InflowReturnAnchor {
+    return { type: item.type, id: item.id }
+}
+
+function articleOffsetBeforeIndex(index: number): number {
+    if (index <= 0) return 0
+    return items.value.slice(0, index).filter((i) => i.type === 'article').length
+}
+
+function persistInflowContext(index = currentIndex.value) {
+    if (!import.meta.client || restoreInProgress.value) return
+    const item = items.value[index]
+    if (!item) return
+    try {
+        window.localStorage.setItem(
+            INFLOW_RETURN_CONTEXT_STORAGE_KEY,
+            serializeInflowReturnContext(anchorForItem(item), index, articleOffsetBeforeIndex(index)),
+        )
+    } catch {
+        /* private mode / quota — return context is a comfort feature */
+    }
+}
+
+function commitInflowContext(index = currentIndex.value, opts: { updateUrl?: boolean } = {}) {
+    if (!import.meta.client || restoreInProgress.value) return
+    const item = items.value[index]
+    if (!item) return
+    persistInflowContext(index)
+    if (opts.updateUrl === false) return
+    const nextPath = pathForInflowAnchor(anchorForItem(item))
+    if (window.location.pathname !== nextPath) {
+        window.history.replaceState(window.history.state, '', nextPath)
+    }
+}
+
+function scheduleScrollCommit() {
+    if (!import.meta.client || restoreInProgress.value) return
+    if (scrollCommitTimer != null) clearTimeout(scrollCommitTimer)
+    scrollCommitTimer = setTimeout(() => {
+        scrollCommitTimer = null
+        commitInflowContext()
+    }, 350)
+}
+
+function commitIndexAndScroll(index: number) {
+    currentIndex.value = index
+    commitInflowContext(index)
+    cardContainers.value[index]?.scrollIntoView({ behavior: 'smooth' })
+}
+
+function focusInflowIndex(index: number) {
+    if (index < 0 || index >= items.value.length) return
+    if (currentIndex.value !== index) {
+        currentIndex.value = index
+    }
+    commitInflowContext(index)
+}
+
+function findAnchorIndex(anchor: InflowReturnAnchor): number {
+    return items.value.findIndex((item) => item.type === anchor.type && item.id === anchor.id)
+}
+
+function fallbackIndexForStoredContext(itemIndex: number, articleOffset: number): number {
+    if (items.value.length === 0) return -1
+    const articleAtOffset = items.value.findIndex((item, index) => {
+        if (item.type !== 'article') return false
+        return articleOffsetBeforeIndex(index) >= articleOffset
+    })
+    if (articleAtOffset >= 0) return articleAtOffset
+    return Math.min(itemIndex, items.value.length - 1)
+}
+
+async function restoreInflowContext() {
+    if (!import.meta.client || restoreAttempted.value) return
+    const routeAnchor = parseInflowAnchorPath(route.path)
+    const stored = parseInflowReturnContext(
+        window.localStorage.getItem(INFLOW_RETURN_CONTEXT_STORAGE_KEY),
+    )
+    restoreAttempted.value = true
+    const anchor = routeAnchor ?? stored?.anchor
+    if (!anchor) return
+
+    restoreInProgress.value = true
+    try {
+        let targetIndex = findAnchorIndex(anchor)
+        while (targetIndex < 0 && anchor.type === 'article' && inflowHasMore.value) {
+            const beforeCount = items.value.length
+            await loadInflowPage(false)
+            await nextTick()
+            targetIndex = findAnchorIndex(anchor)
+            if (items.value.length === beforeCount) break
+        }
+
+        if (targetIndex < 0 && stored) {
+            targetIndex = fallbackIndexForStoredContext(stored.itemIndex, stored.articleOffset)
+        }
+        if (targetIndex < 0) return
+
+        currentIndex.value = targetIndex
+        await nextTick()
+        cardContainers.value[targetIndex]?.scrollIntoView({ behavior: 'auto', block: 'start' })
+    } finally {
+        restoreInProgress.value = false
+        commitInflowContext()
+    }
+}
+
+function firstArticleIndex(): number {
+    return items.value.findIndex((item) => item.type === 'article')
+}
+
+async function markReaderSessionStarted() {
+    readerSessionStarted.value = true
+    updateUiPrefs({ lastReaderSessionStartedAt: new Date().toISOString() })
+    inflowStats.value = { ...inflowStats.value, newSinceLastReaderSession: 0 }
+    await nextTick()
+}
+
+async function startReaderAtIndex(index: number) {
+    currentIndex.value = index >= 0 ? index : Math.max(0, firstArticleIndex())
+    await nextTick()
+    await fillInflowUntilScrollableOrDone()
+    await nextTick()
+    cardContainers.value[currentIndex.value]?.scrollIntoView({ behavior: 'auto', block: 'start' })
+    commitInflowContext(currentIndex.value)
+}
+
+async function startReader() {
+    await markReaderSessionStarted()
+    await startReaderAtIndex(firstArticleIndex())
+}
+
+async function resumeReader() {
+    await markReaderSessionStarted()
+    const stored = storedReturnContext.value
+    let targetIndex = stored?.anchor ? findAnchorIndex(stored.anchor) : -1
+    while (targetIndex < 0 && stored?.anchor.type === 'article' && inflowHasMore.value) {
+        const beforeCount = items.value.length
+        await loadInflowPage(false)
+        await nextTick()
+        targetIndex = findAnchorIndex(stored.anchor)
+        if (items.value.length === beforeCount) break
+    }
+    if (targetIndex < 0 && stored) {
+        targetIndex = fallbackIndexForStoredContext(stored.itemIndex, stored.articleOffset)
+    }
+    await startReaderAtIndex(targetIndex >= 0 ? targetIndex : firstArticleIndex())
 }
 
 function gotoNextCard(event: KeyboardEvent) {
     event.stopPropagation()
     if (items.value.length === 0) return
     if (currentIndex.value < items.value.length - 1) {
-        cardContainers.value[currentIndex.value + 1]?.scrollIntoView({
-            behavior: 'smooth',
-        })
+        commitIndexAndScroll(currentIndex.value + 1)
     }
 }
 
@@ -277,9 +467,7 @@ function gotoPreviousCard(event: KeyboardEvent) {
     event.stopPropagation()
     if (items.value.length === 0) return
     if (currentIndex.value > 0) {
-        cardContainers.value[currentIndex.value - 1]?.scrollIntoView({
-            behavior: 'smooth',
-        })
+        commitIndexAndScroll(currentIndex.value - 1)
     }
 }
 
@@ -318,12 +506,24 @@ defineShortcuts(
             toggleShowRead()
         },
     },
-    { when: () => !anyModalOpen.value },
+    { when: () => !anyModalOpen.value && readerIsInteractive.value },
 )
 
 onMounted(async () => {
+    readerStartReady.value = true
     await nextTick()
-    await fillInflowUntilScrollableOrDone()
+    if (hasOnboarding.value) {
+        readerSessionStarted.value = true
+        await fillInflowUntilScrollableOrDone()
+        await restoreInflowContext()
+    }
+})
+
+onBeforeUnmount(() => {
+    if (scrollCommitTimer != null) {
+        clearTimeout(scrollCommitTimer)
+        scrollCommitTimer = null
+    }
 })
 </script>
 
@@ -397,6 +597,47 @@ onMounted(async () => {
         </div>
 
         <div
+            v-else-if="showReaderStart"
+            class="relative z-10 mx-auto w-full max-w-lg px-4 py-8"
+            data-testid="reader-start"
+        >
+            <div class="infl0-panel p-8 text-center">
+                <p class="infl0-panel-muted mb-2 text-sm">
+                    {{ $t('index.readerStartKicker') }}
+                </p>
+                <h1 class="text-xl font-semibold mb-3">{{ $t('index.readerStartTitle') }}</h1>
+                <p class="infl0-panel-muted mb-6 text-sm">
+                    {{
+                        $t('index.readerStartBody', {
+                            count: inflowStats.newSinceLastReaderSession,
+                        })
+                    }}
+                </p>
+                <div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        data-testid="reader-start-button"
+                        :disabled="!readerStartReady"
+                        @click="startReader"
+                    >
+                        {{ $t('index.readerStartCta') }}
+                    </button>
+                    <button
+                        v-if="canResumeReader"
+                        type="button"
+                        class="btn btn-outline border-[var(--infl0-field-border)]"
+                        data-testid="reader-resume-button"
+                        :disabled="!readerStartReady"
+                        @click="resumeReader"
+                    >
+                        {{ $t('index.readerResumeCta') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div
             v-else-if="showAllReadEmpty"
             class="relative z-10 mx-auto w-full max-w-lg px-4 py-8"
         >
@@ -423,12 +664,15 @@ onMounted(async () => {
                 :key="item.id"
                 :ref="(el) => setCardEl(el, index)"
                 class="my-1 max-w-full landscape:aspect-smartphone landscape:h-[95%] portrait:h-full snap-start mx-auto snap-always"
+                @focusin="focusInflowIndex(index)"
+                @pointerdown.capture="focusInflowIndex(index)"
             >
                 <ArticleView
                     v-if="item.type === 'article'"
                     class="article rounded-xl"
                     :article="item"
                     :is-selected="index === currentIndex"
+                    @commit="commitInflowContext(index)"
                 />
                 <OnboardingCardView
                     v-else
@@ -437,6 +681,7 @@ onMounted(async () => {
                     :cta="item.cta"
                     :has-device-variants="item.hasDeviceVariants"
                     :is-selected="index === currentIndex"
+                    @commit="commitInflowContext(index)"
                     @skip="onSkipOnboarding"
                 />
             </div>
