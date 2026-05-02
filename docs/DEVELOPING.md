@@ -129,7 +129,7 @@ user-facing component.
 | [`ROADMAP.md`](./ROADMAP.md) | Vision, idea backlog, technical follow-ups |
 | [`CHANGELOG.md`](./CHANGELOG.md) | Shipped work (features, fixes, breaking changes) |
 | [`planned/README.md`](./planned/README.md) | Feature packages for implementation planning |
-| [`RELEASING.md`](./RELEASING.md) | GitHub Actions CI + tagging a release |
+| [`RELEASING.md`](./RELEASING.md) | GitHub Actions CI, deployments, and tagging a release |
 
 ## Dependencies and security
 
