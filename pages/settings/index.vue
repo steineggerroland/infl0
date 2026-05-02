@@ -16,7 +16,7 @@ import type { SurfaceId } from '~/utils/ui-prefs'
 const DISPLAY_SURFACES: SurfaceId[] = ['card-front', 'card-back', 'reader']
 
 definePageMeta({
-  layout: 'app',
+  layout: 'settings',
   appFooter: { testId: 'settings-page-footer' },
 })
 
@@ -83,7 +83,11 @@ function onOnboardingToggle(e: Event) {
         </p>
       </header>
 
-      <section aria-labelledby="settings-display-heading" class="mb-10">
+      <section
+        id="display"
+        aria-labelledby="settings-display-heading"
+        class="mb-10"
+      >
         <header class="mb-4 text-center">
           <h2 id="settings-display-heading" class="infl0-canvas-fg text-lg font-semibold">
             {{ t('settingsDisplay.heading') }}
@@ -160,7 +164,7 @@ function onOnboardingToggle(e: Event) {
         factor group inside is an h3 so screen-reader outline mirrors
         the "Settings → Sorting → factor groups" nesting.
       -->
-      <section aria-labelledby="settings-sorting-heading" class="mb-10">
+      <section id="sorting" aria-labelledby="settings-sorting-heading" class="mb-10">
         <header class="mb-4 text-center">
           <h2 id="settings-sorting-heading" class="infl0-canvas-fg text-lg font-semibold">
             {{ t('settingsTimeline.title') }}

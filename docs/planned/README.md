@@ -21,7 +21,7 @@ order, acceptance criteria — separate from the large idea pool in
 |--------|--------|--------|
 | [`return-context-and-onboarding-completion.md`](./return-context-and-onboarding-completion.md) | Define stable return-to-context behavior and explicit onboarding completion model | Draft |
 | [`read-state-without-tracking.md`](./read-state-without-tracking.md) | Separate read/unread state from engagement tracking and add a read-status toggle | In progress |
-| [`daisyui-polish-and-settings-navigation.md`](./daisyui-polish-and-settings-navigation.md) | Reuse suitable DaisyUI components and add mobile-friendly Settings navigation | Draft |
+| [`daisyui-polish-and-settings-navigation.md`](./daisyui-polish-and-settings-navigation.md) | Reuse suitable DaisyUI components and add mobile-friendly Settings navigation | In progress |
 | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Add first BDD scenario wave for new-user, privacy-sensitive, and power-user personas | Draft |
 | [`ci-remote-e2e-smoke-strategy.md`](./ci-remote-e2e-smoke-strategy.md) | Decide and document remote CI strategy for smoke E2E gates | Draft |
 

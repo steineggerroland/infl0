@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+In progress (settings navigation drawer shipped in app; remaining items below)
 
 ## Goal
 
@@ -88,7 +88,7 @@ The structure must work well on mobile and desktop.
 
 ## Candidate order
 
-1. Settings navigation with responsive drawer/sidebar and section anchors.
+1. ~~Settings navigation with responsive drawer/sidebar and section anchors.~~ (layout `settings`, ids `#display`, `#onboarding`, `#sorting`, `#tracking`, `#personalization`, `#privacy`)
 2. Convert feed/source rows to DaisyUI `list`.
 3. Convert personalization summary numbers to `stats` / `stat`.
 4. Improve form grouping with `fieldset` / `label`.

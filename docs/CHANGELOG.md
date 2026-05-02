@@ -134,6 +134,14 @@ new entries accrue under **Unreleased**.
   the opener `aria-label` reflects whether the menu is open or closed (`menu.close` /
   `menu.open`).
 
+- **Settings section navigation.** `/settings`, `/settings/personalization`, and
+  `/settings/privacy` use a dedicated **`settings` layout** with a DaisyUI `drawer`:
+  sidebar from `lg:` up (`lg:drawer-open`), compact **Sections** control on narrow
+  viewports, overlay close, and a `menu` of links to anchored blocks on the main
+  settings page (`#display`, `#onboarding`, `#sorting`, `#tracking`) plus sibling
+  routes. Stable **`id` hooks** (`#personalization`, `#privacy`) support deep links
+  and tests.
+
 ### Fixed
 
 - **Help shortcut `<kbd>` appearance.** Shortcut keys in `#shortcuts-reference`

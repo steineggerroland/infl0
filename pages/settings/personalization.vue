@@ -3,7 +3,7 @@ import { parseFetchError } from '~/utils/parse-fetch-error'
 import { scoreDirection } from '~/utils/score-indicator'
 
 definePageMeta({
-  layout: 'app',
+  layout: 'settings',
   appFooter: { containerMax: '4xl', testId: 'settings-page-footer' },
 })
 
@@ -90,7 +90,7 @@ function directionLabel(value: number | null | undefined) {
 </script>
 
 <template>
-  <div class="infl0-page-shell pb-24 pt-14">
+  <div id="personalization" class="infl0-page-shell pb-24 pt-14">
     <div class="mx-auto w-full max-w-4xl px-4">
       <header class="mb-8 text-center">
         <h1 class="infl0-canvas-fg text-2xl font-semibold">{{ $t('settingsPersonalization.title') }}</h1>

@@ -39,6 +39,11 @@
   "settingsCommon": {
     "footerNav": "Page shortcuts"
   },
+  "settingsNav": {
+    "landmark": "Settings sections",
+    "openSections": "Sections",
+    "closeDrawer": "Close navigation"
+  },
   "settingsIndex": {
     "title": "Settings",
     "intro": "Change how infl0 looks for you and how your timeline gets sorted.",

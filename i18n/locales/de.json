@@ -39,6 +39,11 @@
   "settingsCommon": {
     "footerNav": "Kurznavigation"
   },
+  "settingsNav": {
+    "landmark": "Einstellungsbereiche",
+    "openSections": "Bereiche",
+    "closeDrawer": "Navigation schließen"
+  },
   "settingsIndex": {
     "title": "Einstellungen",
     "intro": "Hier passt du an, wie infl0 für dich aussieht und wie deine Timeline sortiert wird.",
