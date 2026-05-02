@@ -134,6 +134,13 @@ new entries accrue under **Unreleased**.
   the opener `aria-label` reflects whether the menu is open or closed (`menu.close` /
   `menu.open`).
 
+- **Feeds / sources (`/feeds`).** Add-source form uses DaisyUI **`fieldset`** with
+  **`fieldset-legend`**, stacked **`label` / `label-text`** pairs ([Fieldset](https://daisyui.com/components/fieldset/));
+  submission errors use **`alert alert-error`**. Saved feeds render as DaisyUI **`list`**
+  rows with **`list-row`** and **`list-col-grow`** for title/URL metadata and actions
+  on the trailing column ([List](https://daisyui.com/components/list/)); empty state
+  is a compact **`alert`**.
+
 - **Settings section navigation.** `/settings`, `/settings/personalization`, and
   `/settings/privacy` use a dedicated **`settings` layout** with a DaisyUI `drawer`:
   sidebar from `lg:` up (`lg:drawer-open`), compact **Sections** control on narrow

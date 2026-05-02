@@ -113,61 +113,97 @@ async function removeFeed(id: string) {
                 </p>
             </header>
 
+            <!-- DaisyUI Fieldset ([Fieldset docs](https://daisyui.com/components/fieldset/)). -->
             <section class="infl0-panel p-6">
-                <h2 class="mb-4 text-sm font-medium text-[var(--infl0-panel-text)]">{{
-                    $t('feeds.addSection')
-                }}</h2>
-                <form class="flex flex-col gap-4" @submit.prevent="addFeed">
-                    <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
-                        <span class="infl0-panel-muted">{{ $t('feeds.feedUrl') }}</span>
-                        <input
-                            v-model="newFeedUrl"
-                            type="url"
-                            required
-                            :placeholder="$t('feeds.feedUrlPlaceholder')"
-                            class="input input-bordered infl0-field w-full"
+                <form class="contents" @submit.prevent="addFeed">
+                    <fieldset
+                        class="fieldset gap-4 border-0 bg-transparent p-0"
+                        data-testid="feeds-add-fieldset"
+                    >
+                        <legend class="fieldset-legend text-[var(--infl0-panel-text)]">
+                            {{ $t('feeds.addSection') }}
+                        </legend>
+
+                        <div class="space-y-1">
+                            <label class="label w-full pb-0" for="feed-url-input">
+                                <span class="label-text text-[var(--infl0-panel-text)]">{{
+                                    $t('feeds.feedUrl')
+                                }}</span>
+                            </label>
+                            <input
+                                id="feed-url-input"
+                                v-model="newFeedUrl"
+                                type="url"
+                                required
+                                autocomplete="off"
+                                :placeholder="$t('feeds.feedUrlPlaceholder')"
+                                class="input input-bordered infl0-field w-full"
+                            >
+                        </div>
+                        <div class="space-y-1">
+                            <label class="label w-full pb-0" for="feed-display-input">
+                                <span class="label-text text-[var(--infl0-panel-text)]">{{
+                                    $t('feeds.displayNameOptional')
+                                }}</span>
+                            </label>
+                            <input
+                                id="feed-display-input"
+                                v-model="newDisplayTitle"
+                                type="text"
+                                autocomplete="off"
+                                class="input input-bordered infl0-field w-full"
+                            >
+                        </div>
+                        <div
+                            v-if="addError"
+                            role="alert"
+                            class="alert alert-error py-3 text-sm"
+                            data-testid="feeds-add-error"
                         >
-                    </label>
-                    <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
-                        <span class="infl0-panel-muted">{{ $t('feeds.displayNameOptional') }}</span>
-                        <input
-                            v-model="newDisplayTitle"
-                            type="text"
-                            class="input input-bordered infl0-field w-full"
-                        >
-                    </label>
-                    <p v-if="addError" class="text-sm text-red-400">{{ addError }}</p>
-                    <button type="submit" class="btn btn-primary w-full" :disabled="addPending">
-                        {{ addPending ? $t('common.loading') : $t('feeds.saveSource') }}
-                    </button>
+                            {{ addError }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full" :disabled="addPending">
+                            {{ addPending ? $t('common.loading') : $t('feeds.saveSource') }}
+                        </button>
+                    </fieldset>
                 </form>
             </section>
 
-            <section v-if="feedList.length > 0" class="infl0-panel p-6">
-                <h2 class="mb-4 text-sm font-medium text-[var(--infl0-panel-text)]">{{
-                    $t('feeds.listSection')
-                }}</h2>
-                <ul class="space-y-3 text-sm">
+            <!-- DaisyUI List rows ([List docs](https://daisyui.com/components/list/)). -->
+            <section
+                v-if="feedList.length > 0"
+                class="infl0-panel p-6"
+                aria-labelledby="feeds-list-heading"
+            >
+                <h2
+                    id="feeds-list-heading"
+                    class="mb-3 text-sm font-medium text-[var(--infl0-panel-text)]"
+                >
+                    {{ $t('feeds.listSection') }}
+                </h2>
+                <ul class="list rounded-box border border-[var(--infl0-panel-border)]" data-testid="feeds-source-list">
                     <li
                         v-for="f in feedList"
                         :key="f.id"
-                        class="flex items-start justify-between gap-3 border-b border-[var(--infl0-panel-border)]/80 pb-3 last:border-0 last:pb-0"
+                        class="list-row items-start gap-3 px-4 py-3"
+                        :data-feed-id="f.id"
                     >
-                        <div class="min-w-0 flex-1 break-all">
-                            <div class="font-medium text-[var(--infl0-panel-text)]">
+                        <div class="list-col-grow min-w-0 break-all">
+                            <div class="text-sm font-medium text-[var(--infl0-panel-text)]">
                                 {{ f.displayTitle || f.feedUrl }}
                             </div>
                             <div
                                 v-if="f.displayTitle"
-                                class="infl0-panel-muted mt-0.5 break-all font-mono text-xs"
+                                class="infl0-panel-muted mt-0.5 font-mono text-xs leading-snug"
                             >
                                 {{ f.feedUrl }}
                             </div>
                         </div>
                         <button
                             type="button"
-                            class="btn btn-ghost btn-xs shrink-0 text-red-400 hover:bg-red-950/40 hover:text-red-300"
+                            class="btn btn-ghost btn-xs shrink-0 text-[var(--color-error)]"
                             :disabled="removingId === f.id"
+                            :data-testid="`feed-remove-${f.id}`"
                             @click="removeFeed(f.id)"
                         >
                             {{ removingId === f.id ? $t('common.loading') : $t('feeds.remove') }}
@@ -176,9 +212,9 @@ async function removeFeed(id: string) {
                 </ul>
             </section>
 
-            <p v-else class="infl0-canvas-muted text-center text-sm">
-                {{ $t('feeds.emptyList') }}
-            </p>
+            <div v-else class="alert border-[var(--infl0-panel-border)] bg-[var(--infl0-panel-bg)]" role="status">
+                <span class="text-sm text-[var(--infl0-panel-text)]">{{ $t('feeds.emptyList') }}</span>
+            </div>
         </div>
     </div>
 </template>
