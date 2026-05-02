@@ -11,6 +11,27 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+_No user-facing changes since v0.4.0 yet._
+
+## [0.4.0] — 2026-05-02
+
+Reader-first inflow: a **deliberate reader start** (with resume), **timeline read
+state** decoupled from behaviour tracking, **polymorphic onboarding** cards on
+**`/api/inflow`**, and a **DaisyUI** consistency pass (settings hub drawer, feeds,
+auth, help, footer, chrome). **Cucumber** now covers reader return-context, settings
+hub navigation, tracking/personalization entry points, and feeds add/remove.
+**Database:** no new Prisma migrations versus `v0.3.0` — run **`npm run db:migrate:deploy`**
+after deploy anyway (idempotent).
+
+### Breaking
+
+- **`GET /api/timeline` is deprecated** and forwards to **`GET /api/inflow`** for one
+  release; the alias will be removed in a later release. The JSON body is **no longer**
+  a bare **`Article[]`**: responses use
+  **`{ items: Array<{ type: 'article' | 'onboarding', … }>, hasMore, stats }`**.
+  Migrate scripts and integrations to **`/api/inflow`**, treat items as a discriminated
+  union, and filter **`type === 'article'`** when you only need article rows.
+
 ### Added
 
 - **Cucumber coverage** for `/settings` hub deep links and a sidebar jump, reading-behaviour
@@ -109,17 +130,6 @@ new entries accrue under **Unreleased**.
   no longer "rutsch durch" review.
 
 ### Changed
-
-- **`/api/timeline` is now a deprecated alias.** Both `/api/timeline`
-  and the new `/api/inflow` endpoint forward to the same handler in
-  `server/utils/inflow-handler.ts` for one release. External callers
-  and any cached client should migrate to `/api/inflow`; the alias
-  is removed in the next minor release. The response shape changed
-  from `Article[]` to `Array<{ type: 'article' | 'onboarding', ... }>`
-  in both endpoints; if you consume `/api/timeline` from a script,
-  filter by `type === 'article'` (or send the new
-  `/settings` toggle off via `PATCH /api/me/ui-prefs` with
-  `{ "onboardingHidden": true }`).
 
 - **Onboarding E2E narrowed to smoke-level behavior.** The onboarding
   Playwright spec now validates timeline load and onboarding render
