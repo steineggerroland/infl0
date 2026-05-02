@@ -1,72 +1,100 @@
 # infl0
 
-A Nuxt app that turns RSS/Atom feeds into a personal, re-rankable
-timeline. Built with Nuxt, Prisma, and vue-i18n; authenticated with SRP so
-passwords never leave the device.
+infl0 is a calm, privacy-first reading-and-learning app for personal sources:
+it helps you discover, read, understand, find again, and eventually connect
+good content without noisy engagement mechanics or opaque automation.
 
-> Looking for how to develop on this project? See
-> [`docs/DEVELOPING.md`](docs/DEVELOPING.md). Writing UI copy or reviewing
-> accessibility? See [`docs/CONTENT_AND_A11Y.md`](docs/CONTENT_AND_A11Y.md).
+Today infl0 works with RSS/Atom feeds and crawler-ingested article content;
+the product direction is intentionally broader than feeds alone, with Mastodon
+and other source types on the roadmap. Its development principles are
+transparency, user control, provenance, accessibility, and privacy by design:
+SRP login means passwords never leave the device, scoring is explainable, and
+tracking is explicitly user-controlled.
 
-## Quick start
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the product philosophy and future
+direction.
 
-This repo pins its Node version via `.nvmrc`. Always select it before
-running `npm` commands so lockfile and engine match CI.
+## Try it yourself
+
+Open [`infl0.neurospicy.icu`](https://infl0.neurospicy.icu) and sign in with:
+
+- Email: `dev@localhost`
+- Password: `dev`
+
+This is a demo deployment. Data may be reset, and the account is shared by
+anyone using the public demo.
+
+## What it does
+
+- Collects source content into a personal reading timeline.
+- Lets readers tune ranking, readability, theme, motion, and tracking choices.
+- Explains product behavior instead of hiding it behind black boxes.
+- Keeps authentication privacy-friendly with SRP-based login.
+- Seeds a local demo account so new contributors and evaluators can try the
+  app quickly.
+
+## Try it locally
+
+This repo pins Node via `.nvmrc`. For a local demo with Postgres and sample
+content:
 
 ```bash
-nvm install    # once, if the pinned version is missing
+cp .env.example .env
+nvm install
 nvm use
-npm ci         # install exactly what the lockfile says
-npm run dev    # http://localhost:3000
+npm ci
+docker compose up -d postgres
+npm run db:migrate:deploy
+npm run devData
+npm run dev
 ```
+
+Open `http://localhost:3000` and sign in as `dev@localhost` with password
+`dev`.
 
 If you use `fish` (as this repo's maintainer does), run the wrapper
 `./scripts/with-nvm.sh` from a bash-compatible shell instead of invoking
 `nvm` directly.
 
-## Local seed data
+## For users
 
-After migrations and with `DATABASE_URL` set:
+- Found a bug or rough edge? Open a
+  [GitHub issue](https://github.com/steineggerroland/infl0/issues).
+- Curious what changed recently? Read [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
+- Want to know what might come next? Start with
+  [`docs/ROADMAP.md`](docs/ROADMAP.md).
+- Have an idea for a feature? Open an issue or compare it with the current
+  roadmap and planned packages in [`docs/planned/`](docs/planned/).
+
+## Self-hosting
+
+infl0 is a Nuxt SSR app backed by PostgreSQL. A small deployment needs:
+
+- Node 24 or a compatible SSR host for the Nuxt/Nitro server.
+- PostgreSQL for users, source subscriptions, article metadata, preferences,
+  and reading state.
+- `DATABASE_URL` and `AUTH_JWT_SECRET`; optional keys configure registration
+  and crawler ingestion.
+
+For hosted previews and production, this repo currently documents a
+Vercel + Neon setup with PR preview databases. See
+[`docs/DEPLOYING.md`](docs/DEPLOYING.md), [`docker-compose.yaml`](docker-compose.yaml),
+and [`.env.example`](.env.example).
+
+## Contributing
+
+Developers can start with the local demo commands above. Before opening a PR,
+run:
 
 ```bash
-nvm use
-npm run devData
+npm run verify
 ```
 
-Creates `dev@localhost` (password: **`dev`** if `DEV_SRP_*` is not set; otherwise your verifier’s password), two sample feeds, and three
-articles with enrichment and timeline rows. In `production` this only
-runs with `ALLOW_DEV_DATA=1` (not recommended).
+More detail lives in:
 
-## Production build
-
-```bash
-nvm use
-npm run build       # builds .output/
-npm run preview     # serves the production build locally
-```
-
-See the [Nuxt deployment docs](https://nuxt.com/docs/getting-started/deployment)
-for hosting options.
-
-**Upgrading** an existing deployment (DB URL, Docker, Prisma 7, Nuxt 4): follow
-the **Unreleased → Breaking** checklist in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
-If you operate infl0 behind **ModSecurity + OWASP CRS**, also review
-[`infl0-exclusion.conf`](infl0-exclusion.conf) and the operator notes in
-[`docs/DEVELOPING.md`](docs/DEVELOPING.md#modsecurity--crs-operators).
-
-## Contributor guides
-
-- [`docs/DEVELOPING.md`](docs/DEVELOPING.md) — lint, tests, CI, Node setup,
-  troubleshooting the dev server.
-- [`docs/CONTENT_AND_A11Y.md`](docs/CONTENT_AND_A11Y.md) — plain-language
-  and accessibility rules for all user-facing copy and UI. Read this
-  before editing `i18n/locales/*.json`, `pages/help.vue`, or any
-  user-facing component. Also covers **page auth modes** (`public`,
-  `entry`, `required`).
-- [`docs/ROADMAP.md`](docs/ROADMAP.md) — product vision, **idea backlog**,
-  and technical follow-ups. Add new ideas here first.
-- [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — **shipped** changes for
-  operators (features, fixes, **breaking** changes when they occur).
-- [`docs/planned/`](docs/planned/) — **feature packages** for implementation
-  (scope, acceptance criteria); see [`docs/planned/README.md`](docs/planned/README.md).
-- [`docs/RELEASING.md`](docs/RELEASING.md) — **CI on GitHub** and how to **tag a release**.
+- [`docs/DEVELOPING.md`](docs/DEVELOPING.md) — local development, tests, CI,
+  Docker, and troubleshooting.
+- [`docs/CONTENT_AND_A11Y.md`](docs/CONTENT_AND_A11Y.md) — user-facing copy,
+  accessibility, and page auth modes.
+- [`docs/RELEASING.md`](docs/RELEASING.md) — CI gates, changelog flow, and
+  tagging releases.

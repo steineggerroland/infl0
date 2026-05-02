@@ -54,7 +54,7 @@ End-to-end tests use a **committed** `.env.e2e` with `DATABASE_URL`, `AUTH_JWT_S
 
 1. Start Postgres (e.g. Docker Compose from `.env.example`) and ensure `DATABASE_URL` in `.env.e2e` matches.
 2. Apply schema and seed: `npx prisma migrate deploy` (or `db:push` in dev), then **`npx prisma db seed`** when you need seed data. For E2E, merge **`.env.e2e`** so **`DEV_SRP_*`** are present (e.g. **`dotenv -e .env -e .env.e2e -- npx prisma db seed`** — `.env` wins on conflicts, `.env.e2e` fills missing keys). Plain **`npx prisma db seed`** only loads **`.env`**, so you miss **`DEV_*`** unless they are copied into **`.env`**. Prisma 7 does not auto-run seed after migrate; seed is always explicit.
-3. Run **`npm run test:e2e`**. `dotenv-cli` injects env for `nuxt build`, the Nitro server, and Playwright (same merge as **`tests/e2e/load-e2e-env.ts`**). The Playwright project **`setup`** runs **`tests/e2e/auth.setup.ts`**, performs SRP login, and writes **`tests/e2e/.auth/dev.json`** (gitignored). The **`chromium-authed`** project depends on **`setup`**. The **`chromium`** project (public a11y smokes) does not, so **`playwright test --project chromium`** does not need Postgres. Full **`test:e2e`**, including authed projects, needs **`DATABASE_URL`**, a reachable DB, and merge-seeded **`dev@localhost`**. For a non-empty **timeline** in manual or authed tests, run **`npm run devData`** (see [README](../README.md) "Local seed data") before or alongside E2E; onboarding fixture background is documented in [`docs/archive/26-04-30-onboarding-welcome-timeline.md`](./archive/26-04-30-onboarding-welcome-timeline.md).
+3. Run **`npm run test:e2e`**. `dotenv-cli` injects env for `nuxt build`, the Nitro server, and Playwright (same merge as **`tests/e2e/load-e2e-env.ts`**). The Playwright project **`setup`** runs **`tests/e2e/auth.setup.ts`**, performs SRP login, and writes **`tests/e2e/.auth/dev.json`** (gitignored). The **`chromium-authed`** project depends on **`setup`**. The **`chromium`** project (public a11y smokes) does not, so **`playwright test --project chromium`** does not need Postgres. Full **`test:e2e`**, including authed projects, needs **`DATABASE_URL`**, a reachable DB, and merge-seeded **`dev@localhost`**. For a non-empty **timeline** in manual or authed tests, run **`npm run devData`** before or alongside E2E; the README's [local try-out path](../README.md#try-it-locally) shows the short setup sequence, and onboarding fixture background is documented in [`docs/archive/26-04-30-onboarding-welcome-timeline.md`](./archive/26-04-30-onboarding-welcome-timeline.md).
 
 To rotate the dev password: `SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp-env.ts dev@localhost` (prints `DEV_SRP_*`), update `.env.e2e` and `E2E_LOGIN_PASSWORD`, then re-seed.
 
@@ -129,7 +129,8 @@ user-facing component.
 | [`ROADMAP.md`](./ROADMAP.md) | Vision, idea backlog, technical follow-ups |
 | [`CHANGELOG.md`](./CHANGELOG.md) | Shipped work (features, fixes, breaking changes) |
 | [`planned/README.md`](./planned/README.md) | Feature packages for implementation planning |
-| [`RELEASING.md`](./RELEASING.md) | GitHub Actions CI, deployments, and tagging a release |
+| [`DEPLOYING.md`](./DEPLOYING.md) | Vercel/Neon deployments and preview database cleanup |
+| [`RELEASING.md`](./RELEASING.md) | GitHub Actions CI and tagging a release |
 
 ## Dependencies and security
 
