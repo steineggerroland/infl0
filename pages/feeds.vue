@@ -181,32 +181,65 @@ async function removeFeed(id: string) {
                 >
                     {{ $t('feeds.listSection') }}
                 </h2>
-                <ul class="list rounded-box border border-[var(--infl0-panel-border)]" data-testid="feeds-source-list">
+                <ul
+                    class="list divide-y divide-[var(--infl0-panel-border)] rounded-box border border-[var(--infl0-panel-border)] p-0"
+                    data-testid="feeds-source-list"
+                >
                     <li
                         v-for="f in feedList"
                         :key="f.id"
-                        class="list-row items-start gap-3 px-4 py-3"
+                        class="flex gap-3 px-4 py-3"
                         :data-feed-id="f.id"
                     >
-                        <div class="list-col-grow min-w-0 break-all">
-                            <div class="text-sm font-medium text-[var(--infl0-panel-text)]">
-                                {{ f.displayTitle || f.feedUrl }}
-                            </div>
+                        <div class="min-w-0 flex-1 space-y-1">
                             <div
                                 v-if="f.displayTitle"
-                                class="infl0-panel-muted mt-0.5 font-mono text-xs leading-snug"
+                                class="text-sm font-medium text-[var(--infl0-panel-text)] hyphens-none [overflow-wrap:anywhere]"
                             >
-                                {{ f.feedUrl }}
+                                {{ f.displayTitle }}
+                            </div>
+                            <!-- One line + horizontal scroll avoids breaking URLs mid-token -->
+                            <div class="-mx-0.5 max-w-full px-0.5">
+                                <div
+                                    class="max-w-full overflow-x-auto overscroll-x-contain whitespace-nowrap font-mono text-xs leading-normal [scrollbar-width:thin]"
+                                    :class="f.displayTitle ? 'infl0-panel-muted' : 'text-sm font-medium text-[var(--infl0-panel-text)]'"
+                                    :title="f.feedUrl"
+                                >
+                                    {{ f.feedUrl }}
+                                </div>
                             </div>
                         </div>
                         <button
                             type="button"
-                            class="btn btn-ghost btn-xs shrink-0 text-[var(--color-error)]"
+                            class="btn btn-square btn-ghost btn-sm tooltip tooltip-left shrink-0 text-[var(--color-error)] hover:bg-[color-mix(in_srgb,var(--color-error)_14%,transparent)]"
+                            :data-tip="$t('feeds.remove')"
                             :disabled="removingId === f.id"
+                            :aria-label="$t('feeds.remove')"
+                            :aria-busy="removingId === f.id"
                             :data-testid="`feed-remove-${f.id}`"
                             @click="removeFeed(f.id)"
                         >
-                            {{ removingId === f.id ? $t('common.loading') : $t('feeds.remove') }}
+                            <span
+                                v-if="removingId === f.id"
+                                class="loading loading-spinner loading-md text-[var(--color-error)]"
+                                aria-hidden="true"
+                            />
+                            <svg
+                                v-else
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="size-[1.2em]"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.75"
+                                stroke="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                            </svg>
                         </button>
                     </li>
                 </ul>
