@@ -5,8 +5,9 @@ import { test, expect } from '@playwright/test'
  * `tests/e2e/.auth/dev.json` from `auth.setup.ts` + seeded `dev@localhost`.
  */
 test.describe('app layout (signed in)', () => {
-  test('privacy page loads and exposes settings footer landmark', async ({ page }) => {
+  test('legacy /settings/privacy URL lands on anchored settings hub + footer landmark', async ({ page }) => {
     await page.goto('/settings/privacy')
+    await expect(page).toHaveURL(/\/settings#privacy\b/)
     await expect(page.locator('main#main')).toHaveCount(1)
     const footer = page.locator('[data-testid="settings-page-footer"]')
     await expect(footer).toBeVisible()

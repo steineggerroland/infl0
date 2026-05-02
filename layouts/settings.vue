@@ -1,8 +1,15 @@
 <script setup lang="ts">
 /**
- * Settings-only layout: DaisyUI drawer sidebar for section navigation.
- * Desktop (`lg:`): drawer stays open; overlay only on small viewports.
+ * Settings-only layout: DaisyUI drawer sidebar for in-page section anchors
+ * on `/settings` only. Scroll position drives which menu row is `active`
+ * (IntersectionObserver). Legacy `/settings/personalization` and
+ * `/settings/privacy` URLs redirect via middleware.
  */
+import {
+    SETTINGS_NAV_SECTION_IDS,
+    useSettingsNavSectionSpy,
+} from '~/composables/useSettingsNavSectionSpy'
+
 const { t } = useI18n()
 const route = useRoute()
 
@@ -27,6 +34,49 @@ const footerTestId = computed<string>(() => {
     return 'app-footer-shortcuts'
 })
 
+const { activeSectionId } = useSettingsNavSectionSpy([...SETTINGS_NAV_SECTION_IDS])
+
+const navSections = computed(() =>
+    (
+        [
+            {
+                hash: 'display',
+                testId: 'settings-nav-link-display',
+                labelKey: 'settingsDisplay.heading' as const,
+            },
+            {
+                hash: 'onboarding',
+                testId: 'settings-nav-link-onboarding',
+                labelKey: 'settingsIndex.onboardingHeading' as const,
+            },
+            {
+                hash: 'sorting',
+                testId: 'settings-nav-link-sorting',
+                labelKey: 'settingsTimeline.title' as const,
+            },
+            {
+                hash: 'tracking',
+                testId: 'settings-nav-link-tracking',
+                labelKey: 'settingsIndex.trackingHeading' as const,
+            },
+            {
+                hash: 'personalization',
+                testId: 'settings-nav-link-personalization',
+                labelKey: 'settingsPersonalization.title' as const,
+            },
+            {
+                hash: 'privacy',
+                testId: 'settings-nav-link-privacy',
+                labelKey: 'settingsPrivacy.title' as const,
+            },
+        ] as const
+    ).map((entry) => ({
+        ...entry,
+        to: `/settings#${entry.hash}` as const,
+        label: t(entry.labelKey),
+    })),
+)
+
 function closeDrawerOnNarrow() {
     if (!import.meta.client) return
     if (window.matchMedia('(min-width: 1024px)').matches) return
@@ -39,49 +89,8 @@ watch(
     () => closeDrawerOnNarrow(),
 )
 
-const navLinks = computed(() =>
-    [
-        {
-            to: '/settings#display',
-            testId: 'settings-nav-link-display',
-            labelKey: 'settingsDisplay.heading' as const,
-        },
-        {
-            to: '/settings#onboarding',
-            testId: 'settings-nav-link-onboarding',
-            labelKey: 'settingsIndex.onboardingHeading' as const,
-        },
-        {
-            to: '/settings#sorting',
-            testId: 'settings-nav-link-sorting',
-            labelKey: 'settingsTimeline.title' as const,
-        },
-        {
-            to: '/settings#tracking',
-            testId: 'settings-nav-link-tracking',
-            labelKey: 'settingsIndex.trackingHeading' as const,
-        },
-        {
-            to: '/settings/personalization',
-            testId: 'settings-nav-link-personalization',
-            labelKey: 'settingsPersonalization.title' as const,
-        },
-        {
-            to: '/settings/privacy',
-            testId: 'settings-nav-link-privacy',
-            labelKey: 'settingsPrivacy.title' as const,
-        },
-    ].map((entry) => ({
-        ...entry,
-        label: t(entry.labelKey),
-    })),
-)
-
-function linkIsActive(to: string): boolean {
-    const [path, hash] = to.split('#')
-    if (route.path !== path) return false
-    if (!hash) return !route.hash || route.hash === ''
-    return route.hash === `#${hash}`
+function sectionLinkActive(hash: string): boolean {
+    return route.path === '/settings' && activeSectionId.value === hash
 }
 </script>
 
@@ -124,13 +133,14 @@ function linkIsActive(to: string): boolean {
                     >
                         <ul class="menu menu-sm w-full rounded-box p-0">
                             <li
-                                v-for="item in navLinks"
-                                :key="item.to"
+                                v-for="item in navSections"
+                                :key="item.hash"
+                                :class="{ active: sectionLinkActive(item.hash) }"
                             >
                                 <NuxtLink
                                     :to="item.to"
                                     :data-testid="item.testId"
-                                    :aria-current="linkIsActive(item.to) ? 'page' : undefined"
+                                    :aria-current="sectionLinkActive(item.hash) ? 'location' : undefined"
                                     exact-active-class=""
                                     active-class=""
                                     class="no-underline"

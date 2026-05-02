@@ -51,26 +51,23 @@ const linkClass =
                         </NuxtLink>
                     </li>
                     <!--
-                        Settings is the one-click destination for visual +
-                        sorting + data-consent preferences. "Why at the top?"
-                        stays as its own entry because it is an explanatory
-                        read, not a setting, and "Privacy" stays
-                        because it carries the storage philosophy (and
-                        eventually the legal privacy statement), not a
-                        toggle — the toggle lives inside Settings.
+                        `/settings` is one long page + drawer sidebar links.
+                        While already there, omit Settings / personalization /
+                        Privacy from the burger so navigation is not split
+                        between two models (sidebar anchors vs secondary routes).
                     -->
                     <li v-if="route.path !== '/settings'">
                         <NuxtLink to="/settings" :class="linkClass" @click="closeMenu">
                             {{ t('menu.settings') }}
                         </NuxtLink>
                     </li>
-                    <li v-if="route.path !== '/settings/personalization'">
-                        <NuxtLink to="/settings/personalization" :class="linkClass" @click="closeMenu">
+                    <li v-if="route.path !== '/settings'">
+                        <NuxtLink to="/settings#personalization" :class="linkClass" @click="closeMenu">
                             {{ t('menu.personalization') }}
                         </NuxtLink>
                     </li>
-                    <li v-if="route.path !== '/settings/privacy'">
-                        <NuxtLink to="/settings/privacy" :class="linkClass" @click="closeMenu">
+                    <li v-if="route.path !== '/settings'">
+                        <NuxtLink to="/settings#privacy" :class="linkClass" @click="closeMenu">
                             {{ t('menu.privacy') }}
                         </NuxtLink>
                     </li>

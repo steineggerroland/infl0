@@ -84,7 +84,7 @@ const fullTextLinks = computed<Array<{ to: string; label: string }>>(() => {
         return [
             { to: '/settings#settings-sorting-heading', label: t('onboarding.scoring.linkTimeline') },
             { to: '/settings#settings-tracking-heading', label: t('onboarding.scoring.linkTracking') },
-            { to: '/settings/personalization', label: t('onboarding.scoring.linkWhyTop') },
+            { to: '/settings#personalization', label: t('onboarding.scoring.linkWhyTop') },
         ]
     }
     return []

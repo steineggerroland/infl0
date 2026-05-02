@@ -26,5 +26,5 @@ Feature: Scoring card explains algorithm transparency and control
     When I open full text on the "scoring" onboarding card
     Then I should see a link to "/settings#settings-sorting-heading"
     And I should see a link to "/settings#settings-tracking-heading"
-    And I should see a link to "/settings/personalization"
+    And I should see a link to "/settings#personalization"
     And I should see wording that scores are recalculated after saving sorting settings
