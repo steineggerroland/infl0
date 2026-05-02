@@ -17,6 +17,7 @@
   "menu": {
     "navLandmark": "App-Navigation",
     "open": "Menü",
+    "close": "Menü schließen",
     "timeline": "Timeline",
     "feeds": "Quellen verwalten",
     "settings": "Einstellungen",

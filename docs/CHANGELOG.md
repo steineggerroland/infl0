@@ -28,8 +28,16 @@ new entries accrue under **Unreleased**.
 - **Reader return-context behavior specs.** New Cucumber scenarios cover
   onboarding bypass, passive opening without read tracking, fresh reader
   start, explicit resume to the stored article, missing resume context,
-  URL calmness before start, new-article count, and visible read-state
-  feedback.
+  URL calmness before start, new-article count, visible read-state
+  feedback, marking read **without** behaviour tracking enabled, and
+  manual unread via the read-state shortcut.
+
+- **Separate timeline read marking from behaviour tracking.** `PATCH /api/me/articles/:articleId/read-state`
+  toggles `read_at` on the signed-in user's timeline row. Focused articles
+  can auto-mark **read** after ~2 s visible in the interactive reader,
+  independently of engagement opt-in; `POST /api/me/article-engagement`
+  still records dwell only when behaviour tracking is on and **does not**
+  set read state.
 
 - **Onboarding cards on a polymorphic inflow.** A new account lands on
   four prefabricated welcome cards (`intro`, `sources`, `scoring`,
@@ -117,6 +125,21 @@ new entries accrue under **Unreleased**.
   (`Log out` / `Abmelden`), and URL assertions accept optional query/hash
   suffixes (e.g. `/login?redirect=/`) for stable return-navigation checks.
 
+- **Appearance presets emit DaisyUI semantic colours.** Derived theme CSS now
+  includes `--color-base-*`, `--color-primary`, `--color-error`, etc., mapped
+  from existing infl0 chrome and panel accents so DaisyUI components (`menu`,
+  `dropdown`, `kbd`, …) follow the selected preset.
+
+- **User menu chrome** uses DaisyUI `dropdown`, `menu`, and `swap` primitives;
+  the opener `aria-label` reflects whether the menu is open or closed (`menu.close` /
+  `menu.open`).
+
+### Fixed
+
+- **Help shortcut `<kbd>` appearance.** Shortcut keys in `#shortcuts-reference`
+  use DaisyUI `kbd` styling with a light-theme contrast tweak so keys stay readable
+  on the help canvas.
+
 ### Documentation
 
 - **Closed package** [`docs/archive/26-04-27-shortcuts-help.md`](./archive/26-04-27-shortcuts-help.md)
@@ -131,6 +154,11 @@ new entries accrue under **Unreleased**.
   - [`docs/planned/return-context-and-onboarding-completion.md`](./planned/return-context-and-onboarding-completion.md)
   - [`docs/planned/bdd-persona-coverage-wave-1.md`](./planned/bdd-persona-coverage-wave-1.md)
   - [`docs/planned/ci-remote-e2e-smoke-strategy.md`](./planned/ci-remote-e2e-smoke-strategy.md)
+
+- **`package-lock.json`:** keep lockfile churn predictable by running **`npm ci` /
+  `npm install` only with the Node version pinned in `.nvmrc`** (repo helper:
+  `./scripts/with-nvm.sh`). A mismatched npm version can silently rewrite optional
+  dependency metadata (e.g. `libc` qualifiers) across the tree.
 
 ## [0.3.0] — 2026-04-27
 
