@@ -10,6 +10,8 @@ This folder contains executable user-facing behavior specifications using Cucumb
   - onboarding behavior in `features/steps/onboarding.steps.js`
   - reader return-context behavior in `features/steps/reader.steps.js`
   - registration/login behavior in `features/steps/auth.steps.js`
+  - settings hub / tracking / personalization in `features/steps/settings.steps.js`
+  - feeds (sources) in `features/steps/feeds.steps.js`
 - Browser locale is forced to English in `features/support/world.js` so scenario wording and assertions stay EN-consistent.
 
 ## Authoring rules
@@ -23,10 +25,28 @@ This folder contains executable user-facing behavior specifications using Cucumb
 
 ## Test gaps
 
-- Privacy-sensitive tracking journey: disabled/enabled tracking and visible explanation affordances.
-- Power-user personalization journey: score/sort preference tuning and expectation framing.
-- Returning-user onboarding completion: post-skip/post-complete behavior across sessions.
-- Feed/source management: source add/remove and visible inflow consequences.
+Covered in BDD today:
+
+- **`reader_return_context.feature`** — reader start, resume, URLs, read feedback,
+  read without behaviour tracking, read shortcut.
+- **`auth_registration_login.feature`** — register, sign-in, sign-out journeys.
+- **`settings_hub_navigation.feature`** — `/settings` deep links and a hub sidebar
+  jump (wide viewport); not yet the narrow **Sections** drawer control.
+- **`settings_tracking_and_personalization.feature`** — `#tracking` affordance and
+  one toggle flip; **`/settings/personalization`** title + algorithm snapshot heading.
+- **`feeds_sources.feature`** — add a source from `/feeds`, list row, remove, empty
+  state again.
+
+Still sensible follow-ups:
+
+- **Narrow viewport settings:** open **Sections** (`settingsNav.openSections`), pick
+  a link, assert hash + visible block (mobile drawer).
+- **Auth negative path:** invalid credentials → visible **`alert`** (optional).
+- **Tracking copy:** assert intro/label strings remain visible after toggling (optional).
+- **Personalization depth:** expand a timeline row, assert rank strip (optional).
+- **Returning-user onboarding completion** across sessions (where not already in
+  reader scenarios).
+- **Help FAQ** expand/collapse regression (optional; component tests already exist).
 
 ## Run commands
 

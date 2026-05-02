@@ -137,10 +137,6 @@ Given('my inflow contains reader articles', async function () {
 })
 
 Given('the first reader article is already read', async function () {
-  await authedJsonFetch(this, '/api/me/engagement-tracking', {
-    method: 'PATCH',
-    body: JSON.stringify({ enabled: true }),
-  })
   await this.page.goto('/')
   await this.page.getByTestId('reader-start-button').click()
   const article = this.readerArticles?.[0]
@@ -149,13 +145,9 @@ Given('the first reader article is already read', async function () {
   await expect(card).toBeVisible()
   this.currentReaderArticleId = article.id
   await card.locator('.action-flip-front').click()
-  await authedJsonFetch(this, '/api/me/article-engagement', {
-    method: 'POST',
-    body: JSON.stringify({
-      articleId: article.id,
-      segment: 'summary',
-      durationSec: 2.1,
-    }),
+  await authedJsonFetch(this, `/api/me/articles/${encodeURIComponent(article.id)}/read-state`, {
+    method: 'PATCH',
+    body: JSON.stringify({ read: true }),
   })
   await this.page.goto('/help')
 })
@@ -171,6 +163,13 @@ Given('reading behaviour tracking is enabled', async function () {
   await authedJsonFetch(this, '/api/me/engagement-tracking', {
     method: 'PATCH',
     body: JSON.stringify({ enabled: true }),
+  })
+})
+
+Given('reading behaviour tracking is disabled', async function () {
+  await authedJsonFetch(this, '/api/me/engagement-tracking', {
+    method: 'PATCH',
+    body: JSON.stringify({ enabled: false }),
   })
 })
 
@@ -211,6 +210,10 @@ When('I flip the current reader article', async function () {
   await currentArticle(this).locator('.action-flip-front').click()
 })
 
+When('I press the read-state shortcut', async function () {
+  await this.page.keyboard.press('m')
+})
+
 Then('the URL should point to the {word} reader article', async function (ordinal) {
   const article = this.readerArticles?.[articleOrdinalIndex(ordinal)]
   if (!article) throw new Error(`No ${ordinal} reader article exists.`)
@@ -230,6 +233,54 @@ Then('the current reader article should show that it is read', async function ()
   await expect(card.locator('[data-testid="article-read-status"]').first()).toBeVisible({
     timeout: 10_000,
   })
+  await expect(card.locator('[data-testid="article-read-status"]').first()).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+})
+
+Then('the current reader article should become read', async function () {
+  const card = currentArticle(this)
+  await expect(card.locator('[data-testid="article-read-status"]').first()).toHaveAttribute(
+    'aria-pressed',
+    'true',
+    { timeout: 10_000 },
+  )
+  const data = await readStateForCurrentArticle(this)
+  expect(data.item?.readAt).not.toBeNull()
+})
+
+Then('the current reader article should become unread', async function () {
+  const card = currentArticle(this)
+  await expect(card.locator('[data-testid="article-read-status"]').first()).toHaveAttribute(
+    'aria-pressed',
+    'false',
+    { timeout: 10_000 },
+  )
+  const data = await readStateForCurrentArticle(this)
+  expect(data.item?.readAt).toBeNull()
+})
+
+Then('no reading behaviour event should be stored for the current reader article', async function () {
+  const articleId = this.currentReaderArticleId
+  if (!articleId) throw new Error('No current reader article is focused.')
+  const data = await authedJsonFetch(this, '/api/me/personalization-dashboard', { method: 'GET' })
+  expect(data.pies.feeds).toEqual([])
+  expect(data.pies.categories).toEqual([])
+  expect(data.pies.tags).toEqual([])
+
+  const row = data.timeline.find((candidate) => candidate.articleId === articleId)
+  expect(row, `No personalization row found for article ${articleId}`).toBeTruthy()
+  expect(row.engagement.feed.posPoints).toBe(0)
+  expect(row.engagement.feed.negPoints).toBe(0)
+  for (const category of row.engagement.categories) {
+    expect(category.posPoints).toBe(0)
+    expect(category.negPoints).toBe(0)
+  }
+  for (const tag of row.engagement.tags) {
+    expect(tag.posPoints).toBe(0)
+    expect(tag.negPoints).toBe(0)
+  }
 })
 
 Then('I should see the reader start screen', async function () {
@@ -251,13 +302,28 @@ Then('I should see {int} new reader articles on the reader start screen', async 
 Then('the first reader article should still be unread', async function () {
   const article = this.readerArticles?.[0]
   if (!article) throw new Error('No first reader article exists.')
-  await this.page.goto('/help')
-  const data = await this.page.evaluate(async (articleId) => {
-    const res = await fetch('/api/inflow?showRead=1', { credentials: 'include' })
-    return { ok: res.ok, status: res.status, body: await res.json(), articleId }
-  }, article.id)
-  expect(data.ok, `GET /api/inflow?showRead=1 failed with ${data.status}`).toBe(true)
-  const item = data.body.items.find((candidate) => candidate.type === 'article' && candidate.id === data.articleId)
+  const data = await readStateForArticle(this, article.id)
+  const item = data.item
   expect(item).toBeTruthy()
   expect(item.readAt).toBeNull()
 })
+
+async function readStateForCurrentArticle(world) {
+  const articleId = world.currentReaderArticleId
+  if (!articleId) throw new Error('No current reader article is focused.')
+  return await readStateForArticle(world, articleId)
+}
+
+async function readStateForArticle(world, articleId) {
+  await ensureAppOrigin(world)
+  const data = await world.page.evaluate(async (targetArticleId) => {
+    const res = await fetch('/api/inflow?showRead=1', { credentials: 'include' })
+    return { ok: res.ok, status: res.status, body: await res.json(), articleId: targetArticleId }
+  }, articleId)
+  expect(data.ok, `GET /api/inflow?showRead=1 failed with ${data.status}`).toBe(true)
+  return {
+    item: data.body.items.find(
+      (candidate) => candidate.type === 'article' && candidate.id === data.articleId,
+    ),
+  }
+}

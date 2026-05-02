@@ -72,53 +72,78 @@ async function onSubmit() {
       <div class="mb-4 flex justify-center">
         <SecurityBadge align="center" />
       </div>
-      <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
-        <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
-          <span class="infl0-panel-muted">{{ $t('register.inviteCode') }}</span>
-          <input
-            v-model="inviteCode"
-            type="password"
-            autocomplete="off"
-            required
-            class="input input-bordered infl0-field w-full"
+      <form class="contents" @submit.prevent="onSubmit">
+        <fieldset class="fieldset mt-1 gap-4 border-0 bg-transparent p-0">
+          <legend class="fieldset-legend sr-only">
+            {{ $t('register.fieldsetLegend') }}
+          </legend>
+
+          <div class="space-y-1">
+            <label class="label w-full pb-0" for="register-invite">
+              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('register.inviteCode') }}</span>
+            </label>
+            <input
+              id="register-invite"
+              v-model="inviteCode"
+              type="password"
+              autocomplete="off"
+              required
+              class="input input-bordered infl0-field w-full"
+            >
+          </div>
+          <div class="space-y-1">
+            <label class="label w-full pb-0" for="register-email">
+              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('register.email') }}</span>
+            </label>
+            <input
+              id="register-email"
+              v-model="email"
+              type="email"
+              autocomplete="username"
+              required
+              class="input input-bordered infl0-field w-full"
+            >
+          </div>
+          <div class="space-y-1">
+            <label class="label w-full pb-0" for="register-name">
+              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('register.nameOptional') }}</span>
+            </label>
+            <input
+              id="register-name"
+              v-model="name"
+              type="text"
+              autocomplete="name"
+              class="input input-bordered infl0-field w-full"
+            >
+          </div>
+          <div class="space-y-1">
+            <label class="label w-full pb-0" for="register-password">
+              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('register.password') }}</span>
+            </label>
+            <input
+              id="register-password"
+              v-model="password"
+              type="password"
+              autocomplete="new-password"
+              required
+              class="input input-bordered infl0-field w-full"
+            >
+          </div>
+          <div
+            v-if="errorMsg"
+            role="alert"
+            class="alert alert-error py-3 text-sm"
+            data-testid="register-error"
           >
-        </label>
-        <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
-          <span class="infl0-panel-muted">{{ $t('register.email') }}</span>
-          <input
-            v-model="email"
-            type="email"
-            autocomplete="username"
-            required
-            class="input input-bordered infl0-field w-full"
-          >
-        </label>
-        <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
-          <span class="infl0-panel-muted">{{ $t('register.nameOptional') }}</span>
-          <input
-            v-model="name"
-            type="text"
-            autocomplete="name"
-            class="input input-bordered infl0-field w-full"
-          >
-        </label>
-        <label class="flex flex-col gap-1 text-sm text-[var(--infl0-panel-text)]">
-          <span class="infl0-panel-muted">{{ $t('register.password') }}</span>
-          <input
-            v-model="password"
-            type="password"
-            autocomplete="new-password"
-            required
-            class="input input-bordered infl0-field w-full"
-          >
-        </label>
-        <p v-if="errorMsg" class="text-sm text-red-400">{{ errorMsg }}</p>
-        <button type="submit" class="btn btn-primary w-full" :disabled="pending">
-          {{ pending ? $t('common.loading') : $t('register.submit') }}
-        </button>
+            {{ errorMsg }}
+          </div>
+          <button type="submit" class="btn btn-primary w-full" :disabled="pending">
+            {{ pending ? $t('common.loading') : $t('register.submit') }}
+          </button>
+        </fieldset>
         <NuxtLink
           to="/login"
-          class="infl0-panel-muted text-center text-sm underline-offset-2 hover:underline hover:text-[var(--infl0-panel-text)]"
+          class="infl0-panel-muted mt-4 block text-center text-sm underline-offset-2 hover:underline hover:text-[var(--infl0-panel-text)]"
         >
           {{ $t('register.signInLink') }}
         </NuxtLink>

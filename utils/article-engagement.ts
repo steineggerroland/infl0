@@ -6,9 +6,6 @@ export function isArticleEngagementSegment(s: string): s is ArticleEngagementSeg
   return (ARTICLE_ENGAGEMENT_SEGMENTS as readonly string[]).includes(s)
 }
 
-/** Seconds of dwell on this article (all segments) before we set read_at. */
-export const ARTICLE_READ_ENGAGED_SECONDS_THRESHOLD = 2
-
 /** Ignore accidental focus blips shorter than this (ms). */
 export const ARTICLE_ENGAGEMENT_MIN_DWELL_MS = 50
 

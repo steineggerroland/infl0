@@ -533,11 +533,17 @@ onBeforeUnmount(() => {
             v-if="showOnboardingEmpty"
             class="relative z-10 mx-auto w-full max-w-md px-4 py-8"
         >
-            <div class="infl0-panel p-8 text-center">
-                <h1 class="text-xl font-semibold mb-2">{{ $t('index.emptyNoFeedsTitle') }}</h1>
-                <p class="infl0-panel-muted mb-6 text-sm">
-                    {{ $t('index.emptyNoFeedsBody') }}
-                </p>
+            <div class="infl0-panel flex flex-col gap-4 p-8 text-center">
+                <div
+                    role="status"
+                    class="alert alert-info alert-soft alert-vertical w-full justify-items-center gap-2 border-0 py-6 shadow-none [&_h1]:text-xl [&_h1]:font-semibold"
+                    data-testid="index-empty-no-feeds-alert"
+                >
+                    <h1 class="leading-tight">{{ $t('index.emptyNoFeedsTitle') }}</h1>
+                    <p class="max-w-prose px-2 text-center text-sm leading-relaxed opacity-90">
+                        {{ $t('index.emptyNoFeedsBody') }}
+                    </p>
+                </div>
                 <NuxtLink to="/feeds" class="btn btn-primary w-full">
                     {{ $t('index.emptyNoFeedsCta') }}
                 </NuxtLink>
@@ -548,11 +554,18 @@ onBeforeUnmount(() => {
             v-else-if="showWaiting"
             class="relative z-10 mx-auto w-full max-w-lg px-4 py-8"
         >
-            <div class="infl0-panel p-8">
-                <h1 class="text-xl font-semibold mb-2">{{ $t('index.preparingTitle') }}</h1>
-                <p class="infl0-panel-muted mb-4 text-sm">
-                    {{ $t('index.preparingBody') }}
-                </p>
+            <div class="infl0-panel flex flex-col gap-4 p-8">
+                <div
+                    role="status"
+                    aria-live="polite"
+                    class="alert alert-info alert-soft alert-vertical w-full justify-items-start gap-2 border-0 px-5 py-4 text-start shadow-none [&_h1]:text-xl [&_h1]:font-semibold"
+                    data-testid="index-preparing-alert"
+                >
+                    <h1 class="leading-tight">{{ $t('index.preparingTitle') }}</h1>
+                    <p class="text-sm leading-relaxed opacity-90">
+                        {{ $t('index.preparingBody') }}
+                    </p>
+                </div>
                 <ul
                     class="mb-6 space-y-2 rounded-lg border p-3 text-sm"
                     style="
@@ -601,18 +614,24 @@ onBeforeUnmount(() => {
             class="relative z-10 mx-auto w-full max-w-lg px-4 py-8"
             data-testid="reader-start"
         >
-            <div class="infl0-panel p-8 text-center">
-                <p class="infl0-panel-muted mb-2 text-sm">
-                    {{ $t('index.readerStartKicker') }}
-                </p>
-                <h1 class="text-xl font-semibold mb-3">{{ $t('index.readerStartTitle') }}</h1>
-                <p class="infl0-panel-muted mb-6 text-sm">
-                    {{
-                        $t('index.readerStartBody', {
-                            count: inflowStats.newSinceLastReaderSession,
-                        })
-                    }}
-                </p>
+            <div class="infl0-panel flex flex-col gap-5 p-8 text-center">
+                <div
+                    role="status"
+                    class="alert alert-info alert-soft alert-vertical w-full justify-items-center gap-2 border-0 py-6 shadow-none [&_h1]:text-xl [&_h1]:font-semibold"
+                    data-testid="index-reader-start-alert"
+                >
+                    <p class="text-[0.7rem] font-medium uppercase tracking-wide opacity-75">
+                        {{ $t('index.readerStartKicker') }}
+                    </p>
+                    <h1 class="leading-tight">{{ $t('index.readerStartTitle') }}</h1>
+                    <p class="max-w-prose px-2 text-center text-sm leading-relaxed opacity-90">
+                        {{
+                            $t('index.readerStartBody', {
+                                count: inflowStats.newSinceLastReaderSession,
+                            })
+                        }}
+                    </p>
+                </div>
                 <div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
                     <button
                         type="button"
@@ -641,11 +660,17 @@ onBeforeUnmount(() => {
             v-else-if="showAllReadEmpty"
             class="relative z-10 mx-auto w-full max-w-lg px-4 py-8"
         >
-            <div class="infl0-panel p-8 text-center">
-                <h1 class="text-xl font-semibold mb-2">{{ $t('index.allReadTitle') }}</h1>
-                <p class="infl0-panel-muted mb-6 text-sm">
-                    {{ $t('index.allReadBody') }}
-                </p>
+            <div class="infl0-panel flex flex-col gap-4 p-8 text-center">
+                <div
+                    role="status"
+                    class="alert alert-warning alert-soft alert-vertical w-full justify-items-center gap-2 border-0 py-6 shadow-none [&_h1]:text-xl [&_h1]:font-semibold"
+                    data-testid="index-all-read-alert"
+                >
+                    <h1 class="leading-tight">{{ $t('index.allReadTitle') }}</h1>
+                    <p class="max-w-prose px-2 text-center text-sm leading-relaxed opacity-90">
+                        {{ $t('index.allReadBody') }}
+                    </p>
+                </div>
                 <label class="flex cursor-pointer items-center justify-center gap-3 text-sm text-[var(--infl0-panel-text)]">
                     <span>{{ $t('index.showReadLabel') }}</span>
                     <input v-model="showRead" type="checkbox" role="switch" class="toggle toggle-primary" >

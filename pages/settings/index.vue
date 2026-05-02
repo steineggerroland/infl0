@@ -9,22 +9,19 @@
  */
 import {
   TIMELINE_SCORE_FACTOR_DEFS,
+  TIMELINE_SCORE_GROUP_ORDER,
   type TimelineScoreFactorGroup,
 } from '~/utils/timeline-score-factors'
-import type { SurfaceId } from '~/utils/ui-prefs'
-
-const DISPLAY_SURFACES: SurfaceId[] = ['card-front', 'card-back', 'reader']
+import { displaySurfaceScrollId, SETTINGS_DISPLAY_SURFACE_ORDER } from '~/utils/settings-hub-display'
 
 definePageMeta({
-  layout: 'app',
+  layout: 'settings',
   appFooter: { testId: 'settings-page-footer' },
 })
 
 const { t } = useI18n()
 
 const { weights, contentLengthPreference, resetWeights, formulaLines } = useTimelineScoreWeights()
-
-const GROUP_ORDER: TimelineScoreFactorGroup[] = ['time', 'content', 'mix', 'feedback']
 
 function factorsForGroup(g: TimelineScoreFactorGroup) {
   return TIMELINE_SCORE_FACTOR_DEFS.filter((d) => d.group === g)
@@ -83,7 +80,11 @@ function onOnboardingToggle(e: Event) {
         </p>
       </header>
 
-      <section aria-labelledby="settings-display-heading" class="mb-10">
+      <section
+        id="display"
+        aria-labelledby="settings-display-heading"
+        class="scroll-mt-24 mb-10"
+      >
         <header class="mb-4 text-center">
           <h2 id="settings-display-heading" class="infl0-canvas-fg text-lg font-semibold">
             {{ t('settingsDisplay.heading') }}
@@ -95,20 +96,31 @@ function onOnboardingToggle(e: Event) {
 
         <div class="infl0-panel space-y-6 p-5">
           <SettingsDisplayThemeBlock />
-          <div class="border-t border-[var(--infl0-panel-border)] pt-5">
+          <div
+            id="display-typography"
+            class="scroll-mt-28 border-t border-[var(--infl0-panel-border)] pt-5 lg:scroll-mt-24"
+          >
             <p class="infl0-canvas-muted mb-6 text-xs leading-snug">
               {{ t('settingsDisplay.typographyIntro') }}
             </p>
             <div class="space-y-0">
-              <SettingsSurfaceDisplayGroup
-                v-for="(sid, i) in DISPLAY_SURFACES"
+              <div
+                v-for="(sid, i) in SETTINGS_DISPLAY_SURFACE_ORDER"
+                :id="displaySurfaceScrollId(sid)"
                 :key="sid"
-                :surface-id="sid"
-                :show-top-border="i > 0"
-              />
+                class="scroll-mt-28 lg:scroll-mt-24"
+              >
+                <SettingsSurfaceDisplayGroup
+                  :surface-id="sid"
+                  :show-top-border="i > 0"
+                />
+              </div>
             </div>
           </div>
-          <div class="border-t border-[var(--infl0-panel-border)] pt-5">
+          <div
+            id="display-motion"
+            class="scroll-mt-28 border-t border-[var(--infl0-panel-border)] pt-5 lg:scroll-mt-24"
+          >
             <SettingsMotionControl />
           </div>
         </div>
@@ -123,7 +135,7 @@ function onOnboardingToggle(e: Event) {
       <section
         id="onboarding"
         aria-labelledby="settings-onboarding-heading"
-        class="mb-10"
+        class="scroll-mt-24 mb-10"
       >
         <header class="mb-4 text-center">
           <h2 id="settings-onboarding-heading" class="infl0-canvas-fg text-lg font-semibold">
@@ -160,7 +172,7 @@ function onOnboardingToggle(e: Event) {
         factor group inside is an h3 so screen-reader outline mirrors
         the "Settings → Sorting → factor groups" nesting.
       -->
-      <section aria-labelledby="settings-sorting-heading" class="mb-10">
+      <section id="sorting" aria-labelledby="settings-sorting-heading" class="scroll-mt-24 mb-10">
         <header class="mb-4 text-center">
           <h2 id="settings-sorting-heading" class="infl0-canvas-fg text-lg font-semibold">
             {{ t('settingsTimeline.title') }}
@@ -171,9 +183,10 @@ function onOnboardingToggle(e: Event) {
         </header>
 
         <div
-          v-for="g in GROUP_ORDER"
+          v-for="g in TIMELINE_SCORE_GROUP_ORDER"
+          :id="`sorting-group-${g}`"
           :key="g"
-          class="infl0-panel mb-4 p-5"
+          class="infl0-panel mb-4 scroll-mt-28 p-5 lg:scroll-mt-24"
         >
           <h3 class="infl0-section-label mb-4 text-sm font-semibold uppercase tracking-wide">
             {{ t(`settingsTimeline.groups.${g}`) }}
@@ -238,8 +251,8 @@ function onOnboardingToggle(e: Event) {
           </ul>
         </div>
 
-        <div class="infl0-panel mb-4 p-5">
-          <h3 class="infl0-section-label mb-2 text-sm font-semibold uppercase tracking-wide">
+        <div id="sorting-formula" class="infl0-panel mb-4 scroll-mt-28 p-5 lg:scroll-mt-24">
+          <h3 class="infl0-section-label mb-4 text-sm font-semibold uppercase tracking-wide">
             {{ t('settingsTimeline.formulaTitle') }}
           </h3>
           <p class="infl0-panel-muted mb-3 text-xs">
@@ -262,15 +275,11 @@ function onOnboardingToggle(e: Event) {
         </div>
       </section>
 
-      <!--
-        Engagement tracking. The `id="tracking"` exists so the
-        /settings/privacy info page can deep-link here; changing the
-        hash is a soft contract the info-page content references.
-      -->
+      <!-- Engagement tracking (`id="tracking"`). Privacy intro links here. -->
       <section
         id="tracking"
         aria-labelledby="settings-tracking-heading"
-        class="mb-4"
+        class="scroll-mt-24 mb-4"
       >
         <header class="mb-4 text-center">
           <h2 id="settings-tracking-heading" class="infl0-canvas-fg text-lg font-semibold">

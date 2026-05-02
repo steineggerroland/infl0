@@ -56,3 +56,20 @@ Feature: Reader context stays stable
     When I start reading
     And I focus the first reader article
     Then the current reader article should show that it is read
+
+  Scenario: Reading an article marks it read without behaviour tracking
+    Given reading behaviour tracking is disabled
+    And I open the timeline
+    When I start reading
+    And I focus the first reader article
+    Then the current reader article should become read
+    And no reading behaviour event should be stored for the current reader article
+
+  Scenario: The read shortcut marks the focused article unread
+    Given the first reader article is already read
+    And I show read reader articles
+    And I open the timeline
+    When I start reading
+    And I focus the first reader article
+    And I press the read-state shortcut
+    Then the current reader article should become unread

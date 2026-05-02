@@ -13,6 +13,11 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Cucumber coverage** for `/settings` hub deep links and a sidebar jump, reading-behaviour
+  (`#tracking`) toggle flip, `/settings/personalization` snapshot headings, and `/feeds`
+  add/remove (`features/settings_hub_navigation.feature`,
+  `features/settings_tracking_and_personalization.feature`, `features/feeds_sources.feature`).
+
 - **Deliberate reader start with resume option.** Once onboarding is
   hidden, opening `/` shows a quiet reader start screen instead of
   rendering article cards immediately. This prevents passive visits from
@@ -28,8 +33,16 @@ new entries accrue under **Unreleased**.
 - **Reader return-context behavior specs.** New Cucumber scenarios cover
   onboarding bypass, passive opening without read tracking, fresh reader
   start, explicit resume to the stored article, missing resume context,
-  URL calmness before start, new-article count, and visible read-state
-  feedback.
+  URL calmness before start, new-article count, visible read-state
+  feedback, marking read **without** behaviour tracking enabled, and
+  manual unread via the read-state shortcut.
+
+- **Separate timeline read marking from behaviour tracking.** `PATCH /api/me/articles/:articleId/read-state`
+  toggles `read_at` on the signed-in user's timeline row. Focused articles
+  can auto-mark **read** after ~2 s visible in the interactive reader,
+  independently of engagement opt-in; `POST /api/me/article-engagement`
+  still records dwell only when behaviour tracking is on and **does not**
+  set read state.
 
 - **Onboarding cards on a polymorphic inflow.** A new account lands on
   four prefabricated welcome cards (`intro`, `sources`, `scoring`,
@@ -117,7 +130,60 @@ new entries accrue under **Unreleased**.
   (`Log out` / `Abmelden`), and URL assertions accept optional query/hash
   suffixes (e.g. `/login?redirect=/`) for stable return-navigation checks.
 
+- **Appearance presets emit DaisyUI semantic colours.** Derived theme CSS now
+  includes `--color-base-*`, `--color-primary`, `--color-error`, etc., mapped
+  from existing infl0 chrome and panel accents so DaisyUI components (`menu`,
+  `dropdown`, `kbd`, …) follow the selected preset.
+
+- **User menu chrome** uses DaisyUI `dropdown`, `menu`, and `swap` primitives;
+  the opener `aria-label` reflects whether the menu is open or closed (`menu.close` /
+  `menu.open`).
+
+- **Help FAQ details (`/help`).** Long FAQ answers expand with DaisyUI
+  **`collapse`** on native **`<details>` / `<summary>`** so browser find-in-page
+  still discovers the copy ([Collapse with details](https://daisyui.com/components/collapse/#-collapse-using-details-and-summary-tag)).
+  Chevron via **`collapse-arrow`**. Stable test hooks `help-faq-details-<itemId>`.
+
+- **Timeline empty and info surfaces (`/`).** Onboarding-empty, preparing, reader-start,
+  and all-read-empty copy use DaisyUI **`alert`** with **`alert-soft`**: informational
+  states **`alert-info`**, “everything read” **`alert-warning`**, with **`role="status"`**
+  (preparing also **`aria-live="polite"`**) and stable **`data-testid`** hooks for tests.
+
+- **Feeds empty list.** Replaced the plain bordered bar with **`alert alert-info alert-soft`**
+  ([Alert](https://daisyui.com/components/alert/)), `data-testid="feeds-empty-alert"`.
+
+- **Auth entry forms (`/login`, `/register`).** DaisyUI **`fieldset`** (screen-reader legend)
+  + **`label` / `label-text`** for each control; inline errors use **`alert alert-error`**
+  ([Fieldset](https://daisyui.com/components/fieldset/)). Stable hooks `login-error` /
+  `register-error`.
+
+- **Personalization metrics (`/settings/personalization`).** Algorithm snapshot
+  (prior α/β + blend coefficients) and the per-card **stored / live / delta** rank strip
+  use DaisyUI **`stats`** / **`stat`** ([Stat](https://daisyui.com/components/stat/)) with
+  left-aligned headings and monospace values; blend text wraps with **`!whitespace-normal`**
+  instead of Daisy’s default nowrap.
+
+- **Feeds / sources (`/feeds`).** Add-source form uses DaisyUI **`fieldset`** with
+  **`fieldset-legend`**, stacked **`label` / `label-text`** pairs ([Fieldset](https://daisyui.com/components/fieldset/));
+  submission errors use **`alert alert-error`**. Saved feeds render as DaisyUI **`list`**
+  rows with **`list-row`** and **`list-col-grow`** for title/URL metadata and actions
+  on the trailing column ([List](https://daisyui.com/components/list/)); empty state
+  is a compact **`alert`**.
+
+- **DaisyUI polish & Settings hub.** Settings **`drawer`** / **`menu`** with nested
+  **`#display-*`** anchors and scroll-spy, compact hub **`menu`** row spacing, Daisy
+  **`footer`** / **`link`** for **`AppFooterShortcuts`**, final sort-group copy (DE/EN).
+
+### Fixed
+
+- **Help shortcut `<kbd>` appearance.** Shortcut keys in `#shortcuts-reference`
+  use DaisyUI `kbd` styling with a light-theme contrast tweak so keys stay readable
+  on the help canvas.
+
 ### Documentation
+
+- **Closed package** [`docs/archive/26-05-02-daisyui-polish-settings-navigation.md`](./archive/26-05-02-daisyui-polish-settings-navigation.md)
+  (was `docs/planned/daisyui-polish-and-settings-navigation.md`).
 
 - **Closed package** [`docs/archive/26-04-27-shortcuts-help.md`](./archive/26-04-27-shortcuts-help.md)
   (was [`docs/planned/shortcuts-help.md`](./planned/README.md)) with the
@@ -131,6 +197,11 @@ new entries accrue under **Unreleased**.
   - [`docs/planned/return-context-and-onboarding-completion.md`](./planned/return-context-and-onboarding-completion.md)
   - [`docs/planned/bdd-persona-coverage-wave-1.md`](./planned/bdd-persona-coverage-wave-1.md)
   - [`docs/planned/ci-remote-e2e-smoke-strategy.md`](./planned/ci-remote-e2e-smoke-strategy.md)
+
+- **`package-lock.json`:** keep lockfile churn predictable by running **`npm ci` /
+  `npm install` only with the Node version pinned in `.nvmrc`** (repo helper:
+  `./scripts/with-nvm.sh`). A mismatched npm version can silently rewrite optional
+  dependency metadata (e.g. `libc` qualifiers) across the tree.
 
 ## [0.3.0] — 2026-04-27
 

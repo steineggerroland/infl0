@@ -170,6 +170,13 @@ describe('SettingsIndex page', () => {
     expect(h1s[0]!.text()).toBe('Settings')
   })
 
+  it('exposes anchor id="display" for settings navigation hash links', () => {
+    const wrapper = mountPage()
+    const section = wrapper.find('section#display')
+    expect(section.exists()).toBe(true)
+    expect(section.attributes('aria-labelledby')).toBe('settings-display-heading')
+  })
+
   it('exposes an Appearance section with a theme block, three surface groups, and motion', () => {
     const wrapper = mountPage()
     const heading = wrapper.find('#settings-display-heading')
@@ -182,6 +189,13 @@ describe('SettingsIndex page', () => {
     expect(wrapper.find('[data-testid="appearance-control-stub"]').exists()).toBe(true)
     expect(wrapper.findAll('[data-testid="surface-group-stub"]')).toHaveLength(3)
     expect(wrapper.find('[data-testid="motion-control-stub"]').exists()).toBe(true)
+  })
+
+  it('exposes anchor id="sorting" for settings navigation hash links', () => {
+    const wrapper = mountPage()
+    const section = wrapper.find('section#sorting')
+    expect(section.exists()).toBe(true)
+    expect(section.attributes('aria-labelledby')).toBe('settings-sorting-heading')
   })
 
   it('exposes a Sorting section with its section heading', () => {

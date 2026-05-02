@@ -17,6 +17,7 @@
   "menu": {
     "navLandmark": "App-Navigation",
     "open": "Menü",
+    "close": "Menü schließen",
     "timeline": "Timeline",
     "feeds": "Quellen verwalten",
     "settings": "Einstellungen",
@@ -38,13 +39,18 @@
   "settingsCommon": {
     "footerNav": "Kurznavigation"
   },
+  "settingsNav": {
+    "landmark": "Einstellungsbereiche",
+    "openSections": "Bereiche",
+    "closeDrawer": "Navigation schließen"
+  },
   "settingsIndex": {
     "title": "Einstellungen",
     "intro": "Hier passt du an, wie infl0 für dich aussieht und wie deine Timeline sortiert wird.",
     "trackingHeading": "Leseverhalten auswerten",
     "trackingIntro": "Standardmäßig aus. Du entscheidest, ob wir dein Leseverhalten für die Sortierung nutzen dürfen. Du kannst jederzeit wieder abschalten – dann werden keine neuen Daten mehr gespeichert.",
     "trackingLabel": "Leseverhalten für bessere Sortierung nutzen",
-    "trackingHint": "Wenn aktiv, merken wir uns, wie lange du Überschrift, Teaser oder den längeren Text ansiehst. Artikel, die du rund zwei Sekunden oder länger betrachtest, gelten als gelesen.",
+    "trackingHint": "Wenn aktiv, merken wir uns, wie lange du Überschrift, Teaser oder den längeren Text ansiehst. Das hilft der Sortierung, aus deinem Leseverhalten zu lernen.",
     "onboardingHeading": "Willkommenskarten",
     "onboardingIntro": "Blende die vier Willkommenskarten ein oder aus, die in Navigation, Quellen, Scoring und Themes einführen. Wenn aktiv, stehen sie ganz vorne in deinem Inflow.",
     "onboardingLabel": "Willkommenskarten anzeigen",
@@ -234,8 +240,8 @@
     "groups": {
       "time": "Wie aktuell",
       "content": "Inhalt",
-      "mix": "Mischung (folgt)",
-      "feedback": "Dein Feedback (folgt)"
+      "mix": "Mischung",
+      "feedback": "Dein Feedback"
     },
     "contentLengthPreference": {
       "label": "Lieber kurze oder lange Artikel?",
@@ -364,6 +370,7 @@
   "login": {
     "title": "infl0",
     "tagline": "Deine ruhige Nachrichten-Timeline",
+    "fieldsetLegend": "Anmeldedaten",
     "email": "E-Mail",
     "password": "Passwort",
     "signIn": "Anmelden",
@@ -373,6 +380,7 @@
   "register": {
     "title": "Konto erstellen",
     "tagline": "Neu hier? Leg los in weniger als einer Minute.",
+    "fieldsetLegend": "Angaben zur Registrierung",
     "inviteCode": "Einladungscode",
     "email": "E-Mail",
     "nameOptional": "Name (optional)",
@@ -395,6 +403,8 @@
     "flipBack": "Zurückdrehen",
     "originalArticle": "Originalartikel",
     "readStatus": "Gelesen",
+    "markRead": "Als gelesen markieren",
+    "markUnread": "Als nicht gelesen markieren",
     "closeModal": "Schließen",
     "modalKeyboardHint": "Esc schließt · w/s navigieren nach dem Schließen"
   },
@@ -413,7 +423,7 @@
       "scopeRules": {
         "noEditable": "Kein Kürzel reagiert, während du in einem Text-, Such- oder anderen Eingabefeld tippst.",
         "noModalBg": "Wenn ein Originalartikel oder ein Info-Fenster offen ist, pausieren die Timeline-Tasten und der Lese-Schalter – damit der Hintergrund nicht heimlich weiterspringt.",
-        "selectedCard": "Artikel-Tasten (E, Q) wirken nur auf die Karte, die du gerade ansiehst – die, die den größten Teil des Bildschirms füllt.",
+        "selectedCard": "Artikel-Tasten (E, M, Q) wirken nur auf die Karte, die du gerade ansiehst – die, die den größten Teil des Bildschirms füllt.",
         "noChords": "Strg, Cmd oder Alt gewinnen immer für den Browser. Cmd+R lädt also weiterhin die Seite neu und schaltet keine gelesenen Artikel um."
       },
       "keysSeparator": "oder",
@@ -447,6 +457,10 @@
         "flipCard": {
           "label": "Fokussierte Karte umdrehen",
           "description": "Wechselt zwischen Vorderseite (Überschrift und Teaser) und Rückseite (längere Zusammenfassung). Wirkt nur auf die Karte, die du gerade ansiehst."
+        },
+        "toggleReadState": {
+          "label": "Gelesen oder ungelesen markieren",
+          "description": "Markiert den fokussierten Artikel als gelesen – oder wieder als ungelesen, wenn er bereits gelesen ist."
         },
         "openOriginal": {
           "label": "Originalartikel öffnen",

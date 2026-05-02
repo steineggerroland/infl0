@@ -19,7 +19,11 @@
  *
  * 2. **FAQ items** (anchor `#<itemId>`): the historical "frequently
  *    asked questions" list, fully driven by the `help.items.*` i18n
- *    block. New questions need no template change.
+ *    block. Expandable details use DaisyUI [`collapse`][collapse] on
+ *    native `<details>/<summary>` ([searchable in-page][collapse-details]).
+ *
+ * [collapse]: https://daisyui.com/components/collapse/
+ * [collapse-details]: https://daisyui.com/components/collapse/#-collapse-using-details-and-summary-tag
  */
 
 import { SHORTCUT_GROUPS, tokenizeShortcutKey } from '~/utils/app-shortcuts'
@@ -230,7 +234,7 @@ onMounted(() => {
                                                 aria-hidden="true"
                                                 class="infl0-canvas-muted text-xs"
                                             >+</span>
-                                            <kbd class="infl0-shortcut-key">{{ token.label }}</kbd>
+                                            <kbd class="kbd kbd-sm infl0-shortcut-kbd">{{ token.label }}</kbd>
                                         </template>
                                     </span>
                                 </template>
@@ -262,11 +266,21 @@ onMounted(() => {
                         {{ t('help.simpleHeading') }}
                     </h3>
                     <p class="mt-1 text-base leading-relaxed">{{ item.simple }}</p>
-                    <details v-if="item.details" class="infl0-help-nested">
-                        <summary class="cursor-pointer text-sm font-medium">
+                    <details
+                        v-if="item.details"
+                        class="collapse collapse-arrow mt-4 rounded-xl border border-[color:var(--infl0-raised-border)] shadow-sm"
+                        style="background-color: var(--infl0-help-nested-bg); color: var(--infl0-raised-fg-muted)"
+                        :data-testid="`help-faq-details-${item.id}`"
+                    >
+                        <summary
+                            class="collapse-title text-sm font-medium"
+                            style="color: var(--infl0-raised-fg)"
+                        >
                             {{ t('help.detailsHeading') }}
                         </summary>
-                        <p class="mt-3 text-sm leading-relaxed">{{ item.details }}</p>
+                        <div class="collapse-content text-sm leading-relaxed px-5 pb-5 pt-0">
+                            <p>{{ item.details }}</p>
+                        </div>
                     </details>
                 </li>
             </ol>
@@ -275,19 +289,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.infl0-shortcut-key {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.75rem;
-    padding: 0.1rem 0.45rem;
-    border-radius: 0.35rem;
-    border: 1px solid var(--infl0-raised-border);
-    background-color: var(--infl0-help-nested-bg);
-    color: var(--infl0-raised-fg);
-    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
-    font-size: 0.78rem;
-    line-height: 1;
-    box-shadow: 0 1px 0 var(--infl0-raised-border);
+:global(html[data-theme="light"]) .infl0-shortcut-kbd {
+    color: var(--infl0-panel-bg);
 }
 </style>

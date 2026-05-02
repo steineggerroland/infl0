@@ -3,7 +3,7 @@ import { parseFetchError } from '~/utils/parse-fetch-error'
 import { scoreDirection } from '~/utils/score-indicator'
 
 definePageMeta({
-  layout: 'app',
+  layout: 'settings',
   appFooter: { containerMax: '4xl', testId: 'settings-page-footer' },
 })
 
@@ -90,7 +90,7 @@ function directionLabel(value: number | null | undefined) {
 </script>
 
 <template>
-  <div class="infl0-page-shell pb-24 pt-14">
+  <div id="personalization" class="infl0-page-shell pb-24 pt-14">
     <div class="mx-auto w-full max-w-4xl px-4">
       <header class="mb-8 text-center">
         <h1 class="infl0-canvas-fg text-2xl font-semibold">{{ $t('settingsPersonalization.title') }}</h1>
@@ -114,27 +114,32 @@ function directionLabel(value: number | null | undefined) {
           <p class="text-sm leading-relaxed text-[var(--infl0-panel-text)]">
             {{ $t('settingsPersonalization.algorithmBody') }}
           </p>
-          <dl class="infl0-panel-muted mt-4 grid gap-2 text-xs sm:grid-cols-2">
-            <div>
-              <dt class="font-medium">
+          <div
+            class="stats stats-vertical mt-4 w-full rounded-box border border-[var(--infl0-panel-border)] bg-[var(--infl0-nested-surface)] lg:stats-horizontal"
+            data-testid="personalization-algorithm-stats"
+          >
+            <div class="stat place-items-start px-4 py-3">
+              <div class="stat-title infl0-panel-muted">
                 {{ $t('settingsPersonalization.priorLabel') }}
-              </dt>
-              <dd>
+              </div>
+              <div class="stat-value shrink-0 text-lg font-mono font-normal text-[var(--infl0-panel-text)]">
                 α={{ data.engagementModel.prior.alpha }}, β={{ data.engagementModel.prior.beta }}
-              </dd>
+              </div>
             </div>
-            <div>
-              <dt class="font-medium">
+            <div class="stat place-items-start px-4 py-3">
+              <div class="stat-title infl0-panel-muted">
                 {{ $t('settingsPersonalization.blendLabel') }}
-              </dt>
-              <dd>
+              </div>
+              <div
+                class="stat-value !whitespace-normal max-w-none text-sm leading-snug font-mono font-normal text-[var(--infl0-panel-text)]"
+              >
                 {{ $t('settingsPersonalization.blendSources') }} {{ fmt(data.engagementModel.blend.feed, 2) }},
                 {{ $t('settingsPersonalization.blendCategories') }}
                 {{ fmt(data.engagementModel.blend.category, 2) }}, {{ $t('settingsPersonalization.blendTags') }}
                 {{ fmt(data.engagementModel.blend.tag, 2) }}
-              </dd>
+              </div>
             </div>
-          </dl>
+          </div>
         </section>
 
         <section>
@@ -174,43 +179,43 @@ function directionLabel(value: number | null | undefined) {
                 v-show="expandedId === row.timelineItemId"
                 class="border-t border-[var(--infl0-panel-border)]/80 px-4 py-4 text-sm text-[var(--infl0-panel-text)]"
               >
-                <div class="mb-4 grid gap-3 sm:grid-cols-3">
-                  <div>
-                    <h3 class="infl0-panel-muted mb-1 text-xs font-semibold uppercase">
+                <div
+                  class="stats stats-vertical mb-4 w-full rounded-box border border-[var(--infl0-panel-border)] bg-[var(--infl0-surface-dim)] shadow-sm lg:stats-horizontal"
+                  data-testid="personalization-rank-stats"
+                >
+                  <div class="stat place-items-start px-2 py-2 sm:px-4">
+                    <div class="stat-title text-[0.65rem] font-semibold uppercase infl0-panel-muted">
                       {{ $t('settingsPersonalization.rankStored') }}
-                    </h3>
-                    <p class="font-mono text-lg text-[var(--infl0-panel-text)]">
+                    </div>
+                    <div class="stat-value font-mono text-xl font-normal text-[var(--infl0-panel-text)]">
                       {{ row.rankScore != null ? fmt(row.rankScore, 4) : '—' }}
-                    </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 class="infl0-panel-muted mb-1 text-xs font-semibold uppercase">
+                  <div class="stat place-items-start px-2 py-2 sm:px-4">
+                    <div class="stat-title text-[0.65rem] font-semibold uppercase infl0-panel-muted">
                       {{ $t('settingsPersonalization.rankLive') }}
-                    </h3>
-                    <p class="font-mono text-lg text-[var(--infl0-panel-text)]">
+                    </div>
+                    <div class="stat-value font-mono text-xl font-normal text-[var(--infl0-panel-text)]">
                       {{ fmt(row.rankScoreFromFactors, 4) }}
-                    </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 class="infl0-panel-muted mb-1 text-xs font-semibold uppercase">
+                  <div class="stat place-items-start px-2 py-2 sm:px-4">
+                    <div class="stat-title text-[0.65rem] font-semibold uppercase infl0-panel-muted">
                       {{ $t('settingsPersonalization.rankDelta') }}
-                    </h3>
+                    </div>
                     <!--
-                      `<ScoreDelta>` renders the three redundant
-                      cues (signed number, aria-hidden glyph,
-                      sr-only direction label) so colour stays a
-                      purely decorative fourth layer. Colour is
-                      applied via `deltaClass` on this `<p>`.
+                      `<ScoreDelta>`: colour only decorative fourth layer alongside
+                      numeric + sr-only direction cues.
                     -->
-                    <p
-                      class="font-mono text-lg tabular-nums"
+                    <div
+                      class="stat-value font-mono text-xl tabular-nums font-normal"
                       :class="deltaClass(rankDelta(row))"
                     >
                       <ScoreDelta
                         :value="rankDelta(row)"
                         :sr-label="directionLabel(rankDelta(row))"
                       />
-                    </p>
+                    </div>
                   </div>
                 </div>
 

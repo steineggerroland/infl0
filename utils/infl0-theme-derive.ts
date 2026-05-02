@@ -457,6 +457,23 @@ export function deriveInfl0TokensFromSource(s: ThemeSource): Record<string, stri
   const readerCodeFg = mixHex(Rt, Rbg, 0.06)
   const readerProseMuted = mixHex(Rt, Rbg, 0.38)
 
+  const daisyPrimaryContent = isLightBackground(controlAccent) ? '#0f172a' : '#ffffff'
+  const daisySecondary = tonalAccent(Sbg, {
+    satBump: light ? 0.26 : 0.16,
+    lightBump: light ? -0.1 : 0.12,
+    satCap: 0.66,
+    lightCap: light ? 0.5 : 0.62,
+  })
+  const daisySecondaryContent = isLightBackground(daisySecondary) ? '#0f172a' : '#ffffff'
+  const daisyAccent = tonalAccent(Rbg, {
+    satBump: light ? 0.3 : 0.18,
+    lightBump: light ? -0.12 : 0.14,
+    satCap: 0.72,
+    lightCap: light ? 0.48 : 0.66,
+  })
+  const daisyAccentContent = isLightBackground(daisyAccent) ? '#0f172a' : '#ffffff'
+  const daisyError = light ? mixHex('#dc2626', panelText, 0.12) : mixHex('#f87171', panelText, 0.18)
+
   // `--infl0-*` uses both short steps (`-dim`/`-mute` on article fg) and prose
   // (`-muted` on panel/raised); names are stable for existing CSS consumers.
 
@@ -525,6 +542,26 @@ export function deriveInfl0TokensFromSource(s: ThemeSource): Record<string, stri
     '--infl0-reader-code-bg': readerCodeBg,
     '--infl0-reader-code-fg': readerCodeFg,
     '--infl0-reader-prose-muted': readerProseMuted,
+    '--color-base-100': chromeSurface,
+    '--color-base-200': chromeLinkHover,
+    '--color-base-300': chromeBorder,
+    '--color-base-content': chromeFg,
+    '--color-primary': controlAccent,
+    '--color-primary-content': daisyPrimaryContent,
+    '--color-secondary': daisySecondary,
+    '--color-secondary-content': daisySecondaryContent,
+    '--color-accent': daisyAccent,
+    '--color-accent-content': daisyAccentContent,
+    '--color-neutral': panelText,
+    '--color-neutral-content': panelBg,
+    '--color-info': readerLink,
+    '--color-info-content': surfaceReaderBg,
+    '--color-success': deltaPositiveFg,
+    '--color-success-content': panelBg,
+    '--color-warning': formulaPreFg,
+    '--color-warning-content': panelBg,
+    '--color-error': daisyError,
+    '--color-error-content': '#ffffff',
   }
 }
 

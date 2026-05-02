@@ -134,6 +134,7 @@ export const SHORTCUT_GROUPS: ShortcutGroup[] = [
         id: 'article',
         entries: [
             { id: 'flipCard', keys: ['e'] },
+            { id: 'toggleReadState', keys: ['m'] },
             { id: 'openOriginal', keys: ['q'] },
             { id: 'closeSurface', keys: ['escape'] },
         ],

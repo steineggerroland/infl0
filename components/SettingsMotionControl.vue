@@ -25,22 +25,23 @@ function onSelect(mode: MotionMode) {
 </script>
 
 <template>
-  <fieldset
+  <div
     class="space-y-3"
     data-testid="motion-control"
   >
-    <legend class="text-sm font-medium text-[var(--infl0-panel-text)]">
+    <h3
+      class="infl0-section-label mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
+    >
       {{ t('settingsDisplay.motionLabel') }}
-    </legend>
+    </h3>
     <p class="infl0-panel-muted text-xs leading-snug">
       {{ t('settingsDisplay.motionHint') }}
     </p>
-    <div class="space-y-2">
+    <fieldset class="m-0 space-y-2 border-0 p-0">
+      <legend class="sr-only">{{ t('settingsDisplay.motionLabel') }}</legend>
       <!--
-        Native radios for a native single-choice experience. Keyboard
-        arrows move between options automatically because they share a
-        `name` attribute, and the fieldset/legend pair gives assistive
-        tech the group label without us wiring aria manually.
+        Native radios share a `name` so arrows move between options; `legend`
+        is visually hidden because the visible label is the `h3` above.
       -->
       <label
         v-for="m in MOTION_MODES"
@@ -66,6 +67,6 @@ function onSelect(mode: MotionMode) {
           }}</span>
         </span>
       </label>
-    </div>
-  </fieldset>
+    </fieldset>
+  </div>
 </template>

@@ -43,6 +43,7 @@ function makeI18n() {
     menu: {
       navLandmark: 'App navigation',
       open: 'Menu',
+      close: 'Close menu',
       timeline: 'Timeline',
       feeds: 'Manage sources',
       settings: 'Settings',
@@ -97,6 +98,29 @@ describe('AppUserMenu navigation', () => {
         '/settings/privacy',
       ]),
     )
+  })
+
+  it('uses DaisyUI menu and swap primitives for the navigation surface', async () => {
+    const wrapper = await mountMenu('/foo')
+    expect(wrapper.get('summary').classes()).toEqual(
+      expect.arrayContaining(['btn', 'swap', 'swap-rotate']),
+    )
+    const menus = wrapper.findAll('ul.menu')
+    expect(menus.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('updates the menu button label when the dropdown opens', async () => {
+    const wrapper = await mountMenu('/foo')
+    const details = wrapper.get('details')
+    const summary = wrapper.get('summary')
+
+    expect(summary.attributes('aria-label')).toBe('Menu')
+
+    ;(details.element as HTMLDetailsElement).open = true
+    await details.trigger('toggle')
+
+    expect(summary.attributes('aria-label')).toBe('Close menu')
+    expect(summary.classes()).toContain('swap-active')
   })
 
   it('no longer exposes "Adjust sorting" as a separate menu entry — it is a section inside /settings', async () => {

@@ -19,7 +19,9 @@ function onSelect(mode: AppearanceMode) {
     class="space-y-3"
     data-testid="appearance-control"
   >
-    <legend class="text-sm font-medium text-[var(--infl0-panel-text)]">
+    <legend
+      class="infl0-section-label mb-3 block text-sm font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
+    >
       {{ t('settingsDisplay.appearanceLabel') }}
     </legend>
     <p class="infl0-panel-muted text-xs leading-snug">

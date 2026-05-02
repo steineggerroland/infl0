@@ -20,6 +20,8 @@ describe('buildThemeHtmlStyle', () => {
     expect(s).toContain('--infl0-app-bg:')
     expect(s).toContain('--infl0-chrome-surface:')
     expect(s).toContain('--infl0-panel-bg:')
+    expect(s).toContain('--color-base-100:')
+    expect(s).toContain('--color-primary:')
     expect(s).toContain('--infl0-delta-positive-fg:')
     expect(s).toContain('--infl0-reader-link:')
     expect(s).toContain('--infl0-font-front-family:')
@@ -155,5 +157,7 @@ describe('deriveInfl0TokensFromSource', () => {
     const pbg = pastelBlueLight.cardFront.bg
     const mixHint = mixHex('#ffffff', pbg, 0.04)
     expect(t['--infl0-chrome-surface']).toBe(mixHint)
+    expect(t['--color-base-100']).toBe(mixHint)
+    expect(t['--color-base-content']).toBe(t['--infl0-chrome-fg'])
   })
 })

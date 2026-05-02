@@ -12,7 +12,7 @@
  * we do not have yet.
  */
 definePageMeta({
-  layout: 'app',
+  layout: 'settings',
   appFooter: { testId: 'settings-page-footer' },
 })
 
@@ -20,7 +20,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="infl0-page-shell pb-16 pt-16">
+  <div id="privacy" class="infl0-page-shell pb-16 pt-16">
     <div class="mx-auto w-full max-w-lg px-4">
       <header class="mb-8 text-center">
         <h1 class="infl0-canvas-fg text-2xl font-semibold">{{ t('settingsPrivacy.title') }}</h1>
