@@ -23,10 +23,28 @@ This folder contains executable user-facing behavior specifications using Cucumb
 
 ## Test gaps
 
-- Privacy-sensitive tracking journey: disabled/enabled tracking and visible explanation affordances.
-- Power-user personalization journey: score/sort preference tuning and expectation framing.
-- Returning-user onboarding completion: post-skip/post-complete behavior across sessions.
-- Feed/source management: source add/remove and visible inflow consequences.
+Covered since the reader/read-state work: **`reader_return_context.feature`** (reader
+start, resume/jump, calm URLs, read feedback, read without behaviour tracking, read
+shortcut). Registration/login journeys stay in **`auth_registration_login.feature`**;
+Daisy fieldset/alert markup there is an implementation detail unless we add negative
+paths (e.g. invalid credentials → visible error).
+
+Still sensible BDD candidates for recent product surface (see git range after
+`6d5a4b9` on `main`):
+
+- **Settings hub:** drawer/sidebar navigation and deep links (`/settings#…`,
+  including `#display-*` and sorting sub-anchors); optional narrow-viewport “Sections”
+  control. High user impact; not yet a dedicated feature file.
+- **Feed/source management:** add/remove feed and visible outcome (listed here before;
+  still no `features/*.feature` for `/feeds`).
+- **Privacy-sensitive tracking journey:** disabled/enabled tracking and explanation
+  affordances on `/settings` (copy + toggle), still uncovered at BDD layer.
+- **Power-user personalization journey:** `/settings/personalization` score framing
+  and expectation copy (still uncovered at BDD layer).
+- **Returning-user onboarding completion:** post-skip / post-complete behavior across
+  sessions where not already expressed in reader scenarios.
+- **Help FAQ:** optional regression for expandable FAQ rows (Daisy `collapse` on
+  `<details>`); lower priority than settings/feeds if component tests stay green.
 
 ## Run commands
 
