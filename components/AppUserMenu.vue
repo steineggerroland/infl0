@@ -51,23 +51,22 @@ const linkClass =
                         </NuxtLink>
                     </li>
                     <!--
-                        `/settings` is one long page + drawer sidebar links.
-                        While already there, omit Settings / personalization /
-                        Privacy from the burger so navigation is not split
-                        between two models (sidebar anchors vs secondary routes).
+                        Settings hub + two sibling info surfaces: personalization
+                        explainability and privacy philosophy — each stays a distinct
+                        menu entry and route (drawer anchors exist only on /settings).
                     -->
                     <li v-if="route.path !== '/settings'">
                         <NuxtLink to="/settings" :class="linkClass" @click="closeMenu">
                             {{ t('menu.settings') }}
                         </NuxtLink>
                     </li>
-                    <li v-if="route.path !== '/settings'">
-                        <NuxtLink to="/settings#personalization" :class="linkClass" @click="closeMenu">
+                    <li v-if="route.path !== '/settings/personalization'">
+                        <NuxtLink to="/settings/personalization" :class="linkClass" @click="closeMenu">
                             {{ t('menu.personalization') }}
                         </NuxtLink>
                     </li>
-                    <li v-if="route.path !== '/settings'">
-                        <NuxtLink to="/settings#privacy" :class="linkClass" @click="closeMenu">
+                    <li v-if="route.path !== '/settings/privacy'">
+                        <NuxtLink to="/settings/privacy" :class="linkClass" @click="closeMenu">
                             {{ t('menu.privacy') }}
                         </NuxtLink>
                     </li>

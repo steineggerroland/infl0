@@ -1,17 +1,18 @@
 <script setup lang="ts">
 /**
- * Settings-only layout: DaisyUI drawer sidebar for in-page section anchors
- * on `/settings` only. Scroll position drives which menu row is `active`
- * (IntersectionObserver). Legacy `/settings/personalization` and
- * `/settings/privacy` URLs redirect via middleware.
+ * Settings layout: DaisyUI drawer + scrollspy **only on `/settings`** (the long
+ * hub). `/settings/personalization` and `/settings/privacy` render full-width
+ * content without section anchor navigation.
  */
 import {
-    SETTINGS_NAV_SECTION_IDS,
+    SETTINGS_HUB_SECTION_IDS,
     useSettingsNavSectionSpy,
 } from '~/composables/useSettingsNavSectionSpy'
 
 const { t } = useI18n()
 const route = useRoute()
+
+const isSettingsHubPage = computed(() => route.path === '/settings')
 
 type FooterMeta = true | { containerMax?: 'lg' | '4xl'; testId?: string }
 
@@ -34,9 +35,9 @@ const footerTestId = computed<string>(() => {
     return 'app-footer-shortcuts'
 })
 
-const { activeSectionId } = useSettingsNavSectionSpy([...SETTINGS_NAV_SECTION_IDS])
+const { activeSectionId } = useSettingsNavSectionSpy([...SETTINGS_HUB_SECTION_IDS])
 
-const navSections = computed(() =>
+const hubNavSections = computed(() =>
     (
         [
             {
@@ -58,16 +59,6 @@ const navSections = computed(() =>
                 hash: 'tracking',
                 testId: 'settings-nav-link-tracking',
                 labelKey: 'settingsIndex.trackingHeading' as const,
-            },
-            {
-                hash: 'personalization',
-                testId: 'settings-nav-link-personalization',
-                labelKey: 'settingsPersonalization.title' as const,
-            },
-            {
-                hash: 'privacy',
-                testId: 'settings-nav-link-privacy',
-                labelKey: 'settingsPrivacy.title' as const,
             },
         ] as const
     ).map((entry) => ({
@@ -104,7 +95,7 @@ function sectionLinkActive(hash: string): boolean {
         </a>
 
         <main id="main" tabindex="-1" class="outline-none">
-            <div class="drawer lg:drawer-open">
+            <div v-if="isSettingsHubPage" class="drawer lg:drawer-open">
                 <input id="settings-nav-drawer" type="checkbox" class="drawer-toggle" >
                 <div class="drawer-content min-w-0 bg-[var(--infl0-app-bg)]">
                     <div
@@ -133,7 +124,7 @@ function sectionLinkActive(hash: string): boolean {
                     >
                         <ul class="menu menu-sm w-full rounded-box p-0">
                             <li
-                                v-for="item in navSections"
+                                v-for="item in hubNavSections"
                                 :key="item.hash"
                                 :class="{ active: sectionLinkActive(item.hash) }"
                             >
@@ -152,6 +143,12 @@ function sectionLinkActive(hash: string): boolean {
                         </ul>
                     </nav>
                 </div>
+            </div>
+            <div
+                v-else
+                class="min-w-0 bg-[var(--infl0-app-bg)]"
+            >
+                <slot />
             </div>
         </main>
 

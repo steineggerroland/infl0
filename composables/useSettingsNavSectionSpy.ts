@@ -1,21 +1,21 @@
 import { onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue'
 
-/** Sidebar targets on `/settings` (DOM section `id`s). */
-export const SETTINGS_NAV_SECTION_IDS = [
+/**
+ * Sections on **`/settings`** only (appearance, onboarding, sorting, tracking).
+ * “Why at the top?” and Privacy stay separate routes with their own menu entries.
+ */
+export const SETTINGS_HUB_SECTION_IDS = [
     'display',
     'onboarding',
     'sorting',
     'tracking',
-    'personalization',
-    'privacy',
 ] as const
 
-export type SettingsNavSectionId = (typeof SETTINGS_NAV_SECTION_IDS)[number]
+export type SettingsHubSectionId = (typeof SETTINGS_HUB_SECTION_IDS)[number]
 
 /**
- * Highlights the nearest settings section overlapping the viewport “reading
- * band”. Hash navigation updates the highlight immediately when the sidebar
- * is used; scrolling then keeps the Daisy `menu active` marker in sync.
+ * Highlights the hub section overlapping the viewport “reading band”.
+ * Idle on other settings routes (`/settings/personalization`, `/settings/privacy`).
  */
 export function useSettingsNavSectionSpy(sectionIds: readonly string[]): {
     activeSectionId: Ref<string>
@@ -24,17 +24,26 @@ export function useSettingsNavSectionSpy(sectionIds: readonly string[]): {
     const activeSectionId = ref(sectionIds[0] ?? '')
     let observer: IntersectionObserver | null = null
 
+    function syncHashToActive(): void {
+        if (route.path !== '/settings') return
+        const id = route.hash.replace(/^#/, '')
+        if (id && sectionIds.includes(id)) activeSectionId.value = id
+    }
+
+    watch(() => route.hash, syncHashToActive, { immediate: true })
+
     watch(
-        () => route.hash,
-        (hash) => {
-            const id = hash.replace(/^#/, '')
-            if (id && sectionIds.includes(id)) activeSectionId.value = id
+        () => route.path,
+        () => {
+            syncHashToActive()
+            bindObserver()
         },
-        { immediate: true },
     )
 
-    onMounted(() => {
-        if (!import.meta.client) return
+    function bindObserver(): void {
+        observer?.disconnect()
+        observer = null
+        if (!import.meta.client || route.path !== '/settings') return
 
         observer = new IntersectionObserver(
             (entries) => {
@@ -61,11 +70,10 @@ export function useSettingsNavSectionSpy(sectionIds: readonly string[]): {
             if (el) observer.observe(el)
         }
 
-        queueMicrotask(() => {
-            const h = route.hash.replace(/^#/, '')
-            if (h && sectionIds.includes(h)) activeSectionId.value = h
-        })
-    })
+        queueMicrotask(syncHashToActive)
+    }
+
+    onMounted(() => bindObserver())
 
     onBeforeUnmount(() => {
         observer?.disconnect()

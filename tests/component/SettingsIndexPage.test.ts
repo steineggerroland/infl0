@@ -157,12 +157,6 @@ function mountPage() {
         SettingsSurfaceDisplayGroup: {
           template: '<div data-testid="surface-group-stub" />',
         },
-        SettingsPersonalizationSection: {
-          template: '<div data-testid="personalization-section-stub" />',
-        },
-        SettingsPrivacySection: {
-          template: '<div data-testid="privacy-section-stub" />',
-        },
       },
     },
   })
@@ -212,7 +206,7 @@ describe('SettingsIndex page', () => {
     expect(heading.text()).toBe('Adjust sorting')
   })
 
-  it('exposes a Reading behaviour section with id="tracking" for deep links from the privacy section', () => {
+  it('exposes a Reading behaviour section with id="tracking" so /settings/privacy can deep-link to it', () => {
     const wrapper = mountPage()
     const section = wrapper.find('section#tracking')
     expect(section.exists()).toBe(true)
@@ -232,16 +226,6 @@ describe('SettingsIndex page', () => {
   it('does not render its own footer — the shortcut footer comes from the layout', () => {
     const wrapper = mountPage()
     expect(wrapper.find('footer').exists()).toBe(false)
-  })
-
-  it('embeds personalization and privacy blocks with anchor ids', () => {
-    const wrapper = mountPage()
-    expect(wrapper.find('section#personalization').exists()).toBe(true)
-    expect(wrapper.find('section#personalization [data-testid="personalization-section-stub"]').exists()).toBe(
-      true,
-    )
-    expect(wrapper.find('section#privacy').exists()).toBe(true)
-    expect(wrapper.find('section#privacy [data-testid="privacy-section-stub"]').exists()).toBe(true)
   })
 
   describe('Onboarding cards toggle', () => {

@@ -11,7 +11,7 @@ import ScoreDelta from '../../components/ScoreDelta.vue'
  * actually ships to assistive tech: the rendered DOM.
  *
  * We used to assert this with a regex over
- * `components/settings/SettingsPersonalizationSection.vue`; that caught the literal
+ * `pages/settings/personalization.vue`; that caught the literal
  * bytes of the template and broke on every cosmetic refactor while
  * still missing real regressions (a flex-layout bug slipped past
  * it). Now every caller renders through `ScoreDelta`, so these

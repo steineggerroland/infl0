@@ -17,7 +17,7 @@ const DISPLAY_SURFACES: SurfaceId[] = ['card-front', 'card-back', 'reader']
 
 definePageMeta({
   layout: 'settings',
-  appFooter: { containerMax: '4xl', testId: 'settings-page-footer' },
+  appFooter: { testId: 'settings-page-footer' },
 })
 
 const { t } = useI18n()
@@ -74,8 +74,8 @@ function onOnboardingToggle(e: Event) {
 </script>
 
 <template>
-  <div class="infl0-page-shell px-4 pb-24 pt-16">
-    <div class="mx-auto w-full max-w-lg">
+  <div class="infl0-page-shell pb-16 pt-16">
+    <div class="mx-auto w-full max-w-lg px-4">
       <header class="mb-10 text-center">
         <h1 class="infl0-canvas-fg text-2xl font-semibold">{{ t('settingsIndex.title') }}</h1>
         <p class="infl0-canvas-muted mt-2 text-sm">
@@ -270,7 +270,7 @@ function onOnboardingToggle(e: Event) {
       <section
         id="tracking"
         aria-labelledby="settings-tracking-heading"
-        class="scroll-mt-24 mb-10"
+        class="scroll-mt-24 mb-4"
       >
         <header class="mb-4 text-center">
           <h2 id="settings-tracking-heading" class="infl0-canvas-fg text-lg font-semibold">
@@ -305,23 +305,6 @@ function onOnboardingToggle(e: Event) {
           </label>
         </div>
       </section>
-
     </div>
-
-      <!-- Wide block: algorithm + timeline diagnostics (narrow column above ends here). -->
-      <section
-        id="personalization"
-        aria-labelledby="settings-personalization-heading"
-        class="scroll-mt-24 mb-10"
-      >
-        <SettingsPersonalizationSection />
-      </section>
-
-      <div class="mx-auto w-full max-w-lg">
-        <section id="privacy" aria-labelledby="settings-privacy-title" class="scroll-mt-24 mb-4">
-          <SettingsPrivacySection />
-        </section>
-      </div>
-
   </div>
 </template>

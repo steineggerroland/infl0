@@ -23,8 +23,6 @@ function makeI18n() {
             trackingHeading: 'Reading-behaviour analysis',
         },
         settingsTimeline: { title: 'Adjust sorting' },
-        settingsPersonalization: { title: 'Personalization' },
-        settingsPrivacy: { title: 'Privacy' },
         menu: { timeline: '', help: '', open: '', close: '', feeds: '', settings: '' },
     }
     return createI18n({
@@ -63,7 +61,7 @@ function mountLayout(routeOverrides: Partial<{ path: string; hash: string; fullP
 }
 
 describe('Settings layout (drawer nav)', () => {
-    it('exposes landmark navigation with stable in-page anchor links only', () => {
+    it('exposes hub landmark navigation with four stable /settings hash links', () => {
         const wrapper = mountLayout({})
         const nav = wrapper.find('[data-testid="settings-nav-sidebar"]')
         expect(nav.attributes('aria-label')).toBe('Settings sections')
@@ -74,10 +72,7 @@ describe('Settings layout (drawer nav)', () => {
         )
         expect(wrapper.find('[data-testid="settings-nav-link-sorting"]').attributes('href')).toBe('/settings#sorting')
         expect(wrapper.find('[data-testid="settings-nav-link-tracking"]').attributes('href')).toBe('/settings#tracking')
-        expect(wrapper.find('[data-testid="settings-nav-link-personalization"]').attributes('href')).toBe(
-            '/settings#personalization',
-        )
-        expect(wrapper.find('[data-testid="settings-nav-link-privacy"]').attributes('href')).toBe('/settings#privacy')
+        expect(wrapper.findAll('[data-testid^="settings-nav-link-"]')).toHaveLength(4)
     })
 
     it('marks the tracking anchor row when the route hash targets that section', () => {
@@ -91,16 +86,23 @@ describe('Settings layout (drawer nav)', () => {
         expect(wrapper.find('[data-testid="settings-nav-link-display"]').attributes('aria-current')).toBeUndefined()
     })
 
-    it('marks personalization active when only the hash changes (still /settings)', () => {
-        const wrapper = mountLayout({
-            path: '/settings',
-            hash: '#personalization',
-            fullPath: '/settings#personalization',
+    it('omits hub drawer sidebar on personalization and privacy routes', () => {
+        const p = mountLayout({
+            path: '/settings/personalization',
+            hash: '',
+            fullPath: '/settings/personalization',
         })
-        expect(wrapper.find('[data-testid="settings-nav-link-personalization"]').attributes('aria-current')).toBe(
-            'location',
-        )
-        expect(wrapper.find('[data-testid="settings-nav-link-privacy"]').attributes('aria-current')).toBeUndefined()
+        expect(p.find('[data-testid="settings-nav-sidebar"]').exists()).toBe(false)
+        expect(p.find('[data-testid="settings-nav-drawer-toggle"]').exists()).toBe(false)
+        p.unmount()
+
+        const pr = mountLayout({
+            path: '/settings/privacy',
+            hash: '',
+            fullPath: '/settings/privacy',
+        })
+        expect(pr.find('[data-testid="settings-nav-sidebar"]').exists()).toBe(false)
+        pr.unmount()
     })
 
     it('renders mobile sections toggle alongside main slot', () => {

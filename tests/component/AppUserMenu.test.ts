@@ -88,14 +88,14 @@ describe('AppUserMenu navigation', () => {
     vi.clearAllMocks()
   })
 
-  it('surfaces Settings, "Why at the top?" and Privacy as flat anchor links into /settings', async () => {
+  it('surfaces Settings, "Why at the top?" and Privacy as flat menu entries', async () => {
     const wrapper = await mountMenu('/')
     const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
     expect(hrefs).toEqual(
       expect.arrayContaining([
         '/settings',
-        '/settings#personalization',
-        '/settings#privacy',
+        '/settings/personalization',
+        '/settings/privacy',
       ]),
     )
   })
@@ -139,11 +139,25 @@ describe('AppUserMenu navigation', () => {
     expect(hrefs).toEqual(expect.arrayContaining(['/', '/feeds', '/help', '/settings']))
   })
 
-  it('while on /settings, hides duplicate settings entries (sidebar + scrollspy)', async () => {
+  it('hides only the current-route entry so the rest of the menu stays navigable', async () => {
+    // On /settings the Settings link is hidden, but "Why at the top?" and
+    // Privacy stay reachable — they are siblings, not children of
+    // Settings.
     const wrapper = await mountMenu('/settings')
-    const hrefs = wrapper.findAll('a').map((a) => a.attributes('href')).filter(Boolean) as string[]
-    expect(hrefs.filter((h) => h.startsWith('/settings'))).toHaveLength(0)
-    expect(hrefs).toContain('/help')
-    expect(hrefs).toContain('/feeds')
+    const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
+    expect(hrefs).not.toContain('/settings')
+    expect(hrefs).toEqual(
+      expect.arrayContaining([
+        '/settings/personalization',
+        '/settings/privacy',
+      ]),
+    )
+  })
+
+  it('hides Privacy when the user is already on the privacy page', async () => {
+    const wrapper = await mountMenu('/settings/privacy')
+    const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
+    expect(hrefs).not.toContain('/settings/privacy')
+    expect(hrefs).toContain('/settings')
   })
 })
