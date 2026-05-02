@@ -4,6 +4,13 @@
  * hub). `/settings/personalization` and `/settings/privacy` render full-width
  * content without section anchor navigation.
  */
+import {
+    displaySurfaceScrollId,
+    SETTINGS_DISPLAY_NESTED_NAV_HASHES,
+    SETTINGS_DISPLAY_SURFACE_HEADING_KEYS,
+    SETTINGS_DISPLAY_SURFACE_ORDER,
+} from '~/utils/settings-hub-display'
+import type { SurfaceId } from '~/utils/ui-prefs'
 import { TIMELINE_SCORE_GROUP_ORDER } from '~/utils/timeline-score-factors'
 
 import {
@@ -54,6 +61,32 @@ const hubNavEntries = computed<HubNavEntry[]>(() => {
             labelKey: 'settingsDisplay.heading',
         },
         {
+            hash: 'display-appearance',
+            testId: 'settings-nav-link-display-appearance',
+            labelKey: 'settingsDisplay.appearanceLabel',
+            nested: true,
+        },
+        {
+            hash: 'display-palette',
+            testId: 'settings-nav-link-display-palette',
+            labelKey: 'settingsDisplay.themeLabel',
+            nested: true,
+        },
+        ...SETTINGS_DISPLAY_SURFACE_ORDER.map((sid: SurfaceId) =>
+            ({
+                hash: displaySurfaceScrollId(sid),
+                testId: `settings-nav-link-display-surface-${sid}`,
+                labelKey: SETTINGS_DISPLAY_SURFACE_HEADING_KEYS[sid],
+                nested: true,
+            }) satisfies HubNavEntry,
+        ),
+        {
+            hash: 'display-motion',
+            testId: 'settings-nav-link-display-motion',
+            labelKey: 'settingsDisplay.motionLabel',
+            nested: true,
+        },
+        {
             hash: 'onboarding',
             testId: 'settings-nav-link-onboarding',
             labelKey: 'settingsIndex.onboardingHeading',
@@ -90,6 +123,10 @@ function navLiActive(item: HubNavEntry): boolean {
     if (route.path !== '/settings') return false
     const cur = activeSectionId.value
     if (item.hash === 'sorting') return cur === 'sorting'
+    if (item.hash === 'display') {
+        if (SETTINGS_DISPLAY_NESTED_NAV_HASHES.has(cur)) return false
+        return cur === 'display' || cur.startsWith('display-')
+    }
     return cur === item.hash
 }
 
@@ -97,6 +134,7 @@ function navAriaCurrent(item: HubNavEntry): 'location' | undefined {
     if (route.path !== '/settings') return undefined
     const cur = activeSectionId.value
     if (item.hash === 'sorting') return cur === 'sorting' ? 'location' : undefined
+    if (item.hash === 'display') return cur === 'display' ? 'location' : undefined
     return cur === item.hash ? 'location' : undefined
 }
 

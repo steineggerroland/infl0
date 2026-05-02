@@ -165,13 +165,9 @@ new entries accrue under **Unreleased**.
   on the trailing column ([List](https://daisyui.com/components/list/)); empty state
   is a compact **`alert`**.
 
-- **Settings section navigation.** `/settings`, `/settings/personalization`, and
-  `/settings/privacy` use a dedicated **`settings` layout** with a DaisyUI `drawer`:
-  sidebar from `lg:` up (`lg:drawer-open`), compact **Sections** control on narrow
-  viewports, overlay close, and a `menu` of links to anchored blocks on the main
-  settings page (`#display`, `#onboarding`, `#sorting`, `#tracking`) plus sibling
-  routes. Stable **`id` hooks** (`#personalization`, `#privacy`) support deep links
-  and tests.
+- **DaisyUI polish & Settings hub.** Settings **`drawer`** / **`menu`** with nested
+  **`#display-*`** anchors and scroll-spy, compact hub **`menu`** row spacing, Daisy
+  **`footer`** / **`link`** for **`AppFooterShortcuts`**, final sort-group copy (DE/EN).
 
 ### Fixed
 
@@ -180,6 +176,9 @@ new entries accrue under **Unreleased**.
   on the help canvas.
 
 ### Documentation
+
+- **Closed package** [`docs/archive/26-05-02-daisyui-polish-settings-navigation.md`](./archive/26-05-02-daisyui-polish-settings-navigation.md)
+  (was `docs/planned/daisyui-polish-and-settings-navigation.md`).
 
 - **Closed package** [`docs/archive/26-04-27-shortcuts-help.md`](./archive/26-04-27-shortcuts-help.md)
   (was [`docs/planned/shortcuts-help.md`](./planned/README.md)) with the

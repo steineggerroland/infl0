@@ -1,10 +1,16 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue'
 
+import { SETTINGS_HUB_DISPLAY_SURFACE_SCROLL_IDS } from '~/utils/settings-hub-display'
 import { TIMELINE_SCORE_GROUP_ORDER } from '~/utils/timeline-score-factors'
 
-/** DOM ids used for `/settings` scroll position (finest granularity first). */
+/** DOM ids used for `/settings` scroll position (coarse ids first; later ids win — see composable loop). */
 export const SETTINGS_HUB_SCROLL_SPY_IDS = [
     'display',
+    'display-appearance',
+    'display-palette',
+    'display-typography',
+    ...SETTINGS_HUB_DISPLAY_SURFACE_SCROLL_IDS,
+    'display-motion',
     'onboarding',
     'sorting',
     ...TIMELINE_SCORE_GROUP_ORDER.map((g) => `sorting-group-${g}`),

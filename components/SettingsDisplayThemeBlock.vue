@@ -8,17 +8,22 @@ const { active, onFocusIn, onFocusOut } = useContainedFocusActive()
 
 <template>
   <div
-    class="space-y-4"
+    class="space-y-6"
     data-testid="display-theme-block"
     @focusin="onFocusIn"
     @focusout="onFocusOut"
   >
-    <SettingsAppearanceControl />
-    <div class="border-t border-[var(--infl0-panel-border)] pt-5">
-      <SettingsThemeControl />
+    <div id="display-appearance" class="scroll-mt-28 lg:scroll-mt-24">
+      <SettingsAppearanceControl />
     </div>
-    <div v-show="active" class="pt-1">
-      <SettingsThemePreview />
+    <div
+      id="display-palette"
+      class="scroll-mt-28 border-t border-[var(--infl0-panel-border)] pt-5 lg:scroll-mt-24"
+    >
+      <SettingsThemeControl />
+      <div v-show="active" class="pt-5">
+        <SettingsThemePreview />
+      </div>
     </div>
   </div>
 </template>

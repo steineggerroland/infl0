@@ -44,17 +44,21 @@ function onSelectChoice(choice: ThemeChoice) {
     class="space-y-5"
     data-testid="theme-control"
   >
-    <legend class="text-sm font-medium text-[var(--infl0-panel-text)]">
+    <legend
+      class="infl0-section-label mb-3 block text-sm font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
+    >
       {{ t('settingsDisplay.themeLabel') }}
     </legend>
     <p class="infl0-panel-muted text-xs leading-snug">
       {{ t('settingsDisplay.themeHint') }}
     </p>
 
-    <div class="space-y-1.5">
-      <p class="text-xs font-medium text-[var(--infl0-panel-text)]">
+    <fieldset class="m-0 min-w-0 space-y-2 border-0 p-0">
+      <legend
+        class="infl0-section-label mb-2 block px-0 text-xs font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
+      >
         {{ t('settingsDisplay.themePastelGroup') }}
-      </p>
+      </legend>
       <div
         class="grid grid-cols-5 gap-2"
         role="radiogroup"
@@ -78,12 +82,14 @@ function onSelectChoice(choice: ThemeChoice) {
           @click="onSelectPreset('pastel', hue)"
         />
       </div>
-    </div>
+    </fieldset>
 
-    <div class="space-y-1.5">
-      <p class="text-xs font-medium text-[var(--infl0-panel-text)]">
+    <fieldset class="m-0 min-w-0 space-y-2 border-0 p-0">
+      <legend
+        class="infl0-section-label mb-2 block px-0 text-xs font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
+      >
         {{ t('settingsDisplay.themeWarmGroup') }}
-      </p>
+      </legend>
       <div
         class="grid grid-cols-5 gap-2"
         role="radiogroup"
@@ -107,7 +113,7 @@ function onSelectChoice(choice: ThemeChoice) {
           @click="onSelectPreset('warm', hue)"
         />
       </div>
-    </div>
+    </fieldset>
 
     <div class="space-y-2 border-t border-[var(--infl0-panel-border)]/70 pt-4">
       <label

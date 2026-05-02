@@ -17,7 +17,17 @@ function makeI18n() {
             openSections: 'Sections',
             closeDrawer: 'Close navigation',
         },
-        settingsDisplay: { heading: 'Display' },
+        settingsDisplay: {
+            heading: 'Display',
+            appearanceLabel: 'Light or dark',
+            themeLabel: 'Colour palette',
+            motionLabel: 'Motion and animation',
+            surfaces: {
+                cardFront: { heading: 'Card · front' },
+                cardBack: { heading: 'Card · back' },
+                reader: { heading: 'Full text' },
+            },
+        },
         settingsIndex: {
             onboardingHeading: 'Welcome cards',
             trackingHeading: 'Reading-behaviour analysis',
@@ -83,6 +93,24 @@ describe('Settings layout (drawer nav)', () => {
         expect(nav.attributes('aria-label')).toBe('Settings sections')
 
         expect(wrapper.find('[data-testid="settings-nav-link-display"]').attributes('href')).toBe('/settings#display')
+        expect(wrapper.find('[data-testid="settings-nav-link-display-appearance"]').attributes('href')).toBe(
+            '/settings#display-appearance',
+        )
+        expect(wrapper.find('[data-testid="settings-nav-link-display-palette"]').attributes('href')).toBe(
+            '/settings#display-palette',
+        )
+        expect(
+            wrapper.find('[data-testid="settings-nav-link-display-surface-card-front"]').attributes('href'),
+        ).toBe('/settings#display-surface-card-front')
+        expect(
+            wrapper.find('[data-testid="settings-nav-link-display-surface-card-back"]').attributes('href'),
+        ).toBe('/settings#display-surface-card-back')
+        expect(wrapper.find('[data-testid="settings-nav-link-display-surface-reader"]').attributes('href')).toBe(
+            '/settings#display-surface-reader',
+        )
+        expect(wrapper.find('[data-testid="settings-nav-link-display-motion"]').attributes('href')).toBe(
+            '/settings#display-motion',
+        )
         expect(wrapper.find('[data-testid="settings-nav-link-onboarding"]').attributes('href')).toBe(
             '/settings#onboarding',
         )
@@ -94,7 +122,7 @@ describe('Settings layout (drawer nav)', () => {
             '/settings#sorting-formula',
         )
         expect(wrapper.find('[data-testid="settings-nav-link-tracking"]').attributes('href')).toBe('/settings#tracking')
-        expect(wrapper.findAll('[data-testid^="settings-nav-link-"]')).toHaveLength(9)
+        expect(wrapper.findAll('[data-testid^="settings-nav-link-"]')).toHaveLength(15)
     })
 
     it('marks the tracking row when route hash targets it (fallback without section DOM)', async () => {

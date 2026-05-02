@@ -12,9 +12,7 @@ import {
   TIMELINE_SCORE_GROUP_ORDER,
   type TimelineScoreFactorGroup,
 } from '~/utils/timeline-score-factors'
-import type { SurfaceId } from '~/utils/ui-prefs'
-
-const DISPLAY_SURFACES: SurfaceId[] = ['card-front', 'card-back', 'reader']
+import { displaySurfaceScrollId, SETTINGS_DISPLAY_SURFACE_ORDER } from '~/utils/settings-hub-display'
 
 definePageMeta({
   layout: 'settings',
@@ -98,20 +96,31 @@ function onOnboardingToggle(e: Event) {
 
         <div class="infl0-panel space-y-6 p-5">
           <SettingsDisplayThemeBlock />
-          <div class="border-t border-[var(--infl0-panel-border)] pt-5">
+          <div
+            id="display-typography"
+            class="scroll-mt-28 border-t border-[var(--infl0-panel-border)] pt-5 lg:scroll-mt-24"
+          >
             <p class="infl0-canvas-muted mb-6 text-xs leading-snug">
               {{ t('settingsDisplay.typographyIntro') }}
             </p>
             <div class="space-y-0">
-              <SettingsSurfaceDisplayGroup
-                v-for="(sid, i) in DISPLAY_SURFACES"
+              <div
+                v-for="(sid, i) in SETTINGS_DISPLAY_SURFACE_ORDER"
+                :id="displaySurfaceScrollId(sid)"
                 :key="sid"
-                :surface-id="sid"
-                :show-top-border="i > 0"
-              />
+                class="scroll-mt-28 lg:scroll-mt-24"
+              >
+                <SettingsSurfaceDisplayGroup
+                  :surface-id="sid"
+                  :show-top-border="i > 0"
+                />
+              </div>
             </div>
           </div>
-          <div class="border-t border-[var(--infl0-panel-border)] pt-5">
+          <div
+            id="display-motion"
+            class="scroll-mt-28 border-t border-[var(--infl0-panel-border)] pt-5 lg:scroll-mt-24"
+          >
             <SettingsMotionControl />
           </div>
         </div>
@@ -243,7 +252,7 @@ function onOnboardingToggle(e: Event) {
         </div>
 
         <div id="sorting-formula" class="infl0-panel mb-4 scroll-mt-28 p-5 lg:scroll-mt-24">
-          <h3 class="infl0-section-label mb-2 text-sm font-semibold uppercase tracking-wide">
+          <h3 class="infl0-section-label mb-4 text-sm font-semibold uppercase tracking-wide">
             {{ t('settingsTimeline.formulaTitle') }}
           </h3>
           <p class="infl0-panel-muted mb-3 text-xs">

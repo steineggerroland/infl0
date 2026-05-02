@@ -94,13 +94,15 @@ function resetEntireSurface() {
     @focusout="onFocusOut"
   >
     <div class="mb-4">
-      <h3 class="text-base font-semibold text-[var(--infl0-panel-text)]">
+      <h3
+        class="infl0-section-label mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
+      >
         {{ i18nSurface('heading') }}
       </h3>
-      <p class="infl0-panel-muted mt-1 text-xs leading-snug">
+      <p class="infl0-panel-muted mb-3 mt-1 text-xs leading-snug">
         {{ i18nSurface('typographyHint') }}
       </p>
-      <div class="mt-2 flex flex-wrap items-center justify-end gap-2">
+      <div class="flex flex-wrap items-center justify-end gap-2">
         <button
           type="button"
           class="infl0-surface-area-reset-btn h-8 min-h-0 shrink-0 rounded px-3 text-xs font-medium"
@@ -178,7 +180,7 @@ function resetEntireSurface() {
       :data-testid="`custom-colors-${surfaceId}`"
     >
       <legend
-        class="mb-1 block w-full text-xs font-medium text-[var(--infl0-panel-text)]"
+        class="infl0-section-label mb-2 block w-full text-xs font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
       >
         {{ t('settingsDisplay.customColors.perSurfaceTitle') }}
       </legend>

@@ -240,8 +240,8 @@
     "groups": {
       "time": "Wie aktuell",
       "content": "Inhalt",
-      "mix": "Mischung (folgt)",
-      "feedback": "Dein Feedback (folgt)"
+      "mix": "Mischung",
+      "feedback": "Dein Feedback"
     },
     "contentLengthPreference": {
       "label": "Lieber kurze oder lange Artikel?",

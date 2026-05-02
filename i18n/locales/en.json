@@ -240,8 +240,8 @@
     "groups": {
       "time": "How recent",
       "content": "Content",
-      "mix": "Variety (coming soon)",
-      "feedback": "Your feedback (coming soon)"
+      "mix": "Variety",
+      "feedback": "Reading feedback"
     },
     "contentLengthPreference": {
       "label": "Do you prefer short or long articles?",
