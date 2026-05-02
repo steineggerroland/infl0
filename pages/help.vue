@@ -230,7 +230,7 @@ onMounted(() => {
                                                 aria-hidden="true"
                                                 class="infl0-canvas-muted text-xs"
                                             >+</span>
-                                            <kbd class="infl0-shortcut-key">{{ token.label }}</kbd>
+                                            <kbd class="kbd kbd-sm infl0-shortcut-kbd">{{ token.label }}</kbd>
                                         </template>
                                     </span>
                                 </template>
@@ -275,19 +275,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.infl0-shortcut-key {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.75rem;
-    padding: 0.1rem 0.45rem;
-    border-radius: 0.35rem;
-    border: 1px solid var(--infl0-raised-border);
-    background-color: var(--infl0-help-nested-bg);
-    color: var(--infl0-raised-fg);
-    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
-    font-size: 0.78rem;
-    line-height: 1;
-    box-shadow: 0 1px 0 var(--infl0-raised-border);
+:global(html[data-theme="light"]) .infl0-shortcut-kbd {
+    color: var(--infl0-panel-bg);
 }
 </style>
