@@ -28,7 +28,7 @@ const linkClass =
 <template>
     <details ref="menuRoot" class="dropdown dropdown-end relative z-40" @toggle="syncOpenState">
         <summary
-            class="btn btn-sm btn-square swap swap-rotate h-10 min-h-0 list-none rounded-xl shadow-lg ring-1 ring-black/30 infl0-chrome-button [&::-webkit-details-marker]:hidden"
+            class="btn btn-square swap swap-rotate h-12 min-h-0 w-12 min-w-0 list-none rounded-xl p-0 shadow-lg ring-1 ring-black/30 infl0-chrome-button [&::-webkit-details-marker]:hidden"
             :class="{ 'swap-active': isOpen }"
             :aria-label="isOpen ? t('menu.close') : t('menu.open')"
         >

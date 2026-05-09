@@ -103,7 +103,7 @@ describe('AppUserMenu navigation', () => {
   it('uses DaisyUI menu and swap primitives for the navigation surface', async () => {
     const wrapper = await mountMenu('/foo')
     expect(wrapper.get('summary').classes()).toEqual(
-      expect.arrayContaining(['btn', 'swap', 'swap-rotate']),
+      expect.arrayContaining(['btn', 'btn-square', 'swap', 'swap-rotate', 'h-12', 'w-12']),
     )
     const menus = wrapper.findAll('ul.menu')
     expect(menus.length).toBeGreaterThanOrEqual(2)
