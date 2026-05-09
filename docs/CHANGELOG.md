@@ -11,12 +11,26 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+### Added
+
+- **Dependabot** version updates on a **weekly** schedule for **npm** and **GitHub
+  Actions** (`.github/dependabot.yml`), so dependency and workflow-action bumps land as
+  reviewable PRs.
+
 ### Changed
 
-- **Toolchain / dependencies:** **TypeScript 6**, **`marked` v18**, **`@types/node`
-  v25**, and **`dotenv-cli` v11** (lockfile refreshed). **`marked` v18** trims trailing
-  blank lines in block tokens, which can slightly change rendered Markdown HTML vs v15;
-  article reader sanitisation (`ArticleView.vue`) is unchanged otherwise.
+- **Dependencies / lockfile:** ran **`npm update`** within existing semver ranges,
+  refreshed **`package-lock.json`**, merged Dependabot npm bumps where applicable
+  (including **audit-driven fixes**), and added an **`overrides`** pin for
+  **`@hono/node-server`** so the transitive version stays on a known-good release.
+
+- **Toolchain majors:** **TypeScript 6**, **`marked` v18**, **`@types/node` v25**, and
+  **`dotenv-cli` v11**. **`marked` v18** trims trailing blank lines in block tokens,
+  which can slightly change rendered Markdown HTML vs older releases; article reader
+  sanitisation (`ArticleView.vue`) is unchanged otherwise.
+
+- **Vercel deploy workflow** skips jobs when the actor is **`dependabot[bot]`**, so
+  routine dependency PRs do not trigger preview deployments.
 
 - **Settings display preferences are easier to scan.** The `/settings`
   **Display** section now uses separate panels for light/dark, colour palette,
@@ -25,6 +39,16 @@ new entries accrue under **Unreleased**.
   aligned while preserving accessible form semantics. New Cucumber coverage
   verifies that display choices, typeface/size, motion, and custom colours stay
   saved after reload (`features/settings_display_preferences.feature`).
+
+### Fixed
+
+- **Settings hub / app chrome:** the burger menu control keeps a **square** tap target;
+  on narrow viewports, **settings** section actions stay clear of the menu overlay
+  (`fix(menu)`, `fix(settings)`).
+
+- **GitHub Actions security hygiene:** **`.github/workflows/ci.yml`** declares explicit
+  **`permissions: contents: read`** for the default **`GITHUB_TOKEN`**, addressing
+  CodeQL **`actions/missing-workflow-permissions`** (least-privilege token scope for CI).
 
 ## [0.4.0] — 2026-05-02
 
