@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress
+Done — shipped **v0.4.0** (`PATCH /api/me/articles/:articleId/read-state`; engagement no longer sets `readAt`). See [`CHANGELOG.md`](../CHANGELOG.md).
 
 ## Goal
 
@@ -71,5 +71,5 @@ symbol to mark an article as unread again.
 
 ## Links
 
-- PR:
+- PR: *(multiple integration PRs; behaviour summarized in CHANGELOG)*
 - Discussion: local development thread, read-state vs engagement-tracking split
