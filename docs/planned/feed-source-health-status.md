@@ -25,7 +25,7 @@ Users should be able to answer:
 
 ## Dependencies
 
-- [`source-health-api-contract.md`](./source-health-api-contract.md) (Prisma `SourceStatus`, `GET /api/source-statuses`)
+- [`../archive/26-05-10-source-health-api-contract.md`](../archive/26-05-10-source-health-api-contract.md) (Prisma `SourceStatus`, `GET /api/source-statuses`, `POST /api/crawler/source-status`)
 - Existing `/feeds` page
 - Existing authenticated user/feed APIs
 - i18n: `i18n/locales/de.json`, `i18n/locales/en.json`
@@ -100,4 +100,4 @@ Add dominance / underrepresentation once there is a stable per-user source share
 
 - PR:
 - Discussion:
-- Related: [`source-health-api-contract.md`](./source-health-api-contract.md), [`operator-source-observability.md`](./operator-source-observability.md)
+- Related: [`../archive/26-05-10-source-health-api-contract.md`](../archive/26-05-10-source-health-api-contract.md), [`operator-source-observability.md`](./operator-source-observability.md)

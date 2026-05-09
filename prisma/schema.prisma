@@ -56,6 +56,41 @@ model UserFeed {
   @@map("user_feeds")
 }
 
+/// Latest processing / health snapshot per normalized crawl key (crawler POST upsert).
+model SourceStatus {
+  crawlKey String @id @map("crawl_key")
+
+  sourceStatus       String? @map("source_status")
+  sourceHealthStatus String? @map("source_health_status")
+  sourceHealthReason String? @map("source_health_reason")
+  sourceHealthJson   Json?   @map("source_health_json")
+  operatorAttention  Boolean @default(false) @map("operator_attention")
+  operatorAttentionReason String? @map("operator_attention_reason")
+
+  lastCrawlStatus       String?   @map("last_crawl_status")
+  lastCrawlStartedAt    DateTime? @map("last_crawl_started_at")
+  lastCrawlFinishedAt   DateTime? @map("last_crawl_finished_at")
+  nextAllowedCrawlAt    DateTime? @map("next_allowed_crawl_at")
+  lastSuccessfulCrawlAt DateTime? @map("last_successful_crawl_at")
+  lastCrawlError        String?   @map("last_crawl_error") @db.Text
+
+  crawlCandidateCount   Int? @map("crawl_candidate_count")
+  crawlSkippedCount     Int? @map("crawl_skipped_count")
+  crawlProcessedCount   Int? @map("crawl_processed_count")
+  crawlUnchangedCount   Int? @map("crawl_unchanged_count")
+  crawlFetchErrorCount  Int? @map("crawl_fetch_error_count")
+  crawlLlmFailedCount   Int? @map("crawl_llm_failed_count")
+  consecutiveErrorCount Int? @map("consecutive_error_count")
+
+  detectedPolicy Json? @map("detected_policy")
+  effectivePolicy Json? @map("effective_policy")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("source_statuses")
+}
+
 /// Globally stored articles (one row per content id, e.g. content hash / GUID).
 model Article {
   id           String    @id

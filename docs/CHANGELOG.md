@@ -13,6 +13,14 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Source health API (crawler + app):** Prisma **`SourceStatus`** / **`source_statuses`**
+  (latest snapshot per **`crawlKey`**). **`POST /api/crawler/source-status`** upserts with the
+  same **`NUXT_CRAWLER_API_KEY`** as ingest (camelCase or snake_case body).
+  **`GET /api/source-statuses`** returns active feeds for the signed-in user with optional
+  **`latest`** health payload. Migration **`20260510120000_source_statuses`**.
+  Playwright **`tests/e2e/authed/source-statuses.spec.ts`** covers create feed → crawler upsert
+  → session **`GET /api/source-statuses`** (requires migrated DB + **`.env.e2e`** crawler key).
+
 - **Reader session persists across Help / Settings / Feeds:** leaving `/` for those
   routes while reading stores a same-tab flag so returning to `/` skips the reader
   start screen and restores the last inflow anchor when possible (full reload
@@ -28,6 +36,11 @@ new entries accrue under **Unreleased**.
   reviewable PRs.
 
 ### Changed
+
+- **`POST /api/crawler/source-status`:** the upsert **update** path is a **partial merge**
+  — only keys present in the JSON body are written; omitted keys keep their stored values
+  (explicit **`null`** still clears nullable scalars / JSON where sent). Matches safe
+  delta payloads from n8n or the crawler.
 
 - **Dependencies / lockfile:** ran **`npm update`** within existing semver ranges,
   refreshed **`package-lock.json`**, merged Dependabot npm bumps where applicable

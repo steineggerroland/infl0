@@ -37,7 +37,7 @@ Without a suitable Node version, ESLint plugins or `postinstall` can fail (e.g. 
 We treat tests as three explicit layers with different ownership:
 
 - **Unit/component (`npm run test`)**: domain behavior, helper invariants, architectural boundaries, and isolated component interaction contracts.
-- **E2E smoke (`npm run test:e2e`)**: app boot, page reachability, setup/auth plumbing, and high-signal integration smoke checks only.
+- **E2E smoke (`npm run test:e2e`)**: app boot, page reachability, setup/auth plumbing, and high-signal integration smoke checks only. Authed **`source-statuses.spec.ts`** exercises **`POST /api/crawler/source-status`** and **`GET /api/source-statuses`** (uses **`NUXT_CRAWLER_API_KEY`** from merged env, e.g. **`.env.e2e`**).
 - **BDD (`npm run test:bdd`)**: user-facing feature behavior and guided journeys as the primary executable product specification.
 
 Practical coverage targets:
@@ -121,6 +121,16 @@ user-facing component.
   routes (`PATCH` / `DELETE`) and documents how to add endpoint-scoped
   `REQUEST_BODY` exclusions for rich-content ingestion (`/api/crawler/ingest`)
   using concrete audit-log rule IDs.
+
+## Crawler → infl0 (TopicKnowledgeCrawler / n8n)
+
+- **`GET /api/crawler/sources`** — list active feed `crawlKey`s (deduped) for sync.
+- **`POST /api/crawler/ingest`** — article upsert; body includes `crawlKey` + article fields.
+- **`POST /api/crawler/source-status`** — same **`NUXT_CRAWLER_API_KEY`** auth; upserts one row per
+  normalized `crawlKey` into **`source_statuses`** (latest snapshot). Prefer **camelCase** JSON;
+  **snake_case** keys are also accepted (see `server/utils/source-status-crawler-payload.ts`).
+- **`GET /api/source-statuses`** — **session** user only; joins active `UserFeed` rows with
+  `SourceStatus` for UI (`latest` is `null` until the crawler posts).
 
 ## Documentation map
 

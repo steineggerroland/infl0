@@ -27,7 +27,7 @@ Operators should be able to answer:
 
 ## Dependencies
 
-- [`source-health-api-contract.md`](./source-health-api-contract.md)
+- [`../archive/26-05-10-source-health-api-contract.md`](../archive/26-05-10-source-health-api-contract.md)
 - Source health fields posted by TopicKnowledgeCrawler / n8n
 - Existing auth/session utilities
 - One simple operator access mechanism, for example:
@@ -91,4 +91,4 @@ Document the chosen approach in **`.env.example`** and **`docs/DEPLOYING.md`**.
 
 - PR:
 - Discussion:
-- Related: [`source-health-api-contract.md`](./source-health-api-contract.md), [`feed-source-health-status.md`](./feed-source-health-status.md)
+- Related: [`../archive/26-05-10-source-health-api-contract.md`](../archive/26-05-10-source-health-api-contract.md), [`feed-source-health-status.md`](./feed-source-health-status.md)

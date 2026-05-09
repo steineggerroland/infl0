@@ -10,7 +10,7 @@ infl0 is a Nuxt SSR app backed by PostgreSQL. A small deployment needs:
 - **Required environment:** `DATABASE_URL` and `AUTH_JWT_SECRET`.
 - **Optional environment:** `NUXT_REGISTRATION_INVITE_CODE` enables
   invite-code registration, and `NUXT_CRAWLER_API_KEY` protects crawler
-  ingestion endpoints.
+  endpoints (**`/api/crawler/ingest`**, **`/api/crawler/source-status`**, **`/api/crawler/sources`**).
 - **Expected load:** currently sized and tested for personal or small-group
   use. Treat larger public instances as unmeasured until database, crawler,
   and serverless/runtime limits are observed under real traffic.
