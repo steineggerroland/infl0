@@ -166,7 +166,7 @@ watch(
                 <input id="settings-nav-drawer" type="checkbox" class="drawer-toggle" >
                 <div class="drawer-content min-w-0 bg-[var(--infl0-app-bg)]">
                     <div
-                        class="sticky top-0 z-40 flex justify-end border-b border-[var(--infl0-panel-border)] bg-[var(--infl0-app-bg)]/95 px-3 py-2 backdrop-blur lg:hidden"
+                        class="sticky top-0 z-40 flex justify-start border-b border-[var(--infl0-panel-border)] bg-[var(--infl0-app-bg)]/95 px-3 py-2 pe-24 backdrop-blur lg:hidden"
                     >
                         <label
                             for="settings-nav-drawer"

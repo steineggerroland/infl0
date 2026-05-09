@@ -159,7 +159,11 @@ describe('Settings layout (drawer nav)', () => {
 
     it('renders mobile sections toggle alongside main slot', () => {
         const wrapper = mountLayout({})
-        expect(wrapper.find('[data-testid="settings-nav-drawer-toggle"]').exists()).toBe(true)
+        const toggle = wrapper.find('[data-testid="settings-nav-drawer-toggle"]')
+        expect(toggle.exists()).toBe(true)
+        const barClasses = toggle.element.parentElement?.className ?? ''
+        expect(barClasses).toContain('justify-start')
+        expect(barClasses).toContain('pe-24')
         expect(wrapper.find('[data-testid="settings-slot"]').exists()).toBe(true)
     })
 })
