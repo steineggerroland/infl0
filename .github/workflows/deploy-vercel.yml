@@ -21,7 +21,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    if: github.actor != 'dependabot[bot]' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     environment:
       name: ${{ github.event_name == 'pull_request' && format('preview/pr-{0}', github.event.pull_request.number) || 'production' }}
       url: ${{ steps.deploy.outputs.url }}
