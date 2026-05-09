@@ -23,6 +23,9 @@ order, acceptance criteria — separate from the large idea pool in
 | [`read-state-without-tracking.md`](./read-state-without-tracking.md) | Separate read/unread state from engagement tracking and add a read-status toggle | In progress |
 | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Add first BDD scenario wave for new-user, privacy-sensitive, and power-user personas | Draft |
 | [`ci-remote-e2e-smoke-strategy.md`](./ci-remote-e2e-smoke-strategy.md) | Decide and document remote CI strategy for smoke E2E gates | Draft |
+| [`source-health-api-contract.md`](./source-health-api-contract.md) | Canonical `SourceStatus` storage + crawler upsert + user-scoped read API | Draft |
+| [`feed-source-health-status.md`](./feed-source-health-status.md) | Calm source health labels and timing on `/feeds` (no operator dashboard) | Draft |
+| [`operator-source-observability.md`](./operator-source-observability.md) | Protected `/operator/sources` global health table and summary band | Draft |
 
 *(Add a row when a new package markdown is created.)*
 
@@ -32,7 +35,11 @@ order, acceptance criteria — separate from the large idea pool in
 2. `read-state-without-tracking.md`
 3. `bdd-persona-coverage-wave-1.md`
 4. `ci-remote-e2e-smoke-strategy.md`
-5. Next package: explicit “capture” (collection / knowledge) **without** an
+5. Source health slice (ship **API contract before** UIs):
+   1. `source-health-api-contract.md`
+   2. `feed-source-health-status.md`
+   3. `operator-source-observability.md`
+6. Next package: explicit “capture” (collection / knowledge) **without** an
    LLM, then larger product areas (knowledge menu, search, …) as separate
    packages (see `ROADMAP.md`).
 
