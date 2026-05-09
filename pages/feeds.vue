@@ -58,7 +58,7 @@ async function addFeed() {
     addError.value = ''
     addPending.value = true
     try {
-        await $fetch('/api/feeds', {
+        const res = await $fetch<{ feed: UserFeedRow }>('/api/feeds', {
             method: 'POST',
             body: {
                 feedUrl: newFeedUrl.value.trim(),
@@ -68,7 +68,8 @@ async function addFeed() {
         })
         newFeedUrl.value = ''
         newDisplayTitle.value = ''
-        await refreshFeeds()
+        feedsData.value = { feeds: [...feedList.value, res.feed] }
+        void refreshFeeds()
         toast.push({ message: t('feeds.toastSourceSaved'), variant: 'success' })
     } catch (e: unknown) {
         const { statusCode, message } = parseFetchError(e)
@@ -87,7 +88,8 @@ async function removeFeed(id: string) {
     removingId.value = id
     try {
         await $fetch(`/api/feeds/${id}`, { method: 'DELETE', credentials: 'include' })
-        await refreshFeeds()
+        feedsData.value = { feeds: feedList.value.filter((f) => f.id !== id) }
+        void refreshFeeds()
         toast.push({ message: t('feeds.toastSourceRemoved'), variant: 'success' })
     } catch (e: unknown) {
         const { statusCode, message } = parseFetchError(e)
