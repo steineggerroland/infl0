@@ -32,6 +32,10 @@ new entries accrue under **Unreleased**.
 - **Vercel deploy workflow** skips jobs when the actor is **`dependabot[bot]`**, so
   routine dependency PRs do not trigger preview deployments.
 
+- **GitHub Actions:** **`actions/checkout`** and **`actions/setup-node`** bumped to
+  **v6** (CI, release, Vercel deploy); **`actions/github-script`** to **v9** (PR preview
+  comments); **`softprops/action-gh-release`** to **v3** (tag releases).
+
 - **Settings display preferences are easier to scan.** The `/settings`
   **Display** section now uses separate panels for light/dark, colour palette,
   each reading surface, and motion instead of one large mixed panel. Shared
