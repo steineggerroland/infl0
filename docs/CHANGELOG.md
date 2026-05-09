@@ -13,6 +13,11 @@ new entries accrue under **Unreleased**.
 
 ### Changed
 
+- **Toolchain / dependencies:** **TypeScript 6**, **`marked` v18**, **`@types/node`
+  v25**, and **`dotenv-cli` v11** (lockfile refreshed). **`marked` v18** trims trailing
+  blank lines in block tokens, which can slightly change rendered Markdown HTML vs v15;
+  article reader sanitisation (`ArticleView.vue`) is unchanged otherwise.
+
 - **Settings display preferences are easier to scan.** The `/settings`
   **Display** section now uses separate panels for light/dark, colour palette,
   each reading surface, and motion instead of one large mixed panel. Shared
