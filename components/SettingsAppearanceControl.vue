@@ -16,23 +16,21 @@ function onSelect(mode: AppearanceMode) {
 
 <template>
   <fieldset
-    class="space-y-3"
+    class="infl0-settings-fieldset space-y-3"
     data-testid="appearance-control"
   >
-    <legend
-      class="infl0-section-label mb-3 block text-sm font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
-    >
+    <legend class="infl0-settings-group-title">
       {{ t('settingsDisplay.appearanceLabel') }}
     </legend>
-    <p class="infl0-panel-muted text-xs leading-snug">
+    <p class="infl0-settings-group-hint">
       {{ t('settingsDisplay.appearanceHint') }}
     </p>
-    <div class="space-y-2">
+    <div class="infl0-settings-option-list">
       <label
         v-for="m in APPEARANCE_MODES"
         :key="m"
-        class="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 hover:border-[var(--infl0-control-sel-border)]"
-        :class="prefs.appearance === m ? 'border-[var(--infl0-control-sel-border)] bg-[var(--infl0-control-sel-bg)]' : ''"
+        class="infl0-settings-option-row"
+        :class="prefs.appearance === m ? 'infl0-settings-option-row--selected' : ''"
       >
         <input
           type="radio"

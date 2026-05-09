@@ -350,6 +350,38 @@ body {
   .infl0-section-label {
     color: var(--infl0-section-label);
   }
+  .infl0-settings-group-title {
+    @apply mb-2 block p-0 text-sm font-semibold uppercase;
+    color: var(--infl0-section-label);
+    letter-spacing: 0;
+  }
+  .infl0-settings-subgroup-title {
+    @apply mb-2 block px-0 text-xs font-semibold uppercase;
+    color: var(--infl0-section-label);
+    letter-spacing: 0;
+  }
+  .infl0-settings-group-hint {
+    @apply text-xs leading-snug;
+    color: var(--infl0-panel-text-muted);
+  }
+  .infl0-settings-fieldset {
+    @apply m-0 min-w-0 border-0 p-0;
+  }
+  .infl0-settings-option-list {
+    @apply space-y-2;
+  }
+  .infl0-settings-option-row {
+    @apply flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 transition-colors;
+    color: var(--infl0-panel-text);
+  }
+  .infl0-settings-option-row:hover,
+  .infl0-settings-option-row:focus-within {
+    border-color: var(--infl0-control-sel-border);
+  }
+  .infl0-settings-option-row--selected {
+    border-color: var(--infl0-control-sel-border);
+    background-color: var(--infl0-control-sel-bg);
+  }
   .infl0-app-footer {
     border-top: 1px solid var(--infl0-footer-separator);
     background-color: var(--infl0-app-bg);

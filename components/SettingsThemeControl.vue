@@ -41,22 +41,18 @@ function onSelectChoice(choice: ThemeChoice) {
 
 <template>
   <fieldset
-    class="space-y-5"
+    class="infl0-settings-fieldset space-y-5"
     data-testid="theme-control"
   >
-    <legend
-      class="infl0-section-label mb-3 block text-sm font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
-    >
+    <legend class="infl0-settings-group-title">
       {{ t('settingsDisplay.themeLabel') }}
     </legend>
-    <p class="infl0-panel-muted text-xs leading-snug">
+    <p class="infl0-settings-group-hint">
       {{ t('settingsDisplay.themeHint') }}
     </p>
 
-    <fieldset class="m-0 min-w-0 space-y-2 border-0 p-0">
-      <legend
-        class="infl0-section-label mb-2 block px-0 text-xs font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
-      >
+    <fieldset class="infl0-settings-fieldset space-y-2">
+      <legend class="infl0-settings-subgroup-title">
         {{ t('settingsDisplay.themePastelGroup') }}
       </legend>
       <div
@@ -84,10 +80,8 @@ function onSelectChoice(choice: ThemeChoice) {
       </div>
     </fieldset>
 
-    <fieldset class="m-0 min-w-0 space-y-2 border-0 p-0">
-      <legend
-        class="infl0-section-label mb-2 block px-0 text-xs font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
-      >
+    <fieldset class="infl0-settings-fieldset space-y-2">
+      <legend class="infl0-settings-subgroup-title">
         {{ t('settingsDisplay.themeWarmGroup') }}
       </legend>
       <div
@@ -115,10 +109,10 @@ function onSelectChoice(choice: ThemeChoice) {
       </div>
     </fieldset>
 
-    <div class="space-y-2 border-t border-[var(--infl0-panel-border)]/70 pt-4">
+    <div class="infl0-settings-option-list border-t border-[var(--infl0-panel-border)]/70 pt-4">
       <label
-        class="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 hover:border-[var(--infl0-control-sel-border)]"
-        :class="prefs.theme === 'high-contrast' ? 'border-[var(--infl0-control-sel-border)] bg-[var(--infl0-control-sel-bg)]' : ''"
+        class="infl0-settings-option-row"
+        :class="prefs.theme === 'high-contrast' ? 'infl0-settings-option-row--selected' : ''"
       >
         <input
           type="radio"
@@ -139,8 +133,8 @@ function onSelectChoice(choice: ThemeChoice) {
         </span>
       </label>
       <label
-        class="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 hover:border-[var(--infl0-control-sel-border)]"
-        :class="prefs.theme === 'custom' ? 'border-[var(--infl0-control-sel-border)] bg-[var(--infl0-control-sel-bg)]' : ''"
+        class="infl0-settings-option-row"
+        :class="prefs.theme === 'custom' ? 'infl0-settings-option-row--selected' : ''"
       >
         <input
           type="radio"

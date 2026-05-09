@@ -20,6 +20,11 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const {
+  active: themePreviewActive,
+  onFocusIn: onThemePreviewFocusIn,
+  onFocusOut: onThemePreviewFocusOut,
+} = useContainedFocusActive()
 
 const { weights, contentLengthPreference, resetWeights, formulaLines } = useTimelineScoreWeights()
 
@@ -94,32 +99,50 @@ function onOnboardingToggle(e: Event) {
           </p>
         </header>
 
-        <div class="infl0-panel space-y-6 p-5">
-          <SettingsDisplayThemeBlock />
+        <div class="space-y-4">
           <div
-            id="display-typography"
-            class="scroll-mt-28 border-t border-[var(--infl0-panel-border)] pt-5 lg:scroll-mt-24"
+            id="display-appearance"
+            class="infl0-panel scroll-mt-28 p-5 lg:scroll-mt-24"
           >
-            <p class="infl0-canvas-muted mb-6 text-xs leading-snug">
-              {{ t('settingsDisplay.typographyIntro') }}
-            </p>
-            <div class="space-y-0">
-              <div
-                v-for="(sid, i) in SETTINGS_DISPLAY_SURFACE_ORDER"
-                :id="displaySurfaceScrollId(sid)"
-                :key="sid"
-                class="scroll-mt-28 lg:scroll-mt-24"
-              >
-                <SettingsSurfaceDisplayGroup
-                  :surface-id="sid"
-                  :show-top-border="i > 0"
-                />
-              </div>
+            <SettingsAppearanceControl />
+          </div>
+
+          <div
+            id="display-palette"
+            class="infl0-panel scroll-mt-28 p-5 lg:scroll-mt-24"
+            @focusin="onThemePreviewFocusIn"
+            @focusout="onThemePreviewFocusOut"
+          >
+            <SettingsThemeControl />
+            <div v-show="themePreviewActive" class="pt-5">
+              <SettingsThemePreview />
             </div>
           </div>
+
+          <div
+            id="display-typography"
+            class="scroll-mt-28 lg:scroll-mt-24"
+          >
+            <p class="infl0-canvas-muted px-1 text-xs leading-snug">
+              {{ t('settingsDisplay.typographyIntro') }}
+            </p>
+          </div>
+
+          <div
+            v-for="sid in SETTINGS_DISPLAY_SURFACE_ORDER"
+            :id="displaySurfaceScrollId(sid)"
+            :key="sid"
+            class="infl0-panel scroll-mt-28 p-5 lg:scroll-mt-24"
+          >
+            <SettingsSurfaceDisplayGroup
+              :surface-id="sid"
+              :show-top-border="false"
+            />
+          </div>
+
           <div
             id="display-motion"
-            class="scroll-mt-28 border-t border-[var(--infl0-panel-border)] pt-5 lg:scroll-mt-24"
+            class="infl0-panel scroll-mt-28 p-5 lg:scroll-mt-24"
           >
             <SettingsMotionControl />
           </div>
@@ -188,7 +211,7 @@ function onOnboardingToggle(e: Event) {
           :key="g"
           class="infl0-panel mb-4 scroll-mt-28 p-5 lg:scroll-mt-24"
         >
-          <h3 class="infl0-section-label mb-4 text-sm font-semibold uppercase tracking-wide">
+          <h3 class="infl0-settings-group-title mb-4">
             {{ t(`settingsTimeline.groups.${g}`) }}
           </h3>
           <ul class="list-none space-y-6">
@@ -252,7 +275,7 @@ function onOnboardingToggle(e: Event) {
         </div>
 
         <div id="sorting-formula" class="infl0-panel mb-4 scroll-mt-28 p-5 lg:scroll-mt-24">
-          <h3 class="infl0-section-label mb-4 text-sm font-semibold uppercase tracking-wide">
+          <h3 class="infl0-settings-group-title mb-4">
             {{ t('settingsTimeline.formulaTitle') }}
           </h3>
           <p class="infl0-panel-muted mb-3 text-xs">

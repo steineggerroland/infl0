@@ -87,19 +87,21 @@ function resetEntireSurface() {
 </script>
 
 <template>
-  <div
+  <section
     :class="showTopBorder ? 'border-t border-[var(--infl0-panel-border)] pt-8' : ''"
     :data-testid="`surface-group-${surfaceId}`"
+    :aria-labelledby="`surface-group-title-${surfaceId}`"
     @focusin="onFocusIn"
     @focusout="onFocusOut"
   >
     <div class="mb-4">
       <h3
-        class="infl0-section-label mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
+        :id="`surface-group-title-${surfaceId}`"
+        class="infl0-settings-group-title"
       >
         {{ i18nSurface('heading') }}
       </h3>
-      <p class="infl0-panel-muted mb-3 mt-1 text-xs leading-snug">
+      <p class="infl0-settings-group-hint mb-3 mt-1">
         {{ i18nSurface('typographyHint') }}
       </p>
       <div class="flex flex-wrap items-center justify-end gap-2">
@@ -179,14 +181,12 @@ function resetEntireSurface() {
       class="mt-5 min-w-0 space-y-2 rounded-lg border border-[var(--infl0-panel-border)] bg-[var(--infl0-nested-surface)] p-3"
       :data-testid="`custom-colors-${surfaceId}`"
     >
-      <legend
-        class="infl0-section-label mb-2 block w-full text-xs font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
-      >
+      <legend class="infl0-settings-subgroup-title w-full">
         {{ t('settingsDisplay.customColors.perSurfaceTitle') }}
       </legend>
       <p
         :id="`custom-color-hint-${surfaceId}`"
-        class="infl0-panel-muted text-xs leading-snug"
+        class="infl0-settings-group-hint"
       >
         {{ i18nSurface('colorHint') }}
       </p>
@@ -233,7 +233,7 @@ function resetEntireSurface() {
       </p>
       <SettingsSurfacePreviewOne :surface-id="surfaceId" />
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped>

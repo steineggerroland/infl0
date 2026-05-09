@@ -25,29 +25,22 @@ function onSelect(mode: MotionMode) {
 </script>
 
 <template>
-  <div
-    class="space-y-3"
+  <fieldset
+    class="infl0-settings-fieldset space-y-3"
     data-testid="motion-control"
   >
-    <h3
-      class="infl0-section-label mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--infl0-panel-text)]"
-    >
+    <legend class="infl0-settings-group-title">
       {{ t('settingsDisplay.motionLabel') }}
-    </h3>
-    <p class="infl0-panel-muted text-xs leading-snug">
+    </legend>
+    <p class="infl0-settings-group-hint">
       {{ t('settingsDisplay.motionHint') }}
     </p>
-    <fieldset class="m-0 space-y-2 border-0 p-0">
-      <legend class="sr-only">{{ t('settingsDisplay.motionLabel') }}</legend>
-      <!--
-        Native radios share a `name` so arrows move between options; `legend`
-        is visually hidden because the visible label is the `h3` above.
-      -->
+    <div class="infl0-settings-option-list">
       <label
         v-for="m in MOTION_MODES"
         :key="m"
-        class="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 hover:border-[var(--infl0-control-sel-border)]"
-        :class="prefs.motion === m ? 'border-[var(--infl0-control-sel-border)] bg-[var(--infl0-control-sel-bg)]' : ''"
+        class="infl0-settings-option-row"
+        :class="prefs.motion === m ? 'infl0-settings-option-row--selected' : ''"
       >
         <input
           type="radio"
@@ -67,6 +60,6 @@ function onSelect(mode: MotionMode) {
           }}</span>
         </span>
       </label>
-    </fieldset>
-  </div>
+    </div>
+  </fieldset>
 </template>

@@ -23,6 +23,12 @@ import { reactive, ref } from 'vue'
 // Nuxt auto-imports we need to reach real module code in Vitest.
 vi.stubGlobal('definePageMeta', () => {})
 vi.stubGlobal('useI18n', () => vueUseI18n())
+vi.stubGlobal('useContainedFocusActive', () => ({
+  active: ref(true),
+  onFocusIn: vi.fn(),
+  onFocusOut: vi.fn(),
+  reveal: vi.fn(),
+}))
 
 // The page composes two data-layer composables. Both would hit `$fetch`
 // without a running Nuxt runtime; stub them to their public shape.
@@ -142,14 +148,14 @@ function mountPage() {
         // The Appearance subcomponents have their own component tests; here
         // we only care that the section renders around mount points for
         // them. Stubbing avoids pulling `useUiPrefs` through the tree.
-        SettingsDisplayThemeBlock: {
-          template: `
-            <div data-testid="display-theme-block-stub">
-              <div data-testid="appearance-control-stub" />
-              <div data-testid="theme-control-stub" />
-              <div data-testid="theme-preview-stub" />
-            </div>
-          `,
+        SettingsAppearanceControl: {
+          template: '<div data-testid="appearance-control-stub" />',
+        },
+        SettingsThemeControl: {
+          template: '<div data-testid="theme-control-stub" />',
+        },
+        SettingsThemePreview: {
+          template: '<div data-testid="theme-preview-stub" />',
         },
         SettingsMotionControl: {
           template: '<div data-testid="motion-control-stub" />',
@@ -183,7 +189,9 @@ describe('SettingsIndex page', () => {
     expect(heading.exists()).toBe(true)
     expect(heading.element.tagName.toLowerCase()).toBe('h2')
     expect(heading.text()).toBe('Display')
-    expect(wrapper.find('[data-testid="display-theme-block-stub"]').exists()).toBe(true)
+    expect(wrapper.find('#display-appearance.infl0-panel').exists()).toBe(true)
+    expect(wrapper.find('#display-palette.infl0-panel').exists()).toBe(true)
+    expect(wrapper.find('#display-motion.infl0-panel').exists()).toBe(true)
     expect(wrapper.find('[data-testid="theme-control-stub"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="theme-preview-stub"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="appearance-control-stub"]').exists()).toBe(true)
