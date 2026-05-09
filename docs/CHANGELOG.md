@@ -11,7 +11,15 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
-_No user-facing changes since v0.4.0 yet._
+### Changed
+
+- **Settings display preferences are easier to scan.** The `/settings`
+  **Display** section now uses separate panels for light/dark, colour palette,
+  each reading surface, and motion instead of one large mixed panel. Shared
+  settings group styles keep `fieldset`/`legend` and `h3` sections visually
+  aligned while preserving accessible form semantics. New Cucumber coverage
+  verifies that display choices, typeface/size, motion, and custom colours stay
+  saved after reload (`features/settings_display_preferences.feature`).
 
 ## [0.4.0] — 2026-05-02
 
