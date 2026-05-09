@@ -72,5 +72,8 @@
     "unplugin-auto-import": "^21.0.0",
     "vitest": "^4.0.0",
     "vue-tsc": "^3.2.0"
+  },
+  "overrides": {
+    "@hono/node-server": "^1.19.14"
   }
 }
