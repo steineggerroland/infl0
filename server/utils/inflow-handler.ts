@@ -97,7 +97,7 @@ function mapTimelineItem(row: {
   }
 }
 
-function queryShowRead(q: Record<string, unknown>): boolean {
+export function queryShowRead(q: Record<string, unknown>): boolean {
   const v = q.showRead
   if (v === true || v === 1) return true
   if (typeof v === 'string') {

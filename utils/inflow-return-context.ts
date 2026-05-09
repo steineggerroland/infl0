@@ -9,6 +9,34 @@
 export const INFLOW_RETURN_CONTEXT_STORAGE_KEY = 'infl0.inflow.returnContext.v1'
 export const INFLOW_RETURN_CONTEXT_VERSION = 1
 
+/** Same-tab SPA return from these routes should reopen the inflow cards (not reader start). */
+export const INFLOW_PRESERVE_READER_SESSION_KEY = 'infl0.inflow.preserveReaderSession.v1'
+
+export function inflowReturnRoutesPreserveReaderSession(path: string): boolean {
+  if (!path.startsWith('/')) return false
+  return path === '/feeds' || path === '/help' || path.startsWith('/settings')
+}
+
+export function markPreserveReaderSessionForReturn(): void {
+  if (!import.meta.client) return
+  try {
+    sessionStorage.setItem(INFLOW_PRESERVE_READER_SESSION_KEY, '1')
+  } catch {
+    /* quota / private mode */
+  }
+}
+
+export function consumePreserveReaderSession(): boolean {
+  if (!import.meta.client) return false
+  try {
+    const ok = sessionStorage.getItem(INFLOW_PRESERVE_READER_SESSION_KEY) === '1'
+    if (ok) sessionStorage.removeItem(INFLOW_PRESERVE_READER_SESSION_KEY)
+    return ok
+  } catch {
+    return false
+  }
+}
+
 export type InflowReturnAnchor = {
   type: 'article' | 'onboarding'
   id: string

@@ -13,9 +13,34 @@ Then('I should see the empty sources hint', async function () {
 When(
   'I add a source with address {string} and display name {string}',
   async function (address, displayName) {
-    await this.page.getByLabel('Source address').fill(address)
-    await this.page.getByLabel('Display name (optional)').fill(displayName)
-    await this.page.getByRole('button', { name: 'Save source' }).click()
+    await expect(this.page.getByTestId('feeds-add-fieldset')).toBeVisible({ timeout: 15_000 })
+
+    // Prefer `#feed-*` over `getByLabel`: Daisy label markup + i18n vary in how Chromium exposes names.
+    await this.page.locator('#feed-url-input').fill(address)
+    await this.page.locator('#feed-display-input').fill(displayName)
+
+    const responsePromise = this.page.waitForResponse(
+      (res) => {
+        if (res.request().method() !== 'POST') return false
+        try {
+          const path = new URL(res.url()).pathname.replace(/\/$/, '')
+          return path === '/api/feeds'
+        } catch {
+          return false
+        }
+      },
+      { timeout: 45_000 },
+    )
+
+    await this.page.locator('[data-testid="feeds-add-fieldset"] button[type="submit"]').click()
+
+    const postRes = await responsePromise
+    if (!postRes.ok()) {
+      const body = await postRes.text().catch(() => '')
+      throw new Error(`POST /api/feeds failed (${postRes.status()}): ${body}`)
+    }
+
+    await expect(this.page.getByTestId('feeds-add-error')).toHaveCount(0)
     await expect(this.page.getByTestId('feeds-source-list')).toBeVisible({ timeout: 20_000 })
   },
 )

@@ -17,6 +17,16 @@ Feature: Reader context stays stable
     When I jump to the last reader article
     Then the second reader article should be restored as my current reader article
 
+  Scenario: Returning from Help restores the inflow without reader start
+    Given I open the timeline
+    When I start reading
+    And I focus the second reader article
+    Then the URL should point to the second reader article
+    When I open the floating menu and go to Help
+    And I return to the timeline by opening home
+    Then I should not see the reader start screen
+    And the second reader article should be restored as my current reader article
+
   Scenario: Starting a fresh reader session begins at the current first article
     Given I open the timeline
     Then I should see the reader start screen
@@ -38,6 +48,16 @@ Feature: Reader context stays stable
 
   Scenario: The resume action is hidden without a return context
     When I open the timeline
+    Then I should see the reader start screen
+    And I should not see the resume reader action
+
+  Scenario: The resume action is hidden when the stored anchor is read but read articles are hidden
+    Given I open the timeline
+    When I start reading
+    And I focus the second reader article
+    When I mark the current reader article as read via the API
+    And read articles are hidden in my timeline view
+    When I reload the timeline
     Then I should see the reader start screen
     And I should not see the resume reader action
 

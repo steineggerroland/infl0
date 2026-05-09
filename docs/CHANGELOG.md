@@ -13,6 +13,16 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Reader session persists across Help / Settings / Feeds:** leaving `/` for those
+  routes while reading stores a same-tab flag so returning to `/` skips the reader
+  start screen and restores the last inflow anchor when possible (full reload
+  unchanged).
+
+- **Resume / restore without bogus fallback:** “Jump to last article” is hidden when
+  that anchor is filtered out as read while “hide read” is on; resume and restore
+  no longer scroll to an unrelated article via offset fallback (`GET
+  /api/me/articles/:articleId/resume-eligibility`).
+
 - **Dependabot** version updates on a **weekly** schedule for **npm** and **GitHub
   Actions** (`.github/dependabot.yml`), so dependency and workflow-action bumps land as
   reviewable PRs.
@@ -45,6 +55,11 @@ new entries accrue under **Unreleased**.
   saved after reload (`features/settings_display_preferences.feature`).
 
 ### Fixed
+
+- **BDD (Cucumber):** reader Help navigation uses the teleported header dropdown
+  (`features/steps/reader.steps.js`); add-source on `/feeds` uses stable field
+  selectors, waits for **`POST /api/feeds`**, and reports failed saves explicitly
+  (`features/steps/feeds.steps.js`).
 
 - **Settings hub / app chrome:** the burger menu control keeps a **square** tap target;
   on narrow viewports, **settings** section actions stay clear of the menu overlay

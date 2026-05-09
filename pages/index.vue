@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { OnboardingTopic, OnboardingCardCta } from '~/utils/onboarding-cards'
 import {
+    consumePreserveReaderSession,
     INFLOW_RETURN_CONTEXT_STORAGE_KEY,
+    inflowReturnRoutesPreserveReaderSession,
+    markPreserveReaderSessionForReturn,
     parseInflowReturnContext,
     serializeInflowReturnContext,
     type InflowReturnAnchor,
@@ -75,6 +78,8 @@ const inflowScrollEl = ref<HTMLElement | null>(null)
 const inflowStats = ref({ total: 0, unread: 0, newSinceLastReaderSession: 0 })
 const readerSessionStarted = ref(false)
 const readerStartReady = ref(false)
+/** Null until checked client-side: resume anchor visible under current show-read filter. */
+const resumeAnchorEligible = ref<boolean | null>(null)
 
 /** SSR: forward `Cookie` from the incoming request to internal API calls (plain `$fetch` does not). */
 const requestFetch = useRequestFetch()
@@ -143,6 +148,7 @@ async function loadInflowPage(reset: boolean) {
 async function retryInflow() {
     await loadInflowPage(true)
     await nextTick()
+    await refreshResumeEligibility()
     if (readerIsInteractive.value) {
         await fillInflowUntilScrollableOrDone()
     }
@@ -157,17 +163,6 @@ async function fillInflowUntilScrollableOrDone() {
         await nextTick()
     }
 }
-
-watch(showRead, () => {
-    void loadInflowPage(true).then(async () => {
-        await nextTick()
-        if (readerIsInteractive.value) {
-            await fillInflowUntilScrollableOrDone()
-            restoreAttempted.value = false
-            await restoreInflowContext()
-        }
-    })
-})
 
 await loadInflowPage(true)
 
@@ -243,7 +238,11 @@ const storedReturnContext = computed(() => {
         return null
     }
 })
-const canResumeReader = computed(() => storedReturnContext.value?.anchor.type === 'article')
+const canResumeReader = computed(
+    () =>
+        storedReturnContext.value?.anchor.type === 'article' &&
+        resumeAnchorEligible.value === true,
+)
 const showReaderStart = computed(
     () =>
         hasArticles.value &&
@@ -255,10 +254,47 @@ const showReaderStart = computed(
 )
 const readerIsInteractive = computed(() => readerSessionStarted.value || hasOnboarding.value)
 
+async function refreshResumeEligibility() {
+    if (!import.meta.client) return
+    const anchor = storedReturnContext.value?.anchor
+    if (!anchor || anchor.type !== 'article') {
+        resumeAnchorEligible.value = false
+        return
+    }
+    resumeAnchorEligible.value = null
+    try {
+        const res = await requestFetch<{ eligible: boolean }>(
+            `/api/me/articles/${encodeURIComponent(anchor.id)}/resume-eligibility`,
+            {
+                credentials: 'include',
+                query: showRead.value ? { showRead: '1' } : {},
+            },
+        )
+        resumeAnchorEligible.value = res.eligible
+    } catch {
+        resumeAnchorEligible.value = false
+    }
+}
+
+await refreshResumeEligibility()
+
+watch(showRead, () => {
+    void loadInflowPage(true).then(async () => {
+        await nextTick()
+        await refreshResumeEligibility()
+        if (readerIsInteractive.value) {
+            await fillInflowUntilScrollableOrDone()
+            restoreAttempted.value = false
+            await restoreInflowContext()
+        }
+    })
+})
+
 async function refreshAll() {
     await refreshFeeds()
     await loadInflowPage(true)
     await nextTick()
+    await refreshResumeEligibility()
     if (readerSessionStarted.value) {
         await fillInflowUntilScrollableOrDone()
     }
@@ -399,7 +435,10 @@ async function restoreInflowContext() {
             if (items.value.length === beforeCount) break
         }
 
-        if (targetIndex < 0 && stored) {
+        if (targetIndex < 0 && anchor.type === 'article') {
+            targetIndex = firstArticleIndex()
+        }
+        if (targetIndex < 0 && stored && anchor.type !== 'article') {
             targetIndex = fallbackIndexForStoredContext(stored.itemIndex, stored.articleOffset)
         }
         if (targetIndex < 0) return
@@ -449,10 +488,11 @@ async function resumeReader() {
         targetIndex = findAnchorIndex(stored.anchor)
         if (items.value.length === beforeCount) break
     }
-    if (targetIndex < 0 && stored) {
-        targetIndex = fallbackIndexForStoredContext(stored.itemIndex, stored.articleOffset)
+    if (targetIndex < 0) {
+        await startReaderAtIndex(firstArticleIndex())
+        return
     }
-    await startReaderAtIndex(targetIndex >= 0 ? targetIndex : firstArticleIndex())
+    await startReaderAtIndex(targetIndex)
 }
 
 function gotoNextCard(event: KeyboardEvent) {
@@ -509,11 +549,24 @@ defineShortcuts(
     { when: () => !anyModalOpen.value && readerIsInteractive.value },
 )
 
+onBeforeRouteLeave((to) => {
+    if (!readerSessionStarted.value) return true
+    if (inflowReturnRoutesPreserveReaderSession(to.path)) {
+        markPreserveReaderSessionForReturn()
+    }
+    return true
+})
+
 onMounted(async () => {
+    if (consumePreserveReaderSession()) {
+        readerSessionStarted.value = true
+    }
     readerStartReady.value = true
     await nextTick()
     if (hasOnboarding.value) {
         readerSessionStarted.value = true
+    }
+    if (readerSessionStarted.value || hasOnboarding.value) {
         await fillInflowUntilScrollableOrDone()
         await restoreInflowContext()
     }

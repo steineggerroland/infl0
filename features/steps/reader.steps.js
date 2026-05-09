@@ -194,6 +194,26 @@ When('I leave the app without starting the reader', async function () {
   await this.page.goto('/settings')
 })
 
+When('I open the floating menu and go to Help', async function () {
+  // Prefer structured selectors for `<details>`/`<summary>` + Daisy dropdown — Chromium’s
+  // role/name exposure for the chrome summary is not stable enough for `getByRole('button')`.
+  const menu = this.page.locator('body > header .dropdown.dropdown-end').first()
+  const summary = menu.locator('summary').first()
+  await expect(summary).toBeVisible({ timeout: 15_000 })
+  const isOpen = await menu.evaluate((el) => el instanceof HTMLDetailsElement && el.open)
+  if (!isOpen) {
+    await summary.click()
+  }
+  const helpLink = menu.locator('.dropdown-content a[href="/help"]').first()
+  await expect(helpLink).toBeVisible({ timeout: 10_000 })
+  await helpLink.click()
+  await expect(this.page).toHaveURL(/\/help(?:[?#].*)?$/u, { timeout: 15_000 })
+})
+
+When('I return to the timeline by opening home', async function () {
+  await this.page.goto('/')
+})
+
 When('I focus the {word} reader article', async function (ordinal) {
   const article = this.readerArticles?.[articleOrdinalIndex(ordinal)]
   if (!article) throw new Error(`No ${ordinal} reader article exists.`)
@@ -212,6 +232,21 @@ When('I flip the current reader article', async function () {
 
 When('I press the read-state shortcut', async function () {
   await this.page.keyboard.press('m')
+})
+
+When('I mark the current reader article as read via the API', async function () {
+  const articleId = this.currentReaderArticleId
+  if (!articleId) throw new Error('No current reader article is focused.')
+  await authedJsonFetch(this, `/api/me/articles/${encodeURIComponent(articleId)}/read-state`, {
+    method: 'PATCH',
+    body: JSON.stringify({ read: true }),
+  })
+})
+
+Given('read articles are hidden in my timeline view', async function () {
+  await this.page.evaluate(() => {
+    window.localStorage.setItem('infl0.timeline.showRead', '0')
+  })
 })
 
 Then('the URL should point to the {word} reader article', async function (ordinal) {
@@ -285,6 +320,10 @@ Then('no reading behaviour event should be stored for the current reader article
 
 Then('I should see the reader start screen', async function () {
   await expect(this.page.getByTestId('reader-start')).toBeVisible()
+})
+
+Then('I should not see the reader start screen', async function () {
+  await expect(this.page.getByTestId('reader-start')).toHaveCount(0)
 })
 
 Then('I should not see reader article cards', async function () {

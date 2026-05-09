@@ -28,7 +28,10 @@ This folder contains executable user-facing behavior specifications using Cucumb
 Covered in BDD today:
 
 - **`reader_return_context.feature`** — reader start, resume, URLs, read feedback,
-  read without behaviour tracking, read shortcut.
+  read without behaviour tracking, read shortcut; return from Help with home
+  navigation restores the reader without reader start (Help via floating menu);
+  resume hidden when the
+  stored anchor is read while “hide read articles” applies.
 - **`auth_registration_login.feature`** — register, sign-in, sign-out journeys.
 - **`settings_hub_navigation.feature`** — `/settings` deep links and a hub sidebar
   jump (wide viewport); not yet the narrow **Sections** drawer control.
