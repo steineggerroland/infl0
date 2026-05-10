@@ -203,6 +203,13 @@ function onOnboardingToggle(e: Event) {
           <p class="infl0-canvas-muted mt-1 text-sm">
             {{ t('settingsTimeline.intro') }}
           </p>
+          <p class="infl0-canvas-muted mt-2 text-sm leading-relaxed">
+            <NuxtLink
+              to="/feeds"
+              class="font-medium text-[var(--infl0-canvas-fg-muted)] underline decoration-dotted underline-offset-2 hover:text-[var(--infl0-canvas-fg)]"
+            >{{ t('feeds.title') }}</NuxtLink>
+            <span class="infl0-canvas-muted"> — {{ t('settingsIndex.sortingFeedsHint') }}</span>
+          </p>
         </header>
 
         <div

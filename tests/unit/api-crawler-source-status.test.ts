@@ -1,8 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createError } from 'h3'
+import { Prisma } from '~/generated/prisma/client'
 import handler from '../../server/api/crawler/source-status.post'
 import { prisma } from '../../server/utils/prisma'
 import { requireCrawlerAuth } from '../../server/utils/crawler-auth'
+import {
+  contractCrawlerPostBody,
+  crawlKeyForTkcHealth,
+} from '../fixtures/source-status-contract'
+import { TKC_SOURCE_HEALTH_STATUSES } from '../../utils/source-health-display'
 
 vi.mock('../../server/utils/crawler-auth', () => ({
   requireCrawlerAuth: vi.fn(),
@@ -52,7 +58,68 @@ describe('POST /api/crawler/source-status', () => {
     expect(prisma.sourceStatus.upsert).not.toHaveBeenCalled()
   })
 
-  it('upserts parsed payload', async () => {
+  it('returns 400 when body is null (not an object)', async () => {
+    vi.mocked(readBody).mockResolvedValueOnce(null)
+
+    await expect(handler(mockEvent())).rejects.toMatchObject({ statusCode: 400 })
+    expect(prisma.sourceStatus.upsert).not.toHaveBeenCalled()
+  })
+
+  it('returns 400 when body is an array', async () => {
+    vi.mocked(readBody).mockResolvedValueOnce([])
+
+    await expect(handler(mockEvent())).rejects.toMatchObject({ statusCode: 400 })
+    expect(prisma.sourceStatus.upsert).not.toHaveBeenCalled()
+  })
+
+  it('returns 400 when crawlKey is not a valid URL', async () => {
+    vi.mocked(readBody).mockResolvedValueOnce({ crawlKey: 'not-a-url' })
+
+    await expect(handler(mockEvent())).rejects.toMatchObject({ statusCode: 400 })
+    expect(prisma.sourceStatus.upsert).not.toHaveBeenCalled()
+  })
+
+  it('returns 400 when operatorAttention is not boolean', async () => {
+    vi.mocked(readBody).mockResolvedValueOnce({
+      crawlKey: 'https://example.com/bool.xml',
+      operatorAttention: 'yes',
+    })
+
+    await expect(handler(mockEvent())).rejects.toMatchObject({ statusCode: 400 })
+    expect(prisma.sourceStatus.upsert).not.toHaveBeenCalled()
+  })
+
+  it('returns 400 when crawlProcessedCount is not parseable as integer', async () => {
+    vi.mocked(readBody).mockResolvedValueOnce({
+      crawlKey: 'https://example.com/int.xml',
+      crawlProcessedCount: 'not-a-number',
+    })
+
+    await expect(handler(mockEvent())).rejects.toMatchObject({ statusCode: 400 })
+    expect(prisma.sourceStatus.upsert).not.toHaveBeenCalled()
+  })
+
+  it('returns 400 when lastCrawlFinishedAt is not a parseable date', async () => {
+    vi.mocked(readBody).mockResolvedValueOnce({
+      crawlKey: 'https://example.com/date.xml',
+      lastCrawlFinishedAt: 'not-a-date',
+    })
+
+    await expect(handler(mockEvent())).rejects.toMatchObject({ statusCode: 400 })
+    expect(prisma.sourceStatus.upsert).not.toHaveBeenCalled()
+  })
+
+  it('returns 400 when sourceHealthJson is a string', async () => {
+    vi.mocked(readBody).mockResolvedValueOnce({
+      crawlKey: 'https://example.com/json.xml',
+      sourceHealthJson: 'nope',
+    })
+
+    await expect(handler(mockEvent())).rejects.toMatchObject({ statusCode: 400 })
+    expect(prisma.sourceStatus.upsert).not.toHaveBeenCalled()
+  })
+
+  it('upserts parsed payload (happy path)', async () => {
     vi.mocked(readBody).mockResolvedValueOnce({
       crawlKey: 'https://example.com/f.xml',
       sourceHealthStatus: 'healthy',
@@ -98,4 +165,76 @@ describe('POST /api/crawler/source-status', () => {
       update: { lastCrawlStatus: 'ok' },
     })
   })
+
+  it('accepts snake_case aliases (matches crawler payloads)', async () => {
+    vi.mocked(readBody).mockResolvedValueOnce({
+      crawl_key: 'https://example.com/snake.xml',
+      source_health_status: 'blocked',
+      last_crawl_status: 'failed',
+      crawl_candidate_count: '5',
+    })
+
+    await expect(handler(mockEvent())).resolves.toEqual({
+      ok: true,
+      crawlKey: 'https://example.com/snake.xml',
+    })
+
+    expect(prisma.sourceStatus.upsert).toHaveBeenCalledWith({
+      where: { crawlKey: 'https://example.com/snake.xml' },
+      create: expect.objectContaining({
+        crawlKey: 'https://example.com/snake.xml',
+        sourceHealthStatus: 'blocked',
+        lastCrawlStatus: 'failed',
+        crawlCandidateCount: 5,
+      }),
+      update: expect.objectContaining({
+        sourceHealthStatus: 'blocked',
+        lastCrawlStatus: 'failed',
+        crawlCandidateCount: 5,
+      }),
+    })
+  })
+
+  it('writes explicit null for nullable JSON with Prisma.JsonNull', async () => {
+    vi.mocked(readBody).mockResolvedValueOnce({
+      crawlKey: 'https://example.com/clear-json.xml',
+      sourceHealthJson: null,
+    })
+
+    await handler(mockEvent())
+
+    expect(prisma.sourceStatus.upsert).toHaveBeenCalledWith({
+      where: { crawlKey: 'https://example.com/clear-json.xml' },
+      create: expect.objectContaining({
+        crawlKey: 'https://example.com/clear-json.xml',
+        sourceHealthJson: Prisma.JsonNull,
+      }),
+      update: expect.objectContaining({
+        sourceHealthJson: Prisma.JsonNull,
+      }),
+    })
+  })
+
+  it.each(TKC_SOURCE_HEALTH_STATUSES)(
+    'accepts TKC contract sourceHealthStatus %s',
+    async (health) => {
+      const body = contractCrawlerPostBody(health)
+      vi.mocked(readBody).mockResolvedValueOnce(body)
+
+      await expect(handler(mockEvent())).resolves.toEqual({
+        ok: true,
+        crawlKey: crawlKeyForTkcHealth(health),
+      })
+
+      expect(prisma.sourceStatus.upsert).toHaveBeenCalledWith({
+        where: { crawlKey: crawlKeyForTkcHealth(health) },
+        create: expect.objectContaining({
+          sourceHealthStatus: health,
+        }),
+        update: expect.objectContaining({
+          sourceHealthStatus: health,
+        }),
+      })
+    },
+  )
 })

@@ -46,6 +46,8 @@ model UserFeed {
   crawlKey     String   @map("crawl_key")
   displayTitle String?  @map("display_title")
   active       Boolean  @default(true)
+  /// Explicit per-source preference (-1..+1, 0.25 steps); added to ranking score.
+  userPreferenceWeight Float @default(0) @map("user_preference_weight")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 

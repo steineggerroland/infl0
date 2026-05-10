@@ -1,8 +1,11 @@
 import { TIMELINE_SCORE_FACTOR_DEFS, type TimelineScoreFactorId } from './timeline-score-factors'
 import type { NormalizedTimelineFeatures } from './timeline-score-normalize'
 
+/** Slider-backed factors plus explicit per-source preference shown on the dashboard only. */
+export type FactorRowId = TimelineScoreFactorId | 'source_preference'
+
 export type FactorContributionRow = {
-  id: TimelineScoreFactorId
+  id: FactorRowId
   normalized: number
   weight: number
   contribution: number

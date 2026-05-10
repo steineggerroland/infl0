@@ -69,14 +69,18 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
+  // Includes paused (`active = false`) subscriptions so /feeds can render the
+  // matching health row + a Resume control.
   const feeds = await prisma.userFeed.findMany({
-    where: { userId, active: true },
+    where: { userId },
     orderBy: { createdAt: 'asc' },
     select: {
       id: true,
       feedUrl: true,
       crawlKey: true,
       displayTitle: true,
+      active: true,
+      userPreferenceWeight: true,
     },
   })
 
@@ -97,6 +101,8 @@ export default defineEventHandler(async (event) => {
         feedUrl: f.feedUrl,
         crawlKey: f.crawlKey,
         displayTitle: f.displayTitle,
+        active: f.active,
+        userPreferenceWeight: f.userPreferenceWeight,
       },
       latest: byKey.has(f.crawlKey) ? serializeStatus(byKey.get(f.crawlKey)!) : null,
     })),

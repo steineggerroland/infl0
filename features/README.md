@@ -37,8 +37,12 @@ Covered in BDD today:
   jump (wide viewport); not yet the narrow **Sections** drawer control.
 - **`settings_tracking_and_personalization.feature`** — `#tracking` affordance and
   one toggle flip; **`/settings/personalization`** title + algorithm snapshot heading.
-- **`feeds_sources.feature`** — add a source from `/feeds`, list row, remove, empty
-  state again.
+- **`feeds_sources.feature`** — add a source from `/feeds`, list heading + row, remove,
+  empty state again; **no snapshot** row shows `no_snapshot` and expands to the
+  “no status yet” copy (EN locale); **pause / resume** toggles `data-active` on the
+  row; **`@crawler`** scenarios assert `data-source-health` from TopicKnowledgeCrawler
+  (`needs_setup`) and user-facing expanded label for **`healthy`** (`All good`) when
+  `NUXT_CRAWLER_API_KEY` is available (merged `.env.e2e`).
 
 Still sensible follow-ups:
 
