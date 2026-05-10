@@ -38,6 +38,7 @@ import { recomputeTimelineScoresForUser } from '../../server/utils/recompute-tim
 import { getRouterParam, readBody } from 'h3'
 
 const VALID_ID = '11111111-1111-4111-8111-111111111111'
+const OWNED_CRAWL_KEY = 'https://example.com/feed.xml'
 function ev() { return {} as never }
 
 describe('PATCH /api/feeds/:id/preference', () => {
@@ -82,19 +83,28 @@ describe('PATCH /api/feeds/:id/preference', () => {
     vi.mocked(getSessionUserId).mockResolvedValue('u1')
     vi.mocked(getRouterParam).mockReturnValue(VALID_ID)
     vi.mocked(readBody).mockResolvedValue({ value: 0.75 })
-    vi.mocked(prisma.userFeed.findFirst).mockResolvedValue({ id: VALID_ID } as never)
+    vi.mocked(prisma.userFeed.findFirst).mockResolvedValue({
+      id: VALID_ID,
+      crawlKey: OWNED_CRAWL_KEY,
+    } as never)
     vi.mocked(prisma.userFeed.update).mockResolvedValue({
       id: VALID_ID,
       userPreferenceWeight: 0.75,
     } as never)
 
     const res = await handler(ev())
+    expect(prisma.userFeed.findFirst).toHaveBeenCalledWith({
+      where: { id: VALID_ID, userId: 'u1' },
+      select: { id: true, crawlKey: true },
+    })
     expect(prisma.userFeed.update).toHaveBeenCalledWith({
       where: { id: VALID_ID },
       data: { userPreferenceWeight: 0.75 },
       select: { id: true, userPreferenceWeight: true },
     })
-    expect(recomputeTimelineScoresForUser).toHaveBeenCalledWith(prisma, 'u1')
+    expect(recomputeTimelineScoresForUser).toHaveBeenCalledWith(prisma, 'u1', {
+      crawlKeys: [OWNED_CRAWL_KEY],
+    })
     expect(res).toEqual({ feedId: VALID_ID, userPreferenceWeight: 0.75 })
   })
 })

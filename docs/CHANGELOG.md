@@ -55,8 +55,9 @@ new entries accrue under **Unreleased**.
 
 - **Inflow share + read history per source:** new **`GET /api/me/feed-stats`**
   returns one row per active *and* paused subscription with
-  `inflowCount` / `readCount` / `unreadCount` / `sharePercent` / `lastReadAt`.
-  `/feeds` shows compact figures via DaisyUI tooltips so users can spot
+  `inflowCount` / `readCount` / `unreadCount` / `sharePercent` / `lastReadAt`
+  (counts aggregated in PostgreSQL per `crawl_key`, not by loading every timeline
+  row in Node). `/feeds` shows compact figures via DaisyUI tooltips so users can spot
   sources that dominate or are under-represented.
 
 - **`InfoPopover` mobile fallback:** the popover anchors to its trigger
@@ -77,7 +78,8 @@ new entries accrue under **Unreleased**.
 - **Explicit per-source weighting (steers the inflow):** new column
   **`UserFeed.userPreferenceWeight`** (`-1 … +1`, `0.25` steps) and
   **`PATCH /api/feeds/:id/preference`** which validates the value, stores it,
-  and immediately re-runs `recomputeTimelineScoresForUser`. The weight is added
+  and immediately re-runs **`recomputeTimelineScoresForUser` scoped to that feed’s
+  `crawlKey`** (only articles from that source change rank). The weight is added
   to `rank_score` as `pref × SOURCE_PREFERENCE_BONUS` (`0.5`) so a `+1` rating
   bumps articles from that source by **0.5** and `-1` subtracts the same — a
   noticeable nudge that doesn't drown out freshness or content signals. The
@@ -110,6 +112,12 @@ new entries accrue under **Unreleased**.
   reviewable PRs.
 
 ### Changed
+
+- **Performance (review follow-up):** `PATCH /api/feeds/:id/preference` runs
+  **`recomputeTimelineScoresForUser` only for that subscription’s `crawlKey`**
+  (the preference bonus affects only articles from that source, not the whole
+  timeline). **`GET /api/me/feed-stats`** uses one grouped SQL query over
+  `user_timeline_items` × `articles` instead of loading every row into Node.
 
 - **Why at the top?** (`/settings/personalization`): the per-source preference
   from **Sources** (« How much from this source? ») is now a **dedicated factor

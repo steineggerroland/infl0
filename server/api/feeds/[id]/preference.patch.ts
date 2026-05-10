@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
 
   const owned = await prisma.userFeed.findFirst({
     where: { id, userId },
-    select: { id: true },
+    select: { id: true, crawlKey: true },
   })
   if (!owned) {
     throw createError({ statusCode: 404, statusMessage: 'Feed not found' })
@@ -52,7 +52,9 @@ export default defineEventHandler(async (event) => {
     select: { id: true, userPreferenceWeight: true },
   })
 
-  await recomputeTimelineScoresForUser(prisma, userId)
+  await recomputeTimelineScoresForUser(prisma, userId, {
+    crawlKeys: [owned.crawlKey],
+  })
 
   return {
     feedId: updated.id,

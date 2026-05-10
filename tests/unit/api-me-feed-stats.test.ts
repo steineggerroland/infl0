@@ -10,7 +10,7 @@ vi.mock('../../server/utils/auth-session', () => ({
 vi.mock('../../server/utils/prisma', () => ({
   prisma: {
     userFeed: { findMany: vi.fn() },
-    userTimelineItem: { findMany: vi.fn() },
+    $queryRaw: vi.fn(),
   },
 }))
 
@@ -32,7 +32,7 @@ describe('GET /api/me/feed-stats', () => {
 
     const res = await handler(event())
     expect(res).toEqual({ items: [], totalInflow: 0 })
-    expect(prisma.userTimelineItem.findMany).not.toHaveBeenCalled()
+    expect(prisma.$queryRaw).not.toHaveBeenCalled()
   })
 
   it('aggregates inflow share + read history per crawl key', async () => {
@@ -43,17 +43,22 @@ describe('GET /api/me/feed-stats', () => {
       { id: 'feed-c', crawlKey: 'https://c.com/x.xml' },
     ] as never)
 
-    const ago = new Date('2026-04-30T10:00:00.000Z')
     const recent = new Date('2026-05-08T18:00:00.000Z')
-    vi.mocked(prisma.userTimelineItem.findMany).mockResolvedValue([
-      // feed-a: 4 inflow, 2 read (one earlier, one later)
-      { readAt: ago, article: { crawlKey: 'https://a.com/x.xml' } },
-      { readAt: recent, article: { crawlKey: 'https://a.com/x.xml' } },
-      { readAt: null, article: { crawlKey: 'https://a.com/x.xml' } },
-      { readAt: null, article: { crawlKey: 'https://a.com/x.xml' } },
-      // feed-b: 1 inflow, never read
-      { readAt: null, article: { crawlKey: 'https://b.com/x.xml' } },
-      // feed-c: not in inflow yet
+    vi.mocked(prisma.$queryRaw).mockResolvedValue([
+      {
+        crawlKey: 'https://a.com/x.xml',
+        inflowCount: 4,
+        readCount: 2,
+        unreadCount: 2,
+        lastReadAt: recent,
+      },
+      {
+        crawlKey: 'https://b.com/x.xml',
+        inflowCount: 1,
+        readCount: 0,
+        unreadCount: 1,
+        lastReadAt: null,
+      },
     ] as never)
 
     const res = await handler(event())
@@ -94,10 +99,28 @@ describe('GET /api/me/feed-stats', () => {
       { id: 'feed-b', crawlKey: 'https://b.com/x.xml' },
       { id: 'feed-c', crawlKey: 'https://c.com/x.xml' },
     ] as never)
-    vi.mocked(prisma.userTimelineItem.findMany).mockResolvedValue([
-      { readAt: null, article: { crawlKey: 'https://a.com/x.xml' } },
-      { readAt: null, article: { crawlKey: 'https://b.com/x.xml' } },
-      { readAt: null, article: { crawlKey: 'https://c.com/x.xml' } },
+    vi.mocked(prisma.$queryRaw).mockResolvedValue([
+      {
+        crawlKey: 'https://a.com/x.xml',
+        inflowCount: 1,
+        readCount: 0,
+        unreadCount: 1,
+        lastReadAt: null,
+      },
+      {
+        crawlKey: 'https://b.com/x.xml',
+        inflowCount: 1,
+        readCount: 0,
+        unreadCount: 1,
+        lastReadAt: null,
+      },
+      {
+        crawlKey: 'https://c.com/x.xml',
+        inflowCount: 1,
+        readCount: 0,
+        unreadCount: 1,
+        lastReadAt: null,
+      },
     ] as never)
 
     const res = await handler(event())

@@ -68,6 +68,21 @@ describe('recomputeTimelineScoresForUser — SOURCE_PREFERENCE_BONUS integration
     expect(minus.captured[0]!.rankScore).toBeCloseTo(baseScore - SOURCE_PREFERENCE_BONUS, 6)
   })
 
+  it('passes crawlKeys into findMany when rescoping after a source preference change', async () => {
+    const { prisma } = makePrismaMock({ userPreferenceWeight: 0 })
+    await recomputeTimelineScoresForUser(prisma, 'u1', {
+      crawlKeys: ['https://a.com/x.xml'],
+    })
+    expect(prisma.userTimelineItem.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          userId: 'u1',
+          article: { crawlKey: { in: ['https://a.com/x.xml'] } },
+        },
+      }),
+    )
+  })
+
   it('intermediate 0.25 steps scale linearly between neutral and ±1', async () => {
     const neutral = makePrismaMock({ userPreferenceWeight: 0 })
     await recomputeTimelineScoresForUser(neutral.prisma, 'u1')

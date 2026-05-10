@@ -57,9 +57,19 @@ function rowToArticleScoreInput(
 
 const UPDATE_CHUNK = 80
 
+export type RecomputeTimelineScoresOptions = {
+  /**
+   * When set, only timeline items whose article `crawlKey` is in this list are
+   * rescored. Use after a per-feed preference change — the bonus term only
+   * applies per source, so other rows are unchanged.
+   */
+  crawlKeys?: string[]
+}
+
 export async function recomputeTimelineScoresForUser(
   db: PrismaClient,
   userId: string,
+  options?: RecomputeTimelineScoresOptions,
 ): Promise<{ updated: number }> {
   const user = await db.user.findUnique({
     where: { id: userId },
@@ -67,12 +77,23 @@ export async function recomputeTimelineScoresForUser(
   })
   if (!user) return { updated: 0 }
 
+  const crawlKeysFilter =
+    options?.crawlKeys?.map((k) => k.trim()).filter((k) => k.length > 0) ?? undefined
+  if (crawlKeysFilter !== undefined && crawlKeysFilter.length === 0) {
+    return { updated: 0 }
+  }
+
   const { weights, contentLengthPreference } = resolveTimelineScorePrefs(user.timelineScorePrefs)
   const nowMs = Date.now()
   const scoredAt = new Date()
 
+  const itemsWhere =
+    crawlKeysFilter != null && crawlKeysFilter.length > 0
+      ? { userId, article: { crawlKey: { in: crawlKeysFilter } } }
+      : { userId }
+
   const items = await db.userTimelineItem.findMany({
-    where: { userId },
+    where: itemsWhere,
     select: {
       id: true,
       insertedAt: true,
