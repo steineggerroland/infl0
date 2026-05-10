@@ -47,6 +47,7 @@
   "settingsIndex": {
     "title": "Einstellungen",
     "intro": "Hier passt du an, wie infl0 für dich aussieht und wie deine Timeline sortiert wird.",
+    "sortingFeedsHint": "Diese Regler wirken global für jeden Artikel. Zusätzlich kannst du einzelne Quellen unter Quellen mit „Wie viel von dieser Quelle?“ nach oben oder unten schieben — das wirkt additiv zu diesen Reglern.",
     "trackingHeading": "Leseverhalten auswerten",
     "trackingIntro": "Standardmäßig aus. Du entscheidest, ob wir dein Leseverhalten für die Sortierung nutzen dürfen. Du kannst jederzeit wieder abschalten – dann werden keine neuen Daten mehr gespeichert.",
     "trackingLabel": "Leseverhalten für bessere Sortierung nutzen",
@@ -174,10 +175,10 @@
   },
   "settingsPersonalization": {
     "title": "Warum oben?",
-    "intro": "Hier siehst du in einfacher Sprache, warum deine Timeline so sortiert ist. Öffne einen Artikel und sieh, was ihn hoch- oder runterzieht.",
+    "intro": "Hier siehst du in einfacher Sprache, warum deine Timeline so sortiert ist. Öffne einen Artikel und sieh, was ihn hoch- oder runterzieht. Sortierungs-Regler und die Einstellung pro Quelle greifen zusammen: die Regler formen jedes Signal global; unter „Wie viel von dieser Quelle?“ in den Quellen kannst du eine einzelne Quelle zusätzlich stärken oder dämpfen.",
     "generatedAt": "Stand",
     "algorithmTitle": "So wird deine Timeline gerade sortiert",
-    "algorithmBody": "Jeder Artikel bekommt Punkte aus mehreren Signalen. Neuere Artikel und dein Leseverhalten können den Wert erhöhen oder senken. Quellen, Kategorien und Schlagwörter werden zusammen gewichtet, damit kein Bereich alles dominiert.",
+    "algorithmBody": "Jeder Artikel bekommt Punkte aus mehreren Signalen. Neuere Artikel und dein Leseverhalten können den Wert erhöhen oder senken. Quellen, Kategorien und Schlagwörter werden zusammen gewichtet, damit kein Bereich alles dominiert. Der gespeicherte Score ist die gewichtete Summe der Faktoren unten plus die explizite Quellen-Gewichtung aus den Quellen („Wie viel von dieser Quelle?“).",
     "priorLabel": "Startwert für neue Themen",
     "blendLabel": "So werden die Anteile gemischt",
     "timelineHeading": "Deine Timeline (Vorschau)",
@@ -204,6 +205,9 @@
     "rankDelta": "Änderung",
     "colNormalizedSimple": "Stärke",
     "colWeightSimple": "Wichtigkeit",
+    "sourcePreferenceWeightEmDash": "—",
+    "feedsLinkPrefix": "Die Gewichtung pro Quelle stellst du auf der Seite ",
+    "feedsLinkSuffix": " ein oder änderst sie dort.",
     "colContributionSimple": "Einfluss",
     "sourceLabel": "Quelle:",
     "feedbackLabel": "Hilfreich / nicht hilfreich Klicks:",
@@ -282,6 +286,10 @@
       "engagement_negative": {
         "label": "Was du lieber überspringst",
         "hint": "Zieht Artikel nach unten, wenn du ähnliche Inhalte häufig wegklickst. Die Stärke bestimmt, wie viel abgezogen wird."
+      },
+      "source_preference": {
+        "label": "Ausdrückliche Quellen-Gewichtung",
+        "hint": "Unter Quellen → „Wie viel von dieser Quelle?“. Addiert Präferenz × festen Bonus zu den gewichteten Signalen darüber — unabhängig von den Sortierungs-Reglern hier."
       }
     }
   },
@@ -364,8 +372,103 @@
     "errorSources": "Quellen konnten nicht geladen werden",
     "errorSaveSource": "Quelle konnte nicht gespeichert werden",
     "errorRemoveSource": "Quelle konnte nicht entfernt werden",
+    "errorHealth": "Quellen-Gesundheit konnte nicht geladen werden",
+    "errorTogglePause": "Pause konnte nicht geändert werden",
     "toastSourceSaved": "Quelle gespeichert",
-    "toastSourceRemoved": "Quelle entfernt"
+    "toastSourceRemoved": "Quelle entfernt",
+    "toastSourcePaused": "Quelle pausiert",
+    "toastSourceResumed": "Quelle fortgesetzt",
+    "openSource": "Quelle öffnen",
+    "openSourceAria": "Quelle in neuem Tab öffnen: {url}",
+    "copySource": "URL kopieren",
+    "copySourceDone": "Kopiert",
+    "copySourceAria": "Adresse der Quelle in die Zwischenablage kopieren",
+    "errorCopyUrl": "URL konnte nicht kopiert werden",
+    "health": {
+      "listNote": "Wenn wir einen Status zu einer Quelle haben, erscheint er hier. So siehst du, ob eine Quelle funktioniert und wie oft sie aktualisiert wird.",
+      "noSnapshot": "Noch kein Status — nach dem ersten Abruf erscheint hier mehr.",
+      "healthUnknown": "Kein Status verfügbar",
+      "attentionGeneric": "Diese Quelle sollte geprüft werden.",
+      "valueRaw": "{value}",
+      "lastCheckLine": "Letzter Abruf {when}",
+      "nextCheckLine": "Nächster Abruf {when}",
+      "errorIntro": "Letzte Fehlermeldung:",
+      "attentionBanner": {
+        "one": "1 Quelle braucht Aufmerksamkeit.",
+        "many": "{count} Quellen brauchen Aufmerksamkeit."
+      },
+      "help": {
+        "pending": {
+          "what": "Wir haben diese Quelle noch nicht abgerufen.",
+          "action": "Nichts zu tun — wir starten beim nächsten geplanten Abruf."
+        },
+        "needs_setup": {
+          "what": "Wir analysieren diese Quelle und bereiten den ersten Abruf vor.",
+          "action": "Du musst nichts tun — sobald die Vorbereitung fertig ist, geht es automatisch weiter."
+        },
+        "quiet": {
+          "what": "Wir rufen diese Quelle ab, sie hatte zuletzt aber keine neuen Artikel.",
+          "action": "Nichts zu tun."
+        },
+        "degraded": {
+          "what": "Einige Artikel konnten zuletzt nicht geladen werden.",
+          "action": "Schau in ein paar Stunden noch einmal vorbei. Bleibt es so, melde dich bitte beim Support."
+        },
+        "failing": {
+          "what": "Der letzte Abruf hat nicht geklappt. Wir versuchen es weiter.",
+          "action": "Du kannst diese Quelle pausieren oder durch eine andere ersetzen."
+        },
+        "blocked": {
+          "what": "Der Anbieter blockt uns gerade.",
+          "action": "Du musst nichts tun — wir versuchen es später wieder."
+        },
+        "paused": {
+          "what": "Der automatische Abruf ist derzeit pausiert.",
+          "action": "Setze den Abruf fort, sobald du wieder Inhalte willst."
+        }
+      },
+      "actions": {
+        "pause": "Pausieren",
+        "resume": "Fortsetzen",
+        "pauseAria": "Abruf für diese Quelle pausieren",
+        "resumeAria": "Abruf für diese Quelle fortsetzen"
+      },
+      "stats": {
+        "share": "Anteil im Inflow",
+        "shareValue": "rund {percent} %",
+        "shareTooltip": "Anteil der Artikel in deinem Inflow, die aus dieser Quelle stammen.",
+        "readOf": "{read} von {total} gelesen",
+        "readTooltip": "Wie viele Artikel dieser Quelle aus deinem Inflow du schon geöffnet hast.",
+        "lastRead": "zuletzt gelesen {when}",
+        "noInflow": "Noch keine Artikel im Inflow."
+      },
+      "weighting": {
+        "label": "Wie viel von dieser Quelle?",
+        "hint": "Mehr davon zieht Artikel dieser Quelle in deinem Inflow nach oben. Weniger davon nach unten. Wirkung beim nächsten Inflow-Refresh.",
+        "hintTriggerAria": "Wie wirkt das Quellengewicht?",
+        "lessLabel": "Weniger",
+        "neutralLabel": "Passt",
+        "moreLabel": "Mehr",
+        "valueAria": "Quellengewicht: {value} (Bereich −1 bis +1, Schritte 0,25)",
+        "savedToast": "Quelle gewichtet — wirkt im nächsten Inflow-Refresh.",
+        "errorToast": "Quellengewicht konnte nicht gespeichert werden.",
+        "currentBadge": {
+          "more": "+{amount}",
+          "less": "−{amount}",
+          "fits": "Passt"
+        }
+      },
+      "values": {
+        "pending": "Wartet auf die erste Aktualisierung",
+        "needs_setup": "Wird vorbereitet",
+        "healthy": "Alles in Ordnung",
+        "quiet": "Gerade keine neuen Artikel",
+        "degraded": "Teilweise beeinträchtigt",
+        "failing": "Funktioniert derzeit nicht richtig",
+        "blocked": "Vom Anbieter vorübergehend blockiert",
+        "paused": "Pausiert"
+      }
+    }
   },
   "login": {
     "title": "infl0",
@@ -505,8 +608,8 @@
       },
       "howRanking": {
         "title": "Wie wird meine Timeline sortiert?",
-        "simple": "Jeder Artikel bekommt Punkte. Wichtig sind unter anderem: wie neu er ist und wie sehr er zu deinen Interessen passt. Du kannst die Gewichtung selbst anpassen unter \"Sortierung anpassen\".",
-        "details": "Jedes Signal wird pro Artikel auf einen Wert zwischen 0 und 1 gebracht. Die Punktzahl ist die Summe aus Signal × (Gewicht ÷ 100). Fehlende Daten zählen als 0. Für die Artikellänge gibt es einen eigenen Regler (kürzer ↔ länger). Unter \"Warum oben?\" siehst du pro Artikel, welche Signale besonders beigetragen haben."
+        "simple": "Jeder Artikel bekommt Punkte. Wichtig sind unter anderem: wie neu er ist und wie sehr er zu deinen Interessen passt. Die globalen Regler findest du unter „Sortierung anpassen“. Zusätzlich kannst du jede Quelle einzeln unter „Quellen“ mit „Wie viel von dieser Quelle?“ stärken oder absenken.",
+        "details": "Jedes Signal wird pro Artikel auf einen Wert zwischen 0 und 1 gebracht. Die Punktzahl ist die Summe aus Signal × (Gewicht ÷ 100). Fehlende Daten zählen als 0. Für die Artikellänge gibt es einen eigenen Regler (kürzer ↔ länger). Zu dieser Summe kommt optional ein fester Zusatz pro Quelle hinzu: die Einstellung „Wie viel von dieser Quelle?“ unter Quellen (nicht dasselbe wie die Sortierungs-Regler). Unter „Warum oben?“ siehst du alle Faktoren inklusive dieser Zeile, wenn sie für den Artikel gilt."
       },
       "privacyChoices": {
         "title": "Kann ich die Personalisierung wieder abschalten?",

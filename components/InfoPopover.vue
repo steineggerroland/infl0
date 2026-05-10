@@ -39,8 +39,65 @@ const trigger = ref<HTMLButtonElement | null>(null)
 const internalPanelId = useId()
 const panelIdValue = computed(() => props.panelId ?? internalPanelId)
 
-function toggle() {
-    open.value = !open.value
+/**
+ * Resolved alignment used at render time. We start from the consumer-provided
+ * preference and may flip it on `open` if the trigger is too close to the
+ * viewport edge for the panel to fit (e.g. a trigger near the right edge of
+ * a phone viewport with a default `start` alignment would render the panel
+ * off-screen, forcing horizontal scrolling).
+ */
+const resolvedAlign = ref<'start' | 'end' | 'center'>(props.align ?? 'start')
+
+watch(
+    () => props.align,
+    (next) => {
+        // Keep the resolved value in sync with prop changes from the consumer
+        // while the popover is closed. While it's open we leave the chosen
+        // alignment in place to avoid the panel jumping mid-interaction.
+        if (!open.value) {
+            resolvedAlign.value = next ?? 'start'
+        }
+    },
+)
+
+/**
+ * Pick the alignment that keeps the panel within the viewport, preferring
+ * the consumer's choice when it fits. Falls back to the preferred side as a
+ * last resort if neither side has enough room (the width clamp on the panel
+ * already protects against overflow in that case).
+ */
+function pickFittingAlignment(preferred: 'start' | 'end' | 'center'): 'start' | 'end' | 'center' {
+    if (preferred === 'center') return 'center'
+    const triggerEl = trigger.value
+    if (!triggerEl || typeof window === 'undefined') return preferred
+    const rect = triggerEl.getBoundingClientRect()
+    const viewportWidth = window.innerWidth
+    // Mirrors the panel's Tailwind clamp: `w-[min(20rem, calc(100vw - 2rem))]`.
+    const panelMaxPx = Math.min(20 * 16, viewportWidth - 32)
+    const safeGutter = 16
+    // `start-0` aligns panel.left to trigger.left → fits if it doesn't overflow the right edge.
+    const startFits = rect.left + panelMaxPx <= viewportWidth - safeGutter
+    // `end-0` aligns panel.right to trigger.right → fits if it doesn't overflow the left edge.
+    const endFits = rect.right - panelMaxPx >= safeGutter
+
+    if (preferred === 'end') {
+        if (endFits) return 'end'
+        return startFits ? 'start' : 'end'
+    }
+    if (startFits) return 'start'
+    return endFits ? 'end' : 'start'
+}
+
+async function toggle() {
+    if (open.value) {
+        void close(true)
+        return
+    }
+    open.value = true
+    // Wait for the panel to render so getBoundingClientRect() reflects the
+    // current trigger placement, then choose the alignment that fits.
+    await nextTick()
+    resolvedAlign.value = pickFittingAlignment(props.align ?? 'start')
 }
 
 async function close(returnFocus = true) {
@@ -90,7 +147,7 @@ defineShortcuts(
 useModalStackRegistration(open)
 
 const alignClass = computed(() => {
-    switch (props.align) {
+    switch (resolvedAlign.value) {
         case 'end':
             return 'end-0'
         case 'center':

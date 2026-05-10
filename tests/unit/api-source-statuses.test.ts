@@ -2,6 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import handler from '../../server/api/source-statuses.get'
 import { getSessionUserId } from '../../server/utils/auth-session'
 import { prisma } from '../../server/utils/prisma'
+import {
+  contractUserFeedsInTkcOrder,
+  contractSourceStatusRowsInTkcOrder,
+  crawlKeyForTkcHealth,
+} from '../fixtures/source-status-contract'
+import { TKC_SOURCE_HEALTH_STATUSES } from '../../utils/source-health-display'
 
 vi.mock('../../server/utils/auth-session', () => ({
   getSessionUserId: vi.fn(),
@@ -102,6 +108,34 @@ describe('GET /api/source-statuses', () => {
     expect(res.items[0]?.latest).toBeNull()
     expect(prisma.sourceStatus.findMany).toHaveBeenCalledWith({
       where: { crawlKey: { in: ['https://only-user.com/1.xml'] } },
+    })
+  })
+
+  it('joins each active feed with latest status for every TKC health variant (fixture feeds)', async () => {
+    vi.mocked(getSessionUserId).mockResolvedValue('user-fixtures')
+    const feeds = contractUserFeedsInTkcOrder()
+    const statuses = contractSourceStatusRowsInTkcOrder()
+    vi.mocked(prisma.userFeed.findMany).mockResolvedValue(feeds as never)
+    vi.mocked(prisma.sourceStatus.findMany).mockResolvedValue(statuses as never)
+
+    const res = await handler(mockEvent())
+
+    expect(res.items).toHaveLength(TKC_SOURCE_HEALTH_STATUSES.length)
+
+    for (const health of TKC_SOURCE_HEALTH_STATUSES) {
+      const key = crawlKeyForTkcHealth(health)
+      const row = res.items.find((i) => i.feed.crawlKey === key)
+      expect(row, `missing row for ${health}`).toBeDefined()
+      expect(row!.latest?.sourceHealthStatus).toBe(health)
+      expect(row!.latest?.crawlKey).toBe(key)
+    }
+
+    expect(prisma.sourceStatus.findMany).toHaveBeenCalledWith({
+      where: {
+        crawlKey: {
+          in: TKC_SOURCE_HEALTH_STATUSES.map((h) => crawlKeyForTkcHealth(h)),
+        },
+      },
     })
   })
 })

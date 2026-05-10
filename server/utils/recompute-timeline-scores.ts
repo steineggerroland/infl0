@@ -5,6 +5,7 @@ import {
   type ArticleScoreInput,
 } from '../../utils/timeline-score-normalize'
 import { resolveTimelineScorePrefs } from '../../utils/timeline-score-prefs-merge'
+import { SOURCE_PREFERENCE_BONUS } from '../../utils/timeline-score-factors'
 import {
   articleEngagementNegative,
   articleEngagementPositive,
@@ -87,7 +88,7 @@ export async function recomputeTimelineScoresForUser(
     },
   })
 
-  const [feedAggRows, categoryAggRows, tagAggRows] = await Promise.all([
+  const [feedAggRows, categoryAggRows, tagAggRows, userFeedRows] = await Promise.all([
     db.userFeedEngagement.findMany({
       where: { userId },
       select: { crawlKey: true, posPoints: true, negPoints: true },
@@ -100,11 +101,22 @@ export async function recomputeTimelineScoresForUser(
       where: { userId },
       select: { tag: true, posPoints: true, negPoints: true },
     }),
+    db.userFeed.findMany({
+      where: { userId },
+      select: { crawlKey: true, userPreferenceWeight: true },
+    }),
   ])
 
   const feedMap = new Map(feedAggRows.map((r) => [r.crawlKey, r] as const))
   const categoryMap = new Map(categoryAggRows.map((r) => [r.category, r] as const))
   const tagMap = new Map(tagAggRows.map((r) => [r.tag, r] as const))
+  // Latest explicit preference per crawlKey wins (ignore subscriptions with weight 0).
+  const preferenceByCrawlKey = new Map<string, number>()
+  for (const r of userFeedRows) {
+    if (typeof r.userPreferenceWeight === 'number' && r.userPreferenceWeight !== 0) {
+      preferenceByCrawlKey.set(r.crawlKey, r.userPreferenceWeight)
+    }
+  }
 
   const updates: { id: string; rankScore: number }[] = []
   for (const row of items) {
@@ -128,7 +140,9 @@ export async function recomputeTimelineScoresForUser(
     })
     const input = rowToArticleScoreInput(row as TimelineRow, { positive, negative })
     const features = computeNormalizedFeatures(input, nowMs, contentLengthPreference)
-    const score = computeWeightedScore(features, weights)
+    const baseScore = computeWeightedScore(features, weights)
+    const pref = preferenceByCrawlKey.get(row.article.crawlKey) ?? 0
+    const score = baseScore + pref * SOURCE_PREFERENCE_BONUS
     updates.push({ id: row.id, rankScore: score })
   }
 

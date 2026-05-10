@@ -13,6 +13,80 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Source health UX on `/feeds`:** triage-first ordering (`failing` → `blocked` →
+  `degraded` → `needs_setup` → `pending` → `quiet` → `paused` → `healthy`), an
+  attention banner above the list when at least one source needs action, a
+  left accent stripe per row, and per-status **what / action** copy
+  explaining the problem and a next step in plain language (German +
+  English). The expanded health summary itself was reworked into a calm
+  five-block layout — DaisyUI status dot inline with a bold label,
+  one merged help sentence (`what` + `action`), two muted timestamps for
+  *Letzter Abruf* / *Nächster Abruf*, an optional last-error box, and the
+  operator-attention banner — using only `text-sm` body / `text-xs` muted
+  secondary, instead of the earlier mix of three sizes and operator-grade
+  fields. Pipeline state, run status, last successful crawl, processed /
+  fetch-error counts, the consecutive-error streak, and the inner *„Mehr
+  Infos"* disclosure were removed from the user view (they're operator
+  telemetry, not reader-relevant). The `needs_setup` status now reads
+  *„Wird vorbereitet" / „Getting ready"* with helper copy that makes
+  explicit that the *system* is doing the preparation, not the user. Each row is now a
+  **compact, collapsible** `<details>`: title (or URL), URL underneath, and
+  the Pause / Remove actions stay on one truncated line; the full health,
+  inflow share, and weighting controls expand on click. On phone widths the
+  status is conveyed entirely by the **left accent stripe** (no separate
+  summary dot), the `<summary>` drops to `px-0`, and panel containers go
+  from `p-6` to `p-3 sm:p-6` so titles and URLs are no longer aggressively
+  truncated. While collapsed the row keeps its single-line summary; once
+  expanded the title and URL switch to `whitespace-normal break-words`
+  via `group-open:` so even long URLs are fully readable. Because the
+  `<summary>` is always the disclosure toggle (so plain text inside it
+  can never be a real link), the body now exposes **„Quelle öffnen"**
+  (`<a target="_blank" rel="noopener">`) and **„URL kopieren"** action
+  buttons that sit outside the toggle and don't fight the disclosure. The seed user (`dev@localhost`) now ships with friendlier
+  titles per status (e.g. *„Beispielquelle · läuft sauber"*) instead of
+  `Seed · pending`, and the `paused` example is genuinely paused
+  (`active=false`).
+
+- **Pause / Resume per source:** new **`PATCH /api/feeds/:id`** with
+  `{ active: boolean }` flips a subscription between active and paused while
+  keeping its weighting and read history. Paused rows stay visible on `/feeds`
+  with a Resume action; the inflow / crawler queries continue to filter on
+  `active = true`.
+
+- **Inflow share + read history per source:** new **`GET /api/me/feed-stats`**
+  returns one row per active *and* paused subscription with
+  `inflowCount` / `readCount` / `unreadCount` / `sharePercent` / `lastReadAt`.
+  `/feeds` shows compact figures via DaisyUI tooltips so users can spot
+  sources that dominate or are under-represented.
+
+- **`InfoPopover` mobile fallback:** the popover anchors to its trigger
+  and clamps width to the viewport, but with a `~20 rem` panel and a
+  trigger near the centre of a 414 px screen there is no side that has
+  enough room — the panel kept overflowing. The `FeedSourceWeighting`
+  hint now renders as a muted inline paragraph below the slider on
+  phone widths (`md:hidden`) and keeps the compact desktop popover
+  on `md` and up (`hidden md:inline-flex`). Same content, same a11y
+  contract, delivered in the form factor each viewport actually has
+  room for. The popover itself also picks `start`-vs-`end` alignment
+  automatically when it opens (regression tests in
+  `tests/component/InfoPopover.test.ts`), and the `/feeds` row drops
+  the `overflow-hidden` clip that previously hid the panel inside the
+  source card; the rounded `<li>` border still shows clean corners
+  because the inner `<details>` body stays within the row's bounds.
+
+- **Explicit per-source weighting (steers the inflow):** new column
+  **`UserFeed.userPreferenceWeight`** (`-1 … +1`, `0.25` steps) and
+  **`PATCH /api/feeds/:id/preference`** which validates the value, stores it,
+  and immediately re-runs `recomputeTimelineScoresForUser`. The weight is added
+  to `rank_score` as `pref × SOURCE_PREFERENCE_BONUS` (`0.5`) so a `+1` rating
+  bumps articles from that source by **0.5** and `-1` subtracts the same — a
+  noticeable nudge that doesn't drown out freshness or content signals. The
+  control on `/feeds` is a `−1 … +1` range with a *Less / Just right / More*
+  scale, optimistic update + rollback, and the explanation tucked behind
+  an `InfoPopover` (*„i"*) next to the legend rather than as always-on
+  body copy. Migration: **`20260510130000_user_feed_preference`**
+  (additive).
+
 - **Source health API (crawler + app):** Prisma **`SourceStatus`** / **`source_statuses`**
   (latest snapshot per **`crawlKey`**). **`POST /api/crawler/source-status`** upserts with the
   same **`NUXT_CRAWLER_API_KEY`** as ingest (camelCase or snake_case body).
@@ -36,6 +110,25 @@ new entries accrue under **Unreleased**.
   reviewable PRs.
 
 ### Changed
+
+- **Why at the top?** (`/settings/personalization`): the per-source preference
+  from **Sources** (« How much from this source? ») is now a **dedicated factor
+  row** in the ranking table (always shown; strength uses the same 0–1 scale
+  as other factors via \((pref+1)/2\); importance shows an em dash because
+  there is no slider weight). The recalculated total now **includes** that
+  bonus so it lines up with the saved score. Links to **`/feeds`** sit under the
+  algorithm explainer and under every expanded article’s factor table. **Adjust
+  sorting** on `/settings` gains a Sources link + copy that global sliders and
+  per-feed weighting stack. Help FAQ **howRanking** (DE/EN) explains both
+  controls and where to change per-source weight.
+
+- **BDD (Cucumber) reliability:** default step timeout raised to **60 s**, the
+  “add source” step allows **120 s** and longer inner waits for **`POST /api/feeds`**
+  so the runner no longer aborts before Playwright finishes (cold API/DB).
+  **`features/feeds_sources.feature`** adds scenarios for no-snapshot health,
+  pause/resume, list heading, and (with **`@crawler`**) expanded healthy label;
+  **`docs/DEVELOPING.md`** documents **`npx playwright install chromium`** for
+  **`test:bdd`** because Cucumber launches Chromium the same way as E2E.
 
 - **`POST /api/crawler/source-status`:** the upsert **update** path is a **partial merge**
   — only keys present in the JSON body are written; omitted keys keep their stored values

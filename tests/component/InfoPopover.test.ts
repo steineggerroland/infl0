@@ -115,6 +115,59 @@ describe('InfoPopover', () => {
         expect(wrapper.get('button[aria-haspopup="dialog"]').attributes('aria-expanded')).toBe('true')
     })
 
+    it('flips to end-aligned when the trigger is too close to the right edge of the viewport', async () => {
+        // Regression: with `align="start"` (the default) a trigger near the
+        // right edge of a phone-width viewport would render the popover
+        // panel off-screen, forcing horizontal scrolling. The component
+        // should detect that and align to the trigger's right edge instead.
+        const originalInnerWidth = window.innerWidth
+        Object.defineProperty(window, 'innerWidth', { configurable: true, value: 414 })
+
+        try {
+            const wrapper = mountPopover()
+            const triggerEl = wrapper.get('button[aria-haspopup="dialog"]').element as HTMLButtonElement
+            // Pretend the trigger sits near the right edge of a 414px viewport.
+            vi.spyOn(triggerEl, 'getBoundingClientRect').mockReturnValue({
+                left: 380, right: 400, top: 100, bottom: 120,
+                width: 20, height: 20, x: 380, y: 100,
+                toJSON: () => ({}),
+            } as DOMRect)
+
+            triggerEl.click()
+            await flushPromises()
+
+            const panel = wrapper.get('[role="dialog"]')
+            expect(panel.classes()).toContain('end-0')
+            expect(panel.classes()).not.toContain('start-0')
+        } finally {
+            Object.defineProperty(window, 'innerWidth', { configurable: true, value: originalInnerWidth })
+        }
+    })
+
+    it('keeps start alignment when there is enough room on the right', async () => {
+        const originalInnerWidth = window.innerWidth
+        Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1280 })
+
+        try {
+            const wrapper = mountPopover()
+            const triggerEl = wrapper.get('button[aria-haspopup="dialog"]').element as HTMLButtonElement
+            vi.spyOn(triggerEl, 'getBoundingClientRect').mockReturnValue({
+                left: 200, right: 220, top: 100, bottom: 120,
+                width: 20, height: 20, x: 200, y: 100,
+                toJSON: () => ({}),
+            } as DOMRect)
+
+            triggerEl.click()
+            await flushPromises()
+
+            const panel = wrapper.get('[role="dialog"]')
+            expect(panel.classes()).toContain('start-0')
+            expect(panel.classes()).not.toContain('end-0')
+        } finally {
+            Object.defineProperty(window, 'innerWidth', { configurable: true, value: originalInnerWidth })
+        }
+    })
+
     it('closes on Escape even when the focus is inside an editable control', async () => {
         // `<input>`/`<textarea>` inside a popover must still honour the
         // universal dismissal key. The editable-target guard that

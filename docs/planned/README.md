@@ -23,7 +23,6 @@ order, acceptance criteria — separate from the larger idea pool in
 |--------|--------|--------|
 | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Add first BDD scenario wave for new-user, privacy-sensitive, and power-user personas | Draft |
 | [`ci-remote-e2e-smoke-strategy.md`](./ci-remote-e2e-smoke-strategy.md) | Decide and document remote CI strategy for smoke E2E gates | Draft |
-| [`feed-source-health-status.md`](./feed-source-health-status.md) | Calm source health labels and timing on `/feeds` (no operator dashboard) | Draft |
 | [`operator-source-observability.md`](./operator-source-observability.md) | Protected `/operator/sources` global health table and summary band | Draft |
 
 *(Add a row when a new package markdown is created.)*
@@ -35,9 +34,8 @@ package ships or when dependencies change.
 
 | Priority | Package | Rationale |
 |:--------:|---------|-----------|
-| **P0** | [`feed-source-health-status.md`](./feed-source-health-status.md) | Direct user value on `/feeds`; API contract is [`../archive/26-05-10-source-health-api-contract.md`](../archive/26-05-10-source-health-api-contract.md). |
-| **P1** | [`operator-source-observability.md`](./operator-source-observability.md) | Global operator view after user-facing health; same `SourceStatus` model. |
-| **P2** | [`ci-remote-e2e-smoke-strategy.md`](./ci-remote-e2e-smoke-strategy.md) | Mostly **decision + docs** (and optional CI edits); can run **in parallel** with P0–P1 if bandwidth allows — ideally before or during heavy UI work to protect `main`. |
-| **P3** | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Broad BDD coverage wave; natural **after** major surfaces (e.g. source health) stabilize, or incrementally alongside P0 if scenarios stay behavior-focused. |
+| **P0** | [`operator-source-observability.md`](./operator-source-observability.md) | Global operator view after user-facing `/feeds` health + weighting (shipped: [`../archive/26-05-10-feed-source-health-status.md`](../archive/26-05-10-feed-source-health-status.md)); same `SourceStatus` model. |
+| **P1** | [`ci-remote-e2e-smoke-strategy.md`](./ci-remote-e2e-smoke-strategy.md) | Mostly **decision + docs** (and optional CI edits); can run **in parallel** with P0 if bandwidth allows — ideally before or during heavy UI work to protect `main`. |
+| **P2** | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Broad BDD coverage wave; natural **after** major surfaces (e.g. source health) stabilize, or incrementally if scenarios stay behavior-focused. |
 
-**Source health slice:** contract **done** → next **`/feeds`** UI (P0) → **operator** (P1).
+**Source health slice:** contract **done** ([`../archive/26-05-10-source-health-api-contract.md`](../archive/26-05-10-source-health-api-contract.md)) → **`/feeds`** UI **done** ([`../archive/26-05-10-feed-source-health-status.md`](../archive/26-05-10-feed-source-health-status.md)) → next **operator** (P0 above).

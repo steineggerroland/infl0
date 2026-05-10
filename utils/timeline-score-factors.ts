@@ -65,3 +65,57 @@ export function clampContentLengthPreference(n: number): number {
 export function defaultContentLengthPreference(): number {
   return 0
 }
+
+/**
+ * Explicit per-source preference (`UserFeed.userPreferenceWeight`).
+ *
+ * Value range: −1.0 … +1.0 in 0.25 steps. Independent of the engagement
+ * sliders so that the user's "more / less of this source" command always
+ * has a noticeable effect even when implicit-engagement weights are 0.
+ */
+export const SOURCE_PREFERENCE_STEP = 0.25 as const
+export const SOURCE_PREFERENCE_MIN = -1 as const
+export const SOURCE_PREFERENCE_MAX = 1 as const
+
+/**
+ * Score bonus per full preference unit. A `+1` rating adds this much to the
+ * raw `rank_score`; intermediate steps scale linearly. Tuned to be visible
+ * but not overwhelm freshness / content signals.
+ */
+export const SOURCE_PREFERENCE_BONUS = 0.5 as const
+
+/**
+ * The 9 valid preference values. Useful for UI controls + validation.
+ */
+export const SOURCE_PREFERENCE_STEPS = [
+  -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1,
+] as const
+
+export type SourcePreferenceStep = (typeof SOURCE_PREFERENCE_STEPS)[number]
+
+const QUANTUM = 4 // 1 / 0.25
+
+/**
+ * Returns the input snapped to the nearest 0.25 step, clamped to [-1, +1].
+ * Returns `null` if the value is not a finite number.
+ */
+export function quantizeSourcePreference(value: unknown): number | null {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null
+  const snapped = Math.round(value * QUANTUM) / QUANTUM
+  if (snapped < SOURCE_PREFERENCE_MIN) return SOURCE_PREFERENCE_MIN
+  if (snapped > SOURCE_PREFERENCE_MAX) return SOURCE_PREFERENCE_MAX
+  // Avoid -0 leaking through.
+  return snapped === 0 ? 0 : snapped
+}
+
+/**
+ * Strict variant: rejects values that aren't already on the quantized grid.
+ * Useful at API boundary where we don't want to silently snap user input.
+ */
+export function validateSourcePreference(value: unknown): number | null {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null
+  if (value < SOURCE_PREFERENCE_MIN || value > SOURCE_PREFERENCE_MAX) return null
+  const snapped = Math.round(value * QUANTUM) / QUANTUM
+  if (Math.abs(snapped - value) > 1e-9) return null
+  return snapped
+}

@@ -114,4 +114,4 @@ TopicKnowledgeCrawler output fields may use snake_case; **prefer explicit mappin
 - PR:
 - Discussion:
 - TopicKnowledgeCrawler: https://github.com/steineggerroland/TopicKnowledgeCrawler
-- Follow-up packages: [`../planned/feed-source-health-status.md`](../planned/feed-source-health-status.md), [`../planned/operator-source-observability.md`](../planned/operator-source-observability.md)
+- Shipped: [`26-05-10-feed-source-health-status.md`](./26-05-10-feed-source-health-status.md) (was `docs/planned/feed-source-health-status.md`). Next: [`../planned/operator-source-observability.md`](../planned/operator-source-observability.md)

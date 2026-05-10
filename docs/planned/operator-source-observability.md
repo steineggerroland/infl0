@@ -91,4 +91,4 @@ Document the chosen approach in **`.env.example`** and **`docs/DEPLOYING.md`**.
 
 - PR:
 - Discussion:
-- Related: [`../archive/26-05-10-source-health-api-contract.md`](../archive/26-05-10-source-health-api-contract.md), [`feed-source-health-status.md`](./feed-source-health-status.md)
+- Related: [`../archive/26-05-10-source-health-api-contract.md`](../archive/26-05-10-source-health-api-contract.md), [`../archive/26-05-10-feed-source-health-status.md`](../archive/26-05-10-feed-source-health-status.md) (shipped)

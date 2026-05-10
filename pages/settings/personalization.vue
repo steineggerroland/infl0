@@ -114,6 +114,14 @@ function directionLabel(value: number | null | undefined) {
           <p class="text-sm leading-relaxed text-[var(--infl0-panel-text)]">
             {{ $t('settingsPersonalization.algorithmBody') }}
           </p>
+          <p class="mt-3 text-sm leading-relaxed text-[var(--infl0-panel-text)]">
+            <span>{{ $t('settingsPersonalization.feedsLinkPrefix') }}</span>
+            <NuxtLink
+              to="/feeds"
+              class="font-medium text-[var(--infl0-panel-text)] underline decoration-dotted underline-offset-2 hover:opacity-90"
+            >{{ $t('feeds.title') }}</NuxtLink>
+            <span>{{ $t('settingsPersonalization.feedsLinkSuffix') }}</span>
+          </p>
           <div
             class="stats stats-vertical mt-4 w-full rounded-box border border-[var(--infl0-panel-border)] bg-[var(--infl0-nested-surface)] lg:stats-horizontal"
             data-testid="personalization-algorithm-stats"
@@ -240,7 +248,12 @@ function directionLabel(value: number | null | undefined) {
                       >
                         <td>{{ factorLabel(f.id) }}</td>
                         <td class="text-end font-mono">{{ fmt(f.normalized, 4) }}</td>
-                        <td class="text-end font-mono">{{ f.weight }}</td>
+                        <td class="text-end font-mono">
+                          <template v-if="f.id === 'source_preference'">{{
+                            $t('settingsPersonalization.sourcePreferenceWeightEmDash')
+                          }}</template>
+                          <template v-else>{{ f.weight }}</template>
+                        </td>
                         <td class="text-end font-mono" :class="contributionClass(f.contribution)">
                           <ScoreDelta
                             :value="f.contribution"
@@ -251,6 +264,14 @@ function directionLabel(value: number | null | undefined) {
                     </tbody>
                   </table>
                 </div>
+                <p class="infl0-panel-muted mt-2 text-xs leading-snug">
+                  <span>{{ $t('settingsPersonalization.feedsLinkPrefix') }}</span>
+                  <NuxtLink
+                    to="/feeds"
+                    class="font-medium text-[var(--infl0-panel-text)] underline decoration-dotted underline-offset-2 hover:opacity-90"
+                  >{{ $t('feeds.title') }}</NuxtLink>
+                  <span>{{ $t('settingsPersonalization.feedsLinkSuffix') }}</span>
+                </p>
 
                 <h3 class="infl0-panel-muted mb-2 mt-6 text-xs font-semibold uppercase">
                   {{ $t('settingsPersonalization.engagementHeading') }}

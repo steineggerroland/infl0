@@ -47,6 +47,7 @@
   "settingsIndex": {
     "title": "Settings",
     "intro": "Change how infl0 looks for you and how your timeline gets sorted.",
+    "sortingFeedsHint": "These sliders set the global weights for every article. You can also move individual sources up or down on the Sources page (“How much from this source?”) — that adds an extra factor on top.",
     "trackingHeading": "Reading-behaviour analysis",
     "trackingIntro": "Off by default. You decide whether we may use your reading behaviour for sorting. You can switch it off at any time — no new data will be stored after that.",
     "trackingLabel": "Use reading behaviour for better sorting",
@@ -174,10 +175,10 @@
   },
   "settingsPersonalization": {
     "title": "Why at the top?",
-    "intro": "This view explains your current timeline order in plain language. Open an article to see what pushed it up or down.",
+    "intro": "This view explains your current timeline order in plain language. Open an article to see what pushed it up or down. Sorting sliders and per-source weighting work together: the sliders shape every signal globally; “How much from this source?” on Sources adds a separate boost or nudge for that subscription.",
     "generatedAt": "Snapshot",
     "algorithmTitle": "How your timeline is being sorted right now",
-    "algorithmBody": "Each article gets points from multiple signals. Newer articles and your reading behavior can raise or lower the result. Sources, categories and tags are balanced so one area does not dominate.",
+    "algorithmBody": "Each article gets points from multiple signals. Newer articles and your reading behavior can raise or lower the result. Sources, categories and tags are balanced so one area does not dominate. The saved score is the weighted sum of the factors below plus explicit per-source weighting from Sources (“How much from this source?”).",
     "priorLabel": "Starting point for new topics",
     "blendLabel": "How shares are mixed",
     "timelineHeading": "Your timeline (preview)",
@@ -204,6 +205,9 @@
     "rankDelta": "Change",
     "colNormalizedSimple": "Strength",
     "colWeightSimple": "Importance",
+    "sourcePreferenceWeightEmDash": "—",
+    "feedsLinkPrefix": "Set or change per-source weighting on the ",
+    "feedsLinkSuffix": " page.",
     "colContributionSimple": "Impact",
     "sourceLabel": "Source:",
     "feedbackLabel": "Helpful / not helpful clicks:",
@@ -282,6 +286,10 @@
       "engagement_negative": {
         "label": "What you tend to skip",
         "hint": "Pushes articles down if you often skip similar content. Importance sets how much is subtracted."
+      },
+      "source_preference": {
+        "label": "Explicit source weighting",
+        "hint": "From Sources → “How much from this source?” Adds preference × a fixed bonus on top of the weighted signals above — not controlled by the sorting sliders."
       }
     }
   },
@@ -364,8 +372,103 @@
     "errorSources": "Could not load sources",
     "errorSaveSource": "Could not save source",
     "errorRemoveSource": "Could not remove source",
+    "errorHealth": "Could not load source health",
+    "errorTogglePause": "Could not change pause state",
     "toastSourceSaved": "Source saved",
-    "toastSourceRemoved": "Source removed"
+    "toastSourceRemoved": "Source removed",
+    "toastSourcePaused": "Source paused",
+    "toastSourceResumed": "Source resumed",
+    "openSource": "Open source",
+    "openSourceAria": "Open source in a new tab: {url}",
+    "copySource": "Copy URL",
+    "copySourceDone": "Copied",
+    "copySourceAria": "Copy source URL to the clipboard",
+    "errorCopyUrl": "URL could not be copied",
+    "health": {
+      "listNote": "When we have a status for a source, it appears here. You can use this to see whether a feed is working and how often it updates.",
+      "noSnapshot": "No status yet — we will add one after the first check.",
+      "healthUnknown": "Status not available",
+      "attentionGeneric": "This source may need attention.",
+      "valueRaw": "{value}",
+      "lastCheckLine": "Last check {when}",
+      "nextCheckLine": "Next check {when}",
+      "errorIntro": "Last error message:",
+      "attentionBanner": {
+        "one": "1 source needs attention.",
+        "many": "{count} sources need attention."
+      },
+      "help": {
+        "pending": {
+          "what": "We have not fetched this source yet.",
+          "action": "Nothing to do — we will start at the next scheduled check."
+        },
+        "needs_setup": {
+          "what": "We're analysing this source and preparing the first fetch.",
+          "action": "Nothing for you to do — once we're ready, regular checks continue automatically."
+        },
+        "quiet": {
+          "what": "We are checking this source, but it had no new articles recently.",
+          "action": "Nothing to do."
+        },
+        "degraded": {
+          "what": "Some articles could not be loaded last time.",
+          "action": "Check back in a few hours. If it stays this way, please contact support."
+        },
+        "failing": {
+          "what": "The latest fetch did not work. We are still trying.",
+          "action": "You can pause this source or replace it with another one."
+        },
+        "blocked": {
+          "what": "The publisher is blocking us right now.",
+          "action": "Nothing to do — we will keep trying later."
+        },
+        "paused": {
+          "what": "Automatic fetching is currently paused.",
+          "action": "Resume fetching when you want articles again."
+        }
+      },
+      "actions": {
+        "pause": "Pause",
+        "resume": "Resume",
+        "pauseAria": "Pause fetching for this source",
+        "resumeAria": "Resume fetching for this source"
+      },
+      "stats": {
+        "share": "Share of inflow",
+        "shareValue": "around {percent} %",
+        "shareTooltip": "Percentage of articles in your inflow that come from this source.",
+        "readOf": "{read} of {total} read",
+        "readTooltip": "How many of this source's inflow articles you've already opened.",
+        "lastRead": "last read {when}",
+        "noInflow": "No articles in your inflow yet."
+      },
+      "weighting": {
+        "label": "How much of this source?",
+        "hint": "More moves articles from this source up in your inflow. Less moves them down. Effect kicks in on the next refresh.",
+        "hintTriggerAria": "How does the source weight work?",
+        "lessLabel": "Less",
+        "neutralLabel": "Just right",
+        "moreLabel": "More",
+        "valueAria": "Source weight: {value} (range −1 to +1, step 0.25)",
+        "savedToast": "Source weighted — takes effect on the next inflow refresh.",
+        "errorToast": "Could not save the source weight.",
+        "currentBadge": {
+          "more": "+{amount}",
+          "less": "−{amount}",
+          "fits": "Fits"
+        }
+      },
+      "values": {
+        "pending": "Waiting for the first update",
+        "needs_setup": "Getting ready",
+        "healthy": "All good",
+        "quiet": "No new articles right now",
+        "degraded": "Some issues",
+        "failing": "Not working properly",
+        "blocked": "Temporarily blocked by the publisher",
+        "paused": "Paused"
+      }
+    }
   },
   "login": {
     "title": "infl0",
@@ -505,8 +608,8 @@
       },
       "howRanking": {
         "title": "How is my timeline sorted?",
-        "simple": "Every article gets points. Things like how recent it is and how well it matches your interests matter. You can adjust the weights yourself under “Adjust sorting”.",
-        "details": "Each signal is normalized to a value between 0 and 1 per article. The score is the sum of signal × (weight ÷ 100). Missing data counts as 0. There is a separate slider for article length (shorter ↔ longer). Under “Why at the top?” you can see which signals contributed the most to each article."
+        "simple": "Every article gets points. Things like how recent it is and how well it matches your interests matter. Global weights live under “Adjust sorting”. You can also move each source up or down under “Sources” with “How much of this source?”",
+        "details": "Each signal is normalized to a value between 0 and 1 per article. The weighted part of the score is the sum of signal × (weight ÷ 100). Missing data counts as 0. There is a separate slider for article length (shorter ↔ longer). On top of that sum, an optional fixed bonus from per-source weighting is added (set on Sources — not the same as these sliders). Under “Why at the top?” you see every factor, including that row when it applies."
       },
       "privacyChoices": {
         "title": "Can I disable personalization?",

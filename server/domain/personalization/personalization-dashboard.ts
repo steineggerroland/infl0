@@ -1,13 +1,10 @@
 import type { Prisma, PrismaClient } from '~/generated/prisma/client'
-import { TIMELINE_SCORE_VERSION } from '../../../utils/timeline-score-factors'
+import { SOURCE_PREFERENCE_BONUS, TIMELINE_SCORE_VERSION } from '../../../utils/timeline-score-factors'
 import { resolveTimelineScorePrefs } from '../../../utils/timeline-score-prefs-merge'
-import {
-  computeNormalizedFeatures,
-  computeWeightedScore,
-  type ArticleScoreInput,
-} from '../../../utils/timeline-score-normalize'
+import { computeNormalizedFeatures, type ArticleScoreInput } from '../../../utils/timeline-score-normalize'
 import {
   factorContributionsFromFeatures,
+  sumFactorContributions,
   type FactorContributionRow,
 } from '../../../utils/timeline-score-breakdown'
 import {
@@ -154,8 +151,8 @@ export async function buildPersonalizationDashboardPayload(
 
   const [userFeeds, feedAggRows, categoryAggRows, tagAggRows, anyScored] = await Promise.all([
     db.userFeed.findMany({
-      where: { userId, active: true },
-      select: { crawlKey: true, displayTitle: true, feedUrl: true },
+      where: { userId },
+      select: { crawlKey: true, displayTitle: true, feedUrl: true, userPreferenceWeight: true },
     }),
     db.userFeedEngagement.findMany({
       where: { userId },
@@ -178,6 +175,14 @@ export async function buildPersonalizationDashboardPayload(
   const feedLabelByKey = new Map(
     userFeeds.map((f) => [f.crawlKey, (f.displayTitle?.trim() || f.feedUrl) as string]),
   )
+
+  /** Same merge semantics as `recomputeTimelineScoresForUser`: last non-zero subscription per crawlKey wins. */
+  const preferenceByCrawlKey = new Map<string, number>()
+  for (const r of userFeeds) {
+    if (typeof r.userPreferenceWeight === 'number' && r.userPreferenceWeight !== 0) {
+      preferenceByCrawlKey.set(r.crawlKey, r.userPreferenceWeight)
+    }
+  }
 
   const feedMap = new Map(feedAggRows.map((r) => [r.crawlKey, r] as const))
   const categoryMap = new Map(categoryAggRows.map((r) => [r.category, r] as const))
@@ -251,8 +256,16 @@ export async function buildPersonalizationDashboardPayload(
     })
     const input = rowToArticleScoreInput(r, { positive: pos, negative: neg })
     const features = computeNormalizedFeatures(input, nowMs, contentLengthPreference)
-    const factors = factorContributionsFromFeatures(features, weights)
-    const rankScoreFromFactors = computeWeightedScore(features, weights)
+    const factorsBase = factorContributionsFromFeatures(features, weights)
+    const pref = preferenceByCrawlKey.get(r.article.crawlKey) ?? 0
+    const sourcePreferenceRow: FactorContributionRow = {
+      id: 'source_preference',
+      normalized: (pref + 1) / 2,
+      weight: 0,
+      contribution: pref * SOURCE_PREFERENCE_BONUS,
+    }
+    const factors = [...factorsBase, sourcePreferenceRow]
+    const rankScoreFromFactors = sumFactorContributions(factors)
     const engagement = explainArticleEngagement({
       crawlKey: r.article.crawlKey,
       categories,

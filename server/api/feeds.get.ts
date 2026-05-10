@@ -8,14 +8,17 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
+  // Includes paused (`active = false`) subscriptions so /feeds can show them
+  // with a Resume action. Inflow / crawler queries still filter on `active`.
   const feeds = await prisma.userFeed.findMany({
-    where: { userId, active: true },
+    where: { userId },
     orderBy: { createdAt: 'asc' },
     select: {
       id: true,
       feedUrl: true,
       crawlKey: true,
       displayTitle: true,
+      active: true,
       createdAt: true,
     },
   })
