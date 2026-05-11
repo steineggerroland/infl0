@@ -60,19 +60,37 @@ jobs:
           expires_at: ${{ env.NEON_EXPIRES_AT }}
           api_key: ${{ secrets.NEON_API_KEY }}
 
-      - name: Select database URL
+      - name: Select database URLs
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "DATABASE_URL=$PR_DATABASE_URL" >> "$GITHUB_ENV"
+            echo "DATABASE_URL=$PR_DATABASE_URL_POOLED" >> "$GITHUB_ENV"
+            echo "MIGRATION_DATABASE_URL=$PR_DATABASE_URL_DIRECT" >> "$GITHUB_ENV"
           else
             echo "DATABASE_URL=$PRODUCTION_DATABASE_URL" >> "$GITHUB_ENV"
+            echo "MIGRATION_DATABASE_URL=$PRODUCTION_DATABASE_URL" >> "$GITHUB_ENV"
           fi
         env:
-          PR_DATABASE_URL: ${{ steps.neon-preview.outputs.db_url_pooled }}
+          PR_DATABASE_URL_POOLED: ${{ steps.neon-preview.outputs.db_url_pooled }}
+          PR_DATABASE_URL_DIRECT: ${{ steps.neon-preview.outputs.db_url }}
           PRODUCTION_DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
 
       - name: Apply database migrations
-        run: npm run db:migrate:deploy
+        run: |
+          # Migrations are more reliable on direct Postgres URLs than pooler URLs.
+          export DATABASE_URL="$MIGRATION_DATABASE_URL"
+          for attempt in 1 2 3; do
+            if npm run db:migrate:deploy; then
+              exit 0
+            fi
+
+            if [ "$attempt" -lt 3 ]; then
+              echo "Migration attempt $attempt failed, retrying in 15s..."
+              sleep 15
+            fi
+          done
+
+          echo "Database migrations failed after 3 attempts."
+          exit 1
 
       - name: Seed demo data
         run: npm run devData
