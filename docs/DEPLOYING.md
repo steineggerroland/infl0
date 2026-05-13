@@ -11,9 +11,12 @@ infl0 is a Nuxt SSR app backed by PostgreSQL. A small deployment needs:
 - **Optional environment:** `NUXT_REGISTRATION_INVITE_CODE` enables
   invite-code registration, `NUXT_CRAWLER_API_KEY` protects crawler
   endpoints (**`/api/crawler/ingest`**, **`/api/crawler/source-status`**, **`/api/crawler/sources`**),
-  and `NUXT_OPERATOR_EMAILS` gates operator-only routes (currently
-  **`/operator/sources`** and **`/api/operator/source-statuses`**) by
-  signed-in email allowlist.
+  and `NUXT_OPERATOR_EMAILS` gates the operator status board
+  (**`/operator/sources`**, **`/api/operator/source-statuses`**) by
+  comma-separated email allowlist. Empty / unset ⇒ operator routes return
+  `403` for everyone; the server prints the parsed allowlist size and any
+  invalid entries once at boot. See [`OPERATOR.md`](./OPERATOR.md) for the
+  access model, columns, filters, and troubleshooting.
 - **Seeded operator accounts (optional):** `prisma db seed` can also create a
   dedicated operator account via `OPERATOR_SEED_EMAIL` / `OPERATOR_SEED_NAME`
   (+ SRP salt/verifier envs). To grant access, include that email in

@@ -134,6 +134,27 @@ normalized `crawlKey` into `**source_statuses**` (latest snapshot). Prefer **cam
 - `**GET /api/source-statuses`** — **session** user only; joins active `UserFeed` rows with
 `SourceStatus` for UI (`latest` is `null` until the crawler posts).
 
+## Operator board
+
+- The protected `/operator/sources` view and its API
+  (`GET /api/operator/source-statuses`) are gated by the
+  `NUXT_OPERATOR_EMAILS` allowlist (Phase 1: env-based, see
+  [`OPERATOR.md`](./OPERATOR.md)).
+- Server boot prints one line summarising the parsed allowlist
+  (`[operator-access] N operator email(s) configured`, plus a warning
+  per invalid entry). When the line is missing or warns, fix the env
+  before running operator-scoped tests.
+- Playwright project **`chromium-operator`** (`playwright.config.ts`)
+  uses a dedicated SRP login via `tests/e2e/operator-auth.setup.ts` and
+  the seeded `operator@localhost` account from `.env.e2e`
+  (`OPERATOR_*` vars); the spec `tests/e2e/authed/operator-sources.spec.ts`
+  is excluded from `chromium-authed` so the two roles never share
+  storage state.
+- BDD scenarios in `features/operator_sources.feature` cover the
+  non-operator 403 path and the operator happy path via crawler fixtures
+  (`features/steps/operator.steps.js`). The crawler key (`NUXT_CRAWLER_API_KEY`)
+  must be set in the merged env.
+
 ## Documentation map
 
 
@@ -143,6 +164,7 @@ normalized `crawlKey` into `**source_statuses**` (latest snapshot). Prefer **cam
 | `[CHANGELOG.md](./CHANGELOG.md)`           | Shipped work (features, fixes, breaking changes)     |
 | `[planned/README.md](./planned/README.md)` | Feature packages for implementation planning         |
 | `[DEPLOYING.md](./DEPLOYING.md)`           | Vercel/Neon deployments and preview database cleanup |
+| `[OPERATOR.md](./OPERATOR.md)`             | In-app operator status board (access, columns, troubleshooting) |
 | `[RELEASING.md](./RELEASING.md)`           | GitHub Actions CI and tagging a release              |
 
 

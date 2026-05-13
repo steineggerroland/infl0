@@ -13,6 +13,35 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Operator status board (`/operator/sources`):** protected, technical
+  overview across every known `crawlKey` — not only the operator's own
+  subscriptions. The page shows a compact summary band (total sources,
+  needing attention, failing, degraded, recent candidates / processed /
+  fetch errors / LLM failures) and a table sorted **attention-first**,
+  then by health severity (`blocked` → `failing` → `degraded` →
+  `needs_setup` → `quiet` → `pending` → `paused` → `healthy`), then by
+  `crawlKey`. Columns include source / crawl key, type, health, attention
+  reason, last crawl status, consecutive errors, candidates / processed /
+  skipped, fetch errors, LLM failures, next allowed crawl, and crawler
+  hints (HTTP status, `Retry-After`, `Cache-Control`). Filters narrow
+  to *Attention only*, *Failing / degraded*, *Needs setup*, *Blocked*,
+  or *Quiet*. Backed by **`GET /api/operator/source-statuses`**
+  (`?filter=<key>`), guarded by `requireOperatorUser`. Both the page and
+  the API enforce an email allowlist via the new env var
+  **`NUXT_OPERATOR_EMAILS`** (comma-separated, lower-cased on read; an
+  empty or typo-only value denies every request with `403`). Invalid
+  entries (missing `@…`) are dropped at parse time and surfaced; the
+  Nitro plugin `server/plugins/operator-access-boot-log.ts` prints the
+  parsed allowlist size (and any invalid entries) once at server start
+  so silent misconfigurations no longer surface only as a stray `403`.
+  i18n copy lives under `operatorSources.*` (DE / EN). Tests:
+  `tests/unit/operator-access.test.ts`,
+  `tests/unit/api-operator-source-statuses.test.ts`, Playwright project
+  `chromium-operator` with `tests/e2e/operator-auth.setup.ts` +
+  `tests/e2e/authed/operator-sources.spec.ts`, BDD
+  `features/operator_sources.feature`. See [`OPERATOR.md`](./OPERATOR.md)
+  for the access model and runbook.
+
 - **Source health UX on `/feeds`:** triage-first ordering (`failing` → `blocked` →
   `degraded` → `needs_setup` → `pending` → `quiet` → `paused` → `healthy`), an
   attention banner above the list when at least one source needs action, a
