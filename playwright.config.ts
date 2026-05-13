@@ -17,6 +17,10 @@ export default defineConfig({
       testMatch: 'auth.setup.ts',
     },
     {
+      name: 'operator-setup',
+      testMatch: 'operator-auth.setup.ts',
+    },
+    {
       name: 'onboarding-setup',
       testMatch: 'onboarding-auth.setup.ts',
     },
@@ -33,6 +37,16 @@ export default defineConfig({
         storageState: 'tests/e2e/.auth/dev.json',
       },
       testMatch: 'authed/**/*.spec.ts',
+      testIgnore: ['**/operator-sources.spec.ts'],
+    },
+    {
+      name: 'chromium-operator',
+      dependencies: ['operator-setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'tests/e2e/.auth/operator.json',
+      },
+      testMatch: 'authed/operator-sources.spec.ts',
     },
     {
       name: 'chromium-onboarding',

@@ -470,6 +470,47 @@
       }
     }
   },
+  "operatorSources": {
+    "title": "Operator · sources",
+    "intro": "Technical status board across all known crawler sources.",
+    "errorLoad": "Could not load operator source statuses",
+    "attention": "Attention",
+    "empty": "No sources match this filter.",
+    "subscribers": "{count} subscribers",
+    "filters": {
+      "all": "All",
+      "attention": "Attention only",
+      "failingDegraded": "Failing / degraded",
+      "needsSetup": "Needs setup",
+      "blocked": "Blocked",
+      "quiet": "Quiet"
+    },
+    "summary": {
+      "totalSources": "Total",
+      "needingAttention": "Attention",
+      "failing": "Failing",
+      "degraded": "Degraded",
+      "totalRecentCandidates": "Candidates",
+      "totalRecentProcessed": "Processed",
+      "totalRecentFetchErrors": "Fetch errors",
+      "totalRecentLlmFailures": "LLM failures"
+    },
+    "columns": {
+      "source": "Source / crawl key",
+      "type": "Type",
+      "health": "Health",
+      "attentionReason": "Attention reason",
+      "lastCrawlStatus": "Last crawl",
+      "consecutiveErrors": "Consecutive errors",
+      "candidates": "Candidates",
+      "processed": "Processed",
+      "skipped": "Skipped",
+      "fetchErrors": "Fetch errors",
+      "llmFailures": "LLM failures",
+      "nextAllowed": "Next allowed crawl",
+      "hints": "HTTP / retry / cache"
+    }
+  },
   "login": {
     "title": "infl0",
     "tagline": "Your calm news timeline",

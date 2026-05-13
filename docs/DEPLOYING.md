@@ -9,8 +9,15 @@ infl0 is a Nuxt SSR app backed by PostgreSQL. A small deployment needs:
   preferences, timeline rows, and reading state.
 - **Required environment:** `DATABASE_URL` and `AUTH_JWT_SECRET`.
 - **Optional environment:** `NUXT_REGISTRATION_INVITE_CODE` enables
-  invite-code registration, and `NUXT_CRAWLER_API_KEY` protects crawler
-  endpoints (**`/api/crawler/ingest`**, **`/api/crawler/source-status`**, **`/api/crawler/sources`**).
+  invite-code registration, `NUXT_CRAWLER_API_KEY` protects crawler
+  endpoints (**`/api/crawler/ingest`**, **`/api/crawler/source-status`**, **`/api/crawler/sources`**),
+  and `NUXT_OPERATOR_EMAILS` gates operator-only routes (currently
+  **`/operator/sources`** and **`/api/operator/source-statuses`**) by
+  signed-in email allowlist.
+- **Seeded operator accounts (optional):** `prisma db seed` can also create a
+  dedicated operator account via `OPERATOR_SEED_EMAIL` / `OPERATOR_SEED_NAME`
+  (+ SRP salt/verifier envs). To grant access, include that email in
+  `NUXT_OPERATOR_EMAILS`.
 - **Expected load:** currently sized and tested for personal or small-group
   use. Treat larger public instances as unmeasured until database, crawler,
   and serverless/runtime limits are observed under real traffic.
@@ -44,8 +51,9 @@ Repository setup required once:
    `VERCEL_PROJECT_ID`, `NEON_API_KEY`, `PRODUCTION_DATABASE_URL`, and
    `AUTH_JWT_SECRET`.
 3. Add the GitHub Actions variable `NEON_PROJECT_ID`.
-4. Optionally add `NUXT_REGISTRATION_INVITE_CODE` and `NUXT_CRAWLER_API_KEY`
-   as GitHub Actions secrets if those flows should work on deployed previews.
+4. Optionally add `NUXT_REGISTRATION_INVITE_CODE`, `NUXT_CRAWLER_API_KEY`,
+   and `NUXT_OPERATOR_EMAILS` as GitHub Actions secrets if those flows should
+   work on deployed previews.
 
 The workflow skips external fork PRs because GitHub does not expose repository
 secrets to them. A separate cleanup workflow deletes the matching Neon preview

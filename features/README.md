@@ -43,6 +43,9 @@ Covered in BDD today:
   row; **`@crawler`** scenarios assert `data-source-health` from TopicKnowledgeCrawler
   (`needs_setup`) and user-facing expanded label for **`healthy`** (`All good`) when
   `NUXT_CRAWLER_API_KEY` is available (merged `.env.e2e`).
+- **`operator_sources.feature`** — operator route protection (`403` for non-allowlisted
+  user), operator access for seeded account, summary band visibility, attention-first
+  row order, and filter behavior (blocked/quiet).
 
 Still sensible follow-ups:
 

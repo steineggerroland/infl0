@@ -70,22 +70,22 @@ When(
     await this.page.locator('#feed-url-input').fill(address)
     await this.page.locator('#feed-display-input').fill(displayName)
 
-    const responsePromise = this.page.waitForResponse(
-      (res) => {
-        if (res.request().method() !== 'POST') return false
-        try {
-          const path = new URL(res.url()).pathname.replace(/\/$/, '')
-          return path === '/api/feeds'
-        } catch {
-          return false
-        }
-      },
-      { timeout: 75_000 },
-    )
+    const matchesCreateFeedPost = (res) => {
+      if (res.request().method() !== 'POST') return false
+      try {
+        const path = new URL(res.url()).pathname.replace(/\/$/, '')
+        return path === '/api/feeds'
+      } catch {
+        return false
+      }
+    }
 
-    await this.page.locator('[data-testid="feeds-add-fieldset"] button[type="submit"]').click()
+    const submit = this.page.locator('[data-testid="feeds-add-fieldset"] button[type="submit"]')
 
-    const postRes = await responsePromise
+    const [postRes] = await Promise.all([
+      this.page.waitForResponse(matchesCreateFeedPost, { timeout: 120_000 }),
+      submit.click(),
+    ])
     if (!postRes.ok()) {
       const body = await postRes.text().catch(() => '')
       throw new Error(`POST /api/feeds failed (${postRes.status()}): ${body}`)

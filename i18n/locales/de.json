@@ -470,6 +470,47 @@
       }
     }
   },
+  "operatorSources": {
+    "title": "Operator · Quellen",
+    "intro": "Technisches Status-Board über alle bekannten Crawler-Quellen.",
+    "errorLoad": "Operator-Quellenstatus konnte nicht geladen werden",
+    "attention": "Aufmerksamkeit",
+    "empty": "Keine Quellen für diesen Filter.",
+    "subscribers": "{count} Abonnements",
+    "filters": {
+      "all": "Alle",
+      "attention": "Nur Aufmerksamkeit",
+      "failingDegraded": "Fehlend / degradiert",
+      "needsSetup": "Einrichtung nötig",
+      "blocked": "Blockiert",
+      "quiet": "Ruhig"
+    },
+    "summary": {
+      "totalSources": "Gesamt",
+      "needingAttention": "Aufmerksamkeit",
+      "failing": "Fehlend",
+      "degraded": "Degradiert",
+      "totalRecentCandidates": "Kandidaten",
+      "totalRecentProcessed": "Verarbeitet",
+      "totalRecentFetchErrors": "Fetch-Fehler",
+      "totalRecentLlmFailures": "LLM-Fehler"
+    },
+    "columns": {
+      "source": "Quelle / crawl key",
+      "type": "Typ",
+      "health": "Gesundheit",
+      "attentionReason": "Grund",
+      "lastCrawlStatus": "Letzter Lauf",
+      "consecutiveErrors": "Fehler in Folge",
+      "candidates": "Kandidaten",
+      "processed": "Verarbeitet",
+      "skipped": "Übersprungen",
+      "fetchErrors": "Fetch-Fehler",
+      "llmFailures": "LLM-Fehler",
+      "nextAllowed": "Nächster erlaubter Lauf",
+      "hints": "HTTP / Retry / Cache"
+    }
+  },
   "login": {
     "title": "infl0",
     "tagline": "Deine ruhige Nachrichten-Timeline",
