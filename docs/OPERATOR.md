@@ -50,6 +50,25 @@ This is a deliberate **Phase 1** decision: deployment config is the trust
 boundary. The follow-up plan (DB role / `User.isOperator`) is captured in
 [`docs/archive/26-05-13-operator-source-observability.md`](./archive/26-05-13-operator-source-observability.md).
 
+### Demo / preview deployments
+
+The Vercel deploy workflow seeds both demo accounts from the committed
+`.env.e2e` (SRP salt / verifier pairs + plaintext passwords) and sets
+`NUXT_OPERATOR_EMAILS=operator@localhost` on the deployed app so PR
+reviewers and curious visitors can log in immediately:
+
+| Email | Password | Role |
+|-------|----------|------|
+| `dev@localhost` | `infl0-dev-e2e` | regular user |
+| `operator@localhost` | `operator` | operator (`/operator/sources` reachable) |
+
+For a non-demo production instance, set the GitHub Actions secret
+`NUXT_OPERATOR_EMAILS` to real operator emails (the workflow uses
+`secrets.NUXT_OPERATOR_EMAILS || 'operator@localhost'`) and rotate the
+plaintext seed passwords in `.env.e2e` plus the matching `DEV_SRP_*` and
+`OPERATOR_SRP_*` pairs (regenerate via
+`SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp-env.ts <email>`).
+
 ## Reading the board
 
 | Column | Meaning |

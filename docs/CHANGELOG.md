@@ -13,6 +13,19 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Vercel demo seeding for both demo accounts.** The `Deploy Vercel`
+  workflow now seeds users + source-status matrix from `.env.e2e`
+  (`prisma db seed`) before adding article fixtures (`npm run devData`),
+  and sets `NUXT_OPERATOR_EMAILS=operator@localhost` (overridable via
+  the `NUXT_OPERATOR_EMAILS` repo secret) on the deployed app. Result:
+  every Vercel deployment offers **`dev@localhost` / `infl0-dev-e2e`**
+  (regular user, with 2 sample feeds + 3 articles + the source-health
+  matrix) and **`operator@localhost` / `operator`** (operator, with
+  `/operator/sources` reachable) out of the box. The preview PR
+  comment lists both credential sets. Previously only `dev@localhost`
+  was seeded with the fallback password `dev`, and the operator
+  account did not exist on Vercel.
+
 - **Operator status board (`/operator/sources`):** protected, technical
   overview across every known `crawlKey` — not only the operator's own
   subscriptions. The page shows a compact summary band (total sources,
