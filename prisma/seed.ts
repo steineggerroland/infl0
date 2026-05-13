@@ -130,6 +130,16 @@ async function main() {
     label: 'dev user',
   })
 
+  const operatorEmail = (process.env.OPERATOR_SEED_EMAIL ?? 'operator@localhost').toLowerCase()
+  const operatorName = process.env.OPERATOR_SEED_NAME ?? 'Operator'
+  await upsertSrpUser({
+    email: operatorEmail,
+    name: operatorName,
+    saltEnv: 'OPERATOR_SRP_SALT_HEX',
+    verifierEnv: 'OPERATOR_SRP_VERIFIER_HEX',
+    label: 'operator user',
+  })
+
   await seedDevSourceStatusMatrix(devEmail)
 }
 

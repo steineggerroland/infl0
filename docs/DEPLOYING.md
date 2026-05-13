@@ -9,8 +9,18 @@ infl0 is a Nuxt SSR app backed by PostgreSQL. A small deployment needs:
   preferences, timeline rows, and reading state.
 - **Required environment:** `DATABASE_URL` and `AUTH_JWT_SECRET`.
 - **Optional environment:** `NUXT_REGISTRATION_INVITE_CODE` enables
-  invite-code registration, and `NUXT_CRAWLER_API_KEY` protects crawler
-  endpoints (**`/api/crawler/ingest`**, **`/api/crawler/source-status`**, **`/api/crawler/sources`**).
+  invite-code registration, `NUXT_CRAWLER_API_KEY` protects crawler
+  endpoints (**`/api/crawler/ingest`**, **`/api/crawler/source-status`**, **`/api/crawler/sources`**),
+  and `NUXT_OPERATOR_EMAILS` gates the operator status board
+  (**`/operator/sources`**, **`/api/operator/source-statuses`**) by
+  comma-separated email allowlist. Empty / unset ⇒ operator routes return
+  `403` for everyone; the server prints the parsed allowlist size and any
+  invalid entries once at boot. See [`OPERATOR.md`](./OPERATOR.md) for the
+  access model, columns, filters, and troubleshooting.
+- **Seeded operator accounts (optional):** `prisma db seed` can also create a
+  dedicated operator account via `OPERATOR_SEED_EMAIL` / `OPERATOR_SEED_NAME`
+  (+ SRP salt/verifier envs). To grant access, include that email in
+  `NUXT_OPERATOR_EMAILS`.
 - **Expected load:** currently sized and tested for personal or small-group
   use. Treat larger public instances as unmeasured until database, crawler,
   and serverless/runtime limits are observed under real traffic.
@@ -33,8 +43,21 @@ The `Deploy Vercel` workflow publishes the Nuxt SSR app to Vercel for every
 `main` push and for pull requests targeting `main`. PRs get a Vercel Preview
 Deployment backed by an isolated Neon Postgres branch named
 `preview-pr-<number>`; `main` uses the production database URL. Each deployment
-runs Prisma migrations and seeds the demo account `dev@localhost` with password
-`dev`.
+runs Prisma migrations, then seeds demo accounts and demo articles using the
+committed `.env.e2e` SRP credentials so both demo logins work out of the box:
+
+| Email | Password | Role |
+|-------|----------|------|
+| `dev@localhost` | `infl0-dev-e2e` | regular user (2 sample feeds + 3 articles via `npm run devData`) |
+| `operator@localhost` | `operator` | operator (granted by `NUXT_OPERATOR_EMAILS=operator@localhost` on the deployment) |
+
+The seed runs **on every deployment**, including production, because this
+repository is intended as a demo / playground instance. For a non-demo
+production, add a `NUXT_OPERATOR_EMAILS` GitHub Actions secret (comma-separated
+real operator emails) to override the demo allowlist, and rotate the
+plaintext seed passwords in `.env.e2e` plus the matching `*_SRP_*` salt /
+verifier pairs (see [`OPERATOR.md`](./OPERATOR.md) → *Demo / preview
+deployments*).
 
 Repository setup required once:
 
@@ -46,6 +69,9 @@ Repository setup required once:
 3. Add the GitHub Actions variable `NEON_PROJECT_ID`.
 4. Optionally add `NUXT_REGISTRATION_INVITE_CODE` and `NUXT_CRAWLER_API_KEY`
    as GitHub Actions secrets if those flows should work on deployed previews.
+5. Optionally add `NUXT_OPERATOR_EMAILS` as a GitHub Actions secret to
+   override the demo allowlist (`operator@localhost`) with real operator
+   emails for a non-demo production deployment.
 
 The workflow skips external fork PRs because GitHub does not expose repository
 secrets to them. A separate cleanup workflow deletes the matching Neon preview
