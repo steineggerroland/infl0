@@ -16,13 +16,16 @@ direction.
 
 ## Try it yourself
 
-Open [`infl0.neurospicy.icu`](https://infl0.neurospicy.icu) and sign in with:
+Open [`infl0.neurospicy.icu`](https://infl0.neurospicy.icu) and sign in with
+one of the two seeded demo accounts:
 
-- Email: `dev@localhost`
-- Password: `dev`
+| Email | Password | What you can see |
+|-------|----------|------------------|
+| `dev@localhost` | `dev` | regular user — timeline, sample feeds, settings |
+| `operator@localhost` | `operator` | also `/operator/sources` (technical source health board across the whole instance) |
 
-This is a demo deployment. Data may be reset, and the account is shared by
-anyone using the public demo.
+This is a demo deployment. Data may be reset, and both accounts are shared
+by anyone using the public demo.
 
 ## What it does
 

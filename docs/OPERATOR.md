@@ -52,22 +52,29 @@ boundary. The follow-up plan (DB role / `User.isOperator`) is captured in
 
 ### Demo / preview deployments
 
-The Vercel deploy workflow seeds both demo accounts from the committed
-`.env.e2e` (SRP salt / verifier pairs + plaintext passwords) and sets
+The Vercel deploy workflow seeds both demo accounts and sets
 `NUXT_OPERATOR_EMAILS=operator@localhost` on the deployed app so PR
 reviewers and curious visitors can log in immediately:
 
 | Email | Password | Role |
 |-------|----------|------|
-| `dev@localhost` | `infl0-dev-e2e` | regular user |
+| `dev@localhost` | `dev` | regular user |
 | `operator@localhost` | `operator` | operator (`/operator/sources` reachable) |
+
+How the two passwords coexist:
+
+- `npx dotenv -e .env.e2e -- npx prisma db seed` creates dev + operator
+  with the committed `.env.e2e` SRP pairs (operator's pair matches
+  password `operator`).
+- `npm run devData` runs **without** `.env.e2e`, so its built-in SRP
+  fallback (password `dev`) overwrites `dev@localhost`'s SRP. Operator
+  is not re-upserted in this step and keeps the `.env.e2e` SRP.
 
 For a non-demo production instance, set the GitHub Actions secret
 `NUXT_OPERATOR_EMAILS` to real operator emails (the workflow uses
 `secrets.NUXT_OPERATOR_EMAILS || 'operator@localhost'`) and rotate the
-plaintext seed passwords in `.env.e2e` plus the matching `DEV_SRP_*` and
-`OPERATOR_SRP_*` pairs (regenerate via
-`SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp-env.ts <email>`).
+operator seed password by regenerating `OPERATOR_SRP_*` in `.env.e2e`
+via `SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp-env.ts operator@localhost`.
 
 ## Reading the board
 
