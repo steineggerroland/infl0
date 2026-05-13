@@ -49,18 +49,16 @@ both demo logins work out of the box:
 | Email | Password | Role |
 |-------|----------|------|
 | `dev@localhost` | `dev` | regular user (2 sample feeds + 3 articles via `npm run devData`) |
-| `operator@localhost` | `operator` | operator (granted by `NUXT_OPERATOR_EMAILS=operator@localhost` on the deployment) |
+| `operator@localhost` | `dev` | operator (granted by `NUXT_OPERATOR_EMAILS=operator@localhost` on the deployment) |
 
 Seed mechanics:
 
 1. `npx dotenv -e .env.e2e -- npx prisma db seed` upserts both users with
    the committed `.env.e2e` SRP pairs plus the `dev@localhost`
-   source-health matrix. Operator's `.env.e2e` SRP matches password
-   `operator`.
-2. `npm run devData` runs **without** `.env.e2e` so it overwrites
-   `dev@localhost`'s SRP with the script's built-in fallback (password
-   `dev`) and adds the article / timeline fixtures. Operator is not
-   touched in this step.
+   source-health matrix. Both committed demo SRP pairs match password
+   `dev`.
+2. `npx dotenv -e .env.e2e -- npm run devData` adds the article /
+   timeline fixtures for `dev@localhost`.
 
 The seed runs **on every deployment**, including production, because this
 repository is intended as a demo / playground instance. For a non-demo

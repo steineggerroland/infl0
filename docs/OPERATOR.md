@@ -59,16 +59,15 @@ reviewers and curious visitors can log in immediately:
 | Email | Password | Role |
 |-------|----------|------|
 | `dev@localhost` | `dev` | regular user |
-| `operator@localhost` | `operator` | operator (`/operator/sources` reachable) |
+| `operator@localhost` | `dev` | operator (`/operator/sources` reachable) |
 
-How the two passwords coexist:
+How the demo credentials are seeded:
 
 - `npx dotenv -e .env.e2e -- npx prisma db seed` creates dev + operator
-  with the committed `.env.e2e` SRP pairs (operator's pair matches
-  password `operator`).
-- `npm run devData` runs **without** `.env.e2e`, so its built-in SRP
-  fallback (password `dev`) overwrites `dev@localhost`'s SRP. Operator
-  is not re-upserted in this step and keeps the `.env.e2e` SRP.
+  with the committed `.env.e2e` SRP pairs. Both pairs match password
+  `dev`.
+- `npx dotenv -e .env.e2e -- npm run devData` adds the article /
+  timeline fixtures for `dev@localhost`.
 
 For a non-demo production instance, set the GitHub Actions secret
 `NUXT_OPERATOR_EMAILS` to real operator emails (the workflow uses

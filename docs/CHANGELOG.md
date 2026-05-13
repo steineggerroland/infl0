@@ -14,16 +14,13 @@ new entries accrue under **Unreleased**.
 ### Added
 
 - **Vercel demo seeding for both demo accounts.** The `Deploy Vercel`
-  workflow now seeds users + source-health matrix via `prisma db seed`
-  (with `.env.e2e` so operator's SRP matches password `operator`)
-  before running `npm run devData` (without `.env.e2e`, so its
-  built-in SRP fallback restores `dev@localhost`'s password to `dev`
-  and adds the article fixtures). It also sets
-  `NUXT_OPERATOR_EMAILS=operator@localhost` (overridable via the
-  `NUXT_OPERATOR_EMAILS` repo secret) on the deployed app. Result:
-  every Vercel deployment offers **`dev@localhost` / `dev`** (regular
-  user, with 2 sample feeds + 3 articles + the source-health matrix)
-  and **`operator@localhost` / `operator`** (operator, with
+  workflow now seeds users + source-status matrix from `.env.e2e`
+  (`prisma db seed`) before adding article fixtures (`npm run devData`),
+  and sets `NUXT_OPERATOR_EMAILS=operator@localhost` (overridable via
+  the `NUXT_OPERATOR_EMAILS` repo secret) on the deployed app. Result:
+  every Vercel deployment offers **`dev@localhost` / `dev`**
+  (regular user, with 2 sample feeds + 3 articles + the source-health
+  matrix) and **`operator@localhost` / `dev`** (operator, with
   `/operator/sources` reachable) out of the box. The preview PR
   comment lists both credential sets, and the main `README.md` adds
   the operator account next to the existing demo user. Previously the
