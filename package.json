@@ -67,7 +67,7 @@
     "eslint": "^10.0.0",
     "happy-dom": "^20.9.0",
     "start-server-and-test": "^3.0.2",
-    "tsx": "^4.19.3",
+    "tsx": "^4.22.0",
     "typescript": "^6.0.3",
     "unplugin-auto-import": "^21.0.0",
     "vitest": "^4.0.0",
