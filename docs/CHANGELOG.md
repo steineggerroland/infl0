@@ -11,6 +11,19 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-05-15
+
+Operator observability (status board + access allowlist), source-health UX
+(triage-first ordering, pause/resume, inflow share, explicit per-source
+weighting), reader resume hardening, and a stack-wide dependency / GitHub
+Actions refresh. **Database:** run **`npm run db:migrate:deploy`** after deploy
+to apply the two new Prisma migrations introduced since `v0.4.0`
+(**`20260510120000_source_statuses`**, **`20260510130000_user_feed_preference`**).
+**Env:** new **`NUXT_OPERATOR_EMAILS`** (comma-separated allowlist) is required
+to grant any account access to **`/operator/sources`** and
+**`GET /api/operator/source-statuses`**; an empty value denies every request
+with `403`.
+
 ### Added
 
 - **Vercel demo seeding for both demo accounts.** The `Deploy Vercel`
@@ -189,6 +202,14 @@ new entries accrue under **Unreleased**.
   refreshed **`package-lock.json`**, merged Dependabot npm bumps where applicable
   (including **audit-driven fixes**), and added an **`overrides`** pin for
   **`@hono/node-server`** so the transitive version stays on a known-good release.
+
+- **Dependency bumps for the release** (combined Dependabot batch, see PR #31,
+  closes #22–#30): **`nuxt`** 4.4.4 → 4.4.5, **`vue-router`** 5.0.6 → 5.0.7,
+  **`dompurify`** 3.4.2 → 3.4.3 (runtime); **`@playwright/test`** 1.59.1 → 1.60.0,
+  **`vitest`** 4.1.5 → 4.1.6, **`vue-tsc`** 3.2.8 → 3.2.9, **`@types/node`** 25.6.2
+  → 25.8.0, **`tsx`** 4.21.0 → 4.22.0 (dev); transitive **`devalue`** 5.8.0 → 5.8.1
+  via **`@nuxtjs/i18n`** and **`nuxt`**. All patch / minor; verified with `lint`,
+  `vitest run` (447 / 447), `nuxi typecheck`, and a full production build.
 
 - **Toolchain majors:** **TypeScript 6**, **`marked` v18**, **`@types/node` v25**, and
   **`dotenv-cli` v11**. **`marked` v18** trims trailing blank lines in block tokens,
