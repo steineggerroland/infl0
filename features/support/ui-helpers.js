@@ -65,20 +65,70 @@ export async function setReadingBehaviourTracking(page, enabled) {
   }
 }
 
-export async function setShowReadArticles(page, show) {
-  await page.goto('/')
+async function waitForTimelineShell(page) {
+  await expect(
+    page.locator('[data-testid="reader-start"], .scroll-container').first(),
+  ).toBeVisible({ timeout: 20_000 })
+}
+
+function showReadMenuInput(page) {
+  return page.getByTestId('menu-show-read-toggle').locator('input[type="checkbox"]')
+}
+
+async function openUserMenu(page) {
   const menu = page.locator('body > header .dropdown.dropdown-end').first()
   const summary = menu.locator('summary').first()
   await expect(summary).toBeVisible({ timeout: 15_000 })
   const isOpen = await menu.evaluate((el) => el instanceof HTMLDetailsElement && el.open)
   if (!isOpen) await summary.click()
-  const menuToggle = page.getByTestId('menu-show-read-toggle').getByRole('switch')
-  await expect(menuToggle).toBeVisible({ timeout: 10_000 })
-  const checked = await menuToggle.isChecked()
-  if (checked !== show) {
-    await menuToggle.click()
-    await expect.poll(async () => menuToggle.isChecked(), { timeout: 15_000 }).toBe(show)
+  const input = showReadMenuInput(page)
+  await expect(input).toBeVisible({ timeout: 10_000 })
+  return input
+}
+
+async function closeUserMenu(page) {
+  await page.keyboard.press('Escape')
+}
+
+/** Matches `readerIsInteractive` on the timeline: `r` only works after reader start or with onboarding. */
+async function isShowReadShortcutActive(page) {
+  const readerStart = page.getByTestId('reader-start')
+  if (!(await readerStart.isVisible())) return true
+  return (await page.getByTestId('onboarding-card').count()) > 0
+}
+
+async function readShowReadChecked(page) {
+  const input = await openUserMenu(page)
+  return input.isChecked()
+}
+
+/**
+ * Set show-read like a user: `r` when the timeline shortcut is active, otherwise the
+ * menu switch via `check()` / `uncheck()` on the native input (not label `click()`).
+ */
+export async function setShowReadArticles(page, show) {
+  await page.goto('/')
+  await waitForTimelineShell(page)
+
+  if ((await readShowReadChecked(page)) === show) {
+    await closeUserMenu(page)
+    return
   }
+
+  if (await isShowReadShortcutActive(page)) {
+    await closeUserMenu(page)
+    await page.locator('body').click({ position: { x: 8, y: 8 } })
+    await page.keyboard.press('r')
+    await expect.poll(async () => readShowReadChecked(page), { timeout: 15_000 }).toBe(show)
+    await closeUserMenu(page)
+    return
+  }
+
+  const input = await openUserMenu(page)
+  if (show) await input.check()
+  else await input.uncheck()
+  await expect.poll(async () => input.isChecked(), { timeout: 15_000 }).toBe(show)
+  await closeUserMenu(page)
 }
 
 export function readerArticleCard(page, articleId) {

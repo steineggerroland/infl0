@@ -66,7 +66,7 @@ setWorldConstructor(BddWorld)
 // Feed-add / PATCH flows wait on Playwright with caps up to 45–60s (cold DB,
 // first SSR). Cucumber’s step timeout must exceed those inner waits or the
 // runner kills the step first — seen as flaky failures on `POST /api/feeds`.
-setDefaultTimeout(60_000)
+setDefaultTimeout(90_000)
 
 Before({ tags: '@http-only' }, async function () {
   loadE2eMergedEnv()

@@ -47,6 +47,31 @@ export async function crawlerIngest(page, payload) {
   return res.data
 }
 
+/** Fast reader-scenario fixture: hide onboarding and register feed before crawler ingest. */
+export async function prepareReaderInflowFixture(page, world, feedUrl, displayTitle) {
+  const prefs = await browserFetchJson(page, '/api/me/ui-prefs', {
+    method: 'PATCH',
+    body: { onboardingHidden: true },
+  })
+  if (!prefs.ok) {
+    throw new Error(`PATCH /api/me/ui-prefs failed (${prefs.status}): ${prefs.text}`)
+  }
+
+  const feed = await browserFetchJson(page, '/api/feeds', {
+    method: 'POST',
+    body: { feedUrl, displayTitle },
+  })
+  if (!feed.ok) {
+    throw new Error(`POST /api/feeds failed (${feed.status}): ${feed.text}`)
+  }
+  const crawlKey = feed.data?.feed?.crawlKey
+  if (!crawlKey) {
+    throw new Error('Feed creation did not return a crawlKey.')
+  }
+  world.lastCrawlKey = crawlKey
+  world.lastFeedId = feed.data?.feed?.id
+}
+
 export async function postCrawlerSourceHealth(page, body) {
   const key = process.env.NUXT_CRAWLER_API_KEY?.trim()
   if (!key) throw new Error('NUXT_CRAWLER_API_KEY is not set')

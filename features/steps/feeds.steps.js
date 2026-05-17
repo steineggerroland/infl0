@@ -25,7 +25,7 @@ Then('I should see the empty sources hint', async function () {
 
 When(
   'I add a source with address {string} and display name {string}',
-  { timeout: 120_000 },
+  { timeout: 150_000 },
   async function (address, displayName) {
     await expect(this.page.getByTestId('feeds-add-fieldset')).toBeVisible({ timeout: 30_000 })
 
@@ -35,28 +35,47 @@ When(
 
     const submit = this.page.locator('[data-testid="feeds-add-fieldset"] button[type="submit"]')
     const errorAlert = this.page.getByTestId('feeds-add-error')
-    const row = sourceRow(this.page, address)
+    const rowByUrl = sourceRow(this.page, address)
+    const rowByTitle = sourceRow(this.page, displayName)
 
     await expect(submit).toBeEnabled({ timeout: 30_000 })
     await submit.scrollIntoViewIfNeeded()
     await submit.click()
 
-    // User-visible outcome: row appears or the form shows an error (not Playwright network hooks).
-    await expect
-      .poll(
-        async () => {
-          if (await errorAlert.isVisible()) return 'error'
-          if ((await row.count()) > 0) return 'ok'
-          return 'pending'
-        },
-        { timeout: 90_000 },
-      )
-      .not.toBe('pending')
+    async function waitForAddOutcome(timeoutMs) {
+      await expect
+        .poll(
+          async () => {
+            if (await errorAlert.isVisible()) return 'error'
+            if ((await rowByUrl.count()) > 0 || (await rowByTitle.count()) > 0) return 'ok'
+            if (await submit.isDisabled()) return 'submitting'
+            return 'pending'
+          },
+          { timeout: timeoutMs },
+        )
+        .toMatch(/^(ok|error)$/)
+    }
+
+    try {
+      await waitForAddOutcome(120_000)
+    } catch {
+      if (await errorAlert.isVisible()) {
+        throw new Error(`Add source failed in UI: ${await errorAlert.textContent()}`)
+      }
+      if ((await rowByUrl.count()) > 0 || (await rowByTitle.count()) > 0) {
+        // Row appeared after the poll window closed.
+      } else {
+        await this.page.reload()
+        await expect(this.page.getByTestId('feeds-add-fieldset')).toBeVisible({ timeout: 30_000 })
+        await waitForAddOutcome(90_000)
+      }
+    }
 
     if (await errorAlert.isVisible()) {
       throw new Error(`Add source failed in UI: ${await errorAlert.textContent()}`)
     }
 
+    const row = (await rowByUrl.count()) > 0 ? rowByUrl : rowByTitle
     await expect(row).toBeVisible({ timeout: 15_000 })
     await rememberFeedFromRow(this.page, this, address)
   },

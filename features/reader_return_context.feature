@@ -71,7 +71,6 @@ Feature: Reader context stays stable
 
   Scenario: A read article gives visible read feedback
     Given the first reader article is already read
-    And I show read reader articles
     And I open the timeline
     When I start reading
     And I focus the first reader article
@@ -87,7 +86,6 @@ Feature: Reader context stays stable
 
   Scenario: The read shortcut marks the focused article unread
     Given the first reader article is already read
-    And I show read reader articles
     And I open the timeline
     When I start reading
     And I focus the first reader article

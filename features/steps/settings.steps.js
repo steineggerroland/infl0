@@ -26,6 +26,24 @@ function cardFrontGroup(page) {
   return page.getByTestId(`surface-group-${CARD_FRONT}`)
 }
 
+/** Preset swatches are `<button role="radio">` with `aria-checked`; extra options are native `<input type="radio">`. */
+function themePaletteControl(page, label) {
+  const control = page.getByTestId('theme-control')
+  if (label === 'Custom colours') {
+    return control.getByTestId('theme-option-custom')
+  }
+  return control.getByRole('radio', { name: label })
+}
+
+async function expectThemePaletteSelected(locator) {
+  const testId = await locator.getAttribute('data-testid')
+  if (testId === 'theme-option-custom' || testId === 'theme-option-high-contrast') {
+    await expect(locator).toBeChecked()
+    return
+  }
+  await expect(locator).toHaveAttribute('aria-checked', 'true')
+}
+
 Given('I use a wide viewport for the settings layout', async function () {
   await this.page.setViewportSize(WIDE_VIEWPORT)
 })
@@ -84,22 +102,19 @@ Then('{string} should still be the display appearance', async function (label) {
 })
 
 When('I choose the colour palette {string}', async function (label) {
-  const swatch = this.page.getByTestId('theme-control').getByRole('radio', { name: label })
-  await swatch.click()
-  await expect(swatch).toHaveAttribute('aria-checked', 'true', { timeout: 15_000 })
+  const control = themePaletteControl(this.page, label)
+  await control.click()
+  await expectThemePaletteSelected(control)
 })
 
 When('I choose custom colours as colour palette', async function () {
-  const radio = this.page
-    .getByTestId('theme-control')
-    .getByRole('radio', { name: startsWithAccessibleName('Custom colours') })
+  const radio = this.page.getByTestId('theme-option-custom')
   await radio.check()
-  await expect(radio).toHaveAttribute('aria-checked', 'true', { timeout: 15_000 })
+  await expect(radio).toBeChecked({ timeout: 15_000 })
 })
 
 Then('the colour palette {string} should still be selected', async function (label) {
-  const swatch = this.page.getByTestId('theme-control').getByRole('radio', { name: label })
-  await expect(swatch).toHaveAttribute('aria-checked', 'true')
+  await expectThemePaletteSelected(themePaletteControl(this.page, label))
 })
 
 When('I choose {string} as motion preference', async function (label) {

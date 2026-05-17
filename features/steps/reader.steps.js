@@ -1,9 +1,7 @@
 import { Given, Then, When } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
-import { crawlerIngest } from '../support/crawler-fixtures.js'
+import { crawlerIngest, prepareReaderInflowFixture } from '../support/crawler-fixtures.js'
 import {
-  addSourceViaUi,
-  hideOnboardingCards,
   readerArticleCard,
   setReadingBehaviourTracking,
   setShowReadArticles,
@@ -60,10 +58,8 @@ Given('my inflow contains reader articles', async function () {
     },
   ]
 
-  await hideOnboardingCards(this.page)
-  await addSourceViaUi(this.page, this, feedUrl, 'BDD reader feed')
+  await prepareReaderInflowFixture(this.page, this, feedUrl, 'BDD reader feed')
   const crawlKey = this.lastCrawlKey
-  if (!crawlKey) throw new Error('Add source did not record crawlKey.')
 
   for (const article of articles) {
     await crawlerIngest(this.page, {

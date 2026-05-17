@@ -21,9 +21,11 @@ This folder contains executable user-facing behavior specifications using Cucumb
 - Prefer stable product-facing selectors and visible outcomes.
 - Keep technical setup hidden inside step definitions and world helpers.
 - **Assert user-visible behavior in the browser** (controls, labels, `aria-*`, stable `data-testid` hooks). Do not wait on or assert `/api/*` responses in step definitions unless there is no UI path.
+- **Show-read preference:** use the timeline shortcut `r` when the reader is already interactive; on the reader-start screen (onboarding hidden) use the menu switch with `check()` / `uncheck()` on the native checkbox — not `click()` on the DaisyUI label (double-toggle risk).
 - Avoid direct database access in step definitions whenever the behavior can be set up or asserted through UI flows.
 - **Allowed non-UI setup** (documented in `features/support/crawler-fixtures.js` and step comments):
   - **TopicKnowledgeCrawler** ingest and source-status posts (external system; no infl0 UI).
+  - **Reader scenario Background** (`my inflow contains reader articles`): `POST /api/feeds` plus hiding onboarding via `PATCH /api/me/ui-prefs` so the step stays within Cucumber’s step timeout; feeds UI add remains covered in `feeds_sources.feature`.
   - **Backdating `lastReaderSessionStartedAt`** for the “new articles since last session” scenario (no UI to set a past session anchor).
   - **`@http-only` PWA scenarios** that read `manifest.webmanifest` without a browser session.
 - World `Before` hooks may still register accounts via API for speed; scenario steps should use the registration/login UI where the journey is under test.
