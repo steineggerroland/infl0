@@ -16,6 +16,7 @@ definePageMeta({
 type UserFeedRow = {
     id: string
     feedUrl: string
+    crawlKey: string
     displayTitle: string | null
     active: boolean
     createdAt: string
