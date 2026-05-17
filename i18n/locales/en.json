@@ -668,5 +668,24 @@
         "details": "Shortcuts are active in the timeline as long as no input field is focused and no modifier key (Ctrl, Cmd, Alt) is held down. While an original article or info popover is open, W/S, the arrow keys and R pause – the background will not change while you are reading. Escape closes the open surface. The full list, including readability shortcuts (text size and typeface), now lives in the “Keyboard shortcuts” section above."
       }
     }
+  },
+  "pwa": {
+    "description": "Calm, privacy-first reading and learning from your personal sources.",
+    "updateReady": "A new version of infl0 is ready.",
+    "updateReload": "Reload",
+    "shortcuts": {
+      "timeline": {
+        "name": "Timeline",
+        "shortName": "Timeline"
+      },
+      "feeds": {
+        "name": "Manage sources",
+        "shortName": "Sources"
+      },
+      "settings": {
+        "name": "Settings",
+        "shortName": "Settings"
+      }
+    }
   }
 }
