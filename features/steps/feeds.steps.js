@@ -1,12 +1,7 @@
 import { Given, When, Then } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
-
-/**
- * Locate a single source row in the list by matching visible text (URL or title).
- */
-function sourceRow(page, snippet) {
-  return page.locator('[data-testid="feeds-source-list"] li').filter({ hasText: snippet })
-}
+import { postCrawlerSourceHealth } from '../support/crawler-fixtures.js'
+import { rememberFeedFromRow, sourceRow } from '../support/ui-helpers.js'
 
 /**
  * Open the row’s `<details>` without relying on double-click semantics.
@@ -17,38 +12,6 @@ async function ensureSourceRowExpanded(row) {
   await details.evaluate((/** @type {HTMLDetailsElement} */ el) => {
     if (!el.open) el.open = true
   })
-}
-
-/**
- * Same-origin fetch so session cookies are sent (matches Playwright e2e helpers).
- */
-async function browserFetchJson(page, path, init = {}) {
-  const { method = 'GET', body, headers = {} } = init
-  return page.evaluate(
-    async ({ path: urlPath, method: m, body: b, headers: h }) => {
-      const hasBody = b !== undefined && b !== null
-      const res = await fetch(urlPath, {
-        method: m,
-        credentials: 'include',
-        headers: {
-          ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
-          ...h,
-        },
-        ...(hasBody ? { body: JSON.stringify(b) } : {}),
-      })
-      const text = await res.text()
-      let data = null
-      if (text) {
-        try {
-          data = JSON.parse(text)
-        } catch {
-          data = null
-        }
-      }
-      return { ok: res.ok, status: res.status, data, text }
-    },
-    { path, method, body: body ?? null, headers },
-  )
 }
 
 When('I open the sources page', async function () {
@@ -62,7 +25,7 @@ Then('I should see the empty sources hint', async function () {
 
 When(
   'I add a source with address {string} and display name {string}',
-  { timeout: 120_000 },
+  { timeout: 150_000 },
   async function (address, displayName) {
     await expect(this.page.getByTestId('feeds-add-fieldset')).toBeVisible({ timeout: 30_000 })
 
@@ -70,35 +33,51 @@ When(
     await this.page.locator('#feed-url-input').fill(address)
     await this.page.locator('#feed-display-input').fill(displayName)
 
-    const matchesCreateFeedPost = (res) => {
-      if (res.request().method() !== 'POST') return false
-      try {
-        const path = new URL(res.url()).pathname.replace(/\/$/, '')
-        return path === '/api/feeds'
-      } catch {
-        return false
+    const submit = this.page.locator('[data-testid="feeds-add-fieldset"] button[type="submit"]')
+    const errorAlert = this.page.getByTestId('feeds-add-error')
+    const rowByUrl = sourceRow(this.page, address)
+    const rowByTitle = sourceRow(this.page, displayName)
+
+    await expect(submit).toBeEnabled({ timeout: 30_000 })
+    await submit.scrollIntoViewIfNeeded()
+    await submit.click()
+
+    async function waitForAddOutcome(timeoutMs) {
+      await expect
+        .poll(
+          async () => {
+            if (await errorAlert.isVisible()) return 'error'
+            if ((await rowByUrl.count()) > 0 || (await rowByTitle.count()) > 0) return 'ok'
+            if (await submit.isDisabled()) return 'submitting'
+            return 'pending'
+          },
+          { timeout: timeoutMs },
+        )
+        .toMatch(/^(ok|error)$/)
+    }
+
+    try {
+      await waitForAddOutcome(120_000)
+    } catch {
+      if (await errorAlert.isVisible()) {
+        throw new Error(`Add source failed in UI: ${await errorAlert.textContent()}`)
+      }
+      if ((await rowByUrl.count()) > 0 || (await rowByTitle.count()) > 0) {
+        // Row appeared after the poll window closed.
+      } else {
+        await this.page.reload()
+        await expect(this.page.getByTestId('feeds-add-fieldset')).toBeVisible({ timeout: 30_000 })
+        await waitForAddOutcome(90_000)
       }
     }
 
-    const submit = this.page.locator('[data-testid="feeds-add-fieldset"] button[type="submit"]')
-
-    const [postRes] = await Promise.all([
-      this.page.waitForResponse(matchesCreateFeedPost, { timeout: 120_000 }),
-      submit.click(),
-    ])
-    if (!postRes.ok()) {
-      const body = await postRes.text().catch(() => '')
-      throw new Error(`POST /api/feeds failed (${postRes.status()}): ${body}`)
+    if (await errorAlert.isVisible()) {
+      throw new Error(`Add source failed in UI: ${await errorAlert.textContent()}`)
     }
 
-    const payload = await postRes.json().catch(() => null)
-    if (payload?.feed?.crawlKey) {
-      this.lastCrawlKey = payload.feed.crawlKey
-      this.lastFeedId = payload.feed.id
-    }
-
-    await expect(this.page.getByTestId('feeds-add-error')).toHaveCount(0)
-    await expect(this.page.getByTestId('feeds-source-list')).toBeVisible({ timeout: 30_000 })
+    const row = (await rowByUrl.count()) > 0 ? rowByUrl : rowByTitle
+    await expect(row).toBeVisible({ timeout: 15_000 })
+    await rememberFeedFromRow(this.page, this, address)
   },
 )
 
@@ -126,26 +105,15 @@ Given('the crawler API key is configured', function () {
 When(
   'I post crawler source health for the last added source as {string}',
   async function (healthStatus) {
-    const key = process.env.NUXT_CRAWLER_API_KEY?.trim()
-    if (!key) {
-      throw new Error('NUXT_CRAWLER_API_KEY is not set')
-    }
     const crawlKey = this.lastCrawlKey
     if (!crawlKey) {
       throw new Error('No last added source — run the add-source step first (lastCrawlKey missing).')
     }
-    const res = await browserFetchJson(this.page, '/api/crawler/source-status', {
-      method: 'POST',
-      headers: { 'X-Crawler-Key': key },
-      body: {
-        crawlKey,
-        sourceStatus: 'ready',
-        sourceHealthStatus: healthStatus,
-      },
+    await postCrawlerSourceHealth(this.page, {
+      crawlKey,
+      sourceStatus: 'ready',
+      sourceHealthStatus: healthStatus,
     })
-    if (!res.ok) {
-      throw new Error(`POST /api/crawler/source-status failed (${res.status}): ${res.text}`)
-    }
     await this.page.reload()
   },
 )

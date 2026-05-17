@@ -1,13 +1,43 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from '@tailwindcss/vite'
+import { PWA_MASK_ICON_COLOR, PWA_THEME_COLOR, pwaWebManifest } from './utils/pwa-manifest'
 
 export default defineNuxtConfig({
   app: {
     head: {
       title: 'infl0',
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'description', content: pwaWebManifest.description },
+        { name: 'theme-color', content: PWA_THEME_COLOR },
+        { name: 'mobile-web-app-capable', content: 'yes' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' },
+        { rel: 'mask-icon', href: '/mask-icon.svg', color: PWA_MASK_ICON_COLOR },
+      ],
     },
   },
-  modules: ['@nuxt/eslint', '@nuxtjs/i18n'],
+  modules: ['@nuxt/eslint', '@nuxtjs/i18n', '@vite-pwa/nuxt'],
+  pwa: {
+    registerType: 'autoUpdate',
+    registerWebManifestInRouteRules: true,
+    includeAssets: ['favicon-32x32.png', 'apple-touch-icon.png', 'mask-icon.svg'],
+    manifest: pwaWebManifest,
+    workbox: {
+      // SSR: do not serve `/` for navigations — breaks server routes and can confuse asset loads.
+      navigateFallback: undefined,
+      navigateFallbackDenylist: [/^\/api\//, /^\/operator/],
+      cleanupOutdatedCaches: true,
+    },
+    client: {
+      installPrompt: true,
+    },
+    devOptions: {
+      enabled: false,
+    },
+  },
   compatibilityDate: '2025-07-15',
   i18n: {
     vueI18n: './i18n.config.ts',

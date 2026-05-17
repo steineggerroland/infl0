@@ -22,25 +22,26 @@ function startsWithAccessibleName(text) {
   return new RegExp(`^${escaped}(?:\\b|\\s|$)`, 'u')
 }
 
-async function waitForUiPrefsPatch(page, action) {
-  const response = page.waitForResponse(
-    (res) =>
-      res.url().includes('/api/me/ui-prefs') &&
-      res.request().method() === 'PATCH' &&
-      res.status() < 400,
-    { timeout: 15_000 },
-  )
-  try {
-    await action()
-  } catch (error) {
-    await response.catch(() => {})
-    throw error
-  }
-  await response
-}
-
 function cardFrontGroup(page) {
   return page.getByTestId(`surface-group-${CARD_FRONT}`)
+}
+
+/** Preset swatches are `<button role="radio">` with `aria-checked`; extra options are native `<input type="radio">`. */
+function themePaletteControl(page, label) {
+  const control = page.getByTestId('theme-control')
+  if (label === 'Custom colours') {
+    return control.getByTestId('theme-option-custom')
+  }
+  return control.getByRole('radio', { name: label })
+}
+
+async function expectThemePaletteSelected(locator) {
+  const testId = await locator.getAttribute('data-testid')
+  if (testId === 'theme-option-custom' || testId === 'theme-option-high-contrast') {
+    await expect(locator).toBeChecked()
+    return
+  }
+  await expect(locator).toHaveAttribute('aria-checked', 'true')
 }
 
 Given('I use a wide viewport for the settings layout', async function () {
@@ -89,7 +90,8 @@ When('I choose {string} as display appearance', async function (label) {
   const radio = this.page
     .getByTestId('appearance-control')
     .getByRole('radio', { name: startsWithAccessibleName(label) })
-  await waitForUiPrefsPatch(this.page, async () => radio.check())
+  await radio.check()
+  await expect(radio).toBeChecked({ timeout: 15_000 })
 })
 
 Then('{string} should still be the display appearance', async function (label) {
@@ -100,27 +102,27 @@ Then('{string} should still be the display appearance', async function (label) {
 })
 
 When('I choose the colour palette {string}', async function (label) {
-  const swatch = this.page.getByTestId('theme-control').getByRole('radio', { name: label })
-  await waitForUiPrefsPatch(this.page, async () => swatch.click())
+  const control = themePaletteControl(this.page, label)
+  await control.click()
+  await expectThemePaletteSelected(control)
 })
 
 When('I choose custom colours as colour palette', async function () {
-  const radio = this.page
-    .getByTestId('theme-control')
-    .getByRole('radio', { name: startsWithAccessibleName('Custom colours') })
-  await waitForUiPrefsPatch(this.page, async () => radio.check())
+  const radio = this.page.getByTestId('theme-option-custom')
+  await radio.check()
+  await expect(radio).toBeChecked({ timeout: 15_000 })
 })
 
 Then('the colour palette {string} should still be selected', async function (label) {
-  const swatch = this.page.getByTestId('theme-control').getByRole('radio', { name: label })
-  await expect(swatch).toHaveAttribute('aria-checked', 'true')
+  await expectThemePaletteSelected(themePaletteControl(this.page, label))
 })
 
 When('I choose {string} as motion preference', async function (label) {
   const radio = this.page
     .getByTestId('motion-control')
     .getByRole('radio', { name: startsWithAccessibleName(label) })
-  await waitForUiPrefsPatch(this.page, async () => radio.check())
+  await radio.check()
+  await expect(radio).toBeChecked({ timeout: 15_000 })
 })
 
 Then('{string} should still be the motion preference', async function (label) {
@@ -134,7 +136,8 @@ When('I set the card front typeface to {string}', async function (label) {
   const value = TYPEFACE_VALUE_BY_LABEL[label]
   if (!value) throw new Error(`No test mapping for typeface "${label}".`)
   const select = cardFrontGroup(this.page).getByTestId(`font-family-${CARD_FRONT}`)
-  await waitForUiPrefsPatch(this.page, async () => select.selectOption({ label }))
+  await select.selectOption({ label })
+  await expect(select).toHaveValue(value, { timeout: 15_000 })
 })
 
 Then('the card front typeface should still be {string}', async function (label) {
@@ -146,10 +149,9 @@ Then('the card front typeface should still be {string}', async function (label) 
 
 When('I set the card front text size to {int} px', async function (size) {
   const input = cardFrontGroup(this.page).getByTestId(`font-size-num-${CARD_FRONT}`)
-  await waitForUiPrefsPatch(this.page, async () => {
-    await input.fill(String(size))
-    await input.dispatchEvent('change')
-  })
+  await input.fill(String(size))
+  await input.dispatchEvent('change')
+  await expect(input).toHaveValue(String(size), { timeout: 15_000 })
 })
 
 Then('the card front text size should still be {int} px', async function (size) {
@@ -164,12 +166,11 @@ Then('I should see colour controls for the card front', async function () {
 When('I set the card front background colour to {string}', async function (hex) {
   const normalized = hex.toLowerCase()
   const input = cardFrontGroup(this.page).getByTestId(`custom-color-bg-${CARD_FRONT}`)
-  await waitForUiPrefsPatch(this.page, async () => {
-    await input.evaluate((el, value) => {
-      el.value = value
-      el.dispatchEvent(new Event('input', { bubbles: true }))
-    }, normalized)
-  })
+  await input.evaluate((el, value) => {
+    el.value = value
+    el.dispatchEvent(new Event('input', { bubbles: true }))
+  }, normalized)
+  await expect(input).toHaveValue(normalized, { timeout: 15_000 })
 })
 
 Then('the card front background colour should still be {string}', async function (hex) {

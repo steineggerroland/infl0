@@ -11,6 +11,24 @@ new entries accrue under **Unreleased**.
 
 ## [Unreleased]
 
+### Added
+
+- **Progressive Web App (PWA):** installable from Chrome (manifest, icons,
+  service worker, EN/DE install text, home-screen shortcuts, update toast).
+  Regenerate icons with `npm run pwa:icons`. Preview on port **3001**;
+  `npm run dev` uses **127.0.0.1:3000**.
+- **BDD:** `add_infl0_to_home_screen.feature` — PO-readable scenarios for
+  install listing, shortcuts, icons/updates, and sign-in page install hints
+  (`@http-only` for metadata-only checks).
+
+### Fixed
+
+- **PWA / SSR:** disable Workbox `navigateFallback` so navigations are not
+  rewritten to `/` (avoids broken asset loads and `application/json` MIME
+  errors when a stale service worker or wrong port is used).
+- **BDD:** block service workers in browser scenarios; add-source steps assert
+  visible list outcome instead of flaky `waitForResponse` on `POST /api/feeds`.
+
 ## [0.5.0] — 2026-05-15
 
 Operator observability (status board + access allowlist), source-health UX

@@ -46,8 +46,10 @@ useHead(() => {
 
 <template>
   <div class="infl0-app-root min-h-dvh w-full max-w-full">
+    <NuxtPwaAssets />
     <NuxtRouteAnnouncer />
     <ToastHost />
+    <PwaUpdatePrompt />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

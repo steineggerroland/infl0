@@ -668,5 +668,24 @@
         "details": "Die Kürzel sind in der Timeline aktiv, wenn kein Eingabefeld fokussiert ist und keine gleichzeitige Taste (Strg, Cmd oder Alt) gedrückt wird. Wenn ein Originalartikel oder ein Info-Fenster geöffnet ist, pausieren W/S, Pfeiltasten und R – damit der Hintergrund nicht wechselt, während du liest. Escape schließt das geöffnete Fenster. Die vollständige Liste, einschließlich der Lesbarkeits-Kürzel (Schriftgröße und Schriftart), steht jetzt im Abschnitt „Tastenkürzel“ weiter oben."
       }
     }
+  },
+  "pwa": {
+    "description": "Ruhiges, datenschutzfreundliches Lesen und Lernen aus deinen persönlichen Quellen.",
+    "updateReady": "Eine neue Version von infl0 ist bereit.",
+    "updateReload": "Neu laden",
+    "shortcuts": {
+      "timeline": {
+        "name": "Timeline",
+        "shortName": "Timeline"
+      },
+      "feeds": {
+        "name": "Quellen verwalten",
+        "shortName": "Quellen"
+      },
+      "settings": {
+        "name": "Einstellungen",
+        "shortName": "Einstell."
+      }
+    }
   }
 }

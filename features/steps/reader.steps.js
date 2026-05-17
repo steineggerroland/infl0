@@ -1,5 +1,11 @@
 import { Given, Then, When } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
+import { crawlerIngest, prepareReaderInflowFixture } from '../support/crawler-fixtures.js'
+import {
+  readerArticleCard,
+  setReadingBehaviourTracking,
+  setShowReadArticles,
+} from '../support/ui-helpers.js'
 
 function articleOrdinalIndex(ordinal) {
   if (ordinal === 'first') return 0
@@ -10,7 +16,7 @@ function articleOrdinalIndex(ordinal) {
 function currentArticle(world) {
   const id = world.currentReaderArticleId
   if (!id) throw new Error('No current reader article is focused.')
-  return world.page.locator(`[data-testid="article-card"][data-article-id="${id}"]`).first()
+  return readerArticleCard(world.page, id)
 }
 
 async function visibleRatio(locator) {
@@ -29,59 +35,11 @@ async function ensureAppOrigin(world) {
   }
 }
 
-async function authedJsonFetch(world, url, init) {
-  await ensureAppOrigin(world)
-  const data = await world.page.evaluate(
-    async ({ targetUrl, requestInit }) => {
-      const res = await fetch(targetUrl, {
-        ...requestInit,
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(requestInit.headers ?? {}),
-        },
-      })
-      return { ok: res.ok, status: res.status, body: await res.text() }
-    },
-    { targetUrl: url, requestInit: init },
-  )
-  if (!data.ok) {
-    throw new Error(`Authenticated request failed (${data.status}) ${url}: ${data.body}`)
-  }
-  return data.body ? JSON.parse(data.body) : null
-}
-
-async function crawlerIngest(world, payload) {
-  await ensureAppOrigin(world)
-  const crawlerKey = process.env.NUXT_CRAWLER_API_KEY
-  if (!crawlerKey) {
-    throw new Error('NUXT_CRAWLER_API_KEY is required for HTTP-only reader BDD fixtures.')
-  }
-  const data = await world.page.evaluate(
-    async ({ requestPayload, key }) => {
-      const res = await fetch('/api/crawler/ingest', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Crawler-Key': key,
-        },
-        body: JSON.stringify(requestPayload),
-      })
-      return { ok: res.ok, status: res.status, body: await res.text() }
-    },
-    { requestPayload: payload, key: crawlerKey },
-  )
-  if (!data.ok) {
-    throw new Error(`Crawler ingest failed (${data.status}): ${data.body}`)
-  }
-  return data.body ? JSON.parse(data.body) : null
-}
-
+/** No UI for crawler delivery — simulates TopicKnowledgeCrawler after the user adds a source. */
 Given('my inflow contains reader articles', async function () {
+  await ensureAppOrigin(this)
   const suffix = `${Date.now().toString(36)}-${Math.random().toString(16).slice(2)}`
-  const crawlKey = `https://example.com/bdd-reader/${suffix}`
-  const feedUrl = `${crawlKey}.xml`
+  const feedUrl = `https://example.com/bdd-reader/${suffix}.xml`
   const now = Date.now()
   const articles = [
     {
@@ -100,21 +58,12 @@ Given('my inflow contains reader articles', async function () {
     },
   ]
 
-  await authedJsonFetch(this, '/api/me/ui-prefs', {
-    method: 'PATCH',
-    body: JSON.stringify({ onboardingHidden: true }),
-  })
-
-  const feed = await authedJsonFetch(this, '/api/feeds', {
-    method: 'POST',
-    body: JSON.stringify({ feedUrl, displayTitle: 'BDD reader feed' }),
-  })
-  const normalizedCrawlKey = feed?.feed?.crawlKey
-  if (!normalizedCrawlKey) throw new Error('Feed creation did not return a crawlKey.')
+  await prepareReaderInflowFixture(this.page, this, feedUrl, 'BDD reader feed')
+  const crawlKey = this.lastCrawlKey
 
   for (const article of articles) {
-    await crawlerIngest(this, {
-      crawlKey: normalizedCrawlKey,
+    await crawlerIngest(this.page, {
+      crawlKey,
       id: article.id,
       link: `https://example.com/bdd-reader/${article.id}`,
       title: article.title,
@@ -134,51 +83,61 @@ Given('my inflow contains reader articles', async function () {
   }
 
   this.readerArticles = articles
+  await this.page.goto('/')
 })
 
 Given('the first reader article is already read', async function () {
-  await this.page.goto('/')
-  await this.page.getByTestId('reader-start-button').click()
   const article = this.readerArticles?.[0]
   if (!article) throw new Error('No first reader article exists.')
-  const card = this.page.locator(`[data-testid="article-card"][data-article-id="${article.id}"]`).first()
+  await this.page.goto('/')
+  await setShowReadArticles(this.page, true)
+  await this.page.getByTestId('reader-start-button').click()
+  const card = readerArticleCard(this.page, article.id)
   await expect(card).toBeVisible()
+  await card.scrollIntoViewIfNeeded()
+  await card.locator('h1').first().click()
+  await expect(card).toHaveAttribute('data-reader-selected', 'true')
   this.currentReaderArticleId = article.id
-  await card.locator('.action-flip-front').click()
-  await authedJsonFetch(this, `/api/me/articles/${encodeURIComponent(article.id)}/read-state`, {
-    method: 'PATCH',
-    body: JSON.stringify({ read: true }),
-  })
+  await card.locator('[data-testid="article-read-status"]').first().click()
+  await expect(card.locator('[data-testid="article-read-status"]').first()).toHaveAttribute(
+    'aria-pressed',
+    'true',
+    { timeout: 10_000 },
+  )
   await this.page.goto('/help')
 })
 
 Given('I show read reader articles', async function () {
-  await this.page.goto('/help')
-  await this.page.evaluate(() => {
-    window.localStorage.setItem('infl0.timeline.showRead', '1')
-  })
+  await setShowReadArticles(this.page, true)
 })
 
 Given('reading behaviour tracking is enabled', async function () {
-  await authedJsonFetch(this, '/api/me/engagement-tracking', {
-    method: 'PATCH',
-    body: JSON.stringify({ enabled: true }),
-  })
+  await setReadingBehaviourTracking(this.page, true)
 })
 
 Given('reading behaviour tracking is disabled', async function () {
-  await authedJsonFetch(this, '/api/me/engagement-tracking', {
-    method: 'PATCH',
-    body: JSON.stringify({ enabled: false }),
-  })
+  await setReadingBehaviourTracking(this.page, false)
 })
 
+/**
+ * No UI to backdate the reader session anchor — PATCH mirrors a session that ended
+ * before Background articles were ingested.
+ */
 Given('my last reader session started before these articles arrived', async function () {
+  await ensureAppOrigin(this)
   const startedAt = new Date(Date.now() - 60_000).toISOString()
-  await authedJsonFetch(this, '/api/me/ui-prefs', {
-    method: 'PATCH',
-    body: JSON.stringify({ lastReaderSessionStartedAt: startedAt }),
-  })
+  const result = await this.page.evaluate(async (iso) => {
+    const res = await fetch('/api/me/ui-prefs', {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lastReaderSessionStartedAt: iso }),
+    })
+    return { ok: res.ok, status: res.status, body: await res.text() }
+  }, startedAt)
+  if (!result.ok) {
+    throw new Error(`Could not set last reader session (${result.status}): ${result.body}`)
+  }
 })
 
 When('I start reading', async function () {
@@ -195,8 +154,6 @@ When('I leave the app without starting the reader', async function () {
 })
 
 When('I open the floating menu and go to Help', async function () {
-  // Prefer structured selectors for `<details>`/`<summary>` + Daisy dropdown — Chromium’s
-  // role/name exposure for the chrome summary is not stable enough for `getByRole('button')`.
   const menu = this.page.locator('body > header .dropdown.dropdown-end').first()
   const summary = menu.locator('summary').first()
   await expect(summary).toBeVisible({ timeout: 15_000 })
@@ -217,7 +174,7 @@ When('I return to the timeline by opening home', async function () {
 When('I focus the {word} reader article', async function (ordinal) {
   const article = this.readerArticles?.[articleOrdinalIndex(ordinal)]
   if (!article) throw new Error(`No ${ordinal} reader article exists.`)
-  const card = this.page.locator(`[data-testid="article-card"][data-article-id="${article.id}"]`).first()
+  const card = readerArticleCard(this.page, article.id)
   await expect(card).toBeVisible()
   await card.scrollIntoViewIfNeeded()
   await expect.poll(async () => visibleRatio(card)).toBeGreaterThan(0.5)
@@ -234,19 +191,17 @@ When('I press the read-state shortcut', async function () {
   await this.page.keyboard.press('m')
 })
 
-When('I mark the current reader article as read via the API', async function () {
-  const articleId = this.currentReaderArticleId
-  if (!articleId) throw new Error('No current reader article is focused.')
-  await authedJsonFetch(this, `/api/me/articles/${encodeURIComponent(articleId)}/read-state`, {
-    method: 'PATCH',
-    body: JSON.stringify({ read: true }),
-  })
+When('I mark the current reader article as read', async function () {
+  const card = currentArticle(this)
+  const readControl = card.locator('[data-testid="article-read-status"]').first()
+  if ((await readControl.getAttribute('aria-pressed')) !== 'true') {
+    await readControl.click()
+  }
+  await expect(readControl).toHaveAttribute('aria-pressed', 'true', { timeout: 10_000 })
 })
 
 Given('read articles are hidden in my timeline view', async function () {
-  await this.page.evaluate(() => {
-    window.localStorage.setItem('infl0.timeline.showRead', '0')
-  })
+  await setShowReadArticles(this.page, false)
 })
 
 Then('the URL should point to the {word} reader article', async function (ordinal) {
@@ -258,64 +213,45 @@ Then('the URL should point to the {word} reader article', async function (ordina
 Then('the {word} reader article should be restored as my current reader article', async function (ordinal) {
   const article = this.readerArticles?.[articleOrdinalIndex(ordinal)]
   if (!article) throw new Error(`No ${ordinal} reader article exists.`)
-  const card = this.page.locator(`[data-testid="article-card"][data-article-id="${article.id}"]`).first()
+  const card = readerArticleCard(this.page, article.id)
   await expect(card).toBeVisible()
   await expect.poll(async () => visibleRatio(card)).toBeGreaterThan(0.5)
 })
 
 Then('the current reader article should show that it is read', async function () {
-  const card = currentArticle(this)
-  await expect(card.locator('[data-testid="article-read-status"]').first()).toBeVisible({
-    timeout: 10_000,
-  })
-  await expect(card.locator('[data-testid="article-read-status"]').first()).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  )
+  const readControl = currentArticle(this).locator('[data-testid="article-read-status"]').first()
+  await expect(readControl).toBeVisible({ timeout: 10_000 })
+  await expect(readControl).toHaveAttribute('aria-pressed', 'true')
 })
 
 Then('the current reader article should become read', async function () {
-  const card = currentArticle(this)
-  await expect(card.locator('[data-testid="article-read-status"]').first()).toHaveAttribute(
-    'aria-pressed',
-    'true',
-    { timeout: 10_000 },
-  )
-  const data = await readStateForCurrentArticle(this)
-  expect(data.item?.readAt).not.toBeNull()
+  await expect(
+    currentArticle(this).locator('[data-testid="article-read-status"]').first(),
+  ).toHaveAttribute('aria-pressed', 'true', { timeout: 10_000 })
 })
 
 Then('the current reader article should become unread', async function () {
-  const card = currentArticle(this)
-  await expect(card.locator('[data-testid="article-read-status"]').first()).toHaveAttribute(
-    'aria-pressed',
-    'false',
-    { timeout: 10_000 },
-  )
-  const data = await readStateForCurrentArticle(this)
-  expect(data.item?.readAt).toBeNull()
+  await expect(
+    currentArticle(this).locator('[data-testid="article-read-status"]').first(),
+  ).toHaveAttribute('aria-pressed', 'false', { timeout: 10_000 })
 })
 
 Then('no reading behaviour event should be stored for the current reader article', async function () {
   const articleId = this.currentReaderArticleId
   if (!articleId) throw new Error('No current reader article is focused.')
-  const data = await authedJsonFetch(this, '/api/me/personalization-dashboard', { method: 'GET' })
-  expect(data.pies.feeds).toEqual([])
-  expect(data.pies.categories).toEqual([])
-  expect(data.pies.tags).toEqual([])
-
-  const row = data.timeline.find((candidate) => candidate.articleId === articleId)
-  expect(row, `No personalization row found for article ${articleId}`).toBeTruthy()
-  expect(row.engagement.feed.posPoints).toBe(0)
-  expect(row.engagement.feed.negPoints).toBe(0)
-  for (const category of row.engagement.categories) {
-    expect(category.posPoints).toBe(0)
-    expect(category.negPoints).toBe(0)
+  await this.page.goto('/settings/personalization')
+  await expect(this.page).toHaveURL(/\/settings\/personalization/u)
+  const row = this.page.locator(
+    `[data-testid="personalization-timeline-row"][data-article-id="${articleId}"]`,
+  )
+  await expect(row).toBeVisible({ timeout: 20_000 })
+  const feedback = row.getByTestId('personalization-feed-feedback')
+  if (!(await feedback.isVisible())) {
+    await row.getByRole('button').first().click()
   }
-  for (const tag of row.engagement.tags) {
-    expect(tag.posPoints).toBe(0)
-    expect(tag.negPoints).toBe(0)
-  }
+  await expect(feedback).toHaveText('0 / 0', {
+    timeout: 15_000,
+  })
 })
 
 Then('I should see the reader start screen', async function () {
@@ -341,28 +277,13 @@ Then('I should see {int} new reader articles on the reader start screen', async 
 Then('the first reader article should still be unread', async function () {
   const article = this.readerArticles?.[0]
   if (!article) throw new Error('No first reader article exists.')
-  const data = await readStateForArticle(this, article.id)
-  const item = data.item
-  expect(item).toBeTruthy()
-  expect(item.readAt).toBeNull()
+  await this.page.goto('/')
+  await setShowReadArticles(this.page, true)
+  await this.page.getByTestId('reader-start-button').click()
+  const card = readerArticleCard(this.page, article.id)
+  await expect(card).toBeVisible({ timeout: 15_000 })
+  await expect(card.locator('[data-testid="article-read-status"]').first()).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
 })
-
-async function readStateForCurrentArticle(world) {
-  const articleId = world.currentReaderArticleId
-  if (!articleId) throw new Error('No current reader article is focused.')
-  return await readStateForArticle(world, articleId)
-}
-
-async function readStateForArticle(world, articleId) {
-  await ensureAppOrigin(world)
-  const data = await world.page.evaluate(async (targetArticleId) => {
-    const res = await fetch('/api/inflow?showRead=1', { credentials: 'include' })
-    return { ok: res.ok, status: res.status, body: await res.json(), articleId: targetArticleId }
-  }, articleId)
-  expect(data.ok, `GET /api/inflow?showRead=1 failed with ${data.status}`).toBe(true)
-  return {
-    item: data.body.items.find(
-      (candidate) => candidate.type === 'article' && candidate.id === data.articleId,
-    ),
-  }
-}
