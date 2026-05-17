@@ -443,6 +443,7 @@ async function removeFeed(id: string) {
                         ]"
                         :style="rowAccentVar(latestByFeedId[f.id] ?? null) ? { borderLeftColor: rowAccentVar(latestByFeedId[f.id] ?? null)! } : undefined"
                         :data-feed-id="f.id"
+                        :data-crawl-key="f.crawlKey"
                         :data-active="f.active ? 'true' : 'false'"
                         :data-attention="isAttentionStatus(latestByFeedId[f.id] ?? null) ? 'true' : 'false'"
                     >

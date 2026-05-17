@@ -55,7 +55,7 @@ Feature: Reader context stays stable
     Given I open the timeline
     When I start reading
     And I focus the second reader article
-    When I mark the current reader article as read via the API
+    When I mark the current reader article as read
     And read articles are hidden in my timeline view
     When I reload the timeline
     Then I should see the reader start screen

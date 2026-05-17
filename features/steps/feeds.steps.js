@@ -1,12 +1,7 @@
 import { Given, When, Then } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
-
-/**
- * Locate a single source row in the list by matching visible text (URL or title).
- */
-function sourceRow(page, snippet) {
-  return page.locator('[data-testid="feeds-source-list"] li').filter({ hasText: snippet })
-}
+import { postCrawlerSourceHealth } from '../support/crawler-fixtures.js'
+import { rememberFeedFromRow, sourceRow } from '../support/ui-helpers.js'
 
 /**
  * Open the row’s `<details>` without relying on double-click semantics.
@@ -17,49 +12,6 @@ async function ensureSourceRowExpanded(row) {
   await details.evaluate((/** @type {HTMLDetailsElement} */ el) => {
     if (!el.open) el.open = true
   })
-}
-
-async function browserFetchJson(page, path, init = {}) {
-  const { method = 'GET', body, headers = {} } = init
-  return page.evaluate(
-    async ({ path: urlPath, method: m, body: b, headers: h }) => {
-      const hasBody = b !== undefined && b !== null
-      const res = await fetch(urlPath, {
-        method: m,
-        credentials: 'include',
-        headers: {
-          ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
-          ...h,
-        },
-        ...(hasBody ? { body: JSON.stringify(b) } : {}),
-      })
-      const text = await res.text()
-      let data = null
-      if (text) {
-        try {
-          data = JSON.parse(text)
-        } catch {
-          data = null
-        }
-      }
-      return { ok: res.ok, status: res.status, data, text }
-    },
-    { path, method, body: body ?? null, headers },
-  )
-}
-
-/** After a successful add, resolve crawlKey for crawler contract steps. */
-async function rememberFeedFromApi(page, world, feedUrl) {
-  const res = await browserFetchJson(page, '/api/feeds')
-  if (!res.ok) {
-    throw new Error(`GET /api/feeds failed (${res.status}): ${res.text}`)
-  }
-  const feed = res.data?.feeds?.find((f) => f.feedUrl === feedUrl)
-  if (!feed?.crawlKey) {
-    throw new Error(`Source ${feedUrl} was not saved (missing from /api/feeds).`)
-  }
-  world.lastCrawlKey = feed.crawlKey
-  world.lastFeedId = feed.id
 }
 
 When('I open the sources page', async function () {
@@ -106,7 +58,7 @@ When(
     }
 
     await expect(row).toBeVisible({ timeout: 15_000 })
-    await rememberFeedFromApi(this.page, this, address)
+    await rememberFeedFromRow(this.page, this, address)
   },
 )
 
@@ -134,26 +86,15 @@ Given('the crawler API key is configured', function () {
 When(
   'I post crawler source health for the last added source as {string}',
   async function (healthStatus) {
-    const key = process.env.NUXT_CRAWLER_API_KEY?.trim()
-    if (!key) {
-      throw new Error('NUXT_CRAWLER_API_KEY is not set')
-    }
     const crawlKey = this.lastCrawlKey
     if (!crawlKey) {
       throw new Error('No last added source — run the add-source step first (lastCrawlKey missing).')
     }
-    const res = await browserFetchJson(this.page, '/api/crawler/source-status', {
-      method: 'POST',
-      headers: { 'X-Crawler-Key': key },
-      body: {
-        crawlKey,
-        sourceStatus: 'ready',
-        sourceHealthStatus: healthStatus,
-      },
+    await postCrawlerSourceHealth(this.page, {
+      crawlKey,
+      sourceStatus: 'ready',
+      sourceHealthStatus: healthStatus,
     })
-    if (!res.ok) {
-      throw new Error(`POST /api/crawler/source-status failed (${res.status}): ${res.text}`)
-    }
     await this.page.reload()
   },
 )

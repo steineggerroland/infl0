@@ -159,6 +159,8 @@ function directionLabel(value: number | null | undefined) {
               v-for="row in data.timeline"
               :key="row.timelineItemId"
               class="infl0-panel--flush"
+              data-testid="personalization-timeline-row"
+              :data-article-id="row.articleId"
             >
               <button
                 type="button"
@@ -291,7 +293,9 @@ function directionLabel(value: number | null | undefined) {
                       </div>
                       <div>
                         <span class="infl0-section-label">{{ $t('settingsPersonalization.feedbackLabel') }}</span>
-                        {{ row.engagement.feed.posPoints }} / {{ row.engagement.feed.negPoints }}
+                        <span data-testid="personalization-feed-feedback">
+                          {{ row.engagement.feed.posPoints }} / {{ row.engagement.feed.negPoints }}
+                        </span>
                       </div>
                       <div>
                         <span class="infl0-section-label">{{ $t('settingsPersonalization.scoreLabel') }}</span>

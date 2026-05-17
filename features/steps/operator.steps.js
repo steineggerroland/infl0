@@ -1,34 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
-
-async function browserFetchJson(page, path, init = {}) {
-  const { method = 'GET', body, headers = {} } = init
-  return page.evaluate(
-    async ({ path: urlPath, method: m, body: b, headers: h }) => {
-      const hasBody = b !== undefined && b !== null
-      const res = await fetch(urlPath, {
-        method: m,
-        credentials: 'include',
-        headers: {
-          ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
-          ...h,
-        },
-        ...(hasBody ? { body: JSON.stringify(b) } : {}),
-      })
-      const text = await res.text()
-      let data = null
-      if (text) {
-        try {
-          data = JSON.parse(text)
-        } catch {
-          data = null
-        }
-      }
-      return { ok: res.ok, status: res.status, data, text }
-    },
-    { path, method, body: body ?? null, headers },
-  )
-}
+import { postCrawlerSourceHealth } from '../support/crawler-fixtures.js'
 
 Given('I am signed in as seeded operator', async function () {
   if (!this.browser) throw new Error('Browser not initialized.')
@@ -60,9 +32,9 @@ Given('I am signed in as seeded operator', async function () {
 })
 
 Given('I post operator source status fixtures', async function () {
-  const key = process.env.NUXT_CRAWLER_API_KEY?.trim()
-  if (!key) throw new Error('NUXT_CRAWLER_API_KEY is not set')
-
+  if (!process.env.NUXT_CRAWLER_API_KEY?.trim()) {
+    throw new Error('NUXT_CRAWLER_API_KEY is not set')
+  }
   const fixtures = [
     {
       crawlKey: 'https://example.com/operator-blocked.xml',
@@ -104,14 +76,7 @@ Given('I post operator source status fixtures', async function () {
   ]
 
   for (const body of fixtures) {
-    const res = await browserFetchJson(this.page, '/api/crawler/source-status', {
-      method: 'POST',
-      headers: { 'X-Crawler-Key': key },
-      body,
-    })
-    if (!res.ok) {
-      throw new Error(`POST /api/crawler/source-status failed (${res.status}): ${res.text}`)
-    }
+    await postCrawlerSourceHealth(this.page, body)
   }
 })
 
@@ -171,4 +136,3 @@ Then('the operator table should include source key {string}', async function (cr
 Then('the operator table should not include source key {string}', async function (crawlKey) {
   await expect(this.page.locator('[data-testid="operator-sources-table"]')).not.toContainText(crawlKey)
 })
-
