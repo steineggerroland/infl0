@@ -15,6 +15,7 @@ Given('I start as a signed-out visitor', async function () {
   this.context = await this.browser.newContext({
     baseURL: this.baseURL,
     locale: 'en-US',
+    serviceWorkers: 'block',
     extraHTTPHeaders: {
       'Accept-Language': 'en-US,en;q=0.9',
     },

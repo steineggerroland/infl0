@@ -26,6 +26,8 @@ export default defineNuxtConfig({
     includeAssets: ['favicon-32x32.png', 'apple-touch-icon.png', 'mask-icon.svg'],
     manifest: pwaWebManifest,
     workbox: {
+      // SSR: do not serve `/` for navigations — breaks server routes and can confuse asset loads.
+      navigateFallback: undefined,
       navigateFallbackDenylist: [/^\/api\//, /^\/operator/],
       cleanupOutdatedCaches: true,
     },

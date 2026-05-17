@@ -12,6 +12,7 @@ This folder contains executable user-facing behavior specifications using Cucumb
   - registration/login behavior in `features/steps/auth.steps.js`
   - settings hub / tracking / personalization in `features/steps/settings.steps.js`
   - feeds (sources) in `features/steps/feeds.steps.js`
+  - home-screen install listing in `features/steps/pwa.steps.js`
 - Browser locale is forced to English in `features/support/world.js` so scenario wording and assertions stay EN-consistent.
 
 ## Authoring rules
@@ -21,6 +22,8 @@ This folder contains executable user-facing behavior specifications using Cucumb
 - Keep technical setup hidden inside step definitions and world helpers.
 - Prefer API/UI setup so scenarios can eventually run against a deployed instance with HTTP only.
 - Avoid direct database access in step definitions whenever the behavior can be set up or asserted through UI/API flows.
+- Tag `@http-only` when a scenario only checks server-delivered install metadata (no browser, no signed-in session).
+- Browser scenarios use `serviceWorkers: 'block'` so the PWA service worker does not intercept `/api/*` during UI flows.
 - When behavior is already covered by BDD, avoid duplicating the same feature logic in E2E specs.
 
 ## Test gaps
@@ -46,6 +49,10 @@ Covered in BDD today:
 - **`operator_sources.feature`** — operator route protection (`403` for non-allowlisted
   user), operator access for seeded account, summary band visibility, attention-first
   row order, and filter behavior (blocked/quiet).
+- **`add_infl0_to_home_screen.feature`** — install listing (name, EN/DE description,
+  standalone app window, portrait/landscape), home-screen shortcuts to timeline /
+  sources / settings, install icons, in-place updates, sign-in page ready for phone
+  install (manifest link, viewport).
 
 Still sensible follow-ups:
 

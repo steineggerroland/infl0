@@ -68,7 +68,11 @@ setWorldConstructor(BddWorld)
 // runner kills the step first — seen as flaky failures on `POST /api/feeds`.
 setDefaultTimeout(60_000)
 
-Before(async function () {
+Before({ tags: '@http-only' }, async function () {
+  loadE2eMergedEnv()
+})
+
+Before({ tags: 'not @http-only' }, async function () {
   loadE2eMergedEnv()
   this.browser = await chromium.launch({ headless: true })
   const storageState = await createFreshOnboardingStorageState(this.baseURL)
@@ -76,6 +80,8 @@ Before(async function () {
     baseURL: this.baseURL,
     storageState,
     locale: 'en-US',
+    // BDD asserts UI/API behaviour on the live server — not offline PWA caching.
+    serviceWorkers: 'block',
     extraHTTPHeaders: {
       'Accept-Language': 'en-US,en;q=0.9',
     },

@@ -19,9 +19,6 @@ async function ensureSourceRowExpanded(row) {
   })
 }
 
-/**
- * Same-origin fetch so session cookies are sent (matches Playwright e2e helpers).
- */
 async function browserFetchJson(page, path, init = {}) {
   const { method = 'GET', body, headers = {} } = init
   return page.evaluate(
@@ -51,6 +48,20 @@ async function browserFetchJson(page, path, init = {}) {
   )
 }
 
+/** After a successful add, resolve crawlKey for crawler contract steps. */
+async function rememberFeedFromApi(page, world, feedUrl) {
+  const res = await browserFetchJson(page, '/api/feeds')
+  if (!res.ok) {
+    throw new Error(`GET /api/feeds failed (${res.status}): ${res.text}`)
+  }
+  const feed = res.data?.feeds?.find((f) => f.feedUrl === feedUrl)
+  if (!feed?.crawlKey) {
+    throw new Error(`Source ${feedUrl} was not saved (missing from /api/feeds).`)
+  }
+  world.lastCrawlKey = feed.crawlKey
+  world.lastFeedId = feed.id
+}
+
 When('I open the sources page', async function () {
   await this.page.goto('/feeds')
   await expect(this.page).toHaveURL(/\/feeds/u)
@@ -70,35 +81,32 @@ When(
     await this.page.locator('#feed-url-input').fill(address)
     await this.page.locator('#feed-display-input').fill(displayName)
 
-    const matchesCreateFeedPost = (res) => {
-      if (res.request().method() !== 'POST') return false
-      try {
-        const path = new URL(res.url()).pathname.replace(/\/$/, '')
-        return path === '/api/feeds'
-      } catch {
-        return false
-      }
-    }
-
     const submit = this.page.locator('[data-testid="feeds-add-fieldset"] button[type="submit"]')
+    const errorAlert = this.page.getByTestId('feeds-add-error')
+    const row = sourceRow(this.page, address)
 
-    const [postRes] = await Promise.all([
-      this.page.waitForResponse(matchesCreateFeedPost, { timeout: 120_000 }),
-      submit.click(),
-    ])
-    if (!postRes.ok()) {
-      const body = await postRes.text().catch(() => '')
-      throw new Error(`POST /api/feeds failed (${postRes.status()}): ${body}`)
+    await expect(submit).toBeEnabled({ timeout: 30_000 })
+    await submit.scrollIntoViewIfNeeded()
+    await submit.click()
+
+    // User-visible outcome: row appears or the form shows an error (not Playwright network hooks).
+    await expect
+      .poll(
+        async () => {
+          if (await errorAlert.isVisible()) return 'error'
+          if ((await row.count()) > 0) return 'ok'
+          return 'pending'
+        },
+        { timeout: 90_000 },
+      )
+      .not.toBe('pending')
+
+    if (await errorAlert.isVisible()) {
+      throw new Error(`Add source failed in UI: ${await errorAlert.textContent()}`)
     }
 
-    const payload = await postRes.json().catch(() => null)
-    if (payload?.feed?.crawlKey) {
-      this.lastCrawlKey = payload.feed.crawlKey
-      this.lastFeedId = payload.feed.id
-    }
-
-    await expect(this.page.getByTestId('feeds-add-error')).toHaveCount(0)
-    await expect(this.page.getByTestId('feeds-source-list')).toBeVisible({ timeout: 30_000 })
+    await expect(row).toBeVisible({ timeout: 15_000 })
+    await rememberFeedFromApi(this.page, this, address)
   },
 )
 
