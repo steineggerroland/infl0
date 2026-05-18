@@ -10,6 +10,8 @@ import {
     type InflowReturnAnchor,
 } from '~/utils/inflow-return-context'
 import { parseInflowAnchorPath, pathForInflowAnchor } from '~/utils/inflow-route'
+import { episodeToArticleCardProps } from '~/utils/inflow-episode'
+import type { InflowEpisodeChapter } from '~/utils/inflow-episode'
 
 definePageMeta({
     layout: 'app',
@@ -36,6 +38,29 @@ type InflowArticle = {
     rawMarkdown?: string
 }
 
+type InflowEpisode = {
+    type: 'episode'
+    id: string
+    title: string
+    teaser: string
+    summary_long: string
+    link: string
+    publishedAt: string
+    fetchedAt?: string
+    insertedAt?: string
+    readAt?: string | null
+    category?: string[]
+    tags?: string[]
+    source_type: string
+    tld?: string
+    author?: string
+    rawMarkdown?: string
+    shownotes_md?: string
+    media_url?: string
+    duration_seconds?: number
+    chapters?: InflowEpisodeChapter[]
+}
+
 type InflowOnboarding = {
     type: 'onboarding'
     id: string
@@ -45,7 +70,12 @@ type InflowOnboarding = {
     cta?: OnboardingCardCta
 }
 
-type InflowItem = InflowArticle | InflowOnboarding
+type InflowReadable = InflowArticle | InflowEpisode
+type InflowItem = InflowReadable | InflowOnboarding
+
+function isInflowReadable(item: InflowItem): item is InflowReadable {
+    return item.type === 'article' || item.type === 'episode'
+}
 
 type UserFeedRow = {
     id: string
@@ -89,7 +119,7 @@ async function loadInflowPage(reset: boolean) {
     if (!reset && !inflowHasMore.value) return
     inflowPending.value = true
     try {
-        const articleOffset = reset ? 0 : items.value.filter((i) => i.type === 'article').length
+        const articleOffset = reset ? 0 : items.value.filter((i) => isInflowReadable(i)).length
         const res = await requestFetch<{
             items: InflowItem[]
             hasMore: boolean
@@ -208,7 +238,7 @@ watch(
 
 const feedList = computed(() => feedsData.value?.feeds ?? [])
 const articleItems = computed(() =>
-    items.value.filter((i): i is InflowArticle => i.type === 'article'),
+    items.value.filter((i): i is InflowReadable => isInflowReadable(i)),
 )
 const onboardingItems = computed(() =>
     items.value.filter((i): i is InflowOnboarding => i.type === 'onboarding'),
@@ -343,12 +373,14 @@ function onInflowScroll() {
 }
 
 function anchorForItem(item: InflowItem): InflowReturnAnchor {
+    // Episodes share the article deep-link route until a dedicated episode path exists.
+    if (item.type === 'episode') return { type: 'article', id: item.id }
     return { type: item.type, id: item.id }
 }
 
 function articleOffsetBeforeIndex(index: number): number {
     if (index <= 0) return 0
-    return items.value.slice(0, index).filter((i) => i.type === 'article').length
+    return items.value.slice(0, index).filter((i) => isInflowReadable(i)).length
 }
 
 function persistInflowContext(index = currentIndex.value) {
@@ -453,7 +485,7 @@ async function restoreInflowContext() {
 }
 
 function firstArticleIndex(): number {
-    return items.value.findIndex((item) => item.type === 'article')
+    return items.value.findIndex((item) => isInflowReadable(item))
 }
 
 async function markReaderSessionStarted() {
@@ -749,6 +781,14 @@ onBeforeUnmount(() => {
                     v-if="item.type === 'article'"
                     class="article rounded-xl"
                     :article="item"
+                    :is-selected="index === currentIndex"
+                    @commit="commitInflowContext(index)"
+                />
+                <!-- EpisodeCard UI follows in a dedicated pass; bridge keeps reader shortcuts working. -->
+                <ArticleView
+                    v-else-if="item.type === 'episode'"
+                    class="article rounded-xl"
+                    :article="episodeToArticleCardProps(item)"
                     :is-selected="index === currentIndex"
                     @commit="commitInflowContext(index)"
                 />

@@ -13,6 +13,15 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **TopicKnowledgeCrawler ingest contract:** `POST /api/crawler/ingest`
+  accepts TKC article and podcast episode payloads from the checked-in
+  `tests/fixtures/tkc-ingest/*.json` contract examples. Articles now persist
+  `updated_at`; episodes persist podcast metadata, shownotes, chapters,
+  transcripts, chapter/transcript fetch diagnostics, and `explicit` as a
+  boolean. Unsupported section payloads are rejected for now and surfaced via
+  `SourceStatus` with operator attention. New unit and Playwright E2E tests
+  exercise `article.json`, `episode.json`, and `section.json` against the
+  ingest flow.
 - **Progressive Web App (PWA):** installable from Chrome (manifest, icons,
   service worker, EN/DE install text, home-screen shortcuts, update toast).
   Regenerate icons with `npm run pwa:icons`. Preview on port **3001**;
