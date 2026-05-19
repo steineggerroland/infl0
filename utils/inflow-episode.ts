@@ -30,37 +30,6 @@ export function parseEpisodeChapters(raw: unknown): InflowEpisodeChapter[] | und
   return out.length > 0 ? out : undefined
 }
 
-/** Temporary bridge until `EpisodeCard` ships — same flip-card props as `ArticleView`. */
-export function episodeToArticleCardProps(episode: {
-  id: string
-  title: string
-  link: string
-  author?: string
-  publishedAt: string
-  source_type?: string
-  tld?: string
-  teaser: string
-  summary_long: string
-  category?: string[]
-  rawMarkdown?: string
-  readAt?: string | null
-}) {
-  return {
-    id: episode.id,
-    title: episode.title,
-    teaser: episode.teaser,
-    summary_long: episode.summary_long,
-    link: episode.link,
-    publishedAt: episode.publishedAt,
-    category: episode.category,
-    source_type: episode.source_type ?? 'rss+podcast',
-    rawMarkdown: episode.rawMarkdown,
-    readAt: episode.readAt ?? null,
-    tld: episode.tld ?? '',
-    author: episode.author ?? '',
-  }
-}
-
 export function formatEpisodeDuration(seconds: number | null | undefined): string | null {
   if (seconds == null || !Number.isFinite(seconds) || seconds < 0) return null
   const total = Math.trunc(seconds)

@@ -85,6 +85,7 @@ function fakeEpisodeRow(id: string) {
       sourceType: 'rss+podcast',
       tld: 'example.com',
       contentMd: null,
+      crawlKey: 'https://example.com/podcast/feed.xml',
       shownotesMd: '## Notes',
       mediaUrl: 'https://cdn.example.com/ep.mp3',
       mediaType: 'audio/mpeg',
@@ -226,6 +227,7 @@ describe('loadInflowPage', () => {
     expect(episode).toBeDefined()
     if (episode && episode.type === 'episode') {
       expect(episode.id).toBe('e1')
+      expect(episode.crawl_key).toBe('https://example.com/podcast/feed.xml')
       expect(episode.media_url).toBe('https://cdn.example.com/ep.mp3')
       expect(episode.chapters).toEqual([{ start_seconds: 0, title: 'Intro' }])
     } else {

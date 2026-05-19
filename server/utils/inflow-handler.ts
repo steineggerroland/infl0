@@ -74,6 +74,9 @@ export interface InflowEpisodeItem {
   subtitle?: string
   image_url?: string
   chapters?: InflowEpisodeChapter[]
+  crawl_key: string
+  transcript_md?: string
+  transcript_url?: string
   insertedAt: string
   readAt: string | null
 }
@@ -144,6 +147,9 @@ function mapEpisode(e: EpisodeWithEnrichment): Omit<InflowEpisodeItem, 'type' | 
     ...(e.subtitle ? { subtitle: e.subtitle } : {}),
     ...(e.imageUrl ? { image_url: e.imageUrl } : {}),
     ...(chapters ? { chapters } : {}),
+    crawl_key: e.crawlKey,
+    ...(e.transcriptMd ? { transcript_md: e.transcriptMd } : {}),
+    ...(e.transcriptUrl ? { transcript_url: e.transcriptUrl } : {}),
   }
 }
 

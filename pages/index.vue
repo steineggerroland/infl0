@@ -10,7 +10,6 @@ import {
     type InflowReturnAnchor,
 } from '~/utils/inflow-return-context'
 import { parseInflowAnchorPath, pathForInflowAnchor } from '~/utils/inflow-route'
-import { episodeToArticleCardProps } from '~/utils/inflow-episode'
 import type { InflowEpisodeChapter } from '~/utils/inflow-episode'
 
 definePageMeta({
@@ -57,8 +56,18 @@ type InflowEpisode = {
     rawMarkdown?: string
     shownotes_md?: string
     media_url?: string
+    media_type?: string
     duration_seconds?: number
+    episode_number?: number | null
+    season_number?: number | null
+    episode_type?: string
+    explicit?: boolean
+    subtitle?: string
+    image_url?: string
     chapters?: InflowEpisodeChapter[]
+    crawl_key?: string
+    transcript_md?: string
+    transcript_url?: string
 }
 
 type InflowOnboarding = {
@@ -80,6 +89,7 @@ function isInflowReadable(item: InflowItem): item is InflowReadable {
 type UserFeedRow = {
     id: string
     feedUrl: string
+    crawlKey: string
     displayTitle: string | null
     createdAt: string
 }
@@ -237,6 +247,19 @@ watch(
 )
 
 const feedList = computed(() => feedsData.value?.feeds ?? [])
+
+function feedContextForEpisode(episode: InflowEpisode): {
+    podcastTitle: string | null
+    feedUrl: string | null
+} {
+    const crawlKey = episode.crawl_key?.trim()
+    if (!crawlKey) return { podcastTitle: null, feedUrl: null }
+    const feed = feedList.value.find((f) => f.crawlKey === crawlKey)
+    return {
+        podcastTitle: feed?.displayTitle ?? null,
+        feedUrl: feed?.feedUrl ?? null,
+    }
+}
 const articleItems = computed(() =>
     items.value.filter((i): i is InflowReadable => isInflowReadable(i)),
 )
@@ -784,12 +807,12 @@ onBeforeUnmount(() => {
                     :is-selected="index === currentIndex"
                     @commit="commitInflowContext(index)"
                 />
-                <!-- EpisodeCard UI follows in a dedicated pass; bridge keeps reader shortcuts working. -->
-                <ArticleView
+                <EpisodeCard
                     v-else-if="item.type === 'episode'"
                     class="article rounded-xl"
-                    :article="episodeToArticleCardProps(item)"
+                    :episode="item"
                     :is-selected="index === currentIndex"
+                    v-bind="feedContextForEpisode(item)"
                     @commit="commitInflowContext(index)"
                 />
                 <OnboardingCardView
