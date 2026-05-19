@@ -53,4 +53,4 @@ Feature: Article and episode card presentation
     When I view the teaser of the minimal episode
     Then I should see the minimal episode teaser
     When I flip the focused card to the back
-    Then I should see the minimal episode back without optional fields
+    Then I should see the minimal episode back with core actions only

@@ -249,9 +249,10 @@ Then('I should see the minimal episode teaser', async function () {
   await expectNoFocusedCardText(this, 'Season 3 · Episode 42')
 })
 
-Then('I should see the minimal episode back without optional fields', async function () {
+Then('I should see the minimal episode back with core actions only', async function () {
   const card = focusedCard(this)
   await expect(card.getByTestId('episode-play-browser')).toBeVisible()
+  await expectFocusedCardLink(this, 'bdd/present/podcast-')
   await expect(card.getByTestId('episode-chapters-collapsible')).toHaveCount(0)
   await expect(card.getByTestId('episode-shownotes-collapsible')).toHaveCount(0)
   await expect(card.getByTestId('episode-details-link')).toHaveCount(0)
