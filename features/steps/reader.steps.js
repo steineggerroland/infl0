@@ -1,11 +1,9 @@
 import { Given, Then, When } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
 import { crawlerIngest, prepareReaderInflowFixture } from '../support/crawler-fixtures.js'
-import {
-  readerArticleCard,
-  setReadingBehaviourTracking,
-  setShowReadArticles,
-} from '../support/ui-helpers.js'
+import { ReaderTimeline } from '../support/reader-timeline.js'
+import { SettingsPage } from '../support/settings-page.js'
+import { UserMenu } from '../support/user-menu.js'
 
 function articleOrdinalIndex(ordinal) {
   if (ordinal === 'first') return 0
@@ -16,17 +14,11 @@ function articleOrdinalIndex(ordinal) {
 function currentArticle(world) {
   const id = world.currentReaderArticleId
   if (!id) throw new Error('No current reader article is focused.')
-  return readerArticleCard(world.page, id)
+  return new ReaderTimeline(world.page).articleCard(id)
 }
 
-async function visibleRatio(locator) {
-  return locator.evaluate((el) => {
-    const rect = el.getBoundingClientRect()
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-    const visibleHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0)
-    if (rect.height <= 0) return 0
-    return Math.max(0, Math.min(visibleHeight, rect.height)) / rect.height
-  })
+function timeline(world) {
+  return new ReaderTimeline(world.page)
 }
 
 async function ensureAppOrigin(world) {
@@ -90,9 +82,9 @@ Given('the first reader article is already read', async function () {
   const article = this.readerArticles?.[0]
   if (!article) throw new Error('No first reader article exists.')
   await this.page.goto('/')
-  await setShowReadArticles(this.page, true)
+  await timeline(this).setShowReadArticles(true)
   await this.page.getByTestId('reader-start-button').click()
-  const card = readerArticleCard(this.page, article.id)
+  const card = timeline(this).articleCard(article.id)
   await expect(card).toBeVisible()
   await card.scrollIntoViewIfNeeded()
   await card.locator('h1').first().click()
@@ -108,15 +100,15 @@ Given('the first reader article is already read', async function () {
 })
 
 Given('I show read reader articles', async function () {
-  await setShowReadArticles(this.page, true)
+  await timeline(this).setShowReadArticles(true)
 })
 
 Given('reading behaviour tracking is enabled', async function () {
-  await setReadingBehaviourTracking(this.page, true)
+  await new SettingsPage(this.page).setReadingBehaviourTracking(true)
 })
 
 Given('reading behaviour tracking is disabled', async function () {
-  await setReadingBehaviourTracking(this.page, false)
+  await new SettingsPage(this.page).setReadingBehaviourTracking(false)
 })
 
 /**
@@ -141,7 +133,7 @@ Given('my last reader session started before these articles arrived', async func
 })
 
 When('I start reading', async function () {
-  await this.page.getByTestId('reader-start-button').click()
+  await timeline(this).startReading()
 })
 
 When('I jump to the last reader article', async function () {
@@ -154,17 +146,7 @@ When('I leave the app without starting the reader', async function () {
 })
 
 When('I open the floating menu and go to Help', async function () {
-  const menu = this.page.locator('body > header .dropdown.dropdown-end').first()
-  const summary = menu.locator('summary').first()
-  await expect(summary).toBeVisible({ timeout: 15_000 })
-  const isOpen = await menu.evaluate((el) => el instanceof HTMLDetailsElement && el.open)
-  if (!isOpen) {
-    await summary.click()
-  }
-  const helpLink = menu.locator('.dropdown-content a[href="/help"]').first()
-  await expect(helpLink).toBeVisible({ timeout: 10_000 })
-  await helpLink.click()
-  await expect(this.page).toHaveURL(/\/help(?:[?#].*)?$/u, { timeout: 15_000 })
+  await new UserMenu(this.page).goToHelp()
 })
 
 When('I return to the timeline by opening home', async function () {
@@ -174,10 +156,10 @@ When('I return to the timeline by opening home', async function () {
 When('I focus the {word} reader article', async function (ordinal) {
   const article = this.readerArticles?.[articleOrdinalIndex(ordinal)]
   if (!article) throw new Error(`No ${ordinal} reader article exists.`)
-  const card = readerArticleCard(this.page, article.id)
+  const card = timeline(this).articleCard(article.id)
   await expect(card).toBeVisible()
   await card.scrollIntoViewIfNeeded()
-  await expect.poll(async () => visibleRatio(card)).toBeGreaterThan(0.5)
+  await expect.poll(async () => timeline(this).visibleRatio(card)).toBeGreaterThan(0.5)
   await card.locator('h1').first().click()
   await expect(card).toHaveAttribute('data-reader-selected', 'true')
   this.currentReaderArticleId = article.id
@@ -201,7 +183,7 @@ When('I mark the current reader article as read', async function () {
 })
 
 Given('read articles are hidden in my timeline view', async function () {
-  await setShowReadArticles(this.page, false)
+  await timeline(this).setShowReadArticles(false)
 })
 
 Then('the URL should point to the {word} reader article', async function (ordinal) {
@@ -213,9 +195,9 @@ Then('the URL should point to the {word} reader article', async function (ordina
 Then('the {word} reader article should be restored as my current reader article', async function (ordinal) {
   const article = this.readerArticles?.[articleOrdinalIndex(ordinal)]
   if (!article) throw new Error(`No ${ordinal} reader article exists.`)
-  const card = readerArticleCard(this.page, article.id)
+  const card = timeline(this).articleCard(article.id)
   await expect(card).toBeVisible()
-  await expect.poll(async () => visibleRatio(card)).toBeGreaterThan(0.5)
+  await expect.poll(async () => timeline(this).visibleRatio(card)).toBeGreaterThan(0.5)
 })
 
 Then('the current reader article should show that it is read', async function () {
@@ -278,9 +260,9 @@ Then('the first reader article should still be unread', async function () {
   const article = this.readerArticles?.[0]
   if (!article) throw new Error('No first reader article exists.')
   await this.page.goto('/')
-  await setShowReadArticles(this.page, true)
+  await timeline(this).setShowReadArticles(true)
   await this.page.getByTestId('reader-start-button').click()
-  const card = readerArticleCard(this.page, article.id)
+  const card = timeline(this).articleCard(article.id)
   await expect(card).toBeVisible({ timeout: 15_000 })
   await expect(card.locator('[data-testid="article-read-status"]').first()).toHaveAttribute(
     'aria-pressed',

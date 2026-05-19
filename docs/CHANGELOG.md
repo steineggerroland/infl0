@@ -13,6 +13,12 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Reader episode cards:** inflow can render podcast episodes with dedicated
+  card UI, icon registry, browser playback affordance for playable audio,
+  podcast/feed links, collapsible chapters and shownotes, and content/transcript
+  detail tabs. Demo seeding now includes podcast episodes, with component and
+  unit coverage for episode playback, card rendering, icon lookup, read-state
+  handling, and inflow mapping.
 - **TopicKnowledgeCrawler ingest contract:** `POST /api/crawler/ingest`
   accepts TKC article and podcast episode payloads from the checked-in
   `tests/fixtures/tkc-ingest/*.json` contract examples. Articles now persist
@@ -29,6 +35,9 @@ new entries accrue under **Unreleased**.
 - **BDD:** `add_infl0_to_home_screen.feature` — PO-readable scenarios for
   install listing, shortcuts, icons/updates, and sign-in page install hints
   (`@http-only` for metadata-only checks).
+- **BDD:** `content_presentation.feature` — PO-readable coverage for rich and
+  minimal article / episode card presentation, including episode actions,
+  optional sections, and details dialog content.
 
 ### Fixed
 
@@ -37,6 +46,10 @@ new entries accrue under **Unreleased**.
   errors when a stale service worker or wrong port is used).
 - **BDD:** block service workers in browser scenarios; add-source steps assert
   visible list outcome instead of flaky `waitForResponse` on `POST /api/feeds`.
+- **BDD maintainability:** replace the broad `ui-helpers` module with named
+  screen objects for sources, reader timeline, settings, and user menu; align
+  new scenarios on first-person wording and move low-level card assertions out
+  of the feature text.
 
 ## [0.5.0] — 2026-05-15
 

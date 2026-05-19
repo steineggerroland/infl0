@@ -1,12 +1,13 @@
 import { Given, Then } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
+import { ReaderTimeline } from '../support/reader-timeline.js'
 
 Given('I am signed in with a fresh onboarding account', async function () {
   expect(this.page).toBeTruthy()
 })
 
 Given('I open the timeline', async function () {
-  await this.page.goto('/')
+  await new ReaderTimeline(this.page).open()
 })
 
 Given('I start as a signed-out visitor', async function () {
