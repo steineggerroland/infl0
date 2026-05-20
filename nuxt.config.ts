@@ -60,8 +60,6 @@ export default defineNuxtConfig({
     crawlerApiKey: '',
     /** Set NUXT_REGISTRATION_INVITE_CODE; empty = registration API returns 403 */
     registrationInviteCode: '',
-    /** POST /api/cron/recompute-timeline-scores — header x-infl0-cron-key */
-    timelineScoreCronSecret: '',
   },
   devtools: { enabled: true },
   vite: {
