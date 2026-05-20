@@ -22,6 +22,7 @@ order, acceptance criteria — separate from the larger idea pool in
 
 | Package | Summary | Status |
 |--------|--------|--------|
+| [`episode-card-polish-a11y-security.md`](./episode-card-polish-a11y-security.md) | Round off episode card lint, accessibility, keyboard behavior, and crawler-content HTML safety | Draft |
 | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Add first BDD scenario wave for new-user, privacy-sensitive, and power-user personas | Draft |
 | [`ci-remote-e2e-smoke-strategy.md`](./ci-remote-e2e-smoke-strategy.md) | Decide and document remote CI strategy for smoke E2E gates | Draft |
 
@@ -34,5 +35,6 @@ package ships or when dependencies change.
 
 | Priority | Package | Rationale |
 |:--------:|---------|-----------|
-| **P1** | [`ci-remote-e2e-smoke-strategy.md`](./ci-remote-e2e-smoke-strategy.md) | Mostly **decision + docs** (and optional CI edits). Protects `main` during heavier UI work and can run **in parallel** with other packages if bandwidth allows. |
-| **P2** | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Broad BDD coverage wave; natural **after** major surfaces stabilise, or incrementally if scenarios stay behavior-focused. |
+| **P1** | [`episode-card-polish-a11y-security.md`](./episode-card-polish-a11y-security.md) | Small, high-leverage finishing pass for the just-shipped episode UI: remove known warnings, make the HTML trust boundary explicit, and tighten keyboard/a11y behavior before more content kinds build on it. |
+| **P2** | [`ci-remote-e2e-smoke-strategy.md`](./ci-remote-e2e-smoke-strategy.md) | Mostly **decision + docs** (and optional CI edits). Protects `main` during heavier UI work and can run **in parallel** with other packages if bandwidth allows. |
+| **P3** | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Broad BDD coverage wave; natural **after** major surfaces stabilise, or incrementally if scenarios stay behavior-focused. |
