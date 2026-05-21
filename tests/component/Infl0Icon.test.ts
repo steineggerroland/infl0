@@ -11,5 +11,17 @@ describe('Infl0Icon', () => {
 
     expect(wrapper.find('svg').exists()).toBe(true)
     expect(wrapper.element.tagName).not.toBe('INFL0ICON')
+    expect(wrapper.attributes('aria-hidden')).toBe('true')
+    expect(wrapper.attributes('role')).toBeUndefined()
+  })
+
+  it('uses the optional label as the accessible icon name', () => {
+    const wrapper = mount(Infl0Icon, {
+      props: { name: 'episode.play', label: 'Play episode' },
+    })
+
+    expect(wrapper.attributes('role')).toBe('img')
+    expect(wrapper.attributes('aria-label')).toBe('Play episode')
+    expect(wrapper.attributes('aria-hidden')).toBeUndefined()
   })
 })

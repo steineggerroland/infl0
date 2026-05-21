@@ -10,7 +10,7 @@ const props = withDefaults(
     /** Visual size; defaults to one line of text (`1em`). */
     size?: 'sm' | 'md' | 'lg'
   }>(),
-  { size: 'md' },
+  { label: undefined, size: 'md' },
 )
 
 const sizeClass = computed(() => {

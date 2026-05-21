@@ -41,6 +41,13 @@ new entries accrue under **Unreleased**.
 
 ### Fixed
 
+- **Episode card accessibility and HTML safety:** episode details now open as a
+  labelled dialog with screen-reader-friendly tabs (`aria-controls`,
+  tabpanels, roving `tabindex`, arrow/Home/End keyboard navigation), labelled
+  close control, and focus return to the triggering card action. Episode
+  Markdown rendering now goes through a named `SafeMarkdown` /
+  `renderSafeMarkdown()` sanitizer boundary with tests for allowed Markdown and
+  stripped unsafe HTML. The EpisodeCard / Infl0Icon lint warnings are resolved.
 - **PWA / SSR:** disable Workbox `navigateFallback` so navigations are not
   rewritten to `/` (avoids broken asset loads and `application/json` MIME
   errors when a stale service worker or wrong port is used).

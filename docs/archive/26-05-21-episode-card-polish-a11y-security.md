@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Done (2026-05-21)
 
 ## Goal
 
@@ -44,16 +44,18 @@ keyboard/a11y behavior, and documents the security boundary in code and tests.
 
 ## Implementation notes
 
-- Current lint warnings to address:
-  - `components/EpisodeCard.vue`: self-closing `<img />`.
-  - `components/EpisodeCard.vue`: three `vue/no-v-html` warnings.
-  - `components/Infl0Icon.vue`: optional `label` prop default.
-- Prefer a small named rendering helper over inline ad-hoc sanitizer calls, so
-  the trust boundary is visible and testable.
-- If sanitized HTML needs comments, keep them specific: explain the crawler
-  content boundary and sanitizer, not the mechanics of `v-html`.
-- Add tests near existing component/unit tests rather than adding more BDD
-  scenarios for implementation-level safety rules.
+- Episode details dialog now has `aria-labelledby`, a visible title, a labelled
+  tablist, tab/tabpanel `aria-controls` wiring, roving `tabindex`, arrow-key
+  navigation, Home/End support, a labelled close button, and focus return to the
+  triggering details action.
+- Episode Markdown rendering moved behind `SafeMarkdown` and
+  `renderSafeMarkdown()`, making the DOMPurify boundary explicit and directly
+  testable.
+- `Infl0Icon` now has an explicit default for optional labels and tests for
+  decorative vs accessible icon output.
+- Lint warnings for self-closing cover image, `v-html`, and icon label default
+  are resolved.
+- Verification: `npm run lint`, `npm run typecheck`, and `npm run test`.
 
 ## Links
 

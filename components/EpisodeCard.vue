@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { de, enUS } from 'date-fns/locale'
 import { format } from 'date-fns'
-import DOMPurify from 'dompurify'
-import { marked } from 'marked'
 import type { InflowEpisodeChapter } from '~/utils/inflow-episode'
 import { formatEpisodeDuration } from '~/utils/inflow-episode'
 import {
@@ -62,8 +60,6 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n()
 const dateLocale = computed(() => (locale.value === 'de' ? de : enUS))
-
-marked.setOptions({ gfm: true })
 
 const isDetailView = ref(false)
 const readAt = ref<string | null>(props.episode.readAt ?? null)
@@ -147,15 +143,55 @@ const hasDetailsModal = computed(
 const modalVisible = ref(false)
 const detailsTab = ref<'content' | 'transcript'>('content')
 const modal = ref<HTMLDialogElement | null>(null)
+const detailsLink = ref<HTMLAnchorElement | null>(null)
+const contentTabButton = ref<HTMLButtonElement | null>(null)
+const transcriptTabButton = ref<HTMLButtonElement | null>(null)
+const lastDialogTrigger = ref<HTMLElement | null>(null)
 const audioEl = ref<HTMLAudioElement | null>(null)
 
-function showDetails() {
+const safeEpisodeDomId = computed(
+  () => props.episode.id.replace(/[^A-Za-z0-9_-]+/g, '-') || 'episode',
+)
+const dialogTitleId = computed(() => `${safeEpisodeDomId.value}-details-title`)
+const tablistLabelId = computed(() => `${safeEpisodeDomId.value}-details-tabs-label`)
+const contentTabId = computed(() => `${safeEpisodeDomId.value}-tab-content`)
+const transcriptTabId = computed(() => `${safeEpisodeDomId.value}-tab-transcript`)
+const contentPanelId = computed(() => `${safeEpisodeDomId.value}-panel-content`)
+const transcriptPanelId = computed(() => `${safeEpisodeDomId.value}-panel-transcript`)
+
+const availableDetailTabs = computed<Array<'content' | 'transcript'>>(() => {
+  const tabs: Array<'content' | 'transcript'> = []
+  if (props.episode.rawMarkdown?.trim()) tabs.push('content')
+  if (props.episode.transcript_md?.trim()) tabs.push('transcript')
+  return tabs
+})
+
+function selectDetailsTab(tab: 'content' | 'transcript') {
+  if (!availableDetailTabs.value.includes(tab)) return
+  detailsTab.value = tab
+}
+
+async function focusSelectedTab() {
+  await nextTick()
+  const button =
+    detailsTab.value === 'content' ? contentTabButton.value : transcriptTabButton.value
+  button?.focus()
+}
+
+function showDetails(event?: Event) {
   if (!hasDetailsModal.value) return
   emit('commit')
-  detailsTab.value =
-    props.episode.rawMarkdown?.trim() ? 'content' : 'transcript'
+  const trigger = event?.currentTarget
+  lastDialogTrigger.value =
+    trigger instanceof HTMLElement
+      ? trigger
+      : document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null
+  detailsTab.value = props.episode.rawMarkdown?.trim() ? 'content' : 'transcript'
   modal.value?.showModal()
   modalVisible.value = true
+  void focusSelectedTab()
 }
 
 function toggleDetails() {
@@ -167,21 +203,31 @@ function toggleDetails() {
 function onDialogClose() {
   modalVisible.value = false
   audioEl.value?.pause()
+  lastDialogTrigger.value?.focus()
+  lastDialogTrigger.value = null
 }
 
-function renderMarkdown(md: string | undefined): string {
-  if (!md?.trim()) return ''
-  if (import.meta.server) return ''
-  try {
-    return DOMPurify.sanitize(marked.parse(md) as string)
-  } catch {
-    return ''
+function onDetailsTabKeydown(event: KeyboardEvent) {
+  const tabs = availableDetailTabs.value
+  if (tabs.length <= 1) return
+  const currentIndex = tabs.indexOf(detailsTab.value)
+  if (currentIndex < 0) return
+
+  let nextIndex: number | null = null
+  if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+    nextIndex = (currentIndex + 1) % tabs.length
+  } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+    nextIndex = (currentIndex - 1 + tabs.length) % tabs.length
   }
-}
+  else if (event.key === 'Home') nextIndex = 0
+  else if (event.key === 'End') nextIndex = tabs.length - 1
 
-const renderedContentMd = computed(() => renderMarkdown(props.episode.rawMarkdown))
-const renderedTranscriptMd = computed(() => renderMarkdown(props.episode.transcript_md))
-const renderedShownotesMd = computed(() => renderMarkdown(props.episode.shownotes_md))
+  const nextTab = nextIndex == null ? null : tabs[nextIndex]
+  if (nextTab == null) return
+  event.preventDefault()
+  detailsTab.value = nextTab
+  void focusSelectedTab()
+}
 
 function playInBrowser(fromSeconds = 0) {
   if (!playbackUrl.value || !audioEl.value) return
@@ -524,7 +570,7 @@ watch(
                 :alt="t('episode.coverAlt', { title: episode.title })"
                 class="h-16 w-16 shrink-0 rounded-md object-cover"
                 loading="lazy"
-              />
+              >
               <div class="min-w-0 flex-1">
                 <h2 class="mb-0 text-[0.95em] font-bold leading-snug text-[var(--infl0-article-back-fg)]">
                   {{ episode.title }}
@@ -575,7 +621,7 @@ watch(
                 @click="emit('commit')"
               >
                 <span class="inline-flex items-center gap-0.5" aria-hidden="true">
-                  <Infl0Icon name="episode.external" size="lg"/>
+                  <Infl0Icon name="episode.external" size="lg" />
                 </span>
               </a>
               <a
@@ -589,7 +635,7 @@ watch(
                 @click="emit('commit')"
               >
                 <span class="inline-flex items-center gap-0.5" aria-hidden="true">
-                  <Infl0Icon name="episode.external" size="lg"/>
+                  <Infl0Icon name="episode.external" size="lg" />
                 </span>
               </a>
               <a
@@ -634,16 +680,10 @@ watch(
               :title="t('episode.shownotes')"
               test-id="episode-shownotes-collapsible"
             >
-              <div
+              <SafeMarkdown
+                :markdown="episode.shownotes_md"
                 class="max-h-36 overflow-y-auto px-2 pb-2 text-[0.78em] prose prose-sm max-w-none text-[var(--infl0-article-back-fg-dim)]"
-              >
-                <!-- eslint-disable-next-line vue/no-v-html -->
-                <div
-                  v-if="renderedShownotesMd"
-                  v-html="renderedShownotesMd"
-                />
-                <pre v-else class="whitespace-pre-wrap">{{ episode.shownotes_md }}</pre>
-              </div>
+              />
             </EpisodeCollapsibleSection>
           </section>
 
@@ -656,10 +696,11 @@ watch(
           <p class="m-0 w-full shrink-0 pt-1 text-end text-[0.88em] text-[var(--infl0-article-back-fg-mute)]">
             <a
               v-if="hasDetailsModal"
+              ref="detailsLink"
               href="#"
               class="article-back-link font-bold"
               data-testid="episode-details-link"
-              @click.prevent="showDetails"
+              @click.prevent="showDetails($event)"
             >
               {{ t('episode.details') }}
             </a>
@@ -703,6 +744,7 @@ watch(
       v-if="hasDetailsModal"
       ref="modal"
       class="modal"
+      :aria-labelledby="dialogTitleId"
       @close="onDialogClose"
       @cancel="onDialogClose"
     >
@@ -710,62 +752,101 @@ watch(
         class="modal-box max-w-[100vw] w-[640px] border border-[var(--infl0-surface-reader-border)] bg-[var(--infl0-surface-reader-bg)] text-[var(--infl0-surface-reader-text)]"
       >
         <form method="dialog" class="mb-2 flex justify-end">
-          <button class="btn btn-sm btn-circle btn-ghost" type="submit">✕</button>
+          <button
+            class="btn btn-sm btn-circle btn-ghost"
+            type="submit"
+            :aria-label="t('article.closeModal')"
+          >
+            <span aria-hidden="true">✕</span>
+          </button>
         </form>
 
-        <div role="tablist" class="tabs tabs-boxed mb-3">
+        <h2 :id="dialogTitleId" class="mb-3 text-lg font-semibold">
+          {{ episode.title }}
+        </h2>
+
+        <p :id="tablistLabelId" class="sr-only">
+          {{ t('episode.details') }}
+        </p>
+
+        <div
+          role="tablist"
+          class="tabs tabs-boxed mb-3"
+          :aria-labelledby="tablistLabelId"
+          @keydown="onDetailsTabKeydown"
+        >
           <button
             v-if="episode.rawMarkdown?.trim()"
+            :id="contentTabId"
+            ref="contentTabButton"
             type="button"
             role="tab"
             class="tab"
             :class="{ 'tab-active': detailsTab === 'content' }"
             :aria-selected="detailsTab === 'content'"
-            @click="detailsTab = 'content'"
+            :aria-controls="contentPanelId"
+            :tabindex="detailsTab === 'content' ? 0 : -1"
+            @click="selectDetailsTab('content')"
           >
             {{ t('episode.tabContent') }}
           </button>
           <button
             v-if="episode.transcript_md?.trim()"
+            :id="transcriptTabId"
+            ref="transcriptTabButton"
             type="button"
             role="tab"
             class="tab"
             :class="{ 'tab-active': detailsTab === 'transcript' }"
             :aria-selected="detailsTab === 'transcript'"
-            @click="detailsTab = 'transcript'"
+            :aria-controls="transcriptPanelId"
+            :tabindex="detailsTab === 'transcript' ? 0 : -1"
+            @click="selectDetailsTab('transcript')"
           >
             {{ t('episode.tabTranscript') }}
           </button>
         </div>
 
         <div class="max-h-[70vh] overflow-y-auto infl0-surface-reader infl0-surface-typo-reader prose max-w-none">
-          <template v-if="detailsTab === 'content' && modalVisible">
-            <!-- eslint-disable-next-line vue/no-v-html -->
+          <template v-if="modalVisible">
             <div
-              v-if="renderedContentMd"
-              class="episode-markdown"
-              v-html="renderedContentMd"
-            />
-            <pre v-else class="whitespace-pre-wrap">{{ episode.rawMarkdown }}</pre>
-          </template>
-          <template v-else-if="detailsTab === 'transcript' && modalVisible">
-            <p v-if="episode.transcript_url" class="not-prose mb-3 text-sm">
-              <a
-                :href="episode.transcript_url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link"
-              >
-                {{ t('episode.transcriptExternal') }}
-              </a>
-            </p>
-            <!-- eslint-disable-next-line vue/no-v-html -->
+              v-if="episode.rawMarkdown?.trim()"
+              v-show="detailsTab === 'content'"
+              :id="contentPanelId"
+              role="tabpanel"
+              tabindex="0"
+              :aria-labelledby="contentTabId"
+              :hidden="detailsTab !== 'content'"
+            >
+              <SafeMarkdown
+                :markdown="episode.rawMarkdown"
+                content-class="episode-markdown"
+              />
+            </div>
             <div
-              v-if="renderedTranscriptMd"
-              class="episode-markdown"
-              v-html="renderedTranscriptMd"
-            />
-            <pre v-else class="whitespace-pre-wrap">{{ episode.transcript_md }}</pre>
+              v-if="episode.transcript_md?.trim()"
+              v-show="detailsTab === 'transcript'"
+              :id="transcriptPanelId"
+              role="tabpanel"
+              tabindex="0"
+              :aria-labelledby="transcriptTabId"
+              :hidden="detailsTab !== 'transcript'"
+            >
+              <p v-if="episode.transcript_url" class="not-prose mb-3 text-sm">
+                <a
+                  :href="episode.transcript_url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="link"
+                >
+                  {{ t('episode.transcriptExternal') }}
+                </a>
+              </p>
+              <SafeMarkdown
+                :markdown="episode.transcript_md"
+                content-class="episode-markdown"
+              />
+            </div>
           </template>
         </div>
 
