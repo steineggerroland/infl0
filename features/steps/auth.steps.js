@@ -1,10 +1,12 @@
 import { Given, When } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
-import { randomBytes } from 'node:crypto'
+import {
+  openRegistrationPage,
+  registerFreshAccountViaUi,
+} from '../support/auth-ui.js'
 
 When('I open the registration page', async function () {
-  await this.page.goto('/register')
-  await expect(this.page).toHaveURL(/\/register(\?|$)/u)
+  await openRegistrationPage(this.page)
 })
 
 When('I open the login page', async function () {
@@ -13,48 +15,16 @@ When('I open the login page', async function () {
 })
 
 When('I register with a fresh valid account', async function () {
-  const inviteCode = process.env.NUXT_REGISTRATION_INVITE_CODE
-  if (!inviteCode || inviteCode.trim().length === 0) {
-    throw new Error('NUXT_REGISTRATION_INVITE_CODE is required for auth BDD tests.')
-  }
-  const unique = `${Date.now().toString(36)}-${randomBytes(4).toString('hex')}`
-  const email = `bdd-register-${unique}@neurospicy.icu`
-  const password = randomBytes(16).toString('hex')
-  const name = 'BDD Register User'
-  this.registeredEmail = email
-  this.registeredPassword = password
-
-  await this.page.getByLabel('Invite code').fill(inviteCode)
-  await this.page.getByLabel('Email').fill(email)
-  await this.page.getByLabel('Name (optional)').fill(name)
-  await this.page.locator('input[autocomplete="new-password"]').fill(password)
-  await Promise.all([
-    this.page.waitForURL(/\/(\?|$)/u),
-    this.page.getByRole('button', { name: 'Register' }).click(),
-  ])
+  await registerFreshAccountViaUi(this.page, { world: this })
 })
 
 Given('I have a freshly registered account credentials', async function () {
-  const inviteCode = process.env.NUXT_REGISTRATION_INVITE_CODE
-  if (!inviteCode || inviteCode.trim().length === 0) {
-    throw new Error('NUXT_REGISTRATION_INVITE_CODE is required for auth BDD tests.')
-  }
-  const unique = `${Date.now().toString(36)}-${randomBytes(4).toString('hex')}`
-  const email = `bdd-auth-${unique}@neurospicy.icu`
-  const password = randomBytes(16).toString('hex')
-  const name = 'BDD Auth User'
-  this.registeredEmail = email
-  this.registeredPassword = password
-
-  await this.page.goto('/register')
-  await this.page.getByLabel('Invite code').fill(inviteCode)
-  await this.page.getByLabel('Email').fill(email)
-  await this.page.getByLabel('Name (optional)').fill(name)
-  await this.page.locator('input[autocomplete="new-password"]').fill(password)
-  await Promise.all([
-    this.page.waitForURL(/\/(\?|$)/u),
-    this.page.getByRole('button', { name: 'Register' }).click(),
-  ])
+  await openRegistrationPage(this.page)
+  await registerFreshAccountViaUi(this.page, {
+    emailPrefix: 'bdd-auth',
+    displayName: 'BDD Auth User',
+    world: this,
+  })
 
   const menuTrigger = this.page.locator('details > summary').first()
   await expect(menuTrigger).toBeVisible()

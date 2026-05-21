@@ -26,7 +26,7 @@ symbol to mark an article as unread again.
 - Database: reuse `UserTimelineItem.readAt`; no schema change expected.
 - API: add a read-state endpoint that updates only the authenticated user's
   timeline row.
-- UI: `ArticleView.vue` owns visibility timing and the read-status affordance.
+- UI: `ArticleCard.vue` owns visibility timing and the read-status affordance.
 - Copy/i18n: add labels for “Mark as read” / “Mark as unread” if needed.
 
 ## Acceptance criteria
@@ -58,7 +58,7 @@ symbol to mark an article as unread again.
 - Keep backend ownership of persistence and authorization; let the frontend own
   the visibility decision because it knows which article is selected, visible,
   and actively being read.
-- Use optimistic UI in `ArticleView.vue`, then reconcile on failure by restoring
+- Use optimistic UI in `ArticleCard.vue`, then reconcile on failure by restoring
   the previous `readAt`.
 - The read timer should ignore server render, hidden tabs, and unselected
   articles. It can share the existing threshold from `utils/article-engagement`

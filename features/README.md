@@ -12,6 +12,7 @@ This folder contains executable user-facing behavior specifications using Cucumb
   - registration/login behavior in `features/steps/auth.steps.js`
   - settings hub / tracking / personalization in `features/steps/settings.steps.js`
   - feeds (sources) in `features/steps/feeds.steps.js`
+  - article/episode card presentation in `features/steps/content-presentation.steps.js`
   - home-screen install listing in `features/steps/pwa.steps.js`
 - Browser locale is forced to English in `features/support/world.js` so scenario wording and assertions stay EN-consistent.
 
@@ -30,6 +31,7 @@ This folder contains executable user-facing behavior specifications using Cucumb
   - **`@http-only` PWA scenarios** that read `manifest.webmanifest` without a browser session.
 - World `Before` hooks may still register accounts via API for speed; scenario steps should use the registration/login UI where the journey is under test.
 - Tag `@http-only` when a scenario only checks server-delivered install metadata (no browser, no signed-in session).
+- UI registration: reuse `When I open the registration page` + `When I register with a fresh valid account` from `auth.steps.js` (implementation in `features/support/auth-ui.js`). Start with `Given I start as a signed-out visitor` when the default `Before` session must be discarded.
 - Browser scenarios use `serviceWorkers: 'block'` so the PWA service worker does not intercept `/api/*` during UI flows.
 - When behavior is already covered by BDD, avoid duplicating the same feature logic in E2E specs.
 
@@ -56,6 +58,11 @@ Covered in BDD today:
 - **`operator_sources.feature`** — operator route protection (`403` for non-allowlisted
   user), operator access for seeded account, summary band visibility, attention-first
   row order, and filter behavior (blocked/quiet).
+- **`content_presentation.feature`** — new user registers via shared auth steps;
+  articles/episodes ingested per scenario (`Given I have an article/episode with …`);
+  rich vs minimal card front/back, episode actions, collapsible chapters/shownotes,
+  content/transcript tabs, and browser-level card shortcuts; negative checks for
+  absent optional fields.
 - **`add_infl0_to_home_screen.feature`** — install listing (name, EN/DE description,
   standalone app window, portrait/landscape), home-screen shortcuts to timeline /
   sources / settings, install icons, in-place updates, sign-in page ready for phone

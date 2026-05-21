@@ -1,97 +1,33 @@
 import { Given, When, Then } from '@cucumber/cucumber'
-import { expect } from '@playwright/test'
 import { postCrawlerSourceHealth } from '../support/crawler-fixtures.js'
-import { rememberFeedFromRow, sourceRow } from '../support/ui-helpers.js'
+import { SourcesPage } from '../support/sources-page.js'
 
-/**
- * Open the row’s `<details>` without relying on double-click semantics.
- */
-async function ensureSourceRowExpanded(row) {
-  const details = row.locator('details')
-  await expect(details).toBeVisible()
-  await details.evaluate((/** @type {HTMLDetailsElement} */ el) => {
-    if (!el.open) el.open = true
-  })
+function sourcesPage(world) {
+  return new SourcesPage(world.page)
 }
 
 When('I open the sources page', async function () {
-  await this.page.goto('/feeds')
-  await expect(this.page).toHaveURL(/\/feeds/u)
+  await sourcesPage(this).open()
 })
 
 Then('I should see the empty sources hint', async function () {
-  await expect(this.page.getByTestId('feeds-empty-alert')).toBeVisible({ timeout: 15_000 })
+  await sourcesPage(this).expectEmptyHint()
 })
 
 When(
   'I add a source with address {string} and display name {string}',
   { timeout: 150_000 },
   async function (address, displayName) {
-    await expect(this.page.getByTestId('feeds-add-fieldset')).toBeVisible({ timeout: 30_000 })
-
-    // Prefer `#feed-*` over `getByLabel`: Daisy label markup + i18n vary in how Chromium exposes names.
-    await this.page.locator('#feed-url-input').fill(address)
-    await this.page.locator('#feed-display-input').fill(displayName)
-
-    const submit = this.page.locator('[data-testid="feeds-add-fieldset"] button[type="submit"]')
-    const errorAlert = this.page.getByTestId('feeds-add-error')
-    const rowByUrl = sourceRow(this.page, address)
-    const rowByTitle = sourceRow(this.page, displayName)
-
-    await expect(submit).toBeEnabled({ timeout: 30_000 })
-    await submit.scrollIntoViewIfNeeded()
-    await submit.click()
-
-    async function waitForAddOutcome(timeoutMs) {
-      await expect
-        .poll(
-          async () => {
-            if (await errorAlert.isVisible()) return 'error'
-            if ((await rowByUrl.count()) > 0 || (await rowByTitle.count()) > 0) return 'ok'
-            if (await submit.isDisabled()) return 'submitting'
-            return 'pending'
-          },
-          { timeout: timeoutMs },
-        )
-        .toMatch(/^(ok|error)$/)
-    }
-
-    try {
-      await waitForAddOutcome(120_000)
-    } catch {
-      if (await errorAlert.isVisible()) {
-        throw new Error(`Add source failed in UI: ${await errorAlert.textContent()}`)
-      }
-      if ((await rowByUrl.count()) > 0 || (await rowByTitle.count()) > 0) {
-        // Row appeared after the poll window closed.
-      } else {
-        await this.page.reload()
-        await expect(this.page.getByTestId('feeds-add-fieldset')).toBeVisible({ timeout: 30_000 })
-        await waitForAddOutcome(90_000)
-      }
-    }
-
-    if (await errorAlert.isVisible()) {
-      throw new Error(`Add source failed in UI: ${await errorAlert.textContent()}`)
-    }
-
-    const row = (await rowByUrl.count()) > 0 ? rowByUrl : rowByTitle
-    await expect(row).toBeVisible({ timeout: 15_000 })
-    await rememberFeedFromRow(this.page, this, address)
+    await sourcesPage(this).addSource(this, address, displayName)
   },
 )
 
 Then('I should see the source list containing {string}', async function (snippet) {
-  const list = this.page.getByTestId('feeds-source-list')
-  await expect(list).toBeVisible({ timeout: 15_000 })
-  await expect(list.getByText(snippet, { exact: false })).toBeVisible()
+  await sourcesPage(this).expectListContains(snippet)
 })
 
 When('I remove the source row for {string}', async function (snippet) {
-  const row = sourceRow(this.page, snippet)
-  await expect(row).toBeVisible()
-  await row.getByRole('button', { name: 'Remove' }).click()
-  await expect(this.page.getByTestId('feeds-empty-alert')).toBeVisible({ timeout: 20_000 })
+  await sourcesPage(this).removeSource(snippet)
 })
 
 Given('the crawler API key is configured', function () {
@@ -121,58 +57,37 @@ When(
 Then(
   'the feed row for {string} should have source health {string}',
   async function (snippet, expectedAttr) {
-    const row = sourceRow(this.page, snippet)
-    const health = row.getByTestId('feed-source-health')
-    await expect(health).toBeVisible()
-    await expect(health).toHaveAttribute('data-source-health', expectedAttr)
+    await sourcesPage(this).expectSourceHealth(snippet, expectedAttr)
   },
 )
 
 When('I expand the source row for {string}', async function (snippet) {
-  const row = sourceRow(this.page, snippet)
-  await expect(row).toBeVisible()
-  await ensureSourceRowExpanded(row)
+  await sourcesPage(this).expandRow(snippet)
 })
 
 Then(
   'the expanded health label for {string} should include {string}',
   async function (snippet, substring) {
-    const row = sourceRow(this.page, snippet)
-    await ensureSourceRowExpanded(row)
-    const label = row.getByTestId('feed-source-health-label')
-    await expect(label).toBeVisible({ timeout: 15_000 })
-    await expect(label).toContainText(substring)
+    await sourcesPage(this).expectExpandedHealthLabel(snippet, substring)
   },
 )
 
 When('I pause the source row for {string}', async function (snippet) {
-  const row = sourceRow(this.page, snippet)
-  await expect(row).toBeVisible()
-  const toggle = row.locator('button[data-testid^="feed-toggle-"]')
-  await expect(toggle).toBeVisible()
-  await toggle.click()
-  await expect(row).toHaveAttribute('data-active', 'false', { timeout: 25_000 })
+  await sourcesPage(this).pauseSource(snippet)
 })
 
 When('I resume the source row for {string}', async function (snippet) {
-  const row = sourceRow(this.page, snippet)
-  await expect(row).toBeVisible()
-  const toggle = row.locator('button[data-testid^="feed-toggle-"]')
-  await expect(toggle).toBeVisible()
-  await toggle.click()
-  await expect(row).toHaveAttribute('data-active', 'true', { timeout: 25_000 })
+  await sourcesPage(this).resumeSource(snippet)
 })
 
 Then('the source row for {string} should be active', async function (snippet) {
-  const row = sourceRow(this.page, snippet)
-  await expect(row).toHaveAttribute('data-active', 'true')
+  await sourcesPage(this).expectSourceActive(snippet)
 })
 
 Then('the source row for {string} should be paused', async function (snippet) {
-  const row = sourceRow(this.page, snippet)
-  await expect(row).toHaveAttribute('data-active', 'false')
+  await sourcesPage(this).expectSourcePaused(snippet)
 })
 
 Then('I should see the sources list heading', async function () {
-  await expect(this.page.locator('#feeds-list-heading')).toBeVisible({ timeout: 15_000 })
+  await sourcesPage(this).expectListHeading()
 })

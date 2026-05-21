@@ -28,7 +28,7 @@ matrix).
 
 ## Dependencies (now satisfied)
 
-- Stable readability shortcuts in the **app** (`ArticleView`,
+- Stable readability shortcuts in the **app** (`ArticleCard`,
   `useShortcuts`) — already shipped with the readability package.
 - Decision on **where** the central reference lives — chose the existing
   help page with a stable anchor (`#shortcuts-reference`); kept the FAQ
@@ -57,7 +57,7 @@ matrix).
   `tokenizeShortcutKey()` renderer for the visible `<kbd>` tokens. The
   catalog is consumed by `pages/help.vue` to build the reference; the
   composable contract that actually owns the keys (`defineShortcuts` in
-  `pages/index.vue`, `components/ArticleView.vue`,
+  `pages/index.vue`, `components/ArticleCard.vue`,
   `components/InfoPopover.vue`) is unchanged.
 - **i18n:** group titles, summaries, the four scope rules and the
   per-entry plain-language label + description live under
@@ -86,7 +86,7 @@ matrix).
     reason. The inverse direction is checked too: every catalog combo
     must be registered somewhere — dead rows / typos like `'shift+m'`
     fail the test loudly. The list of expected caller files
-    (`pages/index.vue`, `components/ArticleView.vue`,
+    (`pages/index.vue`, `components/ArticleCard.vue`,
     `components/InfoPopover.vue`) is soft-pinned, so a future shortcut
     in a new location forces a conscious update of the test.
 

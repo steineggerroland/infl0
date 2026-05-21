@@ -6,7 +6,7 @@
  *
  * - The implementation of each shortcut still lives inside the feature
  *   that owns it (timeline `defineShortcuts` in `pages/index.vue`,
- *   readability shortcuts in `components/ArticleView.vue`,
+ *   readability shortcuts in `components/ArticleCard.vue`,
  *   modal dismissal in `components/InfoPopover.vue`, etc.).
  * - Keeping the **user-facing reference** here (instead of a long
  *   hand-written table in i18n) avoids a third copy that drifts out of

@@ -120,7 +120,7 @@ describe('shortcut catalog coverage', () => {
         }
         const expected = [
             'pages/index.vue',
-            'components/ArticleView.vue',
+            'components/ArticleCard.vue',
             'components/InfoPopover.vue',
         ]
         for (const path of expected) {

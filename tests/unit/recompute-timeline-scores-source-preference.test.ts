@@ -77,6 +77,7 @@ describe('recomputeTimelineScoresForUser — SOURCE_PREFERENCE_BONUS integration
       expect.objectContaining({
         where: {
           userId: 'u1',
+          contentKind: 'article',
           article: { crawlKey: { in: ['https://a.com/x.xml'] } },
         },
       }),

@@ -2,7 +2,7 @@ import type { ArticleEngagementSegment } from '~/utils/article-engagement'
 import { ARTICLE_ENGAGEMENT_MIN_DWELL_MS } from '~/utils/article-engagement'
 
 /**
- * Server-backed engagement (dwell) opt-in. Shared across ArticleView instances.
+ * Server-backed engagement (dwell) opt-in. Shared across ArticleCard instances.
  */
 export function useEngagementTrackingPrefs() {
   const enabled = useState('engagement-tracking-enabled', () => false)

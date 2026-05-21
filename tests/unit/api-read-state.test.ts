@@ -10,7 +10,7 @@ vi.mock('../../server/utils/auth-session', () => ({
 vi.mock('../../server/utils/prisma', () => ({
   prisma: {
     userTimelineItem: {
-      findUnique: vi.fn(),
+      findFirst: vi.fn(),
       update: vi.fn(),
     },
   },
@@ -37,7 +37,7 @@ describe('/api/me/articles/:articleId/read-state', () => {
     vi.mocked(getSessionUserId).mockResolvedValue(null)
 
     await expect(handler(mockEvent())).rejects.toMatchObject({ statusCode: 401 })
-    expect(prisma.userTimelineItem.findUnique).not.toHaveBeenCalled()
+    expect(prisma.userTimelineItem.findFirst).not.toHaveBeenCalled()
   })
 
   it('returns 400 when read is not boolean', async () => {
@@ -45,17 +45,23 @@ describe('/api/me/articles/:articleId/read-state', () => {
     vi.mocked(readBody).mockResolvedValueOnce({ read: 'yes' })
 
     await expect(handler(mockEvent())).rejects.toMatchObject({ statusCode: 400 })
-    expect(prisma.userTimelineItem.findUnique).not.toHaveBeenCalled()
+    expect(prisma.userTimelineItem.findFirst).not.toHaveBeenCalled()
   })
 
   it('returns 404 when the article is not on the user timeline', async () => {
     vi.mocked(getSessionUserId).mockResolvedValue('u1')
     vi.mocked(readBody).mockResolvedValueOnce({ read: true })
-    vi.mocked(prisma.userTimelineItem.findUnique).mockResolvedValue(null)
+    vi.mocked(prisma.userTimelineItem.findFirst).mockResolvedValue(null)
 
     await expect(handler(mockEvent())).rejects.toMatchObject({ statusCode: 404 })
-    expect(prisma.userTimelineItem.findUnique).toHaveBeenCalledWith({
-      where: { userId_articleId: { userId: 'u1', articleId: 'a1' } },
+    expect(prisma.userTimelineItem.findFirst).toHaveBeenCalledWith({
+      where: {
+        userId: 'u1',
+        OR: [
+          { contentKind: 'article', articleId: 'a1' },
+          { contentKind: 'episode', episodeId: 'a1' },
+        ],
+      },
       select: { id: true, readAt: true },
     })
   })
@@ -63,7 +69,7 @@ describe('/api/me/articles/:articleId/read-state', () => {
   it('marks a timeline article as read', async () => {
     vi.mocked(getSessionUserId).mockResolvedValue('u1')
     vi.mocked(readBody).mockResolvedValueOnce({ read: true })
-    vi.mocked(prisma.userTimelineItem.findUnique).mockResolvedValue({
+    vi.mocked(prisma.userTimelineItem.findFirst).mockResolvedValue({
       id: 'row1',
       readAt: null,
     } as never)
@@ -83,7 +89,7 @@ describe('/api/me/articles/:articleId/read-state', () => {
   it('marks a timeline article as unread', async () => {
     vi.mocked(getSessionUserId).mockResolvedValue('u1')
     vi.mocked(readBody).mockResolvedValueOnce({ read: false })
-    vi.mocked(prisma.userTimelineItem.findUnique).mockResolvedValue({
+    vi.mocked(prisma.userTimelineItem.findFirst).mockResolvedValue({
       id: 'row1',
       readAt: new Date('2026-05-02T10:00:00.000Z'),
     } as never)

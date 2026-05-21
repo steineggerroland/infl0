@@ -26,14 +26,19 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'read boolean required' })
   }
 
-  const timelineRow = await prisma.userTimelineItem.findUnique({
+  const contentId = articleId
+  const timelineRow = await prisma.userTimelineItem.findFirst({
     where: {
-      userId_articleId: { userId, articleId },
+      userId,
+      OR: [
+        { contentKind: 'article', articleId: contentId },
+        { contentKind: 'episode', episodeId: contentId },
+      ],
     },
     select: { id: true, readAt: true },
   })
   if (!timelineRow) {
-    throw createError({ statusCode: 404, statusMessage: 'Article not on your timeline' })
+    throw createError({ statusCode: 404, statusMessage: 'Item not on your timeline' })
   }
 
   if (body.read && timelineRow.readAt != null) {

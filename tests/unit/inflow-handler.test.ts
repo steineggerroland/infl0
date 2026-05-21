@@ -10,8 +10,8 @@
  *   so paginating into article rows does not duplicate them.
  * - `stats.total` / `stats.unread` count article rows only — onboarding
  *   cards are not in the read/unread accounting.
- * - Article items keep the `type: 'article'` discriminator and the
- *   shape `ArticleView` consumes today.
+ * - Article and episode items keep their `type` discriminators and the
+ *   shapes the reader consumes (`ArticleCard` / `EpisodeCard`).
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../server/utils/prisma'
@@ -24,7 +24,6 @@ vi.mock('../../server/utils/prisma', () => ({
     user: { findUnique: vi.fn() },
     userTimelineItem: {
       count: vi.fn(),
-      findFirst: vi.fn(),
       findMany: vi.fn(),
     },
   },
@@ -33,7 +32,6 @@ vi.mock('../../server/utils/prisma', () => ({
 const mocked = {
   user: vi.mocked(prisma.user.findUnique),
   count: vi.mocked(prisma.userTimelineItem.count),
-  findFirst: vi.mocked(prisma.userTimelineItem.findFirst),
   findMany: vi.mocked(prisma.userTimelineItem.findMany),
 }
 
@@ -47,6 +45,8 @@ function fakeArticleRow(id: string) {
   return {
     insertedAt: new Date('2026-04-29T10:00:00Z'),
     readAt: null,
+    rankScore: null,
+    contentKind: 'article' as const,
     article: {
       id,
       title: `Article ${id}`,
@@ -64,6 +64,40 @@ function fakeArticleRow(id: string) {
         tags: ['t'],
       },
     },
+    episode: null,
+  }
+}
+
+function fakeEpisodeRow(id: string) {
+  return {
+    insertedAt: new Date('2026-04-29T10:00:00Z'),
+    readAt: null,
+    rankScore: null,
+    contentKind: 'episode' as const,
+    article: null,
+    episode: {
+      id,
+      title: `Episode ${id}`,
+      link: `https://example.com/pod/${id}`,
+      author: 'Host',
+      publishedAt: new Date('2026-04-29T09:00:00Z'),
+      fetchedAt: new Date('2026-04-29T09:30:00Z'),
+      sourceType: 'rss+podcast',
+      tld: 'example.com',
+      contentMd: null,
+      crawlKey: 'https://example.com/podcast/feed.xml',
+      shownotesMd: '## Notes',
+      mediaUrl: 'https://cdn.example.com/ep.mp3',
+      mediaType: 'audio/mpeg',
+      durationSeconds: 120,
+      chapters: [{ start_seconds: 0, title: 'Intro' }],
+      enrichment: {
+        teaser: 'ep teaser',
+        summaryLong: 'ep summary',
+        category: ['podcast'],
+        tags: ['audio'],
+      },
+    },
   }
 }
 
@@ -75,7 +109,6 @@ describe('loadInflowPage', () => {
   it('prepends onboarding cards on the first page when not hidden', async () => {
     mocked.user.mockResolvedValue(fakeUser(false) as never)
     mocked.count.mockResolvedValueOnce(2).mockResolvedValueOnce(2).mockResolvedValueOnce(2)
-    mocked.findFirst.mockResolvedValue(null)
     mocked.findMany.mockResolvedValue([fakeArticleRow('a1'), fakeArticleRow('a2')] as never)
 
     const res = await loadInflowPage({ userId: 'u1', limit: 20, offset: 0, showRead: false })
@@ -97,7 +130,6 @@ describe('loadInflowPage', () => {
   it('omits onboarding cards entirely when onboardingHidden is true', async () => {
     mocked.user.mockResolvedValue(fakeUser(true) as never)
     mocked.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0).mockResolvedValueOnce(0)
-    mocked.findFirst.mockResolvedValue(null)
     mocked.findMany.mockResolvedValue([] as never)
 
     const res = await loadInflowPage({ userId: 'u1', limit: 20, offset: 0, showRead: false })
@@ -109,7 +141,6 @@ describe('loadInflowPage', () => {
   it('does not re-emit onboarding cards on subsequent pages', async () => {
     mocked.user.mockResolvedValue(fakeUser(false) as never)
     mocked.count.mockResolvedValueOnce(50).mockResolvedValueOnce(50).mockResolvedValueOnce(5)
-    mocked.findFirst.mockResolvedValue({ id: 'x' } as never)
     mocked.findMany.mockResolvedValue([fakeArticleRow('a3')] as never)
 
     const res = await loadInflowPage({ userId: 'u1', limit: 20, offset: 20, showRead: false })
@@ -122,7 +153,6 @@ describe('loadInflowPage', () => {
     user.uiPrefs.lastReaderSessionStartedAt = '2026-05-02T08:00:00.000Z'
     mocked.user.mockResolvedValue(user as never)
     mocked.count.mockResolvedValueOnce(10).mockResolvedValueOnce(8).mockResolvedValueOnce(3)
-    mocked.findFirst.mockResolvedValue(null)
     mocked.findMany.mockResolvedValue([] as never)
 
     const res = await loadInflowPage({ userId: 'u1', limit: 20, offset: 0, showRead: false })
@@ -139,7 +169,6 @@ describe('loadInflowPage', () => {
   it('counts all articles as new before the first explicit reader session', async () => {
     mocked.user.mockResolvedValue(fakeUser(true) as never)
     mocked.count.mockResolvedValueOnce(10).mockResolvedValueOnce(8).mockResolvedValueOnce(10)
-    mocked.findFirst.mockResolvedValue(null)
     mocked.findMany.mockResolvedValue([] as never)
 
     const res = await loadInflowPage({ userId: 'u1', limit: 20, offset: 0, showRead: false })
@@ -151,11 +180,10 @@ describe('loadInflowPage', () => {
   it('sets type=article and exposes the existing article shape', async () => {
     mocked.user.mockResolvedValue(fakeUser(true) as never)
     mocked.count.mockResolvedValueOnce(1).mockResolvedValueOnce(1).mockResolvedValueOnce(1)
-    mocked.findFirst.mockResolvedValue(null)
     mocked.findMany.mockResolvedValue([fakeArticleRow('a1')] as never)
 
     const res = await loadInflowPage({ userId: 'u1', limit: 20, offset: 0, showRead: false })
-    const article = res.items[0]
+    const article = res.items.find((i) => i.type === 'article')
     expect(article).toBeDefined()
     if (article && article.type === 'article') {
       expect(article.id).toBe('a1')
@@ -179,7 +207,6 @@ describe('loadInflowPage', () => {
   it('reports hasMore correctly when the database returns limit+1', async () => {
     mocked.user.mockResolvedValue(fakeUser(true) as never)
     mocked.count.mockResolvedValueOnce(10).mockResolvedValueOnce(10).mockResolvedValueOnce(10)
-    mocked.findFirst.mockResolvedValue(null)
     const rows = Array.from({ length: 21 }, (_, i) => fakeArticleRow(`a${i}`))
     mocked.findMany.mockResolvedValue(rows as never)
 
@@ -188,5 +215,23 @@ describe('loadInflowPage', () => {
     const articles = res.items.filter((i) => i.type === 'article')
     expect(articles).toHaveLength(20)
     expect(res.hasMore).toBe(true)
+  })
+
+  it('maps episode timeline rows with type=episode', async () => {
+    mocked.user.mockResolvedValue(fakeUser(true) as never)
+    mocked.count.mockResolvedValueOnce(1).mockResolvedValueOnce(1).mockResolvedValueOnce(1)
+    mocked.findMany.mockResolvedValue([fakeEpisodeRow('e1')] as never)
+
+    const res = await loadInflowPage({ userId: 'u1', limit: 20, offset: 0, showRead: false })
+    const episode = res.items.find((i) => i.type === 'episode')
+    expect(episode).toBeDefined()
+    if (episode && episode.type === 'episode') {
+      expect(episode.id).toBe('e1')
+      expect(episode.crawl_key).toBe('https://example.com/podcast/feed.xml')
+      expect(episode.media_url).toBe('https://cdn.example.com/ep.mp3')
+      expect(episode.chapters).toEqual([{ start_seconds: 0, title: 'Intro' }])
+    } else {
+      throw new Error('expected an episode item')
+    }
   })
 })

@@ -343,11 +343,11 @@ regress any of it.
 
 - Respect `prefers-reduced-motion`. Any animation longer than ~150 ms needs
   a reduced-motion fallback (typically a cross-fade or no animation).
-- **Where it is implemented:** article card flip (`ArticleView.vue`: instant
+- **Where it is implemented:** article card flip (`ArticleCard.vue`: instant
   face swap, no 3D keyframes), flip hint pulse (`FlipArrow.vue`), toast
   enter/leave (`ToastHost.vue`), corner-fold hover (`CornerFold.vue`),
   fulltext `<dialog class="modal">` including native `::backdrop` (global
-  rule in `assets/css/tailwind.css` plus matching rules in `ArticleView.vue`).
+  rule in `assets/css/tailwind.css` plus matching rules in `ArticleCard.vue`).
 - Scroll-snap should be `proximity`, not `mandatory`, unless we are certain
   users can still free-scroll.
 - Avoid auto-playing video, parallax, or background motion.

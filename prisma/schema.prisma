@@ -11,45 +11,45 @@ datasource db {
 
 /// Beta: multiple users later; single account for now.
 model User {
-  id           String   @id @default(uuid()) @db.Uuid
-  email        String?  @unique
-  name         String?
+  id                        String   @id @default(uuid()) @db.Uuid
+  email                     String?  @unique
+  name                      String?
   /// Legacy bcrypt; login uses SRP (srpSalt + srpVerifier).
-  passwordHash String?  @map("password_hash")
+  passwordHash              String?  @map("password_hash")
   /// Hex-encoded (no 0x prefix); see scripts/generate-srp-env.ts
-  srpSalt      String?  @map("srp_salt")
-  srpVerifier  String?  @map("srp_verifier")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  srpSalt                   String?  @map("srp_salt")
+  srpVerifier               String?  @map("srp_verifier")
+  createdAt                 DateTime @default(now()) @map("created_at")
+  updatedAt                 DateTime @updatedAt @map("updated_at")
   /// JSON: { v, weights, contentLengthPreference } — timeline ranking sliders (see utils/timeline-score-factors).
-  timelineScorePrefs Json? @map("timeline_score_prefs")
+  timelineScorePrefs        Json?    @map("timeline_score_prefs")
   /// JSON: { v, theme, motion, surfaces, seenFeatureAnnouncements } — readability / theme / motion (see utils/ui-prefs).
-  uiPrefs Json? @map("ui_prefs")
+  uiPrefs                   Json?    @map("ui_prefs")
   /// When false, the app does not record article engagement (dwell) events.
-  engagementTrackingEnabled Boolean @default(false) @map("engagement_tracking_enabled")
+  engagementTrackingEnabled Boolean  @default(false) @map("engagement_tracking_enabled")
 
-  feeds                UserFeed[]
-  timelineItems        UserTimelineItem[]
+  feeds                   UserFeed[]
+  timelineItems           UserTimelineItem[]
   articleEngagementEvents ArticleEngagementEvent[]
-  feedEngagement       UserFeedEngagement[]
-  categoryEngagement   UserCategoryEngagement[]
-  tagEngagement        UserTagEngagement[]
+  feedEngagement          UserFeedEngagement[]
+  categoryEngagement      UserCategoryEngagement[]
+  tagEngagement           UserTagEngagement[]
 
   @@map("users")
 }
 
 /// User subscription to a feed (normalized URL key links articles to subscribers).
 model UserFeed {
-  id           String   @id @default(uuid()) @db.Uuid
-  userId       String   @map("user_id") @db.Uuid
-  feedUrl      String   @map("feed_url")
-  crawlKey     String   @map("crawl_key")
-  displayTitle String?  @map("display_title")
-  active       Boolean  @default(true)
+  id                   String   @id @default(uuid()) @db.Uuid
+  userId               String   @map("user_id") @db.Uuid
+  feedUrl              String   @map("feed_url")
+  crawlKey             String   @map("crawl_key")
+  displayTitle         String?  @map("display_title")
+  active               Boolean  @default(true)
   /// Explicit per-source preference (-1..+1, 0.25 steps); added to ranking score.
-  userPreferenceWeight Float @default(0) @map("user_preference_weight")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  userPreferenceWeight Float    @default(0) @map("user_preference_weight")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -62,11 +62,11 @@ model UserFeed {
 model SourceStatus {
   crawlKey String @id @map("crawl_key")
 
-  sourceStatus       String? @map("source_status")
-  sourceHealthStatus String? @map("source_health_status")
-  sourceHealthReason String? @map("source_health_reason")
-  sourceHealthJson   Json?   @map("source_health_json")
-  operatorAttention  Boolean @default(false) @map("operator_attention")
+  sourceStatus            String? @map("source_status")
+  sourceHealthStatus      String? @map("source_health_status")
+  sourceHealthReason      String? @map("source_health_reason")
+  sourceHealthJson        Json?   @map("source_health_json")
+  operatorAttention       Boolean @default(false) @map("operator_attention")
   operatorAttentionReason String? @map("operator_attention_reason")
 
   lastCrawlStatus       String?   @map("last_crawl_status")
@@ -84,7 +84,7 @@ model SourceStatus {
   crawlLlmFailedCount   Int? @map("crawl_llm_failed_count")
   consecutiveErrorCount Int? @map("consecutive_error_count")
 
-  detectedPolicy Json? @map("detected_policy")
+  detectedPolicy  Json? @map("detected_policy")
   effectivePolicy Json? @map("effective_policy")
 
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -95,18 +95,19 @@ model SourceStatus {
 
 /// Globally stored articles (one row per content id, e.g. content hash / GUID).
 model Article {
-  id           String    @id
-  crawlKey     String    @map("crawl_key")
-  link         String
-  title        String
-  author       String?
-  publishedAt  DateTime? @map("published_at")
-  contentHash  String?   @map("content_hash")
-  contentMd    String?   @map("content_md") @db.Text
-  sourceType   String?   @map("source_type")
-  tld          String?
-  categories   Json?
-  fetchedAt    DateTime  @default(now()) @map("fetched_at")
+  id          String    @id
+  crawlKey    String    @map("crawl_key")
+  link        String
+  title       String
+  author      String?
+  publishedAt DateTime? @map("published_at")
+  updatedAt   DateTime? @map("updated_at")
+  contentHash String?   @map("content_hash")
+  contentMd   String?   @map("content_md") @db.Text
+  sourceType  String?   @map("source_type")
+  tld         String?
+  categories  Json?
+  fetchedAt   DateTime  @default(now()) @map("fetched_at")
 
   enrichment              ArticleEnrichment?
   timelineItems           UserTimelineItem[]
@@ -119,36 +120,106 @@ model Article {
 }
 
 model ArticleEnrichment {
-  id                 String   @id @default(uuid()) @db.Uuid
-  articleId          String   @unique @map("article_id")
-  teaser             String?
-  summaryLong        String?  @map("summary_long") @db.Text
-  category           String[] @default([])
-  tags               String[] @default([])
-  seriousnessRating  String?  @map("seriousness_rating")
-  lastUpdated        DateTime @default(now()) @map("last_updated")
+  id                String   @id @default(uuid()) @db.Uuid
+  articleId         String   @unique @map("article_id")
+  teaser            String?
+  summaryLong       String?  @map("summary_long") @db.Text
+  category          String[] @default([])
+  tags              String[] @default([])
+  seriousnessRating String?  @map("seriousness_rating")
+  lastUpdated       DateTime @default(now()) @map("last_updated")
 
   article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   @@map("article_enrichments")
 }
 
-/// Materialized timeline: per-user links to articles (fan-out on new articles).
-model UserTimelineItem {
-  id         String    @id @default(uuid()) @db.Uuid
-  userId     String    @map("user_id") @db.Uuid
-  articleId  String    @map("article_id")
-  insertedAt DateTime  @default(now()) @map("inserted_at")
-  rankScore       Float?    @map("rank_score")
-  scoredAt        DateTime? @map("scored_at")
-  /// Sum of logged dwell seconds (teaser + summary + body); used with events for “read” at ≥2s.
-  engagedSeconds  Float     @default(0) @map("engaged_seconds")
-  readAt          DateTime? @map("read_at")
+/// Podcast episode (one row per stable crawler episode id).
+model Episode {
+  id                   String    @id
+  crawlKey             String    @map("crawl_key")
+  link                 String
+  title                String
+  author               String?
+  publishedAt          DateTime? @map("published_at")
+  updatedAt            DateTime? @map("updated_at")
+  contentHash          String?   @map("content_hash")
+  contentMd            String?   @map("content_md") @db.Text
+  sourceType           String?   @map("source_type")
+  tld                  String?
+  categories           Json?
+  summary              String?   @db.Text
+  shownotesMd          String?   @map("shownotes_md") @db.Text
+  transcriptMd         String?   @map("transcript_md") @db.Text
+  mediaUrl             String?   @map("media_url")
+  mediaType            String?   @map("media_type")
+  mediaLengthBytes     Int?      @map("media_length_bytes")
+  durationSeconds      Int?      @map("duration_seconds")
+  episodeNumber        Int?      @map("episode_number")
+  seasonNumber         Int?      @map("season_number")
+  episodeType          String?   @map("episode_type")
+  explicit             Boolean?
+  subtitle             String?
+  imageUrl             String?   @map("image_url")
+  chaptersUrl          String?   @map("chapters_url")
+  chaptersType         String?   @map("chapters_type")
+  chapters             Json?
+  chaptersFetchError   String?   @map("chapters_fetch_error") @db.Text
+  transcriptUrl        String?   @map("transcript_url")
+  transcriptType       String?   @map("transcript_type")
+  transcriptFetchError String?   @map("transcript_fetch_error") @db.Text
+  fetchedAt            DateTime  @default(now()) @map("fetched_at")
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  enrichment    EpisodeEnrichment?
+  timelineItems UserTimelineItem[]
+
+  @@index([crawlKey])
+  @@index([publishedAt])
+  @@map("episodes")
+}
+
+model EpisodeEnrichment {
+  id                String   @id @default(uuid()) @db.Uuid
+  episodeId         String   @unique @map("episode_id")
+  teaser            String?
+  summaryLong       String?  @map("summary_long") @db.Text
+  category          String[] @default([])
+  tags              String[] @default([])
+  seriousnessRating String?  @map("seriousness_rating")
+  lastUpdated       DateTime @default(now()) @map("last_updated")
+
+  episode Episode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@map("episode_enrichments")
+}
+
+enum TimelineContentKind {
+  article
+  episode
+
+  @@map("timeline_content_kind")
+}
+
+/// Materialized timeline: per-user links to articles or episodes (fan-out on ingest).
+model UserTimelineItem {
+  id             String              @id @default(uuid()) @db.Uuid
+  userId         String              @map("user_id") @db.Uuid
+  contentKind    TimelineContentKind @default(article) @map("content_kind")
+  articleId      String?             @map("article_id")
+  episodeId      String?             @map("episode_id")
+  insertedAt     DateTime            @default(now()) @map("inserted_at")
+  rankScore      Float?              @map("rank_score")
+  scoredAt       DateTime?           @map("scored_at")
+  /// Sum of logged dwell seconds (teaser + summary + body); used with events for “read” at ≥2s.
+  engagedSeconds Float               @default(0) @map("engaged_seconds")
+  readAt         DateTime?           @map("read_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  episode Episode? @relation(fields: [episodeId], references: [id], onDelete: Cascade)
 
   @@unique([userId, articleId])
+  @@unique([userId, episodeId])
   @@index([userId, insertedAt(sort: Desc)])
   @@index([userId, rankScore(sort: Desc)])
   @@map("user_timeline_items")
@@ -173,15 +244,15 @@ model ArticleEngagementEvent {
 
 /// Aggregated engagement points per (user, feed/crawl key).
 model UserFeedEngagement {
-  id       String  @id @default(uuid()) @db.Uuid
-  userId   String  @map("user_id") @db.Uuid
-  crawlKey String  @map("crawl_key")
-  articleId String? @map("last_article_id")
-  posPoints Float   @default(0) @map("pos_points")
-  negPoints Float   @default(0) @map("neg_points")
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  crawlKey  String   @map("crawl_key")
+  articleId String?  @map("last_article_id")
+  posPoints Float    @default(0) @map("pos_points")
+  negPoints Float    @default(0) @map("neg_points")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   article Article? @relation(fields: [articleId], references: [id], onDelete: SetNull)
 
   @@unique([userId, crawlKey])
@@ -191,11 +262,11 @@ model UserFeedEngagement {
 
 /// Aggregated engagement points per (user, normalized category).
 model UserCategoryEngagement {
-  id       String   @id @default(uuid()) @db.Uuid
-  userId   String   @map("user_id") @db.Uuid
-  category String   @db.VarChar(200)
-  posPoints Float   @default(0) @map("pos_points")
-  negPoints Float   @default(0) @map("neg_points")
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  category  String   @db.VarChar(200)
+  posPoints Float    @default(0) @map("pos_points")
+  negPoints Float    @default(0) @map("neg_points")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -207,11 +278,11 @@ model UserCategoryEngagement {
 
 /// Aggregated engagement points per (user, normalized tag).
 model UserTagEngagement {
-  id       String   @id @default(uuid()) @db.Uuid
-  userId   String   @map("user_id") @db.Uuid
-  tag      String   @db.VarChar(200)
-  posPoints Float   @default(0) @map("pos_points")
-  negPoints Float   @default(0) @map("neg_points")
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  tag       String   @db.VarChar(200)
+  posPoints Float    @default(0) @map("pos_points")
+  negPoints Float    @default(0) @map("neg_points")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

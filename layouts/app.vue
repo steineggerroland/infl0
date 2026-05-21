@@ -81,7 +81,7 @@ const footerTestId = computed<string>(() => {
         />
 
         <!--
-          Avoid `position:fixed` inside transformed ancestors (e.g. ArticleView flip).
+          Avoid `position:fixed` inside transformed ancestors (e.g. ArticleCard flip).
           Teleport keeps the control in viewport stacking order.
         -->
         <Teleport to="body">

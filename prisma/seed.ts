@@ -1,6 +1,7 @@
 import { TKC_SOURCE_HEALTH_STATUSES } from '../utils/source-health-display'
 import { seedSourceStatusFeedUrl } from '../utils/source-status-seed-urls'
 import { createScriptPrismaClient } from './prisma-client'
+import { seedDevPodcastEpisodes } from './seed-podcast-episodes'
 
 const prisma = createScriptPrismaClient()
 
@@ -141,6 +142,7 @@ async function main() {
   })
 
   await seedDevSourceStatusMatrix(devEmail)
+  await seedDevPodcastEpisodes(prisma, devEmail)
 }
 
 main()

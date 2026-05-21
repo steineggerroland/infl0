@@ -541,6 +541,32 @@
     "older": "Older",
     "unknown": "—"
   },
+  "episode": {
+    "duration": "Length",
+    "durationTooltip": "Episode length: {duration}",
+    "podcast": "Podcast",
+    "seasonEpisode": "Season {season} · Episode {episode}",
+    "seasonEpisodeTooltip": "Season {season}, episode {episode}",
+    "episodeNumber": "Episode {episode}",
+    "episodeNumberTooltip": "Episode {episode}",
+    "explicit": "Explicit",
+    "coverAlt": "Cover: {title}",
+    "playInBrowser": "Play in browser",
+    "playInBrowserHint": "Starts the audio file directly in your browser.",
+    "openInPodcastApp": "Open in podcast app",
+    "openEpisodePage": "Episode page",
+    "openPodcastFeed": "Podcast feed",
+    "chapters": "Chapters",
+    "shownotes": "Shownotes",
+    "details": "Details",
+    "tabContent": "Content",
+    "tabTranscript": "Transcript",
+    "transcriptExternal": "Open transcript online",
+    "typeTooltip": {
+      "trailer": "Trailer",
+      "bonus": "Bonus episode"
+    }
+  },
   "article": {
     "cornerFold": "Click to flip",
     "flipCard": "Flip card",

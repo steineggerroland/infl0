@@ -5,7 +5,7 @@ import { extractDefineShortcutsKeys } from '../_helpers/parse-define-shortcuts'
  * Self-test for the small `defineShortcuts(...)` scanner used by the
  * coverage test (`tests/unit/shortcuts-coverage.test.ts`). The shapes
  * exercised here are exactly the shapes the codebase uses today
- * (`pages/index.vue`, `components/ArticleView.vue`,
+ * (`pages/index.vue`, `components/ArticleCard.vue`,
  * `components/InfoPopover.vue`). New shapes — e.g. a computed key,
  * a spread, or a `defineShortcuts` invocation built from a constant —
  * should either be added here or trip the coverage test loud enough

@@ -89,8 +89,8 @@ export async function recomputeTimelineScoresForUser(
 
   const itemsWhere =
     crawlKeysFilter != null && crawlKeysFilter.length > 0
-      ? { userId, article: { crawlKey: { in: crawlKeysFilter } } }
-      : { userId }
+      ? { userId, contentKind: 'article' as const, article: { crawlKey: { in: crawlKeysFilter } } }
+      : { userId, contentKind: 'article' as const }
 
   const items = await db.userTimelineItem.findMany({
     where: itemsWhere,
@@ -141,10 +141,12 @@ export async function recomputeTimelineScoresForUser(
 
   const updates: { id: string; rankScore: number }[] = []
   for (const row of items) {
-    const categories = normalizeKeys(row.article.enrichment?.category)
-    const tags = normalizeKeys(row.article.enrichment?.tags)
+    const article = row.article
+    if (!article) continue
+    const categories = normalizeKeys(article.enrichment?.category)
+    const tags = normalizeKeys(article.enrichment?.tags)
     const positive = articleEngagementPositive({
-      crawlKey: row.article.crawlKey,
+      crawlKey: article.crawlKey,
       categories,
       tags,
       feedMap,
@@ -152,7 +154,7 @@ export async function recomputeTimelineScoresForUser(
       tagMap,
     })
     const negative = articleEngagementNegative({
-      crawlKey: row.article.crawlKey,
+      crawlKey: article.crawlKey,
       categories,
       tags,
       feedMap,
@@ -162,7 +164,7 @@ export async function recomputeTimelineScoresForUser(
     const input = rowToArticleScoreInput(row as TimelineRow, { positive, negative })
     const features = computeNormalizedFeatures(input, nowMs, contentLengthPreference)
     const baseScore = computeWeightedScore(features, weights)
-    const pref = preferenceByCrawlKey.get(row.article.crawlKey) ?? 0
+    const pref = preferenceByCrawlKey.get(article.crawlKey) ?? 0
     const score = baseScore + pref * SOURCE_PREFERENCE_BONUS
     updates.push({ id: row.id, rankScore: score })
   }

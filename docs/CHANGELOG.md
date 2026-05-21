@@ -13,6 +13,21 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Reader episode cards:** inflow can render podcast episodes with dedicated
+  card UI, icon registry, browser playback affordance for playable audio,
+  podcast/feed links, collapsible chapters and shownotes, and content/transcript
+  detail tabs. Demo seeding now includes podcast episodes, with component and
+  unit coverage for episode playback, card rendering, icon lookup, read-state
+  handling, and inflow mapping.
+- **TopicKnowledgeCrawler ingest contract:** `POST /api/crawler/ingest`
+  accepts TKC article and podcast episode payloads from the checked-in
+  `tests/fixtures/tkc-ingest/*.json` contract examples. Articles now persist
+  `updated_at`; episodes persist podcast metadata, shownotes, chapters,
+  transcripts, chapter/transcript fetch diagnostics, and `explicit` as a
+  boolean. Unsupported section payloads are rejected for now and surfaced via
+  `SourceStatus` with operator attention. New unit and Playwright E2E tests
+  exercise `article.json`, `episode.json`, and `section.json` against the
+  ingest flow.
 - **Progressive Web App (PWA):** installable from Chrome (manifest, icons,
   service worker, EN/DE install text, home-screen shortcuts, update toast).
   Regenerate icons with `npm run pwa:icons`. Preview on port **3001**;
@@ -20,14 +35,36 @@ new entries accrue under **Unreleased**.
 - **BDD:** `add_infl0_to_home_screen.feature` — PO-readable scenarios for
   install listing, shortcuts, icons/updates, and sign-in page install hints
   (`@http-only` for metadata-only checks).
+- **BDD:** `content_presentation.feature` — PO-readable coverage for rich and
+  minimal article / episode card presentation, including episode actions,
+  optional sections, and details dialog content.
 
 ### Fixed
 
+- **Episode card accessibility and HTML safety:** episode details now open as a
+  labelled dialog with screen-reader-friendly tabs (`aria-controls`,
+  tabpanels, roving `tabindex`, arrow/Home/End keyboard navigation), labelled
+  close control, and focus return to the triggering card action. Episode
+  Markdown rendering now goes through a named `SafeMarkdown` /
+  `renderSafeMarkdown()` sanitizer boundary with tests for allowed Markdown and
+  stripped unsafe HTML. The EpisodeCard / Infl0Icon lint warnings are resolved.
+- **Article reader modal accessibility:** `ArticleView` is now `ArticleCard` to
+  match its reader-card role. Its full-text dialog uses the shared
+  `SafeMarkdown` sanitizer boundary, has a visible accessible title, labelled
+  close control, and returns focus to the triggering card action when closed.
 - **PWA / SSR:** disable Workbox `navigateFallback` so navigations are not
   rewritten to `/` (avoids broken asset loads and `application/json` MIME
   errors when a stale service worker or wrong port is used).
 - **BDD:** block service workers in browser scenarios; add-source steps assert
   visible list outcome instead of flaky `waitForResponse` on `POST /api/feeds`.
+- **BDD maintainability:** replace the broad `ui-helpers` module with named
+  screen objects for sources, reader timeline, settings, and user menu; align
+  new scenarios on first-person wording and move low-level card assertions out
+  of the feature text.
+- **BDD browser coverage for reader card shortcuts:** `content_presentation.feature`
+  now drives article and episode cards through the browser keyboard path for
+  flip/close (`E`, `Escape`), details/fulltext dialog (`Q`), read state (`M`),
+  font size (`+`, `=`, `-`, `0`), and font family (`Shift+K` / `Shift+L`).
 
 ## [0.5.0] — 2026-05-15
 
@@ -232,7 +269,7 @@ with `403`.
 - **Toolchain majors:** **TypeScript 6**, **`marked` v18**, **`@types/node` v25**, and
   **`dotenv-cli` v11**. **`marked` v18** trims trailing blank lines in block tokens,
   which can slightly change rendered Markdown HTML vs older releases; article reader
-  sanitisation (`ArticleView.vue`) is unchanged otherwise.
+  sanitisation (`ArticleCard.vue`) is unchanged otherwise.
 
 - **Vercel deploy workflow** skips jobs when the actor is **`dependabot[bot]`**, so
   routine dependency PRs do not trigger preview deployments.
@@ -334,7 +371,7 @@ after deploy anyway (idempotent).
 
 - **`GET /api/inflow` with discriminated card types.** The inflow
   endpoint now returns `{ items: Array<{ type: 'article' | 'onboarding', ... }>, hasMore, stats }`.
-  `Article` rows keep the shape `ArticleView` already consumes;
+  `Article` rows keep the shape `ArticleCard` already consumes;
   `onboarding` rows are locale-free structural data (`topic`,
   `ordinal`, optional `cta`, `hasDeviceVariants`). Onboarding cards
   do not participate in `R` (show-read), engagement-tracking
@@ -546,7 +583,7 @@ If you use **Compose** or another image, mirror the same idea: install from lock
 
 - Bumped **dompurify** (3.3.3 → 3.4.1) via `npm audit fix` to address
   moderate-severity DOMPurify advisories. Used for article HTML sanitization
-  (`ArticleView`).
+  (`ArticleCard`).
 
 ## [0.2.0] — 2026-04-24
 
@@ -670,7 +707,7 @@ bullets can be copied under dated version headings.*
 - **Score direction accessibility**: `utils/score-indicator.ts`,
   `components/ScoreDelta.vue`, unit tests; colour is not the only cue.
 - **Modal stack** for overlays: `useModalStack`, shortcut `when` / editable
-  guards, `ArticleView` / `InfoPopover` registration, keyboard hint in modal
+  guards, `ArticleCard` / `InfoPopover` registration, keyboard hint in modal
   chrome; behavioural tests for dialog close/cancel sync with stack.
 - **Reduced-motion paths** for card flip, toasts, decorative motion; app
   chrome landmarks (`menu.navLandmark`, header/nav structure).
