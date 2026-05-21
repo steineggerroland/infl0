@@ -26,16 +26,16 @@ import {
  * - every background shortcut gated on `!anyOpen.value` (timeline
  *   `w/s`, `r`, arrow keys, card-flip `e`) stays muted forever.
  *
- * This is exactly the bug the reviewer hit in `ArticleView.vue`. The
- * test below mounts the *same wiring pattern* ArticleView now uses
+ * This is exactly the bug the reviewer hit in `ArticleCard.vue`. The
+ * test below mounts the *same wiring pattern* ArticleCard now uses
  * (`ref="modal"` + `@close`/`@cancel` bound to an `isOpen = false`
  * handler + stack registration) and pins it end-to-end in happy-dom
  * so regressions trip a real test rather than the user's reload.
  *
  * The harness is deliberately minimal – it imports nothing from
- * ArticleView so the test stays readable and is not dragged into
- * ArticleView's unrelated render concerns. The invariant under test
- * is the *wiring contract*, which ArticleView must follow verbatim.
+ * ArticleCard so the test stays readable and is not dragged into
+ * ArticleCard's unrelated render concerns. The invariant under test
+ * is the *wiring contract*, which ArticleCard must follow verbatim.
  */
 
 function createDialogHarness() {

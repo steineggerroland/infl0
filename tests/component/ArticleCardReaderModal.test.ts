@@ -2,7 +2,7 @@
 import { resetNuxtTestState } from '../_helpers/nuxt-globals'
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createI18n, useI18n as vueUseI18n } from 'vue-i18n'
 import { defineShortcuts } from '../../composables/useShortcuts'
@@ -11,6 +11,7 @@ import {
   useModalStackRegistration,
 } from '../../composables/useModalStack'
 import { defaultUiPrefs } from '../../utils/ui-prefs'
+import SafeMarkdown from '../../components/SafeMarkdown.vue'
 
 vi.stubGlobal('defineShortcuts', defineShortcuts)
 vi.stubGlobal('useModalStack', useModalStack)
@@ -34,7 +35,7 @@ vi.stubGlobal('useUiPrefs', () => ({
   update: vi.fn(),
 }))
 
-const ArticleView = (await import('../../components/ArticleView.vue')).default
+const ArticleCard = (await import('../../components/ArticleCard.vue')).default
 
 function makeI18n() {
   const messages = {
@@ -61,12 +62,21 @@ const baseArticle = {
   source_type: 'rss',
 }
 
-describe('ArticleView reader modal + modal stack', () => {
+describe('ArticleCard reader modal + modal stack', () => {
   beforeEach(() => {
     resetNuxtTestState()
     setReadState.mockReset()
     setReadState.mockResolvedValue({ ok: true, readAt: '2026-05-02T10:00:00.000Z' })
     document.body.innerHTML = ''
+    HTMLDialogElement.prototype.showModal = function showModal() {
+      this.open = true
+      this.setAttribute('open', '')
+    }
+    HTMLDialogElement.prototype.close = function close() {
+      this.open = false
+      this.removeAttribute('open')
+      this.dispatchEvent(new Event('close'))
+    }
   })
   afterEach(() => {
     vi.useRealTimers()
@@ -77,12 +87,15 @@ describe('ArticleView reader modal + modal stack', () => {
     const i18n = makeI18n()
     const { anyOpen } = useModalStack()
 
-    const wrapper = mount(ArticleView, {
+    const wrapper = mount(ArticleCard, {
       props: {
         article: { ...baseArticle },
         isSelected: true,
       },
-      global: { plugins: [i18n] },
+      global: {
+        plugins: [i18n],
+        components: { SafeMarkdown },
+      },
       attachTo: document.body,
     })
     await flushPromises()
@@ -102,12 +115,15 @@ describe('ArticleView reader modal + modal stack', () => {
     const i18n = makeI18n()
     const { anyOpen } = useModalStack()
 
-    const wrapper = mount(ArticleView, {
+    const wrapper = mount(ArticleCard, {
       props: {
         article: { ...baseArticle, rawMarkdown: '# Hello' },
         isSelected: true,
       },
-      global: { plugins: [i18n] },
+      global: {
+        plugins: [i18n],
+        components: { SafeMarkdown },
+      },
       attachTo: document.body,
     })
     await flushPromises()
@@ -129,11 +145,47 @@ describe('ArticleView reader modal + modal stack', () => {
     wrapper.unmount()
   })
 
+  it('opens the reader as a labelled dialog and returns focus to the card action', async () => {
+    const i18n = makeI18n()
+
+    const wrapper = mount(ArticleCard, {
+      props: {
+        article: { ...baseArticle, title: 'Accessible article', rawMarkdown: '# Hello' },
+        isSelected: true,
+      },
+      global: { plugins: [i18n] },
+      attachTo: document.body,
+    })
+    await flushPromises()
+
+    const trigger = wrapper.get('.article-back-link')
+    ;(trigger.element as HTMLElement).focus()
+    await trigger.trigger('click')
+    await flushPromises()
+    await nextTick()
+
+    const dialog = wrapper.get('dialog')
+    const titleId = dialog.attributes('aria-labelledby')
+    expect(titleId).toBeTruthy()
+    expect(wrapper.get(`#${titleId}`).text()).toBe('Accessible article')
+
+    const content = wrapper.get('[id$="-reader-content"]')
+    expect(content.attributes('tabindex')).toBe('-1')
+    expect(document.activeElement).toBe(content.element)
+    expect(wrapper.get('form[method="dialog"] button').attributes('aria-label')).toBe('Close')
+    expect(wrapper.html()).toContain('<h1>Hello</h1>')
+
+    ;(dialog.element as HTMLDialogElement).close()
+    await flushPromises()
+    expect(document.activeElement).toBe(trigger.element)
+    wrapper.unmount()
+  })
+
   it('clears modalVisible when rawMarkdown is cleared while the reader was open', async () => {
     const i18n = makeI18n()
     const { anyOpen } = useModalStack()
 
-    const wrapper = mount(ArticleView, {
+    const wrapper = mount(ArticleCard, {
       props: {
         article: { ...baseArticle, rawMarkdown: '# Hello' },
         isSelected: true,
@@ -162,7 +214,7 @@ describe('ArticleView reader modal + modal stack', () => {
   it('shows a read-status control when the article is already read', async () => {
     const i18n = makeI18n()
 
-    const wrapper = mount(ArticleView, {
+    const wrapper = mount(ArticleCard, {
       props: {
         article: { ...baseArticle, readAt: '2026-05-01T10:00:00.000Z' },
         isSelected: true,
@@ -183,7 +235,7 @@ describe('ArticleView reader modal + modal stack', () => {
     vi.useFakeTimers()
     const i18n = makeI18n()
 
-    const wrapper = mount(ArticleView, {
+    const wrapper = mount(ArticleCard, {
       props: {
         article: { ...baseArticle },
         isSelected: true,
@@ -209,7 +261,7 @@ describe('ArticleView reader modal + modal stack', () => {
     const i18n = makeI18n()
     setReadState.mockResolvedValueOnce({ ok: true, readAt: null })
 
-    const wrapper = mount(ArticleView, {
+    const wrapper = mount(ArticleCard, {
       props: {
         article: { ...baseArticle, readAt: '2026-05-01T10:00:00.000Z' },
         isSelected: true,
@@ -233,7 +285,7 @@ describe('ArticleView reader modal + modal stack', () => {
     const i18n = makeI18n()
     setReadState.mockResolvedValueOnce({ ok: true, readAt: null })
 
-    const wrapper = mount(ArticleView, {
+    const wrapper = mount(ArticleCard, {
       props: {
         article: { ...baseArticle, readAt: '2026-05-01T10:00:00.000Z' },
         isSelected: true,

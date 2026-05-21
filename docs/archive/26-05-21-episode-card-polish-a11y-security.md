@@ -53,6 +53,10 @@ keyboard/a11y behavior, and documents the security boundary in code and tests.
   testable.
 - `Infl0Icon` now has an explicit default for optional labels and tests for
   decorative vs accessible icon output.
+- Article full-text rendering was brought in line with the episode dialog:
+  `ArticleView.vue` was renamed to `ArticleCard.vue`, uses the shared
+  `SafeMarkdown` sanitizer boundary, exposes a labelled reader dialog, and
+  returns focus to the triggering card action on close.
 - Lint warnings for self-closing cover image, `v-html`, and icon label default
   are resolved.
 - Verification: `npm run lint`, `npm run typecheck`, and `npm run test`.

@@ -11,7 +11,7 @@
  * - `stats.total` / `stats.unread` count article rows only — onboarding
  *   cards are not in the read/unread accounting.
  * - Article and episode items keep their `type` discriminators and the
- *   shapes the reader consumes (`ArticleView` / future `EpisodeCard`).
+ *   shapes the reader consumes (`ArticleCard` / `EpisodeCard`).
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../server/utils/prisma'

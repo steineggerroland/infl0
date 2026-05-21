@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { de, enUS } from 'date-fns/locale'
 import { format } from 'date-fns'
-import DOMPurify from 'dompurify'
-import { marked } from 'marked'
+import SafeMarkdown from './SafeMarkdown.vue'
 import type { ArticleEngagementSegment } from '~/utils/article-engagement'
 import { ARTICLE_READ_VISIBILITY_MS } from '~/utils/read-state'
 import {
@@ -14,8 +13,6 @@ import {
 
 const { t, locale } = useI18n()
 const dateLocale = computed(() => (locale.value === 'de' ? de : enUS))
-
-marked.setOptions({ gfm: true })
 
 // Define the props for the component
 const props = defineProps({
@@ -72,12 +69,31 @@ function toggleDetailView() {
 // Track modal visibility. Keep it in sync with native <dialog> close paths
 // (Escape, backdrop, form[method=dialog]) via onDialogClose.
 const modalVisible = ref(false)
+const modal = ref<HTMLDialogElement | null>(null)
+const lastDialogTrigger = ref<HTMLElement | null>(null)
 
-function showOriginalArticle() {
+const safeArticleDomId = computed(
+  () => props.article.id.replace(/[^A-Za-z0-9_-]+/g, '-') || 'article',
+)
+const dialogTitleId = computed(() => `${safeArticleDomId.value}-reader-title`)
+const dialogContentId = computed(() => `${safeArticleDomId.value}-reader-content`)
+
+function showOriginalArticle(event?: Event) {
   if (!hasReaderModal.value) return
   emit('commit')
+  const trigger = event?.currentTarget
+  lastDialogTrigger.value =
+    trigger instanceof HTMLElement
+      ? trigger
+      : document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null
   modal.value?.showModal()
   modalVisible.value = true
+  void nextTick(() => {
+    const panel = document.getElementById(dialogContentId.value)
+    panel?.focus()
+  })
 }
 
 function toggleOriginalArticle() {
@@ -91,9 +107,9 @@ function toggleOriginalArticle() {
 
 function onDialogClose() {
   modalVisible.value = false
+  lastDialogTrigger.value?.focus()
+  lastDialogTrigger.value = null
 }
-
-const modal = ref()
 
 /** In-app reader modal (sanitized markdown from DB). */
 const hasReaderModal = computed(
@@ -102,19 +118,6 @@ const hasReaderModal = computed(
 
 watch(hasReaderModal, (ok) => {
   if (!ok && modalVisible.value) modalVisible.value = false
-})
-
-/** DB-sourced markdown: parse + sanitize (client only — DOMPurify needs DOM). */
-const renderedRawMarkdown = computed(() => {
-  const md = props.article.rawMarkdown
-  if (md == null || md.trim() === '') return ''
-  if (import.meta.server) return ''
-  try {
-    const html = marked.parse(md) as string
-    return DOMPurify.sanitize(html)
-  } catch {
-    return ''
-  }
 })
 
 const engagement = useEngagementTrackingPrefs()
@@ -459,14 +462,23 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
           <p class="m-0 w-full shrink-0 pt-1 text-end text-[0.88em] text-[var(--infl0-article-back-fg-mute)]">
             <a
               v-if="hasReaderModal"
+              ref="originalArticleLink"
               :href="article.link"
               target="_blank"
+              rel="noopener noreferrer"
               class="article-back-link font-bold"
-              @click.prevent="showOriginalArticle"
+              @click.prevent="showOriginalArticle($event)"
             >
               {{ t('article.originalArticle') }}
             </a>
-            <a v-else :href="article.link" target="_blank" class="article-back-link font-bold" @click="emit('commit')">
+            <a
+              v-else
+              :href="article.link"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="article-back-link font-bold"
+              @click="emit('commit')"
+            >
               {{ t('article.originalArticle') }}
             </a>
           </p>
@@ -514,6 +526,7 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
       v-if="hasReaderModal"
       ref="modal"
       class="modal"
+      :aria-labelledby="dialogTitleId"
       @close="onDialogClose"
       @cancel="onDialogClose"
     >
@@ -521,30 +534,37 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
         class="modal-box max-w-[100vw] w-[640px] border border-[var(--infl0-surface-reader-border)] bg-[var(--infl0-surface-reader-bg)] text-[var(--infl0-surface-reader-text)]"
       >
         <form method="dialog" class="mb-2 flex justify-end">
-          <button class="btn btn-sm btn-circle btn-ghost">✕</button>
+          <button
+            class="btn btn-sm btn-circle btn-ghost"
+            type="submit"
+            :aria-label="t('article.closeModal')"
+          >
+            <span aria-hidden="true">✕</span>
+          </button>
         </form>
+
+        <h2 :id="dialogTitleId" class="mb-3 text-lg font-semibold">
+          {{ article.title }}
+        </h2>
+
         <div
+          :id="dialogContentId"
+          tabindex="-1"
           class="max-h-[80vh] h-full w-full min-w-0 overflow-y-auto infl0-surface-reader infl0-surface-typo-reader prose max-w-none md:p-2 text-[var(--infl0-surface-reader-text)] prose-headings:font-semibold prose-headings:text-[var(--infl0-surface-reader-text)] prose-p:text-[var(--infl0-surface-reader-text)] prose-li:marker:text-[var(--infl0-reader-prose-muted)] prose-a:text-[var(--infl0-reader-link)] prose-pre:rounded-lg prose-pre:bg-[var(--infl0-reader-code-bg)] prose-pre:text-[var(--infl0-reader-code-fg)] prose-code:text-[var(--infl0-reader-code-fg)] prose-code:bg-[var(--infl0-reader-code-bg)] prose-code:px-1 prose-code:py-0.5 prose-code:rounded"
         >
-          <!-- eslint-disable vue/no-v-html -- Markdown sanitized with DOMPurify -->
-          <div
-            v-if="modalVisible && article.rawMarkdown && renderedRawMarkdown"
-            class="article-markdown"
-            v-html="renderedRawMarkdown"
+          <SafeMarkdown
+            v-if="modalVisible && article.rawMarkdown"
+            :markdown="article.rawMarkdown"
+            content-class="article-markdown"
+            fallback-class="whitespace-pre-wrap break-words text-[1em] text-[var(--infl0-surface-reader-text)]"
           />
-          <!-- eslint-enable vue/no-v-html -->
-          <pre
-            v-else-if="modalVisible && article.rawMarkdown"
-            class="whitespace-pre-wrap break-words text-[1em] text-[var(--infl0-surface-reader-text)]"
-            >{{ article.rawMarkdown }}</pre
-          >
         </div>
         <p class="mt-3 select-none text-xs text-[var(--infl0-reader-prose-muted)]">
           {{ t('article.modalKeyboardHint') }}
         </p>
       </div>
       <form method="dialog" class="modal-backdrop">
-        <button>{{ t('article.closeModal') }}</button>
+        <button type="submit">{{ t('article.closeModal') }}</button>
       </form>
     </dialog>
   </div>

@@ -27,7 +27,7 @@ import { parseEpisodeChapters, type InflowEpisodeChapter } from '../../utils/inf
 type ArticleWithEnrichment = Article & { enrichment: ArticleEnrichment | null }
 type EpisodeWithEnrichment = Episode & { enrichment: EpisodeEnrichment | null }
 
-/** Article-shaped row in the inflow response (kept compatible with `ArticleView.vue`). */
+/** Article-shaped row in the inflow response (kept compatible with `ArticleCard.vue`). */
 export interface InflowArticleItem {
   type: 'article'
   id: string

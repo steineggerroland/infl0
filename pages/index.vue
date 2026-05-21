@@ -800,7 +800,7 @@ onBeforeUnmount(() => {
                 @focusin="focusInflowIndex(index)"
                 @pointerdown.capture="focusInflowIndex(index)"
             >
-                <ArticleView
+                <ArticleCard
                     v-if="item.type === 'article'"
                     class="article rounded-xl"
                     :article="item"

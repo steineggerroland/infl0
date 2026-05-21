@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { de, enUS } from 'date-fns/locale'
 import { format } from 'date-fns'
+import SafeMarkdown from './SafeMarkdown.vue'
 import type { InflowEpisodeChapter } from '~/utils/inflow-episode'
 import { formatEpisodeDuration } from '~/utils/inflow-episode'
 import {

@@ -25,7 +25,7 @@ inflow top or resuming from their stored return context.
 - `uiPrefs` persistence for `lastReaderSessionStartedAt`.
 - Inflow API stats for `newSinceLastReaderSession`.
 - Local return-context storage and internal URL sync.
-- Engagement tracking and read-state feedback in `ArticleView`.
+- Engagement tracking and read-state feedback in `ArticleCard`.
 - HTTP-accessible BDD setup through feed creation and crawler ingest.
 
 ## Acceptance criteria
@@ -51,7 +51,7 @@ inflow top or resuming from their stored return context.
   `pages/inflow/onboarding/[topic].vue`.
 - Preferences: `utils/ui-prefs.ts`, `composables/useUiPrefs.ts`.
 - Inflow stats: `server/utils/inflow-handler.ts`.
-- Read feedback / engagement: `components/ArticleView.vue`,
+- Read feedback / engagement: `components/ArticleCard.vue`,
   `composables/useEngagementTrackingPrefs.ts`.
 - Behavior coverage: `features/reader_return_context.feature` with glue in
   `features/steps/reader.steps.js`.

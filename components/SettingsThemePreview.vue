@@ -10,7 +10,7 @@
  * the tokens from the document root.
  *
  * The component is deliberately small and does not re-use
- * `ArticleView` or any real timeline card; the preview's job is "does
+ * `ArticleCard` or any real timeline card; the preview's job is "does
  * the theme visibly change?", not "is this a faithful mini timeline".
  * Pulling in the real card would couple this slice to fixture data
  * and slow down future token refactors.

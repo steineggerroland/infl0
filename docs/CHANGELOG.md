@@ -48,6 +48,10 @@ new entries accrue under **Unreleased**.
   Markdown rendering now goes through a named `SafeMarkdown` /
   `renderSafeMarkdown()` sanitizer boundary with tests for allowed Markdown and
   stripped unsafe HTML. The EpisodeCard / Infl0Icon lint warnings are resolved.
+- **Article reader modal accessibility:** `ArticleView` is now `ArticleCard` to
+  match its reader-card role. Its full-text dialog uses the shared
+  `SafeMarkdown` sanitizer boundary, has a visible accessible title, labelled
+  close control, and returns focus to the triggering card action when closed.
 - **PWA / SSR:** disable Workbox `navigateFallback` so navigations are not
   rewritten to `/` (avoids broken asset loads and `application/json` MIME
   errors when a stale service worker or wrong port is used).
@@ -261,7 +265,7 @@ with `403`.
 - **Toolchain majors:** **TypeScript 6**, **`marked` v18**, **`@types/node` v25**, and
   **`dotenv-cli` v11**. **`marked` v18** trims trailing blank lines in block tokens,
   which can slightly change rendered Markdown HTML vs older releases; article reader
-  sanitisation (`ArticleView.vue`) is unchanged otherwise.
+  sanitisation (`ArticleCard.vue`) is unchanged otherwise.
 
 - **Vercel deploy workflow** skips jobs when the actor is **`dependabot[bot]`**, so
   routine dependency PRs do not trigger preview deployments.
@@ -363,7 +367,7 @@ after deploy anyway (idempotent).
 
 - **`GET /api/inflow` with discriminated card types.** The inflow
   endpoint now returns `{ items: Array<{ type: 'article' | 'onboarding', ... }>, hasMore, stats }`.
-  `Article` rows keep the shape `ArticleView` already consumes;
+  `Article` rows keep the shape `ArticleCard` already consumes;
   `onboarding` rows are locale-free structural data (`topic`,
   `ordinal`, optional `cta`, `hasDeviceVariants`). Onboarding cards
   do not participate in `R` (show-read), engagement-tracking
@@ -575,7 +579,7 @@ If you use **Compose** or another image, mirror the same idea: install from lock
 
 - Bumped **dompurify** (3.3.3 → 3.4.1) via `npm audit fix` to address
   moderate-severity DOMPurify advisories. Used for article HTML sanitization
-  (`ArticleView`).
+  (`ArticleCard`).
 
 ## [0.2.0] — 2026-04-24
 
@@ -699,7 +703,7 @@ bullets can be copied under dated version headings.*
 - **Score direction accessibility**: `utils/score-indicator.ts`,
   `components/ScoreDelta.vue`, unit tests; colour is not the only cue.
 - **Modal stack** for overlays: `useModalStack`, shortcut `when` / editable
-  guards, `ArticleView` / `InfoPopover` registration, keyboard hint in modal
+  guards, `ArticleCard` / `InfoPopover` registration, keyboard hint in modal
   chrome; behavioural tests for dialog close/cancel sync with stack.
 - **Reduced-motion paths** for card flip, toasts, decorative motion; app
   chrome landmarks (`menu.navLandmark`, header/nav structure).
