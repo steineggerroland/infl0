@@ -204,13 +204,16 @@ When('I use the font-family shortcuts on the focused card', async function () {
   await expect(target).toBeVisible()
   this.cardFontFamilyBefore = await readFontFamily(target)
 
-  for (let attempt = 0; attempt < 6; attempt += 1) {
-    await this.page.keyboard.press('Shift+L')
-    this.cardFontFamilyAfterForward = await readFontFamily(target)
-    if (this.cardFontFamilyAfterForward !== this.cardFontFamilyBefore) break
-  }
+  await this.page.keyboard.press('Shift+L')
+  await expect
+    .poll(async () => readFontFamily(target), { timeout: 10_000 })
+    .not.toBe(this.cardFontFamilyBefore)
+  this.cardFontFamilyAfterForward = await readFontFamily(target)
 
   await this.page.keyboard.press('Shift+K')
+  await expect
+    .poll(async () => readFontFamily(target), { timeout: 10_000 })
+    .not.toBe(this.cardFontFamilyAfterForward)
   this.cardFontFamilyAfterBackward = await readFontFamily(target)
 })
 

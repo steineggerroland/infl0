@@ -1,5 +1,19 @@
 import { expect } from '@playwright/test'
 
+function timeoutAfter(ms, message) {
+  return new Promise((_, reject) => {
+    setTimeout(() => reject(new Error(message)), ms)
+  })
+}
+
+async function fillStable(locator, value) {
+  await expect(async () => {
+    await locator.fill(value)
+    await locator.page().waitForTimeout(150)
+    await expect(locator).toHaveValue(value)
+  }).toPass({ timeout: 10_000 })
+}
+
 export class SourcesPage {
   /** @param {import('@playwright/test').Page} page */
   constructor(page) {
@@ -9,6 +23,7 @@ export class SourcesPage {
   async open() {
     await this.page.goto('/feeds')
     await expect(this.page).toHaveURL(/\/feeds/u)
+    await this.page.waitForLoadState('networkidle')
   }
 
   row(snippet) {
@@ -29,8 +44,10 @@ export class SourcesPage {
 
   async addSource(world, address, displayName) {
     await expect(this.page.getByTestId('feeds-add-fieldset')).toBeVisible({ timeout: 30_000 })
-    await this.page.locator('#feed-url-input').fill(address)
-    await this.page.locator('#feed-display-input').fill(displayName)
+    const urlInput = this.page.locator('#feed-url-input')
+    const displayInput = this.page.locator('#feed-display-input')
+    await fillStable(urlInput, address)
+    await fillStable(displayInput, displayName)
 
     const submit = this.page.locator('[data-testid="feeds-add-fieldset"] button[type="submit"]')
     const errorAlert = this.page.getByTestId('feeds-add-error')
@@ -39,33 +56,31 @@ export class SourcesPage {
 
     await expect(submit).toBeEnabled({ timeout: 30_000 })
     await submit.scrollIntoViewIfNeeded()
+
+    const isFeedPost = (request) =>
+      request.method() === 'POST' && new URL(request.url()).pathname === '/api/feeds'
+
+    let feedRequestPromise = this.page.waitForRequest(isFeedPost, { timeout: 10_000 })
     await submit.click()
 
-    async function waitForAddOutcome(timeoutMs) {
-      await expect
-        .poll(
-          async () => {
-            if (await errorAlert.isVisible()) return 'error'
-            if ((await rowByUrl.count()) > 0 || (await rowByTitle.count()) > 0) return 'ok'
-            if (await submit.isDisabled()) return 'submitting'
-            return 'pending'
-          },
-          { timeout: timeoutMs },
-        )
-        .toMatch(/^(ok|error)$/)
+    let feedRequest
+    try {
+      feedRequest = await feedRequestPromise
+    } catch {
+      feedRequestPromise = this.page.waitForRequest(isFeedPost, { timeout: 10_000 })
+      await urlInput.press('Enter')
+      feedRequest = await feedRequestPromise
     }
 
-    try {
-      await waitForAddOutcome(120_000)
-    } catch {
-      if (await errorAlert.isVisible()) {
-        throw new Error(`Add source failed in UI: ${await errorAlert.textContent()}`)
-      }
-      if ((await rowByUrl.count()) === 0 && (await rowByTitle.count()) === 0) {
-        await this.page.reload()
-        await expect(this.page.getByTestId('feeds-add-fieldset')).toBeVisible({ timeout: 30_000 })
-        await waitForAddOutcome(90_000)
-      }
+    const feedResponse = await Promise.race([
+      feedRequest.response(),
+      timeoutAfter(45_000, 'POST /api/feeds was sent but did not receive a response within 45s.'),
+    ])
+    if (!feedResponse) {
+      throw new Error('POST /api/feeds finished without a response.')
+    }
+    if (!feedResponse.ok()) {
+      throw new Error(`POST /api/feeds failed (${feedResponse.status()}): ${await feedResponse.text()}`)
     }
 
     if (await errorAlert.isVisible()) {
@@ -73,7 +88,13 @@ export class SourcesPage {
     }
 
     const row = (await rowByUrl.count()) > 0 ? rowByUrl : rowByTitle
-    await expect(row).toBeVisible({ timeout: 15_000 })
+    try {
+      await expect(row).toBeVisible({ timeout: 15_000 })
+    } catch {
+      await this.page.reload()
+      await expect(this.page.getByTestId('feeds-add-fieldset')).toBeVisible({ timeout: 30_000 })
+      await expect(row).toBeVisible({ timeout: 15_000 })
+    }
     await this.rememberFeedFromRow(world, address)
   }
 
