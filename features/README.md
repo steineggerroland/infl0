@@ -61,7 +61,8 @@ Covered in BDD today:
 - **`content_presentation.feature`** — new user registers via shared auth steps;
   articles/episodes ingested per scenario (`Given I have an article/episode with …`);
   rich vs minimal card front/back, episode actions, collapsible chapters/shownotes,
-  and content/transcript tabs; negative checks for absent optional fields.
+  content/transcript tabs, and browser-level card shortcuts; negative checks for
+  absent optional fields.
 - **`add_infl0_to_home_screen.feature`** — install listing (name, EN/DE description,
   standalone app window, portrait/landscape), home-screen shortcuts to timeline /
   sources / settings, install icons, in-place updates, sign-in page ready for phone

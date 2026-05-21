@@ -19,6 +19,28 @@ Feature: Article and episode card presentation
     When I open the original article from the focused card back
     Then I should see the rich article body in the reader dialog
 
+  Scenario: Article card shortcuts work in the browser
+    Given I have an article with all information
+    And I open the timeline
+    And I start reading
+    When I view the teaser of the rich article
+    And I use the card flip shortcut
+    Then I should see the rich article back
+    When I use the card escape shortcut
+    Then I should see the rich article teaser
+    When I use the card flip shortcut
+    Then I should see the rich article back
+    When I use the reader dialog shortcut
+    Then I should see the rich article body in the reader dialog
+    When I use the reader dialog shortcut
+    Then I should not see an open reader dialog
+    When I use the read-state shortcut on the focused card
+    Then the focused card should be marked as read
+    When I use the font-size shortcuts on the focused card
+    Then the focused card font size should respond to shortcuts
+    When I use the font-family shortcuts on the focused card
+    Then the focused card font family should respond to shortcuts
+
   Scenario: Minimal article hides optional back fields
     Given I have an article with little information
     And I open the timeline
@@ -45,6 +67,28 @@ Feature: Article and episode card presentation
     Then I should see the rich episode content tab
     When I open the transcript tab in the episode details
     Then I should see the rich episode transcript tab
+
+  Scenario: Episode card shortcuts work in the browser
+    Given I have an episode with all information
+    And I open the timeline
+    And I start reading
+    When I view the teaser of the rich episode
+    And I use the card flip shortcut
+    Then I should see the rich episode back
+    When I use the card escape shortcut
+    Then I should see the rich episode teaser
+    When I use the card flip shortcut
+    Then I should see the rich episode back
+    When I use the reader dialog shortcut
+    Then I should see the rich episode content tab
+    When I use the reader dialog shortcut
+    Then I should not see an open reader dialog
+    When I use the read-state shortcut on the focused card
+    Then the focused card should be marked as read
+    When I use the font-size shortcuts on the focused card
+    Then the focused card font size should respond to shortcuts
+    When I use the font-family shortcuts on the focused card
+    Then the focused card font family should respond to shortcuts
 
   Scenario: Minimal episode shows only core fields
     Given I have an episode with little information

@@ -61,6 +61,10 @@ new entries accrue under **Unreleased**.
   screen objects for sources, reader timeline, settings, and user menu; align
   new scenarios on first-person wording and move low-level card assertions out
   of the feature text.
+- **BDD browser coverage for reader card shortcuts:** `content_presentation.feature`
+  now drives article and episode cards through the browser keyboard path for
+  flip/close (`E`, `Escape`), details/fulltext dialog (`Q`), read state (`M`),
+  font size (`+`, `=`, `-`, `0`), and font family (`Shift+K` / `Shift+L`).
 
 ## [0.5.0] — 2026-05-15
 

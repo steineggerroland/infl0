@@ -40,6 +40,25 @@ function focusedCard(world) {
   return reader.episodeCard(focus.id)
 }
 
+function focusedReadStatus(world) {
+  const focus = world.focusedPresentation
+  if (!focus) throw new Error('No card is focused — use a "view the teaser" step first.')
+  const testId = focus.kind === 'article' ? 'article-read-status' : 'episode-read-status'
+  return focusedCard(world).getByTestId(testId).first()
+}
+
+function focusedBackTypography(world) {
+  return focusedCard(world).locator('.infl0-surface-typo-back').first()
+}
+
+async function readFontSizePx(locator) {
+  return locator.evaluate((el) => Number.parseFloat(getComputedStyle(el).fontSize))
+}
+
+async function readFontFamily(locator) {
+  return locator.evaluate((el) => getComputedStyle(el).fontFamily)
+}
+
 Given('I have an article with all information', async function () {
   await ingestRichArticle(this.page, this)
 })
@@ -133,6 +152,68 @@ When('I open the original article from the focused card back', async function ()
   await card.getByRole('link', { name: 'Original article' }).click()
 })
 
+When('I use the card flip shortcut', async function () {
+  await this.page.keyboard.press('e')
+})
+
+When('I use the card escape shortcut', async function () {
+  await this.page.keyboard.press('Escape')
+})
+
+When('I use the reader dialog shortcut', async function () {
+  await this.page.keyboard.press('q')
+})
+
+When('I use the read-state shortcut on the focused card', async function () {
+  await this.page.keyboard.press('m')
+})
+
+When('I use the font-size shortcuts on the focused card', async function () {
+  const target = focusedBackTypography(this)
+  await expect(target).toBeVisible()
+  await this.page.keyboard.press('0')
+  this.cardFontSizeBefore = await readFontSizePx(target)
+
+  await this.page.keyboard.press('+')
+  await expect
+    .poll(async () => readFontSizePx(target), { timeout: 10_000 })
+    .toBeGreaterThan(this.cardFontSizeBefore)
+  this.cardFontSizeAfterIncrease = await readFontSizePx(target)
+
+  await this.page.keyboard.press('-')
+  await expect
+    .poll(async () => readFontSizePx(target), { timeout: 10_000 })
+    .toBeLessThan(this.cardFontSizeAfterIncrease)
+  this.cardFontSizeAfterDecrease = await readFontSizePx(target)
+
+  await this.page.keyboard.press('=')
+  await expect
+    .poll(async () => readFontSizePx(target), { timeout: 10_000 })
+    .toBeGreaterThan(this.cardFontSizeAfterDecrease)
+  this.cardFontSizeAfterEquals = await readFontSizePx(target)
+
+  await this.page.keyboard.press('0')
+  await expect
+    .poll(async () => readFontSizePx(target), { timeout: 10_000 })
+    .toBe(this.cardFontSizeBefore)
+  this.cardFontSizeAfterReset = await readFontSizePx(target)
+})
+
+When('I use the font-family shortcuts on the focused card', async function () {
+  const target = focusedBackTypography(this)
+  await expect(target).toBeVisible()
+  this.cardFontFamilyBefore = await readFontFamily(target)
+
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    await this.page.keyboard.press('Shift+L')
+    this.cardFontFamilyAfterForward = await readFontFamily(target)
+    if (this.cardFontFamilyAfterForward !== this.cardFontFamilyBefore) break
+  }
+
+  await this.page.keyboard.press('Shift+K')
+  this.cardFontFamilyAfterBackward = await readFontFamily(target)
+})
+
 async function expectFocusedCardText(world, ...texts) {
   const card = focusedCard(world)
   for (const text of texts) {
@@ -190,6 +271,10 @@ Then('I should see the rich article back', async function () {
 
 Then('I should see the rich article body in the reader dialog', async function () {
   await expectOpenReaderDialogText(this, 'Rich body')
+})
+
+Then('I should not see an open reader dialog', async function () {
+  await expect(this.page.locator('dialog[open]')).toHaveCount(0)
 })
 
 Then('I should see the minimal article teaser', async function () {
@@ -257,4 +342,25 @@ Then('I should see the minimal episode back with core actions only', async funct
   await expect(card.getByTestId('episode-shownotes-collapsible')).toHaveCount(0)
   await expect(card.getByTestId('episode-details-link')).toHaveCount(0)
   await expectNoFocusedCardText(this, 'Rich episode subtitle')
+})
+
+Then('the focused card should be marked as read', async function () {
+  await expect(focusedReadStatus(this)).toHaveAttribute('aria-pressed', 'true', {
+    timeout: 10_000,
+  })
+})
+
+Then('the focused card font size should respond to shortcuts', async function () {
+  expect(this.cardFontSizeBefore).toBeGreaterThan(0)
+  expect(this.cardFontSizeAfterIncrease).toBeGreaterThan(this.cardFontSizeBefore)
+  expect(this.cardFontSizeAfterDecrease).toBeLessThan(this.cardFontSizeAfterIncrease)
+  expect(this.cardFontSizeAfterEquals).toBeGreaterThan(this.cardFontSizeAfterDecrease)
+  expect(this.cardFontSizeAfterReset).toBe(this.cardFontSizeBefore)
+})
+
+Then('the focused card font family should respond to shortcuts', async function () {
+  expect(this.cardFontFamilyBefore).toBeTruthy()
+  expect(this.cardFontFamilyAfterForward).toBeTruthy()
+  expect(this.cardFontFamilyAfterForward).not.toBe(this.cardFontFamilyBefore)
+  expect(this.cardFontFamilyAfterBackward).toBeTruthy()
 })

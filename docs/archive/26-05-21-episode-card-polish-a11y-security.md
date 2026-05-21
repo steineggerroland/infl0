@@ -57,9 +57,13 @@ keyboard/a11y behavior, and documents the security boundary in code and tests.
   `ArticleView.vue` was renamed to `ArticleCard.vue`, uses the shared
   `SafeMarkdown` sanitizer boundary, exposes a labelled reader dialog, and
   returns focus to the triggering card action on close.
+- `content_presentation.feature` now includes browser-level shortcut scenarios
+  for article and episode cards: flip/close, reader/details dialog, read state,
+  font size, and font family.
 - Lint warnings for self-closing cover image, `v-html`, and icon label default
   are resolved.
-- Verification: `npm run lint`, `npm run typecheck`, and `npm run test`.
+- Verification: `npm run lint`, `npm run typecheck`, `npm run test`, and the
+  targeted Cucumber browser run for `features/content_presentation.feature`.
 
 ## Links
 
