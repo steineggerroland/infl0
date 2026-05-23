@@ -60,7 +60,7 @@
     "@cucumber/cucumber": "^12.8.2",
     "@nuxt/eslint": "^1.15.0",
     "@playwright/test": "^1.60.0",
-    "@types/node": "^25.8.0",
+    "@types/node": "^25.9.1",
     "@types/pg": "^8.15.0",
     "@vite-pwa/nuxt": "^1.1.1",
     "@vitejs/plugin-vue": "^6.0.6",
