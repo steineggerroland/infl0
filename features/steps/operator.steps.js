@@ -84,6 +84,7 @@ Given('I post operator source status fixtures', async function () {
 
 When('I open the operator sources page', async function () {
   await this.page.goto('/operator/sources')
+  await waitForNuxtAppReady(this.page)
 })
 
 Then('I should see operator access denied', async function () {
@@ -128,7 +129,19 @@ Then('the operator sources table should show rows', async function () {
 })
 
 When('I activate the operator filter {string}', async function (label) {
+  const filterByLabel = {
+    Attention: 'attention',
+    'Failing / degraded': 'failing_degraded',
+    'Needs setup': 'needs_setup',
+    Blocked: 'blocked',
+    Quiet: 'quiet',
+    All: 'all',
+  }
   await this.page.getByRole('button', { name: label }).click()
+  const filter = filterByLabel[label]
+  if (filter) {
+    await expect(this.page).toHaveURL(new RegExp(`[?&]filter=${filter}(?:&|$)`, 'u'))
+  }
 })
 
 Then('the operator table should include source key {string}', async function (crawlKey) {

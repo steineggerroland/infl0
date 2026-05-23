@@ -38,6 +38,31 @@ async function browserFetchJson(
   )
 }
 
+async function expectOperatorFilter(
+  page: Page,
+  filter: 'blocked' | 'quiet',
+  includedCrawlKey: string,
+  excludedCrawlKey: string,
+) {
+  await expect(page).toHaveURL(new RegExp(`[?&]filter=${filter}(?:&|$)`, 'u'))
+  const table = page.getByTestId('operator-sources-table')
+  const rows = table.locator('tbody tr')
+  const includedRow = rows.filter({ hasText: includedCrawlKey }).first()
+  await expect(includedRow).toBeVisible({ timeout: 20_000 })
+  await expect
+    .poll(
+      async () =>
+        rows.evaluateAll((visibleRows) =>
+          visibleRows
+            .filter((row) => row.textContent?.trim())
+            .every((row) => row.getAttribute('data-health') === filter),
+        ),
+      { timeout: 20_000 },
+    )
+    .toBe(true)
+  await expect(table).not.toContainText(excludedCrawlKey)
+}
+
 test.describe('operator sources page (signed in)', () => {
   test.beforeAll(() => {
     loadE2eMergedEnv()
@@ -54,9 +79,12 @@ test.describe('operator sources page (signed in)', () => {
     await page.goto('/operator/sources')
     await expect(page.getByTestId('operator-sources-table')).toBeVisible({ timeout: 20_000 })
 
+    const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`
+    const blockedCrawlKey = `https://e2e-infl0.example.com/operator-blocked/${suffix}.xml`
+    const quietCrawlKey = `https://e2e-infl0.example.com/operator-quiet/${suffix}.xml`
     const fixtures = [
       {
-        crawlKey: 'https://example.com/e2e-operator-blocked.xml',
+        crawlKey: blockedCrawlKey,
         sourceStatus: 'ready',
         sourceHealthStatus: 'blocked',
         operatorAttention: true,
@@ -68,7 +96,7 @@ test.describe('operator sources page (signed in)', () => {
         crawlLlmFailedCount: 1,
       },
       {
-        crawlKey: 'https://example.com/e2e-operator-quiet.xml',
+        crawlKey: quietCrawlKey,
         sourceStatus: 'ready',
         sourceHealthStatus: 'quiet',
         operatorAttention: false,
@@ -95,28 +123,22 @@ test.describe('operator sources page (signed in)', () => {
     // or dedupe fetches so `waitForResponse` for `/api/operator/source-statuses` is flaky.
     await page.reload({ waitUntil: 'domcontentloaded' })
     await expect(page.getByTestId('operator-sources-table')).toBeVisible({ timeout: 60_000 })
-    await expect(page.getByTestId('operator-sources-table')).toContainText(
-      'https://example.com/e2e-operator-blocked.xml',
-      { timeout: 45_000 },
-    )
+    await expect(page.getByTestId('operator-sources-table')).toContainText(blockedCrawlKey, {
+      timeout: 45_000,
+    })
     await expect(page.getByTestId('operator-summary-total')).toContainText(/\d+/u)
     await expect(page.getByTestId('operator-summary-attention')).toContainText(/\d+/u)
 
-    const firstRow = page.locator('[data-testid="operator-sources-table"] tbody tr').first()
-    await expect(firstRow).toContainText('https://example.com/e2e-operator-blocked.xml')
+    const blockedRow = page
+      .locator('[data-testid="operator-sources-table"] tbody tr[data-health="blocked"]')
+      .filter({ hasText: blockedCrawlKey })
+      .first()
+    await expect(blockedRow).toContainText('e2e blocked fixture')
 
     await page.getByTestId('operator-filter-blocked').click()
-    await expect(page.getByTestId('operator-sources-table')).toContainText(
-      'https://example.com/e2e-operator-blocked.xml',
-    )
-    await expect(page.getByTestId('operator-sources-table')).not.toContainText(
-      'https://example.com/e2e-operator-quiet.xml',
-    )
+    await expectOperatorFilter(page, 'blocked', blockedCrawlKey, quietCrawlKey)
 
     await page.getByTestId('operator-filter-quiet').click()
-    await expect(page.getByTestId('operator-sources-table')).toContainText(
-      'https://example.com/e2e-operator-quiet.xml',
-    )
+    await expectOperatorFilter(page, 'quiet', quietCrawlKey, blockedCrawlKey)
   })
 })
-

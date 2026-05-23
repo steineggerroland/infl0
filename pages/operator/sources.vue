@@ -60,10 +60,11 @@ const activeFilter = computed<OperatorFilter>(() => {
     : 'all'
 })
 
-const { data, error, refresh } = await useFetch<OperatorResponse>('/api/operator/source-statuses', {
+const { data, error } = await useFetch<OperatorResponse>('/api/operator/source-statuses', {
   key: 'operator-source-statuses',
   credentials: 'include',
   query: computed(() => ({ filter: activeFilter.value })),
+  watch: [activeFilter],
 })
 
 if (error.value) {
@@ -99,7 +100,6 @@ function fmtDate(iso: string | null): string {
 async function setFilter(filter: OperatorFilter) {
   if (filter === activeFilter.value) return
   await router.replace({ query: { ...route.query, filter } })
-  await refresh()
 }
 </script>
 
@@ -261,4 +261,3 @@ async function setFilter(filter: OperatorFilter) {
     </section>
   </main>
 </template>
-
