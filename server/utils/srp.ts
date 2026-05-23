@@ -5,6 +5,7 @@ import {
   SRPParameters,
   SRPRoutines,
 } from 'tssrp6a'
+import { prisma } from './prisma'
 
 const CHALLENGE_TTL_MS = 120_000
 
@@ -24,40 +25,30 @@ export function bigintToHex(n: bigint): string {
   return n.toString(16)
 }
 
-type ChallengeEntry = { serialized: string; expiresAt: number }
-
-function challengeMap(): Map<string, ChallengeEntry> {
-  const g = globalThis as unknown as { __infl0SrpChallenges?: Map<string, ChallengeEntry> }
-  if (!g.__infl0SrpChallenges) {
-    g.__infl0SrpChallenges = new Map()
-  }
-  return g.__infl0SrpChallenges
-}
-
-function pruneChallenges() {
-  const m = challengeMap()
+async function pruneChallenges() {
   const now = Date.now()
-  for (const [k, v] of m) {
-    if (v.expiresAt <= now) m.delete(k)
-  }
+  await prisma.srpChallenge.deleteMany({ where: { expiresAt: { lte: new Date(now) } } })
 }
 
-export function storeSrpChallenge(serializedStep1Json: string): string {
-  pruneChallenges()
+export async function storeSrpChallenge(serializedStep1Json: string): Promise<string> {
+  await pruneChallenges()
   const id = crypto.randomUUID()
-  challengeMap().set(id, {
-    serialized: serializedStep1Json,
-    expiresAt: Date.now() + CHALLENGE_TTL_MS,
+  await prisma.srpChallenge.create({
+    data: {
+      id,
+      serialized: serializedStep1Json,
+      expiresAt: new Date(Date.now() + CHALLENGE_TTL_MS),
+    },
   })
   return id
 }
 
-export function takeSrpChallenge(id: string): SRPServerSessionStep1State | null {
-  pruneChallenges()
-  const m = challengeMap()
-  const row = m.get(id)
-  m.delete(id)
-  if (!row || row.expiresAt <= Date.now()) return null
+export async function takeSrpChallenge(id: string): Promise<SRPServerSessionStep1State | null> {
+  await pruneChallenges()
+  const row = await prisma.srpChallenge.findUnique({ where: { id } })
+  if (!row) return null
+  await prisma.srpChallenge.delete({ where: { id } }).catch(() => null)
+  if (row.expiresAt <= new Date()) return null
   try {
     return JSON.parse(row.serialized) as SRPServerSessionStep1State
   } catch {

@@ -8,11 +8,15 @@ export default defineConfig({
   retries: 0,
   reporter: 'list',
   use: {
-    baseURL: 'http://127.0.0.1:4275',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || process.env.E2E_BASE_URL || 'http://127.0.0.1:4275',
     trace: 'retain-on-failure',
     serviceWorkers: 'block',
   },
   projects: [
+    {
+      name: 'fresh-setup',
+      testMatch: 'fresh-auth.setup.ts',
+    },
     {
       name: 'setup',
       testMatch: 'auth.setup.ts',
@@ -28,14 +32,14 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      testIgnore: [/authed\//, /auth\.setup\.ts$/, /onboarding\//, /onboarding-auth\.setup\.ts$/],
+      testIgnore: [/authed\//, /auth\.setup\.ts$/, /fresh-auth\.setup\.ts$/, /onboarding\//, /onboarding-auth\.setup\.ts$/],
     },
     {
       name: 'chromium-authed',
-      dependencies: ['setup'],
+      dependencies: ['fresh-setup'],
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/.auth/dev.json',
+        storageState: 'tests/e2e/.auth/fresh-user.json',
       },
       testMatch: 'authed/**/*.spec.ts',
       testIgnore: ['**/operator-sources.spec.ts'],

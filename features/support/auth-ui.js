@@ -4,6 +4,7 @@
 
 import { expect } from '@playwright/test'
 import { randomBytes } from 'node:crypto'
+import { waitForNuxtAppReady } from './app-ready.js'
 
 export function requireRegistrationInviteCode() {
   const inviteCode = process.env.NUXT_REGISTRATION_INVITE_CODE?.trim()
@@ -17,6 +18,7 @@ export function requireRegistrationInviteCode() {
 export async function openRegistrationPage(page) {
   await page.goto('/register')
   await expect(page).toHaveURL(/\/register(\?|$)/u)
+  await waitForNuxtAppReady(page)
 }
 
 /**
@@ -45,7 +47,7 @@ export async function registerFreshAccountViaUi(page, options = {}) {
   await page.getByLabel('Name (optional)').fill(name)
   await page.locator('input[autocomplete="new-password"]').fill(password)
   await Promise.all([
-    page.waitForURL(/\/(\?|$)/u),
+    page.waitForURL(/\/(\?|$)/u, { timeout: 60_000 }),
     page.getByRole('button', { name: 'Register' }).click(),
   ])
 

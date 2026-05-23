@@ -35,7 +35,8 @@ for the local/prod-like configuration shape.
 
 - **`Deploy Vercel`** (`.github/workflows/deploy-vercel.yml`) runs on every
   push to `main`, every same-repository PR targeting `main`, and manual
-  dispatch. It deploys the Nuxt SSR app to Vercel and seeds the demo account.
+  dispatch. It deploys the Nuxt SSR app to Vercel, seeds the demo account,
+  and then runs the remote Playwright smoke job against the deployed URL.
 - **`Cleanup Preview Database`** (`.github/workflows/cleanup-preview-db.yml`)
   runs when a same-repository PR closes and deletes the matching Neon preview
   branch.
@@ -88,6 +89,43 @@ Repository setup required once:
 The workflow skips external fork PRs because GitHub does not expose repository
 secrets to them. A separate cleanup workflow deletes the matching Neon preview
 branch when a PR closes; the main database is never deleted by automation.
+
+## Remote tests after deployment
+
+The `Deploy Vercel` workflow exposes the final Vercel URL as a job output. A
+follow-up `remote-smoke` job installs Chromium and runs:
+
+```bash
+PLAYWRIGHT_BASE_URL=<deployed-url> npm run test:e2e:remote-smoke
+```
+
+Scope is intentionally small and high-signal:
+
+- public app shell / accessibility smoke (`/`, `/help`, `/login`);
+- seeded `dev@localhost` login through SRP setup;
+- authenticated settings and feeds landmark checks.
+
+The smoke job runs for same-repository PR previews, pushes to `main`, and
+manual deployment dispatches. Fork PRs skip deployment and therefore skip
+remote tests.
+
+For same-repository PR previews, two additional jobs run against the same
+isolated Vercel + Neon preview instance:
+
+```bash
+PLAYWRIGHT_BASE_URL=<deployed-url> npm run test:e2e:remote
+E2E_BASE_URL=<deployed-url> npm run test:bdd:remote
+```
+
+These full remote gates intentionally do **not** run on production/main
+deployments. They register fresh test accounts, add/remove sources, post
+crawler status, ingest content, and mutate reader/settings state. That is
+appropriate on the disposable PR Neon branch, but too noisy for production.
+
+The smoke/full-test results are part of the deployment workflow status. A
+failing smoke or PR remote test does not roll back an already-created Vercel
+deployment, but it marks the workflow red and should block merging or release
+tagging until investigated.
 
 Free-tier notes: Vercel Hobby is intended for personal, non-commercial projects,
 and Neon Free has resource limits. See the official docs for

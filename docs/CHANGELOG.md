@@ -38,9 +38,19 @@ new entries accrue under **Unreleased**.
 - **BDD:** `content_presentation.feature` — PO-readable coverage for rich and
   minimal article / episode card presentation, including episode actions,
   optional sections, and details dialog content.
+- **Remote E2E smoke gate:** Vercel deployments now expose their deployed URL
+  to follow-up GitHub Actions jobs. Production/main deployments run a small
+  Playwright smoke suite against the real app, while same-repository PR
+  previews also run the full Playwright E2E suite and Cucumber BDD suite
+  against the isolated Vercel + Neon preview instance. The regular authed
+  Playwright project now registers a fresh account instead of mutating the
+  seeded demo user.
 
 ### Fixed
 
+- **SRP login on serverless deploys:** short-lived SRP challenge state is now
+  persisted in Postgres instead of process memory, so challenge/verify can
+  succeed when Vercel routes the two requests to different runtime instances.
 - **Episode card accessibility and HTML safety:** episode details now open as a
   labelled dialog with screen-reader-friendly tabs (`aria-controls`,
   tabpanels, roving `tabindex`, arrow/Home/End keyboard navigation), labelled

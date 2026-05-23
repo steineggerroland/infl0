@@ -22,6 +22,8 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     if: github.actor != 'dependabot[bot]' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
     environment:
       name: ${{ github.event_name == 'pull_request' && format('preview/pr-{0}', github.event.pull_request.number) || 'production' }}
       url: ${{ steps.deploy.outputs.url }}
@@ -186,3 +188,82 @@ jobs:
                 body,
               })
             }
+
+  remote-smoke:
+    name: Remote smoke
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: needs.deploy.result == 'success' && needs.deploy.outputs.url != ''
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run remote smoke tests
+        run: npm run test:e2e:remote-smoke
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ needs.deploy.outputs.url }}
+          NUXT_REGISTRATION_INVITE_CODE: ${{ secrets.NUXT_REGISTRATION_INVITE_CODE }}
+
+  remote-e2e-pr:
+    name: Remote E2E (PR preview)
+    runs-on: ubuntu-latest
+    needs: [deploy, remote-smoke]
+    if: github.event_name == 'pull_request' && needs.deploy.result == 'success' && needs.remote-smoke.result == 'success' && needs.deploy.outputs.url != ''
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run remote E2E tests
+        run: npm run test:e2e:remote
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ needs.deploy.outputs.url }}
+          NUXT_CRAWLER_API_KEY: ${{ secrets.NUXT_CRAWLER_API_KEY }}
+          NUXT_REGISTRATION_INVITE_CODE: ${{ secrets.NUXT_REGISTRATION_INVITE_CODE }}
+          NUXT_OPERATOR_EMAILS: ${{ secrets.NUXT_OPERATOR_EMAILS || 'operator@localhost' }}
+
+  remote-bdd-pr:
+    name: Remote BDD (PR preview)
+    runs-on: ubuntu-latest
+    needs: [deploy, remote-smoke, remote-e2e-pr]
+    if: github.event_name == 'pull_request' && needs.deploy.result == 'success' && needs.remote-smoke.result == 'success' && needs.remote-e2e-pr.result == 'success' && needs.deploy.outputs.url != ''
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run remote BDD tests
+        run: npm run test:bdd:remote
+        env:
+          E2E_BASE_URL: ${{ needs.deploy.outputs.url }}
+          NUXT_CRAWLER_API_KEY: ${{ secrets.NUXT_CRAWLER_API_KEY }}
+          NUXT_REGISTRATION_INVITE_CODE: ${{ secrets.NUXT_REGISTRATION_INVITE_CODE }}
+          NUXT_OPERATOR_EMAILS: ${{ secrets.NUXT_OPERATOR_EMAILS || 'operator@localhost' }}
