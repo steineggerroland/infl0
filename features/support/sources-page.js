@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test'
+import { waitForNuxtAppReady } from './app-ready.js'
 
 function timeoutAfter(ms, message) {
   return new Promise((_, reject) => {
@@ -22,6 +23,7 @@ export class SourcesPage {
 
   async open() {
     await this.page.goto('/feeds')
+    await waitForNuxtAppReady(this.page)
     await expect(this.page).toHaveURL(/\/feeds/u)
     await this.page.waitForLoadState('networkidle')
   }
@@ -109,6 +111,7 @@ export class SourcesPage {
   }
 
   async removeSource(snippet) {
+    await waitForNuxtAppReady(this.page)
     const row = this.row(snippet)
     await expect(row).toBeVisible()
     const feedId = await row.getAttribute('data-feed-id')

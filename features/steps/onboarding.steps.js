@@ -9,8 +9,11 @@ async function focusTopic(world, topic) {
   const card = topicCard(world, topic)
   await expect(card).toBeVisible()
   await card.scrollIntoViewIfNeeded()
+  await expect.poll(async () => visibleRatio(card), { timeout: 15_000 }).toBeGreaterThan(0.35)
+  await card.click({ position: { x: 12, y: 12 } })
+  await expect(card).toHaveAttribute('data-reader-selected', 'true', { timeout: 10_000 })
   await card.locator('[data-onboarding-title]').first().click()
-  await world.page.waitForTimeout(150)
+  await waitForStoredTopic(world, topic)
   world.currentTopic = topic
   return card
 }

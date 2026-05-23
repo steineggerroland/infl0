@@ -223,6 +223,7 @@ defineShortcuts(
         :class="{ 'flip-back': isDetailView, 'flip-front': !isDetailView }"
         data-testid="onboarding-card"
         :data-onboarding-topic="topic"
+        :data-reader-selected="isSelected ? 'true' : 'false'"
     >
         <div
             class="onboarding-card onboarding-front infl0-surface-front rounded-xl bg-front relative transition-all"
