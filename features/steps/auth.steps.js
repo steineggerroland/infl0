@@ -4,6 +4,7 @@ import {
   openRegistrationPage,
   registerFreshAccountViaUi,
 } from '../support/auth-ui.js'
+import { waitForNuxtAppReady } from '../support/app-ready.js'
 
 When('I open the registration page', async function () {
   await openRegistrationPage(this.page)
@@ -12,6 +13,7 @@ When('I open the registration page', async function () {
 When('I open the login page', async function () {
   await this.page.goto('/login')
   await expect(this.page).toHaveURL(/\/login(\?|$)/u)
+  await waitForNuxtAppReady(this.page)
 })
 
 When('I register with a fresh valid account', async function () {
@@ -44,7 +46,7 @@ When('I sign in with my registered account', async function () {
   await this.page.getByLabel('Email').fill(this.registeredEmail)
   await this.page.locator('input[autocomplete="current-password"]').fill(this.registeredPassword)
   await Promise.all([
-    this.page.waitForURL(/\/(\?|$)/u),
+    this.page.waitForURL(/\/(\?|$)/u, { timeout: 60_000 }),
     this.page.getByRole('button', { name: 'Sign in' }).click(),
   ])
 })

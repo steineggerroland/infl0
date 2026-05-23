@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test'
+import { waitForNuxtAppReady } from './app-ready.js'
 import { UserMenu } from './user-menu.js'
 
 export class ReaderTimeline {
@@ -10,6 +11,7 @@ export class ReaderTimeline {
 
   async open() {
     await this.page.goto('/')
+    await waitForNuxtAppReady(this.page)
   }
 
   async waitForShell() {

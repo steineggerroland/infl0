@@ -5,6 +5,11 @@
 - **`CI`** (`.github/workflows/ci.yml`) runs on every push and PR to
   `main`: `npm ci` (which runs **`postinstall`**: `nuxt prepare` then
   `prisma generate`), lint, unit tests, typecheck.
+- **`Deploy Vercel`** (`.github/workflows/deploy-vercel.yml`) runs on
+  same-repository PRs, pushes to `main`, and manual dispatch. After deploy it
+  runs `npm run test:e2e:remote-smoke` against the deployed URL. For
+  same-repository PR previews only, it also runs `npm run test:e2e:remote` and
+  `npm run test:bdd:remote` against the isolated preview instance.
 - **`Release`** (`.github/workflows/release.yml`) runs when a **tag** such as
   `v0.2.0` is **pushed**: it creates a **GitHub Release** using that version's
   `docs/CHANGELOG.md` entry as the release description.
@@ -19,7 +24,10 @@ Deployment operations are documented separately in [`DEPLOYING.md`](./DEPLOYING.
 ## Test gates before tagging
 
 Current CI gate on PR/push includes lint, unit/component tests, and typecheck.
-BDD and E2E smoke are currently treated as release-readiness gates run before tagging:
+Same-repository PR previews also run full remote Playwright E2E and Cucumber
+BDD against the Vercel preview/Neon branch. `main` deployments run remote smoke
+only. Local BDD and full local E2E remain useful release-readiness checks before
+tagging:
 
 - `npm run test:bdd`
 - `npm run test:e2e`

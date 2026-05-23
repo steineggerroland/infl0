@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'challengeId, AHex and M1Hex required' })
   }
 
-  const state = takeSrpChallenge(challengeId)
+  const state = await takeSrpChallenge(challengeId)
   if (!state) {
     throw createError({ statusCode: 401, statusMessage: 'Challenge expired or invalid' })
   }

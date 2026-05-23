@@ -1,5 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
+import { waitForNuxtAppReady } from '../support/app-ready.js'
 
 const WIDE_VIEWPORT = { width: 1440, height: 900 }
 const CARD_FRONT = 'card-front'
@@ -51,10 +52,12 @@ Given('I use a wide viewport for the settings layout', async function () {
 Given('I open the settings page', async function () {
   await this.page.goto('/settings')
   await expect(this.page).toHaveURL(/\/settings(?:[?#]|$)/u)
+  await waitForNuxtAppReady(this.page)
 })
 
 When('I reload the settings page', async function () {
   await this.page.reload()
+  await waitForNuxtAppReady(this.page)
   await expect(this.page.getByRole('heading', { level: 1, name: 'Settings' })).toBeVisible({
     timeout: 20_000,
   })
@@ -62,6 +65,7 @@ When('I reload the settings page', async function () {
 
 When('I open settings at {string}', async function (path) {
   await this.page.goto(path)
+  await waitForNuxtAppReady(this.page)
 })
 
 When('I follow the settings hub link {string}', async function (slug) {

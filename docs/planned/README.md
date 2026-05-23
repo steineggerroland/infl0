@@ -23,7 +23,6 @@ order, acceptance criteria — separate from the larger idea pool in
 | Package | Summary | Status |
 |--------|--------|--------|
 | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Add first BDD scenario wave for new-user, privacy-sensitive, and power-user personas | Draft |
-| [`ci-remote-e2e-smoke-strategy.md`](./ci-remote-e2e-smoke-strategy.md) | Decide and document remote CI strategy for smoke E2E gates | Draft |
 
 *(Add a row when a new package markdown is created.)*
 
@@ -34,5 +33,4 @@ package ships or when dependencies change.
 
 | Priority | Package | Rationale |
 |:--------:|---------|-----------|
-| **P1** | [`ci-remote-e2e-smoke-strategy.md`](./ci-remote-e2e-smoke-strategy.md) | Mostly **decision + docs** (and optional CI edits). Protects `main` during heavier UI work and can run **in parallel** with other packages if bandwidth allows. |
-| **P2** | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Broad BDD coverage wave; natural **after** major surfaces stabilise, or incrementally if scenarios stay behavior-focused. |
+| **P1** | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Broad BDD coverage wave; natural **after** major surfaces stabilise, or incrementally if scenarios stay behavior-focused. |

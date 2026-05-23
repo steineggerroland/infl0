@@ -1,5 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
+import { waitForNuxtAppReady } from '../support/app-ready.js'
 import { postCrawlerSourceHealth } from '../support/crawler-fixtures.js'
 
 Given('I am signed in as seeded operator', async function () {
@@ -23,10 +24,11 @@ Given('I am signed in as seeded operator', async function () {
   }
 
   await this.page.goto('/login')
+  await waitForNuxtAppReady(this.page)
   await this.page.getByLabel('Email').fill(email)
   await this.page.locator('input[autocomplete="current-password"]').fill(password)
   await Promise.all([
-    this.page.waitForURL(/\/(\?|$)/u),
+    this.page.waitForURL(/\/(\?|$)/u, { timeout: 60_000 }),
     this.page.getByRole('button', { name: 'Sign in' }).click(),
   ])
 })

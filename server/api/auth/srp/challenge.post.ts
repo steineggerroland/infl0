@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const { step1, BHex } = await srpServerStep1(emailRaw, user.srpSalt, user.srpVerifier)
-  const challengeId = storeSrpChallenge(JSON.stringify(step1))
+  const challengeId = await storeSrpChallenge(JSON.stringify(step1))
 
   return {
     challengeId,

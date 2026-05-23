@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 /**
  * Authenticated-only checks (`chromium-authed` project). Requires
- * `tests/e2e/.auth/dev.json` from `auth.setup.ts` + seeded `dev@localhost`.
+ * `tests/e2e/.auth/fresh-user.json` from `fresh-auth.setup.ts`.
  */
 test.describe('app layout (signed in)', () => {
   test('privacy page loads and exposes settings footer landmark', async ({ page }) => {
