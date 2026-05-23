@@ -34,7 +34,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-    (e: 'skip' | 'commit'): void
+    (e: 'skip' | 'select' | 'commit'): void
 }>()
 
 const { t } = useI18n()
@@ -96,19 +96,24 @@ const ctaSafe = computed<OnboardingCardCta | null>(() => {
     return props.cta
 })
 
-function onSkipClick() {
+function selectAndCommit() {
+    emit('select')
     emit('commit')
+}
+
+function onSkipClick() {
+    selectAndCommit()
     emit('skip')
 }
 
 function toggleDetailView() {
-    emit('commit')
+    selectAndCommit()
     isDetailView.value = !isDetailView.value
 }
 
 function showFullText() {
     if (!fullText.value) return
-    emit('commit')
+    selectAndCommit()
     readerDialog.value?.showModal()
     readerVisible.value = true
 }
@@ -242,7 +247,7 @@ defineShortcuts(
                     <h1
                         class="mb-2 w-full shrink-0 text-end text-[length:max(0.7rem,0.78em)] font-bold leading-tight tracking-tighter"
                         :data-onboarding-title="topic"
-                        @click="emit('commit')"
+                        @click="selectAndCommit"
                     >
                         {{ t(titleKey) }}
                     </h1>
@@ -274,7 +279,7 @@ defineShortcuts(
                         :to="ctaSafe.href"
                         class="btn btn-primary btn-sm"
                         :data-onboarding-cta="topic"
-                        @click="emit('commit')"
+                        @click="selectAndCommit"
                     >
                         {{ t(ctaSafe.labelKey) }}
                     </NuxtLink>
@@ -341,7 +346,7 @@ defineShortcuts(
                         :to="ctaSafe.href"
                         class="btn btn-primary btn-sm"
                         :data-onboarding-cta="topic"
-                        @click="emit('commit')"
+                        @click="selectAndCommit"
                     >
                         {{ t(ctaSafe.labelKey) }}
                     </NuxtLink>
@@ -377,7 +382,7 @@ defineShortcuts(
                             :key="link.to"
                             :to="link.to"
                             class="btn btn-sm btn-ghost border border-[var(--infl0-field-border)]"
-                            @click="emit('commit')"
+                            @click="selectAndCommit"
                         >
                             {{ link.label }}
                         </NuxtLink>
