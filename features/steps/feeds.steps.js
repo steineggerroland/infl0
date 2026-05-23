@@ -1,5 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber'
 import { postCrawlerSourceHealth } from '../support/crawler-fixtures.js'
+import { waitForNuxtAppReady } from '../support/app-ready.js'
 import { SourcesPage } from '../support/sources-page.js'
 
 function sourcesPage(world) {
@@ -51,6 +52,7 @@ When(
       sourceHealthStatus: healthStatus,
     })
     await this.page.reload()
+    await waitForNuxtAppReady(this.page)
   },
 )
 
