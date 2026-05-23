@@ -52,10 +52,12 @@ async function expectOperatorFilter(
   await expect
     .poll(
       async () =>
-        rows.evaluateAll((visibleRows) =>
-          visibleRows
-            .filter((row) => row.textContent?.trim())
-            .every((row) => row.getAttribute('data-health') === filter),
+        rows.evaluateAll(
+          (visibleRows, expectedFilter) =>
+            visibleRows
+              .filter((row) => row.textContent?.trim())
+              .every((row) => row.getAttribute('data-health') === expectedFilter),
+          filter,
         ),
       { timeout: 20_000 },
     )
