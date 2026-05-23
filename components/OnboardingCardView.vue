@@ -102,6 +102,7 @@ function onSkipClick() {
 }
 
 function toggleDetailView() {
+    emit('commit')
     isDetailView.value = !isDetailView.value
 }
 
@@ -240,6 +241,7 @@ defineShortcuts(
                     <h1
                         class="mb-2 w-full shrink-0 text-end text-[length:max(0.7rem,0.78em)] font-bold leading-tight tracking-tighter"
                         :data-onboarding-title="topic"
+                        @click="emit('commit')"
                     >
                         {{ t(titleKey) }}
                     </h1>

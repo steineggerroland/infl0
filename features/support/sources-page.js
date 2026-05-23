@@ -111,7 +111,23 @@ export class SourcesPage {
   async removeSource(snippet) {
     const row = this.row(snippet)
     await expect(row).toBeVisible()
+    const feedId = await row.getAttribute('data-feed-id')
+    const deleteResponse = feedId
+      ? this.page.waitForResponse(
+          (response) =>
+            response.request().method() === 'DELETE' &&
+            new URL(response.url()).pathname === `/api/feeds/${feedId}`,
+          { timeout: 45_000 },
+        )
+      : null
     await row.getByRole('button', { name: 'Remove' }).click()
+    if (deleteResponse) {
+      const response = await deleteResponse
+      if (!response.ok()) {
+        throw new Error(`DELETE /api/feeds/${feedId} failed (${response.status()}): ${await response.text()}`)
+      }
+    }
+    await expect(row).toHaveCount(0, { timeout: 15_000 })
     await this.expectEmptyHint()
   }
 
