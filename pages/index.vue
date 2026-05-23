@@ -822,6 +822,7 @@ onBeforeUnmount(() => {
                     :cta="item.cta"
                     :has-device-variants="item.hasDeviceVariants"
                     :is-selected="index === currentIndex"
+                    @select="focusInflowIndex(index)"
                     @commit="commitInflowContext(index)"
                     @skip="onSkipOnboarding"
                 />
