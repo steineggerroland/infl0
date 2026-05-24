@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test'
+import { waitForNuxtAppReady } from './app-ready.js'
 
 export class SettingsPage {
   /** @param {import('@playwright/test').Page} page */
@@ -8,6 +9,7 @@ export class SettingsPage {
 
   async hideOnboardingCards() {
     await this.page.goto('/settings#onboarding')
+    await waitForNuxtAppReady(this.page)
     const toggle = this.page.getByTestId('onboarding-visible-toggle')
     await expect(toggle).toBeEnabled({ timeout: 20_000 })
     if (await toggle.isChecked()) {
@@ -18,6 +20,7 @@ export class SettingsPage {
 
   async setReadingBehaviourTracking(enabled) {
     await this.page.goto('/settings#tracking')
+    await waitForNuxtAppReady(this.page)
     const toggle = this.page.getByTestId('tracking-toggle')
     await expect(toggle).toBeEnabled({ timeout: 20_000 })
     const checked = await toggle.isChecked()
