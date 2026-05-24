@@ -18,7 +18,7 @@ import {
  *   `useCoarsePointer()` has not yet resolved (SSR, first paint),
  *   the body is replaced by a DaisyUI skeleton placeholder so users
  *   never see the wrong variant flicker in.
- * - The skip button only renders on the first card (`intro`). It
+ * - The skip button renders on every onboarding card. It
  *   emits `skip`; the parent flips `uiPrefs.onboardingHidden` so the
  *   change persists and survives across tabs / devices.
  * - Stable selectors for E2E:
@@ -42,8 +42,6 @@ const isCoarse = useCoarsePointer()
 const isDetailView = ref(false)
 const readerVisible = ref(false)
 const readerDialog = ref<HTMLDialogElement | null>(null)
-
-const showSkip = computed(() => props.topic === 'intro')
 
 const titleKey = computed(() => `onboarding.${props.topic}.title`)
 const frontDesktopKey = computed(() => `onboarding.${props.topic}.front.desktop`)
@@ -287,12 +285,11 @@ defineShortcuts(
                         {{ t(ctaSafe.labelKey) }}
                     </NuxtLink>
                     <button
-                        v-if="showSkip"
                         type="button"
                         class="btn btn-ghost btn-sm border border-[var(--infl0-field-border)]"
                         data-onboarding-skip
                         @click="onSkipClick"
-                    >{{ t('onboarding.skipIntro') }}</button>
+                    >{{ t('onboarding.finishIntro') }}</button>
                 </div>
             </div>
             <FlipArrow class="action-flip-front" direction="front" @click="toggleDetailView" />

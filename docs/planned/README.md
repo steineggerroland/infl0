@@ -22,7 +22,8 @@ order, acceptance criteria — separate from the larger idea pool in
 
 | Package | Summary | Status |
 |--------|--------|--------|
-| [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Add first BDD scenario wave for new-user, privacy-sensitive, and power-user personas | Draft |
+| [`bdd-persona-coverage-wave-2-existing-tests-to-screenplay.md`](./bdd-persona-coverage-wave-2-existing-tests-to-screenplay.md) | Migrate existing behavior-focused BDD steps toward reusable Screenplay Tasks and Questions | Draft |
+| [`bdd-persona-coverage-wave-3-privacy-and-power-users.md`](./bdd-persona-coverage-wave-3-privacy-and-power-users.md) | Add Privacy-sensitive and Power User persona scenarios on top of the Screenplay foundation | Draft |
 
 *(Add a row when a new package markdown is created.)*
 
@@ -33,4 +34,5 @@ package ships or when dependencies change.
 
 | Priority | Package | Rationale |
 |:--------:|---------|-----------|
-| **P1** | [`bdd-persona-coverage-wave-1.md`](./bdd-persona-coverage-wave-1.md) | Broad BDD coverage wave; natural **after** major surfaces stabilise, or incrementally if scenarios stay behavior-focused. |
+| **P1** | [`bdd-persona-coverage-wave-2-existing-tests-to-screenplay.md`](./bdd-persona-coverage-wave-2-existing-tests-to-screenplay.md) | Consolidate the existing BDD suite around the Screenplay foundation before adding more persona breadth. |
+| **P2** | [`bdd-persona-coverage-wave-3-privacy-and-power-users.md`](./bdd-persona-coverage-wave-3-privacy-and-power-users.md) | Complete the original persona breadth once shared Tasks and Questions are reusable. |

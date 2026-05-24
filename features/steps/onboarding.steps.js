@@ -1,103 +1,34 @@
 import { Then, When } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
+import { OnboardingJourney } from '../support/onboarding-journey.js'
 
-const ONBOARDING_TOPICS = ['intro', 'sources', 'scoring', 'themes']
-
-function topicCard(world, topic) {
-  return world.page.locator(`[data-onboarding-topic="${topic}"]`).first()
-}
-
-async function focusTopic(world, topic) {
-  const targetIndex = ONBOARDING_TOPICS.indexOf(topic)
-  if (targetIndex < 0) throw new Error(`Unknown onboarding topic: ${topic}`)
-
-  await expect(topicCard(world, 'intro')).toBeVisible()
-  let currentTopic = await readStoredTopic(world)
-  if (!currentTopic) {
-    await waitForStoredTopic(world, 'intro')
-    currentTopic = 'intro'
-  }
-
-  let currentIndex = ONBOARDING_TOPICS.indexOf(currentTopic)
-  if (currentIndex < 0) currentIndex = 0
-
-  while (currentIndex < targetIndex) {
-    currentIndex += 1
-    await world.page.keyboard.press('s')
-    await waitForStoredTopic(world, ONBOARDING_TOPICS[currentIndex])
-  }
-
-  while (currentIndex > targetIndex) {
-    currentIndex -= 1
-    await world.page.keyboard.press('w')
-    await waitForStoredTopic(world, ONBOARDING_TOPICS[currentIndex])
-  }
-
-  const card = topicCard(world, topic)
-  await expect(card).toHaveAttribute('data-reader-selected', 'true', { timeout: 10_000 })
-  await expect.poll(async () => visibleRatio(card), { timeout: 15_000 }).toBeGreaterThan(0.5)
-  world.currentTopic = topic
-  return card
-}
-
-async function readStoredTopic(world) {
-  const raw = await world.page.evaluate(() => window.localStorage.getItem('infl0.inflow.returnContext.v1'))
-  if (!raw) return ''
-  try {
-    const id = JSON.parse(raw).anchor?.id ?? ''
-    return id.startsWith('onboarding/') ? id.slice('onboarding/'.length) : ''
-  } catch {
-    return ''
-  }
-}
-
-async function waitForStoredTopic(world, topic) {
-  await expect
-    .poll(async () => readStoredTopic(world), { timeout: 15_000 })
-    .toBe(topic)
-}
-
-async function visibleRatio(locator) {
-  return locator.evaluate((el) => {
-    const rect = el.getBoundingClientRect()
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-    const visibleHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0)
-    if (rect.height <= 0) return 0
-    return Math.max(0, Math.min(visibleHeight, rect.height)) / rect.height
-  })
+function onboarding(world) {
+  return new OnboardingJourney(world.page)
 }
 
 async function ensureSurface(world, surface) {
   const topic = world.currentTopic
-  const card = topicCard(world, topic)
   if (surface === 'front') {
-    await expect(card.locator(`[data-onboarding-front="${topic}"]`)).toBeVisible()
+    await expect(onboarding(world).front(topic)).toBeVisible()
     world.currentSurface = 'front'
     return
   }
   if (surface === 'back') {
-    const back = card.locator(`[data-onboarding-back="${topic}"]`)
-    if (!(await back.isVisible())) {
-      await card.locator('.action-flip-front').click({ force: true })
-      await expect(back).toBeVisible()
-    }
+    await onboarding(world).flipTopic(topic)
     world.currentSurface = 'back'
     return
   }
   if (surface === 'full-text') {
-    await ensureSurface(world, 'back')
-    const openFull = world.page.locator(`[data-onboarding-open-full="${topic}"]`).first()
-    await openFull.evaluate((el) => el.click())
-    await expect(world.page.locator(`[data-onboarding-full="${topic}"]`).first()).toBeVisible()
+    await onboarding(world).openFullText(topic)
     world.currentSurface = 'full-text'
   }
 }
 
 function activeCopyLocator(world) {
   const topic = world.currentTopic
-  if (world.currentSurface === 'back') return world.page.locator(`[data-onboarding-back="${topic}"]`)
-  if (world.currentSurface === 'full-text') return world.page.locator(`[data-onboarding-full="${topic}"]`)
-  return world.page.locator(`[data-onboarding-front="${topic}"]`)
+  if (world.currentSurface === 'back') return onboarding(world).back(topic)
+  if (world.currentSurface === 'full-text') return onboarding(world).fullText(topic)
+  return onboarding(world).front(topic)
 }
 
 async function readFontSizePx(locator) {
@@ -118,83 +49,64 @@ function normalizeShortcut(shortcut) {
 }
 
 When('I focus the {string} onboarding card', async function (topic) {
-  await focusTopic(this, topic)
+  await onboarding(this).focusTopic(topic)
+  this.currentTopic = topic
 })
 
 When('I reload the timeline', async function () {
   if (this.currentTopic) {
-    await waitForStoredTopic(this, this.currentTopic)
+    await onboarding(this).waitForStoredTopic(this.currentTopic)
   }
   await this.page.reload({ waitUntil: 'networkidle' })
 })
 
 Then('I should see onboarding cards before regular articles', async function () {
-  const firstItemIsOnboarding = await this.page
-    .locator('.scroll-container > div')
-    .first()
-    .locator('[data-testid="onboarding-card"]')
-    .count()
-  expect(firstItemIsOnboarding).toBeGreaterThan(0)
+  await onboarding(this).expectCardsBeforeArticles()
 })
 
 Then('the onboarding topics should be ordered as:', async function (table) {
   const expected = table.hashes().map((r) => r.topic)
-  const topics = await this.page
-    .locator('[data-testid="onboarding-card"]')
-    .evaluateAll((els) => els.map((el) => el.getAttribute('data-onboarding-topic')))
-  expect(topics).toEqual(expected)
+  await onboarding(this).expectTopicsInOrder(expected)
 })
 
 Then('the {string} onboarding card should be restored as my current place', async function (topic) {
-  const card = topicCard(this, topic)
-  await expect(card).toBeVisible()
-  await expect.poll(async () => visibleRatio(card)).toBeGreaterThan(0.5)
+  await onboarding(this).expectTopicRestored(topic)
 })
 
 Then('the URL should point to the {string} onboarding card', async function (topic) {
-  await expect(this.page).toHaveURL(new RegExp(`/inflow/onboarding/${topic}$`, 'u'))
+  await onboarding(this).expectUrlForTopic(topic)
 })
 
 Then('I should see the intro headline', async function () {
-  const title = this.page.locator('[data-onboarding-topic="intro"] [data-onboarding-title="intro"]')
-  await expect(title).toBeVisible()
-  await expect(title).not.toHaveText('')
+  await onboarding(this).expectIntroHeadline()
 })
 
 Then('I should see guidance to flip the card', async function () {
-  const text = this.page.locator('[data-onboarding-front="intro"]')
-  await expect(text).toBeVisible()
-  const content = (await text.textContent()) ?? ''
-  expect(content).toMatch(/(flip|click the card|shortcut "E"|shortcut "e")/iu)
+  await onboarding(this).expectGuidanceToFlip()
 })
 
 When('I flip the {string} onboarding card', async function (topic) {
-  const card = await focusTopic(this, topic)
-  await card.locator('.action-flip-front').click()
-  await expect(card.locator(`[data-onboarding-back="${topic}"]`)).toBeVisible()
+  await onboarding(this).flipTopic(topic)
+  this.currentTopic = topic
   this.currentSurface = 'back'
 })
 
 Then('I should see details about moving to the next and previous cards', async function () {
-  const text = this.page.locator('[data-onboarding-back="intro"]')
-  const content = (await text.textContent()) ?? ''
-  expect(content).toMatch(/(W\/S|arrow keys|next|previous)/iu)
+  await onboarding(this).expectIntroNavigationDetails()
 })
 
 Then('I should see how to open full text', async function () {
-  await expect(this.page.locator('[data-onboarding-open-full="intro"]')).toBeVisible()
+  await onboarding(this).expectIntroFullTextAffordance()
 })
 
 When('I open full text on the {string} onboarding card', async function (topic) {
-  await focusTopic(this, topic)
-  await ensureSurface(this, 'full-text')
-  await expect(this.page.locator(`[data-onboarding-full="${topic}"]`).first()).toBeVisible()
+  await onboarding(this).openFullText(topic)
+  this.currentTopic = topic
   this.currentSurface = 'full-text'
 })
 
 Then('the copy should ask me to continue to the next onboarding card', async function () {
-  const content = (await this.page.locator('[data-onboarding-full="intro"]').textContent()) ?? ''
-  expect(content).toMatch(/(next)/iu)
+  await onboarding(this).expectIntroFullTextContinuation()
 })
 
 Then('I should see wording that references {string}', async function (phrase) {
@@ -223,13 +135,14 @@ Then('I should see that enabling tracking can improve ranking quality', async fu
 })
 
 Then('I should see a CTA on the {string} card', async function (topic) {
-  await focusTopic(this, topic)
-  const cta = topicCard(this, topic).locator(`.onboarding-front [data-onboarding-cta="${topic}"]`)
+  await onboarding(this).focusTopic(topic)
+  this.currentTopic = topic
+  const cta = onboarding(this).card(topic).locator(`.onboarding-front [data-onboarding-cta="${topic}"]`)
   await expect(cta).toBeVisible()
 })
 
 When('I activate the scoring CTA', async function () {
-  const cta = topicCard(this, 'scoring').locator('.onboarding-front [data-onboarding-cta="scoring"]')
+  const cta = onboarding(this).card('scoring').locator('.onboarding-front [data-onboarding-cta="scoring"]')
   await expect(cta).toBeVisible()
   await Promise.all([
     this.page.waitForURL(/\/settings#settings-sorting-heading$/u),

@@ -183,7 +183,7 @@ describe('OnboardingCardView', () => {
         expect(wrapperEvil.find('[data-onboarding-cta="sources"]').exists()).toBe(false)
     })
 
-    it('shows the skip-introduction button only on the intro card and emits skip', async () => {
+    it('shows the finish-introduction button on every onboarding card and emits skip', async () => {
         stubMatchMedia(false)
         const i18n = makeI18n('en')
         const OnboardingCardView = await loadComponent()
@@ -205,7 +205,7 @@ describe('OnboardingCardView', () => {
             attachTo: document.body,
         })
         await flushPromises()
-        expect(sources.find('[data-onboarding-skip]').exists()).toBe(false)
+        expect(sources.find('[data-onboarding-skip]').exists()).toBe(true)
     })
 
     it('renders DE copy when the locale is de (drift guard sanity)', async () => {
@@ -221,7 +221,7 @@ describe('OnboardingCardView', () => {
         const title = wrapper.find('[data-onboarding-title="intro"]')
         expect(title.text()).toMatch(/Willkommen/u)
         const skip = wrapper.find('[data-onboarding-skip]')
-        expect(skip.text()).toMatch(/überspringen/u)
+        expect(skip.text()).toMatch(/beenden/u)
     })
 })
 
