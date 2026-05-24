@@ -624,6 +624,9 @@ onMounted(async () => {
     if (readerSessionStarted.value || hasOnboarding.value) {
         await fillInflowUntilScrollableOrDone()
         await restoreInflowContext()
+        if (hasOnboarding.value) {
+            commitInflowContext(currentIndex.value)
+        }
     }
 })
 
@@ -805,7 +808,7 @@ onBeforeUnmount(() => {
                     class="article rounded-xl"
                     :article="item"
                     :is-selected="index === currentIndex"
-                    @commit="commitInflowContext(index)"
+                    @commit="focusInflowIndex(index)"
                 />
                 <EpisodeCard
                     v-else-if="item.type === 'episode'"
@@ -813,7 +816,7 @@ onBeforeUnmount(() => {
                     :episode="item"
                     :is-selected="index === currentIndex"
                     v-bind="feedContextForEpisode(item)"
-                    @commit="commitInflowContext(index)"
+                    @commit="focusInflowIndex(index)"
                 />
                 <OnboardingCardView
                     v-else
@@ -823,7 +826,7 @@ onBeforeUnmount(() => {
                     :has-device-variants="item.hasDeviceVariants"
                     :is-selected="index === currentIndex"
                     @select="focusInflowIndex(index)"
-                    @commit="commitInflowContext(index)"
+                    @commit="focusInflowIndex(index)"
                     @skip="onSkipOnboarding"
                 />
             </div>

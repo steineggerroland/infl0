@@ -71,9 +71,13 @@ export class ReaderTimeline {
 
   async focusCard(card) {
     await expect(card).toBeVisible({ timeout: 20_000 })
-    await card.scrollIntoViewIfNeeded()
-    await expect.poll(async () => this.visibleRatio(card), { timeout: 15_000 }).toBeGreaterThan(0.35)
-    await card.locator('h1').first().click()
+    await card.evaluate((el) => {
+      const scroller = el.closest('.scroll-container')
+      if (scroller) scroller.scrollTo({ top: el.offsetTop, behavior: 'instant' })
+      else el.scrollIntoView({ block: 'center', inline: 'nearest' })
+    })
+    await expect.poll(async () => this.visibleRatio(card), { timeout: 15_000 }).toBeGreaterThan(0.5)
+    await card.click({ position: { x: 8, y: 8 } })
     await expect(card).toHaveAttribute('data-reader-selected', 'true', { timeout: 10_000 })
   }
 

@@ -80,6 +80,7 @@ Before({ tags: 'not @http-only' }, async function () {
     baseURL: this.baseURL,
     storageState,
     locale: 'en-US',
+    reducedMotion: 'reduce',
     // BDD asserts UI/API behaviour on the live server — not offline PWA caching.
     serviceWorkers: 'block',
     extraHTTPHeaders: {

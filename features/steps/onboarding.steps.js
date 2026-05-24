@@ -1,34 +1,60 @@
 import { Then, When } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
 
+const ONBOARDING_TOPICS = ['intro', 'sources', 'scoring', 'themes']
+
 function topicCard(world, topic) {
   return world.page.locator(`[data-onboarding-topic="${topic}"]`).first()
 }
 
 async function focusTopic(world, topic) {
+  const targetIndex = ONBOARDING_TOPICS.indexOf(topic)
+  if (targetIndex < 0) throw new Error(`Unknown onboarding topic: ${topic}`)
+
+  await expect(topicCard(world, 'intro')).toBeVisible()
+  let currentTopic = await readStoredTopic(world)
+  if (!currentTopic) {
+    await waitForStoredTopic(world, 'intro')
+    currentTopic = 'intro'
+  }
+
+  let currentIndex = ONBOARDING_TOPICS.indexOf(currentTopic)
+  if (currentIndex < 0) currentIndex = 0
+
+  while (currentIndex < targetIndex) {
+    currentIndex += 1
+    await world.page.keyboard.press('s')
+    await waitForStoredTopic(world, ONBOARDING_TOPICS[currentIndex])
+  }
+
+  while (currentIndex > targetIndex) {
+    currentIndex -= 1
+    await world.page.keyboard.press('w')
+    await waitForStoredTopic(world, ONBOARDING_TOPICS[currentIndex])
+  }
+
   const card = topicCard(world, topic)
-  await expect(card).toBeVisible()
-  await card.scrollIntoViewIfNeeded()
-  await expect.poll(async () => visibleRatio(card), { timeout: 15_000 }).toBeGreaterThan(0.35)
-  await card.locator('[data-onboarding-title]').first().click()
   await expect(card).toHaveAttribute('data-reader-selected', 'true', { timeout: 10_000 })
-  await waitForStoredTopic(world, topic)
+  await expect.poll(async () => visibleRatio(card), { timeout: 15_000 }).toBeGreaterThan(0.5)
   world.currentTopic = topic
   return card
 }
 
+async function readStoredTopic(world) {
+  const raw = await world.page.evaluate(() => window.localStorage.getItem('infl0.inflow.returnContext.v1'))
+  if (!raw) return ''
+  try {
+    const id = JSON.parse(raw).anchor?.id ?? ''
+    return id.startsWith('onboarding/') ? id.slice('onboarding/'.length) : ''
+  } catch {
+    return ''
+  }
+}
+
 async function waitForStoredTopic(world, topic) {
   await expect
-    .poll(async () => {
-      const raw = await world.page.evaluate(() => window.localStorage.getItem('infl0.inflow.returnContext.v1'))
-      if (!raw) return ''
-      try {
-        return JSON.parse(raw).anchor?.id ?? ''
-      } catch {
-        return ''
-      }
-    })
-    .toBe(`onboarding/${topic}`)
+    .poll(async () => readStoredTopic(world), { timeout: 15_000 })
+    .toBe(topic)
 }
 
 async function visibleRatio(locator) {
