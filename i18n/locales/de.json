@@ -314,6 +314,7 @@
   },
   "onboarding": {
     "skipIntro": "Einführung überspringen",
+    "finishIntro": "Einführung beenden",
     "flipCard": "Karte drehen",
     "flipBack": "Zur Vorderseite",
     "openFullText": "Volltext öffnen",

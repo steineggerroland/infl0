@@ -34,6 +34,8 @@ This folder contains executable user-facing behavior specifications using Cucumb
 - UI registration: reuse `When I open the registration page` + `When I register with a fresh valid account` from `auth.steps.js` (implementation in `features/support/auth-ui.js`). Start with `Given I start as a signed-out visitor` when the default `Before` session must be discarded.
 - Browser scenarios use `serviceWorkers: 'block'` so the PWA service worker does not intercept `/api/*` during UI flows.
 - When behavior is already covered by BDD, avoid duplicating the same feature logic in E2E specs.
+- Persona journeys may use the Screenplay support layer in `features/support/screenplay`: feature files name an actor, steps delegate to Tasks, and Questions hold user-facing assertions. Keep concrete selectors in the existing screen/page objects.
+- Tag planned but intentionally unfinished persona scenarios with `@pending`; default BDD commands exclude that tag.
 
 ## Test gaps
 
@@ -67,6 +69,11 @@ Covered in BDD today:
   standalone app window, portrait/landscape), home-screen shortcuts to timeline /
   sources / settings, install icons, in-place updates, sign-in page ready for phone
   install (manifest link, viewport).
+- **`new_user_first_reading_session.feature`** — Screenplay-style New User persona
+  journey from UI registration through onboarding order, intro-card learning,
+  onboarding return context, finishing onboarding from a later card, first
+  source, crawler content delivery, deliberate reader start, and return-context
+  recovery.
 
 Still sensible follow-ups:
 
@@ -75,9 +82,8 @@ Still sensible follow-ups:
 - **Auth negative path:** invalid credentials → visible **`alert`** (optional).
 - **Tracking copy:** assert intro/label strings remain visible after toggling (optional).
 - **Personalization depth:** expand a timeline row, assert rank strip (optional).
-- **Returning-user onboarding completion** across sessions (where not already in
-  reader scenarios).
 - **Help FAQ** expand/collapse regression (optional; component tests already exist).
+- **Persona waves:** privacy-sensitive reader and power reader journeys.
 
 ## Run commands
 

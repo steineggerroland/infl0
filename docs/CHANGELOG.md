@@ -45,6 +45,12 @@ new entries accrue under **Unreleased**.
   against the isolated Vercel + Neon preview instance. The regular authed
   Playwright project now registers a fresh account instead of mutating the
   seeded demo user.
+- **BDD Screenplay persona foundation:** New User coverage now includes a
+  named-actor Screenplay journey for onboarding order, intro-card learning,
+  onboarding return context, finishing onboarding from a later card, and the
+  first deliberate reading session after adding a source and receiving crawler
+  content. Shared Screenplay Actor / Task / Question support and
+  `OnboardingJourney` keep selector details out of persona steps.
 
 ### Fixed
 
@@ -75,6 +81,9 @@ new entries accrue under **Unreleased**.
   now drives article and episode cards through the browser keyboard path for
   flip/close (`E`, `Escape`), details/fulltext dialog (`Q`), read state (`M`),
   font size (`+`, `=`, `-`, `0`), and font family (`Shift+K` / `Shift+L`).
+- **Onboarding completion:** the onboarding finish action is now available on
+  every onboarding card, not just the intro card, so readers can leave the
+  guided flow once they have enough context.
 
 ## [0.5.0] — 2026-05-15
 
