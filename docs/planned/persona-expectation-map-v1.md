@@ -60,7 +60,9 @@ sign-out, reader start, resume, return context, read feedback, read shortcut,
 and read-without-tracking. `content_presentation.feature` still covers
 article/episode presentation and card shortcuts.
 
-**Planned tests:** none on Robin for episode keyboard; see Shorty.
+**Planned tests:** episode dialog keyboard/tab behavior and mid-session
+reading-control changes remain pending in
+`persona_active_reader_expectations.feature`.
 
 ### Shorty — keyboard shortcut enthusiast
 
@@ -70,8 +72,8 @@ on real timeline cards (articles and episodes) without mouse-only workarounds.
 **Covered now:** `persona_shorty_expectations.feature` — rich episode card
 surfaces (chapters, shownotes, details tabs), help catalog
 (`#shortcuts-reference`), article and episode card shortcuts, read-state
-toggle via `m`. Episode dialog keyboard/tabs and timeline `r` (show-read) remain `@pending`
-in `persona_shorty_expectations.feature`.
+toggle via `m`. Timeline `r` (show-read) remains `@pending` in
+`persona_shorty_expectations.feature`.
 
 **Note:** Mira still owns onboarding-card readability shortcuts (before real
 articles); Shorty owns the central catalog and in-flow timeline shortcuts.
