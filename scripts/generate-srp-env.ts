@@ -8,9 +8,8 @@
 import { createVerifierAndSalt, SRPParameters, SRPRoutines } from 'tssrp6a'
 import { normalizeUsername } from '../utils/username'
 
-const username = normalizeUsername(
-  process.argv[2] ?? process.env.DEV_SEED_USERNAME ?? 'dev',
-)
+const cliUsername = process.argv[2]?.trim()
+const username = normalizeUsername(cliUsername ?? process.env.DEV_SEED_USERNAME ?? 'dev')
 const password = process.env.SRP_GEN_PASSWORD
 
 if (!password) {
@@ -26,6 +25,9 @@ const prefix =
   username === 'dev' ? 'DEV' : username === 'operator' ? 'OPERATOR' : username.toUpperCase()
 
 console.log('# Paste into .env / .env.e2e (then npm run db:seed):')
-console.log(`${prefix}_SEED_USERNAME=${username}`)
+// Only echo username when passed on the CLI — not when read from env (CodeQL clear-text-logging).
+if (cliUsername) {
+  console.log(`${prefix}_SEED_USERNAME=${username}`)
+}
 console.log(`${prefix}_SRP_SALT_HEX=${s.toString(16)}`)
 console.log(`${prefix}_SRP_VERIFIER_HEX=${v.toString(16)}`)
