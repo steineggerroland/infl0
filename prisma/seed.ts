@@ -6,7 +6,8 @@ import { seedDevPodcastEpisodes } from './seed-podcast-episodes'
 const prisma = createScriptPrismaClient()
 
 async function upsertSrpUser(opts: {
-  email: string
+  username: string
+  recoveryEmail?: string | null
   name: string
   saltEnv: string
   verifierEnv: string
@@ -17,15 +18,18 @@ async function upsertSrpUser(opts: {
 
   if (!salt || !verifier) {
     console.warn(
-      `${opts.saltEnv} / ${opts.verifierEnv} missing — SRP login will not work for ${opts.email} until set.`,
+      `${opts.saltEnv} / ${opts.verifierEnv} missing — SRP login will not work for ${opts.username} until set.`,
     )
-    console.warn('Generate locally: SRP_GEN_PASSWORD=… npx tsx scripts/generate-srp-env.ts [email]')
+    console.warn(
+      `Generate locally: SRP_GEN_PASSWORD=… npx tsx scripts/generate-srp-env.ts ${opts.username}`,
+    )
   }
 
   await prisma.user.upsert({
-    where: { email: opts.email },
+    where: { username: opts.username },
     create: {
-      email: opts.email,
+      username: opts.username,
+      email: opts.recoveryEmail ?? null,
       name: opts.name,
       srpSalt: salt ?? null,
       srpVerifier: verifier ?? null,
@@ -33,21 +37,24 @@ async function upsertSrpUser(opts: {
     },
     update: {
       name: opts.name,
+      email: opts.recoveryEmail ?? null,
       ...(salt && verifier ? { srpSalt: salt, srpVerifier: verifier, passwordHash: null } : {}),
     },
   })
 
-  console.info(`Seed OK: ${opts.label} ${opts.email}${salt && verifier ? ' (SRP credentials)' : ''}`)
+  console.info(
+    `Seed OK: ${opts.label} ${opts.username}${salt && verifier ? ' (SRP credentials)' : ''}`,
+  )
 }
 
 /**
- * `dev@localhost`: one subscribed feed per TKC `sourceHealthStatus`, plus matching
+ * `dev`: one subscribed feed per TKC `sourceHealthStatus`, plus matching
  * `source_statuses` rows so /feeds shows each health badge (local dev only).
  */
-async function seedDevSourceStatusMatrix(devEmail: string) {
-  const user = await prisma.user.findUnique({ where: { email: devEmail } })
+async function seedDevSourceStatusMatrix(devUsername: string) {
+  const user = await prisma.user.findUnique({ where: { username: devUsername } })
   if (!user) {
-    console.warn(`seed: skip TKC feed matrix — user ${devEmail} not found`)
+    console.warn(`seed: skip TKC feed matrix — user ${devUsername} not found`)
     return
   }
 
@@ -77,8 +84,6 @@ async function seedDevSourceStatusMatrix(devEmail: string) {
       feedUrl: seedSourceStatusFeedUrl(health),
       crawlKey: seedSourceStatusFeedUrl(health),
       displayTitle: friendlyTitle[health],
-      // `paused` mirrors the locally-paused subscription state in the UI;
-      // the other variants stay active so they're fetched in the inflow.
       active: health !== 'paused',
     })),
   })
@@ -104,45 +109,34 @@ async function seedDevSourceStatusMatrix(devEmail: string) {
   }
 
   console.info(
-    `Seed OK: dev@localhost feed list + source_status (${TKC_SOURCE_HEALTH_STATUSES.length} TKC variants at example.com/seed/source-status/…)`,
+    `Seed OK: ${devUsername} feed list + source_status (${TKC_SOURCE_HEALTH_STATUSES.length} TKC variants at example.com/seed/source-status/…)`,
   )
 }
 
 async function main() {
-  const betaEmail = (process.env.BETA_SEED_EMAIL ?? 'beta@localhost').toLowerCase()
-  const betaName = process.env.BETA_SEED_NAME ?? 'Beta'
-
-  await upsertSrpUser({
-    email: betaEmail,
-    name: betaName,
-    saltEnv: 'BETA_SRP_SALT_HEX',
-    verifierEnv: 'BETA_SRP_VERIFIER_HEX',
-    label: 'beta user',
-  })
-
-  const devEmail = (process.env.DEV_SEED_EMAIL ?? 'dev@localhost').toLowerCase()
+  const devUsername = (process.env.DEV_SEED_USERNAME ?? 'dev').toLowerCase()
   const devName = process.env.DEV_SEED_NAME ?? 'Dev'
 
   await upsertSrpUser({
-    email: devEmail,
+    username: devUsername,
     name: devName,
     saltEnv: 'DEV_SRP_SALT_HEX',
     verifierEnv: 'DEV_SRP_VERIFIER_HEX',
     label: 'dev user',
   })
 
-  const operatorEmail = (process.env.OPERATOR_SEED_EMAIL ?? 'operator@localhost').toLowerCase()
+  const operatorUsername = (process.env.OPERATOR_SEED_USERNAME ?? 'operator').toLowerCase()
   const operatorName = process.env.OPERATOR_SEED_NAME ?? 'Operator'
   await upsertSrpUser({
-    email: operatorEmail,
+    username: operatorUsername,
     name: operatorName,
     saltEnv: 'OPERATOR_SRP_SALT_HEX',
     verifierEnv: 'OPERATOR_SRP_VERIFIER_HEX',
     label: 'operator user',
   })
 
-  await seedDevSourceStatusMatrix(devEmail)
-  await seedDevPodcastEpisodes(prisma, devEmail)
+  await seedDevSourceStatusMatrix(devUsername)
+  await seedDevPodcastEpisodes(prisma, devUsername)
 }
 
 main()

@@ -6,10 +6,10 @@ import { loadE2eMergedEnv } from './load-e2e-env'
 
 const authFile = resolve(process.cwd(), 'tests/e2e/.auth/dev.json')
 
-setup('SRP login dev@localhost → storage state', async ({ request }) => {
+setup('SRP login dev → storage state', async ({ request }) => {
   loadE2eMergedEnv()
 
-  const email = (process.env.E2E_LOGIN_EMAIL ?? 'dev@localhost').trim().toLowerCase()
+  const username = (process.env.E2E_LOGIN_USERNAME ?? 'dev').trim().toLowerCase()
   const password = process.env.E2E_LOGIN_PASSWORD
   if (!password) {
     throw new Error(
@@ -21,7 +21,7 @@ setup('SRP login dev@localhost → storage state', async ({ request }) => {
   mkdirSync(outDir, { recursive: true })
 
   const challengeRes = await request.post('/api/auth/srp/challenge', {
-    data: { email },
+    data: { username },
   })
   if (!challengeRes.ok()) {
     const body = await challengeRes.text()
@@ -39,7 +39,7 @@ setup('SRP login dev@localhost → storage state', async ({ request }) => {
 
   const routines = new SRPRoutines(new SRPParameters())
   const client = new SRPClientSession(routines)
-  const clientStep1 = await client.step1(email, password)
+  const clientStep1 = await client.step1(username, password)
   const salt = BigInt(`0x${challenge.saltHex}`)
   const B = BigInt(`0x${challenge.BHex}`)
   const clientStep2 = await clientStep1.step2(salt, B)

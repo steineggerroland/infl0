@@ -1,6 +1,11 @@
 import { createError, readBody } from 'h3'
 import { timingSafeEqual } from 'node:crypto'
 import { Prisma } from '~/generated/prisma/client'
+import {
+  isValidNewUsername,
+  normalizeOptionalRecoveryEmail,
+  normalizeUsername,
+} from '~/utils/username'
 import { prisma } from '../../../utils/prisma'
 import { createSessionToken, setAuthCookie } from '../../../utils/auth-session'
 import { hexToBigint } from '../../../utils/srp'
@@ -18,8 +23,6 @@ function inviteMatches(expected: string, received: string): boolean {
   }
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u
-
 /**
  * SRP registration: client sends salt + verifier only (see createVerifierAndSalt).
  * Requires NUXT_REGISTRATION_INVITE_CODE on the server; user submits the same value.
@@ -32,15 +35,26 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event).catch(() => null)
-  const emailRaw = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : ''
+  const usernameRaw = typeof body?.username === 'string' ? body.username : ''
+  const username = normalizeUsername(usernameRaw)
+  const recoveryEmail = normalizeOptionalRecoveryEmail(
+    typeof body?.recoveryEmail === 'string' ? body.recoveryEmail : null,
+  )
   const name = typeof body?.name === 'string' ? body.name.trim().slice(0, 120) : null
   const saltHex = typeof body?.saltHex === 'string' ? body.saltHex.trim().replace(/^0x/iu, '') : ''
   const verifierHex =
     typeof body?.verifierHex === 'string' ? body.verifierHex.trim().replace(/^0x/iu, '') : ''
   const inviteCode = typeof body?.inviteCode === 'string' ? body.inviteCode : ''
 
-  if (!emailRaw || !EMAIL_RE.test(emailRaw)) {
-    throw createError({ statusCode: 400, statusMessage: 'Valid email required' })
+  if (!username || !isValidNewUsername(username)) {
+    throw createError({ statusCode: 400, statusMessage: 'Valid username required' })
+  }
+  if (
+    recoveryEmail === null &&
+    typeof body?.recoveryEmail === 'string' &&
+    body.recoveryEmail.trim().length > 0
+  ) {
+    throw createError({ statusCode: 400, statusMessage: 'Valid recovery email required' })
   }
   if (!inviteMatches(expectedInvite, inviteCode)) {
     throw createError({ statusCode: 403, statusMessage: 'Invalid invite code' })
@@ -59,13 +73,14 @@ export default defineEventHandler(async (event) => {
   try {
     const user = await prisma.user.create({
       data: {
-        email: emailRaw,
+        username,
+        email: recoveryEmail,
         name: name || null,
         srpSalt: saltHex,
         srpVerifier: verifierHex,
         passwordHash: null,
       },
-      select: { id: true, email: true, name: true },
+      select: { id: true, username: true, email: true, name: true },
     })
 
     const token = await createSessionToken(user.id)
@@ -74,7 +89,7 @@ export default defineEventHandler(async (event) => {
     return { ok: true, user }
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
-      throw createError({ statusCode: 409, statusMessage: 'Email already registered' })
+      throw createError({ statusCode: 409, statusMessage: 'Username already taken' })
     }
     throw e
   }

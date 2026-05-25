@@ -13,6 +13,19 @@ new entries accrue under **Unreleased**.
 
 ### Added
 
+- **Username login:** registration and sign-in use a unique **username** (SRP
+  identity). Optional **recovery email** is stored for future account recovery;
+  it is not verified yet. Existing users are migrated with `username = lower(email)`.
+  Settings show the sign-in name and recovery email (`#account`). Seed accounts use
+  usernames `dev` and `operator`; operator allowlist is
+  `NUXT_OPERATOR_USERNAMES`.
+- **BDD Wave 2:** article and episode card presentation scenarios moved into
+  `persona_active_reader_expectations.feature` (Robin). Account settings scenarios
+  assert sign-in name and recovery email match registration.
+- **BDD persona Shorty:** keyboard shortcut scenarios and rich episode card
+  surface drills (chapters, shownotes, details tabs) live in
+  `persona_shorty_expectations.feature`; moved out of Robin's feature file.
+
 - **Reader episode cards:** inflow can render podcast episodes with dedicated
   card UI, icon registry, browser playback affordance for playable audio,
   podcast/feed links, collapsible chapters and shownotes, and content/transcript

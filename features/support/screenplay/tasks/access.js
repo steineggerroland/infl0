@@ -6,7 +6,7 @@ import {
 import { waitForNuxtAppReady } from '../../app-ready.js'
 import { BrowseTheWeb } from '../abilities/browse-the-web.js'
 
-function emailPrefixFor(actor) {
+function usernamePrefixFor(actor) {
   return `bdd-${actor.name.toLowerCase().replace(/[^a-z0-9]+/gu, '-') || 'reader'}`
 }
 
@@ -14,7 +14,7 @@ async function registerActor(actor) {
   const page = BrowseTheWeb.as(actor)
   await openRegistrationPage(page)
   const credentials = await registerFreshAccountViaUi(page, {
-    emailPrefix: emailPrefixFor(actor),
+    usernamePrefix: usernamePrefixFor(actor),
     displayName: actor.name,
     world: actor.world,
   })
@@ -53,14 +53,14 @@ export const SignInToInfl0 = {
   async performAs(actor) {
     const page = BrowseTheWeb.as(actor)
     const credentials = actor.recall('credentials')
-    if (!credentials?.email || !credentials?.password) {
+    if (!credentials?.username || !credentials?.password) {
       throw new Error(`${actor.name} has no remembered infl0 credentials.`)
     }
 
     await page.goto('/login')
     await expect(page).toHaveURL(/\/login(\?|$)/u)
     await waitForNuxtAppReady(page)
-    await page.getByLabel('Email').fill(credentials.email)
+    await page.getByLabel('Username').fill(credentials.username)
     await page.locator('input[autocomplete="current-password"]').fill(credentials.password)
     await Promise.all([
       page.waitForURL(/\/(\?|$)/u, { timeout: 60_000 }),

@@ -13,6 +13,45 @@ Feature: Active returning reader expectations
     When Robin signs out
     Then Robin should be asked to sign in before reading
 
+  Scenario: Robin sees the sign-in name and recovery email in settings
+    Given Robin is a new reader
+    When Robin registers for infl0
+    And Robin opens account settings
+    Then Robin should see their sign-in name in account settings
+    And Robin should see their recovery email in account settings
+
+  Scenario: Robin sees a rich article teaser and back
+    Given Robin is signed in to infl0
+    And Robin has a rich article in the timeline
+    And Robin opens the timeline
+    And Robin starts reading
+    When Robin views the teaser of the rich article
+    Then Robin should see the rich article teaser
+    When Robin flips the focused card to the back
+    Then Robin should see the rich article back
+    When Robin opens the original article from the focused card back
+    Then Robin should see the rich article body in the reader dialog
+
+  Scenario: Robin sees a minimal article without optional back fields
+    Given Robin is signed in to infl0
+    And Robin has a minimal article in the timeline
+    And Robin opens the timeline
+    And Robin starts reading
+    When Robin views the teaser of the minimal article
+    Then Robin should see the minimal article teaser
+    When Robin flips the focused card to the back
+    Then Robin should see the minimal article back without optional fields
+
+  Scenario: Robin sees a minimal episode with core fields only
+    Given Robin is signed in to infl0
+    And Robin has a minimal episode in the timeline
+    And Robin opens the timeline
+    And Robin starts reading
+    When Robin views the teaser of the minimal episode
+    Then Robin should see the minimal episode teaser
+    When Robin flips the focused card to the back
+    Then Robin should see the minimal episode back with core actions only
+
   Scenario: Robin resumes a previous article intentionally
     Given Robin has reader articles
     When Robin opens the timeline
@@ -108,18 +147,3 @@ Feature: Active returning reader expectations
     And Robin focuses the first reader article
     And Robin presses the read-state shortcut
     Then Robin's current reader article should become unread
-
-  @pending
-  Scenario: Robin works through an episode with keyboard and tabs
-    Given Robin is reading an episode card
-    When Robin opens episode details with the keyboard
-    And Robin switches between content and transcript
-    Then Robin should stay in an accessible dialog
-    And focus should return to the episode action after closing
-
-  @pending
-  Scenario: Robin adjusts reading controls mid-session
-    Given Robin is reading a focused card
-    When Robin changes font size and typeface with shortcuts
-    Then the focused reading surface should reflect those changes
-    And the reader context should remain stable

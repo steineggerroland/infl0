@@ -1,3 +1,4 @@
+import { currentActor } from '../../support/screenplay/actor.js'
 import { Given, Then, When } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
 import {
@@ -5,8 +6,8 @@ import {
   ingestMinimalEpisode,
   ingestRichArticle,
   ingestRichEpisode,
-} from '../support/content-fixtures.js'
-import { ReaderTimeline } from '../support/reader-timeline.js'
+} from '../../support/content-fixtures.js'
+import { ReaderTimeline } from '../../support/reader-timeline.js'
 
 /** @typedef {'rich' | 'minimal'} PresentationVariant */
 /** @typedef {'article' | 'episode'} PresentationKind */
@@ -59,51 +60,60 @@ async function readFontFamily(locator) {
   return locator.evaluate((el) => getComputedStyle(el).fontFamily)
 }
 
-Given('I have an article with all information', async function () {
+Given('{word} has a rich article in the timeline', async function (name) {
+  currentActor(this, name)
   await ingestRichArticle(this.page, this)
 })
 
-Given('I have an article with little information', async function () {
+Given('{word} has a minimal article in the timeline', async function (name) {
+  currentActor(this, name)
   await ingestMinimalArticle(this.page, this)
 })
 
-Given('I have an episode with all information', async function () {
+Given('{word} has a rich episode in the timeline', async function (name) {
+  currentActor(this, name)
   await ingestRichEpisode(this.page, this)
 })
 
-Given('I have an episode with little information', async function () {
+Given('{word} has a minimal episode in the timeline', async function (name) {
+  currentActor(this, name)
   await ingestMinimalEpisode(this.page, this)
 })
 
-When('I view the teaser of the rich article', async function () {
+When('{word} views the teaser of the rich article', async function (name) {
+  currentActor(this, name)
   const meta = presentationMeta(this, 'article', 'rich')
   const card = timeline(this).articleCard(meta.id)
   await timeline(this).focusCard(card)
   this.focusedPresentation = { kind: 'article', id: meta.id, variant: 'rich' }
 })
 
-When('I view the teaser of the minimal article', async function () {
+When('{word} views the teaser of the minimal article', async function (name) {
+  currentActor(this, name)
   const meta = presentationMeta(this, 'article', 'minimal')
   const card = timeline(this).articleCard(meta.id)
   await timeline(this).focusCard(card)
   this.focusedPresentation = { kind: 'article', id: meta.id, variant: 'minimal' }
 })
 
-When('I view the teaser of the rich episode', async function () {
+When('{word} views the teaser of the rich episode', async function (name) {
+  currentActor(this, name)
   const meta = presentationMeta(this, 'episode', 'rich')
   const card = timeline(this).episodeCard(meta.id)
   await timeline(this).focusCard(card)
   this.focusedPresentation = { kind: 'episode', id: meta.id, variant: 'rich' }
 })
 
-When('I view the teaser of the minimal episode', async function () {
+When('{word} views the teaser of the minimal episode', async function (name) {
+  currentActor(this, name)
   const meta = presentationMeta(this, 'episode', 'minimal')
   const card = timeline(this).episodeCard(meta.id)
   await timeline(this).focusCard(card)
   this.focusedPresentation = { kind: 'episode', id: meta.id, variant: 'minimal' }
 })
 
-When('I flip the focused card to the back', async function () {
+When('{word} flips the focused card to the back', async function (name) {
+  currentActor(this, name)
   const card = focusedCard(this)
   await card.locator('.teaser').first().click()
   await expect(card.locator('[data-testid="episode-details-panel"], .summary').first()).toBeVisible({
@@ -111,7 +121,8 @@ When('I flip the focused card to the back', async function () {
   })
 })
 
-When('I expand the chapters on the focused episode card', async function () {
+When('{word} expands the chapters on the focused episode card', async function (name) {
+  currentActor(this, name)
   const card = focusedCard(this)
   const details = card.getByTestId('episode-chapters-collapsible')
   await expect(details).toBeVisible()
@@ -119,7 +130,8 @@ When('I expand the chapters on the focused episode card', async function () {
   await expect(details).toHaveAttribute('open', '')
 })
 
-When('I expand the shownotes on the focused episode card', async function () {
+When('{word} expands the shownotes on the focused episode card', async function (name) {
+  currentActor(this, name)
   const card = focusedCard(this)
   const details = card.getByTestId('episode-shownotes-collapsible')
   await expect(details).toBeVisible()
@@ -127,48 +139,57 @@ When('I expand the shownotes on the focused episode card', async function () {
   await expect(details).toHaveAttribute('open', '')
 })
 
-When('I open the details of the focused episode card', async function () {
+When('{word} opens the details of the focused episode card', async function (name) {
+  currentActor(this, name)
   const card = focusedCard(this)
   await card.getByTestId('episode-details-link').click()
   await expect(this.page.locator('dialog[open]')).toBeVisible({ timeout: 10_000 })
 })
 
-When('I open the content tab in the episode details', async function () {
+When('{word} opens the content tab in the episode details', async function (name) {
+  currentActor(this, name)
   const dialog = this.page.locator('dialog[open]')
   await expect(dialog).toBeVisible()
   await dialog.getByRole('tab', { name: 'Content' }).click()
   await expect(dialog.getByRole('tab', { name: 'Content' })).toHaveAttribute('aria-selected', 'true')
 })
 
-When('I open the transcript tab in the episode details', async function () {
+When('{word} opens the transcript tab in the episode details', async function (name) {
+  currentActor(this, name)
   const dialog = this.page.locator('dialog[open]')
   await expect(dialog).toBeVisible()
   await dialog.getByRole('tab', { name: 'Transcript' }).click()
   await expect(dialog.getByRole('tab', { name: 'Transcript' })).toHaveAttribute('aria-selected', 'true')
 })
 
-When('I open the original article from the focused card back', async function () {
+When('{word} opens the original article from the focused card back', async function (name) {
+  currentActor(this, name)
   const card = focusedCard(this)
   await card.getByRole('link', { name: 'Original article' }).click()
 })
 
-When('I use the card flip shortcut', async function () {
+When('{word} uses the card flip shortcut', async function (name) {
+  currentActor(this, name)
   await this.page.keyboard.press('e')
 })
 
-When('I use the card escape shortcut', async function () {
+When('{word} uses the card escape shortcut', async function (name) {
+  currentActor(this, name)
   await this.page.keyboard.press('Escape')
 })
 
-When('I use the reader dialog shortcut', async function () {
+When('{word} uses the reader dialog shortcut', async function (name) {
+  currentActor(this, name)
   await this.page.keyboard.press('q')
 })
 
-When('I use the read-state shortcut on the focused card', async function () {
+When('{word} uses the read-state shortcut on the focused card', async function (name) {
+  currentActor(this, name)
   await this.page.keyboard.press('m')
 })
 
-When('I use the font-size shortcuts on the focused card', async function () {
+When('{word} uses the font-size shortcuts on the focused card', async function (name) {
+  currentActor(this, name)
   const target = focusedBackTypography(this)
   await expect(target).toBeVisible()
   await this.page.keyboard.press('0')
@@ -199,7 +220,8 @@ When('I use the font-size shortcuts on the focused card', async function () {
   this.cardFontSizeAfterReset = await readFontSizePx(target)
 })
 
-When('I use the font-family shortcuts on the focused card', async function () {
+When('{word} uses the font-family shortcuts on the focused card', async function (name) {
+  currentActor(this, name)
   const target = focusedBackTypography(this)
   await expect(target).toBeVisible()
   this.cardFontFamilyBefore = await readFontFamily(target)
@@ -255,7 +277,8 @@ async function expectOpenReaderDialogLink(world, hrefPart) {
   await expect(dialog.locator(`a[href*="${hrefPart}"]`).first()).toBeVisible()
 }
 
-Then('I should see the rich article teaser', async function () {
+Then('{word} should see the rich article teaser', async function (name) {
+  currentActor(this, name)
   await expectFocusedCardText(
     this,
     'BDD rich article',
@@ -263,7 +286,8 @@ Then('I should see the rich article teaser', async function () {
   )
 })
 
-Then('I should see the rich article back', async function () {
+Then('{word} should see the rich article back', async function (name) {
+  currentActor(this, name)
   await expectFocusedCardText(
     this,
     'Rich article long summary on the back of the card.',
@@ -272,24 +296,29 @@ Then('I should see the rich article back', async function () {
   await expectFocusedCardLink(this, 'https://example.com/bdd/present/')
 })
 
-Then('I should see the rich article body in the reader dialog', async function () {
+Then('{word} should see the rich article body in the reader dialog', async function (name) {
+  currentActor(this, name)
   await expectOpenReaderDialogText(this, 'Rich body')
 })
 
-Then('I should not see an open reader dialog', async function () {
+Then('{word} should not see an open reader dialog', async function (name) {
+  currentActor(this, name)
   await expect(this.page.locator('dialog[open]')).toHaveCount(0)
 })
 
-Then('I should see the minimal article teaser', async function () {
+Then('{word} should see the minimal article teaser', async function (name) {
+  currentActor(this, name)
   await expectFocusedCardText(this, 'BDD minimal article', 'Minimal teaser only.')
 })
 
-Then('I should see the minimal article back without optional fields', async function () {
+Then('{word} should see the minimal article back without optional fields', async function (name) {
+  currentActor(this, name)
   await expectNoFocusedCardText(this, 'Rich article long summary', 'bdd, presentation')
   await expect(openReaderDialog(this)).toHaveCount(0)
 })
 
-Then('I should see the rich episode teaser', async function () {
+Then('{word} should see the rich episode teaser', async function (name) {
+  currentActor(this, name)
   await expectFocusedCardText(
     this,
     'BDD rich episode',
@@ -300,7 +329,8 @@ Then('I should see the rich episode teaser', async function () {
   )
 })
 
-Then('I should see the rich episode back', async function () {
+Then('{word} should see the rich episode back', async function (name) {
+  currentActor(this, name)
   const card = focusedCard(this)
   await expectFocusedCardText(
     this,
@@ -315,29 +345,35 @@ Then('I should see the rich episode back', async function () {
   await expect(card.getByTestId('episode-details-link')).toBeVisible()
 })
 
-Then('I should see the expanded rich episode chapters', async function () {
+Then('{word} should see the expanded rich episode chapters', async function (name) {
+  currentActor(this, name)
   await expectFocusedCardText(this, 'Second chapter')
 })
 
-Then('I should see the expanded rich episode shownotes', async function () {
+Then('{word} should see the expanded rich episode shownotes', async function (name) {
+  currentActor(this, name)
   await expectFocusedCardText(this, 'DDD article')
 })
 
-Then('I should see the rich episode content tab', async function () {
+Then('{word} should see the rich episode content tab', async function (name) {
+  currentActor(this, name)
   await expectOpenReaderDialogText(this, 'Rich episode content')
 })
 
-Then('I should see the rich episode transcript tab', async function () {
+Then('{word} should see the rich episode transcript tab', async function (name) {
+  currentActor(this, name)
   await expectOpenReaderDialogText(this, 'Welcome to the rich BDD episode')
   await expectOpenReaderDialogLink(this, '/transcript.txt')
 })
 
-Then('I should see the minimal episode teaser', async function () {
+Then('{word} should see the minimal episode teaser', async function (name) {
+  currentActor(this, name)
   await expectFocusedCardText(this, 'BDD minimal episode', 'Minimal episode teaser only.', '8:00')
   await expectNoFocusedCardText(this, 'Season 3 · Episode 42')
 })
 
-Then('I should see the minimal episode back with core actions only', async function () {
+Then('{word} should see the minimal episode back with core actions only', async function (name) {
+  currentActor(this, name)
   const card = focusedCard(this)
   await expect(card.getByTestId('episode-play-browser')).toBeVisible()
   await expectFocusedCardLink(this, 'bdd/present/podcast-')
@@ -347,13 +383,15 @@ Then('I should see the minimal episode back with core actions only', async funct
   await expectNoFocusedCardText(this, 'Rich episode subtitle')
 })
 
-Then('the focused card should be marked as read', async function () {
+Then("{word}'s focused card should be marked as read", async function (name) {
+  currentActor(this, name)
   await expect(focusedReadStatus(this)).toHaveAttribute('aria-pressed', 'true', {
     timeout: 10_000,
   })
 })
 
-Then('the focused card font size should respond to shortcuts', async function () {
+Then("{word}'s focused card font size should respond to shortcuts", async function (name) {
+  currentActor(this, name)
   expect(this.cardFontSizeBefore).toBeGreaterThan(0)
   expect(this.cardFontSizeAfterIncrease).toBeGreaterThan(this.cardFontSizeBefore)
   expect(this.cardFontSizeAfterDecrease).toBeLessThan(this.cardFontSizeAfterIncrease)
@@ -361,7 +399,8 @@ Then('the focused card font size should respond to shortcuts', async function ()
   expect(this.cardFontSizeAfterReset).toBe(this.cardFontSizeBefore)
 })
 
-Then('the focused card font family should respond to shortcuts', async function () {
+Then("{word}'s focused card font family should respond to shortcuts", async function (name) {
+  currentActor(this, name)
   expect(this.cardFontFamilyBefore).toBeTruthy()
   expect(this.cardFontFamilyAfterForward).toBeTruthy()
   expect(this.cardFontFamilyAfterForward).not.toBe(this.cardFontFamilyBefore)

@@ -23,7 +23,7 @@ When('I register with a fresh valid account', async function () {
 Given('I have a freshly registered account credentials', async function () {
   await openRegistrationPage(this.page)
   await registerFreshAccountViaUi(this.page, {
-    emailPrefix: 'bdd-auth',
+    usernamePrefix: 'bdd-auth',
     displayName: 'BDD Auth User',
     world: this,
   })
@@ -40,10 +40,11 @@ Given('I have a freshly registered account credentials', async function () {
 })
 
 When('I sign in with my registered account', async function () {
-  if (!this.registeredEmail || !this.registeredPassword) {
+  const username = this.registeredUsername ?? this.registeredEmail
+  if (!username || !this.registeredPassword) {
     throw new Error('No registered account credentials in world state.')
   }
-  await this.page.getByLabel('Email').fill(this.registeredEmail)
+  await this.page.getByLabel('Username').fill(username)
   await this.page.locator('input[autocomplete="current-password"]').fill(this.registeredPassword)
   await Promise.all([
     this.page.waitForURL(/\/(\?|$)/u, { timeout: 60_000 }),

@@ -30,7 +30,7 @@ function ev() {
 describe('GET /api/operator/source-statuses', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    process.env.NUXT_OPERATOR_EMAILS = 'ops@example.com'
+    process.env.NUXT_OPERATOR_USERNAMES = 'ops'
     vi.mocked(getQuery).mockReturnValue({})
   })
 
@@ -39,10 +39,11 @@ describe('GET /api/operator/source-statuses', () => {
     await expect(handler(ev())).rejects.toMatchObject({ statusCode: 401 })
   })
 
-  it('returns 403 when email is not allowlisted', async () => {
+  it('returns 403 when username is not allowlisted', async () => {
     vi.mocked(getAuthUserForEvent).mockResolvedValue({
       id: 'u1',
-      email: 'reader@example.com',
+      username: 'reader',
+      email: null,
       name: null,
     })
     await expect(handler(ev())).rejects.toMatchObject({ statusCode: 403 })
@@ -51,7 +52,8 @@ describe('GET /api/operator/source-statuses', () => {
   it('allows operator and sorts attention first, then blocked/failing/degraded', async () => {
     vi.mocked(getAuthUserForEvent).mockResolvedValue({
       id: 'u-op',
-      email: 'ops@example.com',
+      username: 'ops',
+      email: null,
       name: null,
     })
     const at = new Date('2026-06-01T10:00:00.000Z')
@@ -194,7 +196,8 @@ describe('GET /api/operator/source-statuses', () => {
   it('applies blocked filter', async () => {
     vi.mocked(getAuthUserForEvent).mockResolvedValue({
       id: 'u-op',
-      email: 'ops@example.com',
+      username: 'ops',
+      email: null,
       name: null,
     })
     vi.mocked(getQuery).mockReturnValue({ filter: 'blocked' })
@@ -268,7 +271,8 @@ describe('GET /api/operator/source-statuses', () => {
   ] as const)('applies %s filter', async (filter, expectedHealth) => {
     vi.mocked(getAuthUserForEvent).mockResolvedValue({
       id: 'u-op',
-      email: 'ops@example.com',
+      username: 'ops',
+      email: null,
       name: null,
     })
     vi.mocked(getQuery).mockReturnValue({ filter })

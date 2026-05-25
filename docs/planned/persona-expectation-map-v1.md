@@ -60,9 +60,21 @@ sign-out, reader start, resume, return context, read feedback, read shortcut,
 and read-without-tracking. `content_presentation.feature` still covers
 article/episode presentation and card shortcuts.
 
-**Planned tests:** episode dialog keyboard/tab behavior and mid-session
-reading-control changes remain pending in
-`persona_active_reader_expectations.feature`.
+**Planned tests:** none on Robin for episode keyboard; see Shorty.
+
+### Shorty — keyboard shortcut enthusiast
+
+**Need:** Learn every shortcut from the help reference, then verify they work
+on real timeline cards (articles and episodes) without mouse-only workarounds.
+
+**Covered now:** `persona_shorty_expectations.feature` — rich episode card
+surfaces (chapters, shownotes, details tabs), help catalog
+(`#shortcuts-reference`), article and episode card shortcuts, read-state
+toggle via `m`. Episode dialog keyboard/tabs and timeline `r` (show-read) remain `@pending`
+in `persona_shorty_expectations.feature`.
+
+**Note:** Mira still owns onboarding-card readability shortcuts (before real
+articles); Shorty owns the central catalog and in-flow timeline shortcuts.
 
 ### Mira — sensory customizer
 
@@ -107,6 +119,21 @@ protection, summary visibility, attention-first ordering, and filters for
 source statuses.
 
 **Planned tests:** `persona_operator_expectations.feature`.
+
+### Oblivia — forgetful reader with verified recovery
+
+**Need:** Prove a recovery email is hers before relying on it, then reset a
+forgotten password via that address without operator help.
+
+**Wordplay:** *Oblivia* ≈ *oblivious* — forgot the password, not the recovery
+setup.
+
+**Covered now:** optional unverified recovery email at registration; settings
+show sign-in name and stored recovery email (Robin).
+
+**Planned tests:** `persona_oblivia_expectations.feature` — verify in settings,
+OTP by SMTP, sign out, forgot-password flow. Package:
+[`oblivia-recovery-email-verification.md`](./oblivia-recovery-email-verification.md).
 
 ### Ingo — integrator
 

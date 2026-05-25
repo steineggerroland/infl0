@@ -48,9 +48,6 @@ const {
 } = useEngagementTrackingPrefs()
 const trackingBusy = ref(false)
 
-onMounted(async () => {
-  await ensureTrackingLoaded()
-})
 
 async function onTrackingToggle(e: Event) {
   const checked = (e.target as HTMLInputElement).checked
@@ -69,6 +66,20 @@ async function onTrackingToggle(e: Event) {
 const { prefs: uiPrefs, update: updateUiPrefs } = useUiPrefs()
 const onboardingVisible = computed(() => !uiPrefs.value.onboardingHidden)
 
+const accountUser = ref<{ username: string; email: string | null } | null>(null)
+
+onMounted(async () => {
+  await ensureTrackingLoaded()
+  try {
+    const res = await $fetch<{ user: { username: string; email: string | null } }>('/api/auth/me', {
+      credentials: 'include',
+    })
+    accountUser.value = res.user
+  } catch {
+    accountUser.value = null
+  }
+})
+
 function onOnboardingToggle(e: Event) {
   const checked = (e.target as HTMLInputElement).checked
   updateUiPrefs({ onboardingHidden: !checked })
@@ -84,6 +95,46 @@ function onOnboardingToggle(e: Event) {
           {{ t('settingsIndex.intro') }}
         </p>
       </header>
+
+      <section
+        id="account"
+        aria-labelledby="settings-account-heading"
+        class="scroll-mt-24 mb-10"
+      >
+        <header class="mb-4 text-center">
+          <h2 id="settings-account-heading" class="infl0-canvas-fg text-lg font-semibold">
+            {{ t('settingsIndex.accountHeading') }}
+          </h2>
+          <p class="infl0-canvas-muted mt-1 text-sm">
+            {{ t('settingsIndex.accountIntro') }}
+          </p>
+        </header>
+
+        <div v-if="accountUser" class="infl0-panel space-y-4 p-5">
+          <div>
+            <p class="infl0-panel-muted text-xs font-medium">
+              {{ t('settingsIndex.accountSignInNameLabel') }}
+            </p>
+            <p
+              class="mt-1 text-sm text-[var(--infl0-panel-text)]"
+              data-testid="account-sign-in-name"
+            >
+              {{ accountUser.username }}
+            </p>
+          </div>
+          <div>
+            <p class="infl0-panel-muted text-xs font-medium">
+              {{ t('settingsIndex.accountRecoveryEmailLabel') }}
+            </p>
+            <p
+              class="mt-1 text-sm text-[var(--infl0-panel-text)]"
+              data-testid="account-recovery-email"
+            >
+              {{ accountUser.email ?? t('settingsIndex.accountRecoveryEmailUnset') }}
+            </p>
+          </div>
+        </div>
+      </section>
 
       <section
         id="display"

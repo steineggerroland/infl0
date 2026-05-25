@@ -2,7 +2,7 @@ import type { TkcSourceHealthStatus } from '../../utils/source-health-display'
 import { TKC_SOURCE_HEALTH_STATUSES } from '../../utils/source-health-display'
 import { seedSourceStatusFeedUrl } from '../../utils/source-status-seed-urls'
 
-/** Same `crawlKey` as `npm run db:seed` for dev@localhost (TKC matrix). */
+/** Same `crawlKey` as `npm run db:seed` for username `dev` (TKC matrix). */
 export function crawlKeyForTkcHealth(health: TkcSourceHealthStatus): string {
   return seedSourceStatusFeedUrl(health)
 }

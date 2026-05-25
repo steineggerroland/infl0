@@ -29,8 +29,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Authentication failed' })
   }
 
-  const email = state.identifier.trim().toLowerCase()
-  const user = await prisma.user.findUnique({ where: { email } })
+  const username = state.identifier.trim().toLowerCase()
+  const user = await prisma.user.findUnique({ where: { username } })
   if (!user) {
     throw createError({ statusCode: 401, statusMessage: 'Authentication failed' })
   }

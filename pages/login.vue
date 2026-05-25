@@ -8,7 +8,7 @@ definePageMeta({
 
 const route = useRoute()
 const { t } = useI18n()
-const email = ref('')
+const username = ref('')
 const password = ref('')
 const errorMsg = ref('')
 const pending = ref(false)
@@ -17,7 +17,7 @@ async function onSubmit() {
   errorMsg.value = ''
   pending.value = true
 
-  const emailNorm = email.value.trim().toLowerCase()
+  const usernameNorm = username.value.trim().toLowerCase()
   const pwd = password.value
 
   try {
@@ -27,14 +27,14 @@ async function onSubmit() {
       BHex: string
     }>('/api/auth/srp/challenge', {
       method: 'POST',
-      body: { email: emailNorm },
+      body: { username: usernameNorm },
     })
 
     password.value = ''
 
     const routines = new SRPRoutines(new SRPParameters())
     const client = new SRPClientSession(routines)
-    const clientStep1 = await client.step1(emailNorm, pwd)
+    const clientStep1 = await client.step1(usernameNorm, pwd)
 
     const salt = BigInt(`0x${challenge.saltHex}`)
     const B = BigInt(`0x${challenge.BHex}`)
@@ -96,13 +96,13 @@ async function onSubmit() {
           </legend>
 
           <div class="space-y-1">
-            <label class="label w-full pb-0" for="login-email">
-              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('login.email') }}</span>
+            <label class="label w-full pb-0" for="login-username">
+              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('login.username') }}</span>
             </label>
             <input
-              id="login-email"
-              v-model="email"
-              type="email"
+              id="login-username"
+              v-model="username"
+              type="text"
               autocomplete="username"
               required
               class="input input-bordered infl0-field w-full"
