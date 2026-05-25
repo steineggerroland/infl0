@@ -5,6 +5,7 @@ import {
   SignInToInfl0,
   SignOutOfInfl0,
   StartSignedInToInfl0,
+  StartAsSignedOutVisitor,
 } from '../../support/screenplay/tasks/access.js'
 import {
   SignInIsRequired,
@@ -13,6 +14,10 @@ import {
 
 Given('{word} has an infl0 account', async function (name) {
   await actorCalled(this, name).attemptsTo(HaveInfl0Account)
+})
+
+Given('{word} starts as a signed-out visitor', async function (name) {
+  await actorCalled(this, name).attemptsTo(StartAsSignedOutVisitor)
 })
 
 Given('{word} is signed in to infl0', async function (name) {

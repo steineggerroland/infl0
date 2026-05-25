@@ -24,9 +24,3 @@ Feature: Add infl0 to your home screen
     When I look up how infl0 presents itself for installation
     Then the install listing should include infl0's app icons
     And installed infl0 should be able to receive updates without a store
-
-  Scenario: Sign-in page supports adding infl0 on a phone
-    Given I start as a signed-out visitor
-    When I open the login page
-    Then the page should tell the browser how to install infl0
-    And the page should be laid out for a phone-sized screen
