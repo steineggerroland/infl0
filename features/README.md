@@ -49,8 +49,6 @@ Covered in BDD today:
   navigation restores the reader without reader start (Help via floating menu);
   resume hidden when the
   stored anchor is read while “hide read articles” applies.
-- **`settings_hub_navigation.feature`** — `/settings` deep links and a hub sidebar
-  jump (wide viewport); not yet the narrow **Sections** drawer control.
 - **`feeds_sources.feature`** — add a source from `/feeds`, list heading + row, remove,
   empty state again; **no snapshot** row shows `no_snapshot` and expands to the
   “no status yet” copy (EN locale); **pause / resume** toggles `data-active` on the
@@ -85,6 +83,10 @@ Covered in BDD today:
   reader checks for the reading behaviour tracking deep link, one deliberate
   tracking toggle change, and the personalization explainer; passive open
   without tracking and deeper signal inspection remain captured as `@pending`.
+- **`persona_explorer_expectations.feature`** — Screenplay-style curious explorer
+  checks for settings deep links and wide-layout section navigation; full
+  onboarding exploration and phone install affordances remain captured as
+  `@pending`.
 
 Still sensible follow-ups:
 
