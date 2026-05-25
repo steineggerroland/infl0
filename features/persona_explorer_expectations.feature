@@ -1,21 +1,32 @@
-@pending @persona @screenplay
+@persona @screenplay
 Feature: Curious explorer expectations
   Eli wants to understand the app by exploring navigation and explanations
   before committing to regular reading.
 
+  @pending
   Scenario: Eli explores onboarding deeply before finishing it
     Given Eli is a new reader
     When Eli moves through every onboarding card
     And Eli opens full text where explanations are available
     Then Eli should understand sources, scoring, themes, and help
 
-  Scenario: Eli uses navigation to understand the settings structure
-    Given Eli is exploring infl0
-    When Eli opens settings from multiple entry points
-    And Eli follows section navigation
-    Then Eli should land on the expected settings section
-    And the current section should be visible
+  Scenario: Eli opens the appearance settings from a deep link
+    Given Eli is exploring settings
+    When Eli opens settings section "/settings#display-appearance"
+    Then Eli should see the "appearance" settings section
 
+  Scenario: Eli opens the sorting settings from a deep link
+    Given Eli is exploring settings
+    When Eli opens settings section "/settings#sorting"
+    Then Eli should see the "sorting" settings section
+
+  Scenario: Eli follows section navigation to the colour palette
+    Given Eli is exploring settings
+    When Eli opens settings section "/settings"
+    And Eli follows the settings section "display-palette"
+    Then Eli should see the "theme" settings section
+
+  @pending
   Scenario: Eli checks install affordances before signing in on a phone
     Given Eli starts as a signed-out visitor
     When Eli opens the sign-in page on a phone-sized viewport
