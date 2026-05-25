@@ -79,6 +79,10 @@ Covered in BDD today:
 - **`persona_active_reader_expectations.feature`** — Screenplay-style active
   returning reader access checks for sign-in and sign-out; deeper return-context,
   episode, and reading-control expectations remain captured as `@pending`.
+- **`persona_customizer_expectations.feature`** — Screenplay-style sensory
+  customizer checks for saved display preferences and custom card-front colours;
+  onboarding typography and fuller low-stimulation reading setup remain
+  captured as `@pending`.
 
 Still sensible follow-ups:
 
