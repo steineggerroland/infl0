@@ -75,14 +75,6 @@ Feature: Shorty keyboard shortcut expectations
     Then Shorty's focused card font family should respond to shortcuts
 
   @pending
-  Scenario: Shorty works through an episode with keyboard and tabs
-    Given Shorty is reading an episode card
-    When Shorty opens episode details with the keyboard
-    And Shorty switches between content and transcript
-    Then Shorty should stay in an accessible dialog
-    And focus should return to the episode action after closing
-
-  @pending
   Scenario: Shorty toggles show-read from the timeline with a shortcut
     Given Shorty has reader articles
     And Shorty's first reader article is already read

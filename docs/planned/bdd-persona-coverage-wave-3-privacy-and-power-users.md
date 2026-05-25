@@ -28,9 +28,10 @@ power-reader adjustments that are still intentionally `@pending`.
 
 1. Priya's remaining scenarios cover passive open without unwanted engagement
    and useful explanation of personalization signals after opt-in.
-2. Shorty's remaining `@pending` scenarios cover episode dialog keyboard/tab
-   behavior and timeline `r` (show-read). Mid-session font shortcuts are already
-   green in Shorty's article/episode shortcut scenarios.
+2. Robin's remaining scenarios cover episode dialog keyboard/tab behavior and
+   mid-session reading-control changes. Shorty's `@pending` covers timeline `r`
+   (show-read); mid-session font shortcuts are already green in Shorty's
+   article/episode shortcut scenarios.
 3. Sam's remaining scenarios cover source weighting and focused working sets
    once those product affordances are ready.
 4. Scenarios use named actors and shared Screenplay Tasks / Questions.
