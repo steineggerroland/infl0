@@ -28,10 +28,12 @@ export const ScoringBackExplainsOptionalTracking = {
 
 export const ScoringFullTextLinksControls = {
   async answeredBy(actor) {
+    const dialog = BrowseTheWeb.as(actor).locator('dialog[open]').first()
+    await expect(dialog).toBeVisible()
     const fullText = onboarding(actor).fullText('scoring')
-    await expect(fullText.locator('a[href="/settings#settings-sorting-heading"]').first()).toBeVisible()
-    await expect(fullText.locator('a[href="/settings#settings-tracking-heading"]').first()).toBeVisible()
-    await expect(fullText.locator('a[href="/settings/personalization"]').first()).toBeVisible()
+    await expect(dialog.locator('a[href="/settings#settings-sorting-heading"]').first()).toBeVisible()
+    await expect(dialog.locator('a[href="/settings#settings-tracking-heading"]').first()).toBeVisible()
+    await expect(dialog.locator('a[href="/settings/personalization"]').first()).toBeVisible()
     const content = (await fullText.textContent()) ?? ''
     expect(content).toMatch(/(recalculated|save)/iu)
   },
