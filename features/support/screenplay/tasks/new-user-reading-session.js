@@ -1,15 +1,11 @@
-import { expect } from '@playwright/test'
 import { randomBytes } from 'node:crypto'
-import {
-  openRegistrationPage,
-  registerFreshAccountViaUi,
-} from '../../auth-ui.js'
 import { crawlerIngest } from '../../crawler-fixtures.js'
 import { OnboardingJourney } from '../../onboarding-journey.js'
 import { ReaderTimeline } from '../../reader-timeline.js'
 import { SourcesPage } from '../../sources-page.js'
 import { UserMenu } from '../../user-menu.js'
 import { BrowseTheWeb } from '../abilities/browse-the-web.js'
+export { RegisterForInfl0, StartAsSignedOutVisitor } from './access.js'
 
 function uniqueSuffix() {
   return `${Date.now().toString(36)}-${randomBytes(4).toString('hex')}`
@@ -17,25 +13,6 @@ function uniqueSuffix() {
 
 function actorSlug(actor) {
   return actor.name.toLowerCase().replace(/[^a-z0-9]+/gu, '-').replace(/^-|-$/gu, '') || 'reader'
-}
-
-export const StartAsSignedOutVisitor = {
-  async performAs(actor) {
-    await BrowseTheWeb.withFreshSession(actor)
-  },
-}
-
-export const RegisterForInfl0 = {
-  async performAs(actor) {
-    const page = BrowseTheWeb.as(actor)
-    await openRegistrationPage(page)
-    await registerFreshAccountViaUi(page, {
-      emailPrefix: `bdd-${actor.name.toLowerCase()}`,
-      displayName: actor.name,
-      world: actor.world,
-    })
-    await expect(page).toHaveURL(/\/(\?|$)/u)
-  },
 }
 
 export const LearnOnboardingBasics = {

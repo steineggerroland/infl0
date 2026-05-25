@@ -49,7 +49,6 @@ Covered in BDD today:
   navigation restores the reader without reader start (Help via floating menu);
   resume hidden when the
   stored anchor is read while “hide read articles” applies.
-- **`auth_registration_login.feature`** — register, sign-in, sign-out journeys.
 - **`settings_hub_navigation.feature`** — `/settings` deep links and a hub sidebar
   jump (wide viewport); not yet the narrow **Sections** drawer control.
 - **`settings_tracking_and_personalization.feature`** — `#tracking` affordance and
@@ -77,6 +76,9 @@ Covered in BDD today:
   onboarding return context, finishing onboarding from a later card, first
   source, crawler content delivery, deliberate reader start, and return-context
   recovery.
+- **`persona_active_reader_expectations.feature`** — Screenplay-style active
+  returning reader access checks for sign-in and sign-out; deeper return-context,
+  episode, and reading-control expectations remain captured as `@pending`.
 
 Still sensible follow-ups:
 
