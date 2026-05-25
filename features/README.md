@@ -36,6 +36,9 @@ This folder contains executable user-facing behavior specifications using Cucumb
 - When behavior is already covered by BDD, avoid duplicating the same feature logic in E2E specs.
 - Persona journeys may use the Screenplay support layer in `features/support/screenplay`: feature files name an actor, steps delegate to Tasks, and Questions hold user-facing assertions. Keep concrete selectors in the existing screen/page objects.
 - Tag planned but intentionally unfinished persona scenarios with `@pending`; default BDD commands exclude that tag.
+- `@pending @persona` feature files capture planned persona expectations. Treat
+  them as the red roadmap: remove `@pending` only when the behavior is ready to
+  be implemented and verified.
 
 ## Test gaps
 
@@ -84,6 +87,9 @@ Still sensible follow-ups:
 - **Personalization depth:** expand a timeline row, assert rank strip (optional).
 - **Help FAQ** expand/collapse regression (optional; component tests already exist).
 - **Persona waves:** privacy-sensitive reader and power reader journeys.
+- **Pending persona expectations:** privacy-sensitive reader, active returning
+  reader, sensory customizer, curious explorer, timeline curator, operator, and
+  integrator scenarios are captured as `@pending @persona` feature files.
 
 ## Run commands
 

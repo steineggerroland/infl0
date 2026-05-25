@@ -75,6 +75,26 @@ discover -> read -> understand -> mark -> find again -> connect
 Almost every good idea for infl0 should make at least one of these steps
 stronger, clearer, or calmer.
 
+## Persona lens
+
+Concrete behavior work is now planned through personas and executable BDD
+expectations. The current map lives in
+[`planned/persona-expectation-map-v1.md`](./planned/persona-expectation-map-v1.md)
+and uses `@pending` feature files to hold planned, not-yet-implemented
+scenarios.
+
+The first persona set is:
+
+- **Nora:** reaches the first useful article quickly.
+- **Priya:** understands and controls privacy / tracking.
+- **Robin:** returns to active reading and keeps context.
+- **Mira:** tunes colors, typography, and stimulation level before reading.
+- **Eli:** explores onboarding, help, navigation, and install affordances.
+- **Sam:** curates feeds, podcasts, source health, weighting, and future
+  filtering/favorites.
+- **Oli:** operates an infl0 instance and triages source/crawler health.
+- **Ingo:** integrates TopicKnowledgeCrawler and debugs ingest delivery.
+
 ---
 
 ## Strategic product areas
@@ -159,6 +179,9 @@ later.
 - **Trust profile per signal type:**
   users see whether something comes from reading, source, topic, explicit
   mark, or AI summary.
+- **Integrator observability:**
+  operator-protected view of recent crawler ingest requests, accepted item
+  counts, rejected requests, and bounded request previews for debugging.
 
 ### D. Sources, media, extensions
 
