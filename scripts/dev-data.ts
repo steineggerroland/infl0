@@ -3,7 +3,7 @@
  *
  * Requires DATABASE_URL and a migrated schema (`npm run db:migrate` or db push).
  *
- * Browser login (dev@localhost):
+ * Browser login (username `dev`, password `dev` by default):
  *   If `DEV_SRP_SALT_HEX` / `DEV_SRP_VERIFIER_HEX` are set (e.g. from `.env.e2e`),
  *   the password is whatever you generated for that pair.
  *   Otherwise the built-in pair below is used with password **dev** (local default).
@@ -19,10 +19,10 @@ import { createScriptPrismaClient } from '../prisma/prisma-client'
 
 const prisma = createScriptPrismaClient()
 
-const DEV_EMAIL = 'dev@localhost'
-const DEV_NAME = 'Dev User'
+const DEV_USERNAME = (process.env.DEV_SEED_USERNAME ?? 'dev').toLowerCase()
+const DEV_NAME = process.env.DEV_SEED_NAME ?? 'Dev User'
 
-/** Default SRP for dev@localhost / password `dev` (no env): tssrp6a createVerifierAndSalt. */
+/** Default SRP for `dev` / password `dev` (no env): tssrp6a createVerifierAndSalt. */
 const DEFAULT_DEV_SRP_SALT_HEX =
   '969225e771337ef56f3e9b0f8f2e6ca8be00f7eb96ff8ce37d5ee460ccb5a2461ee2ca6e959117284023ea879d3bce06bd4cbc4c3723fb85d9834af79d4ccf10500ec56281e23d1d1a4a3f4a76aaa3f3e663ef3c0cee9673df7622f1e25f9620e032b9534c763f5d34aaf1574b10a0f8abf963ba32c65e421cfc5344340b2952'
 const DEFAULT_DEV_SRP_VERIFIER_HEX =
@@ -111,9 +111,9 @@ async function main() {
   const srpVerifier = devSrpVerifierFromEnv()
 
   const user = await prisma.user.upsert({
-    where: { email: DEV_EMAIL },
+    where: { username: DEV_USERNAME },
     create: {
-      email: DEV_EMAIL,
+      username: DEV_USERNAME,
       name: DEV_NAME,
       srpSalt,
       srpVerifier,
@@ -197,7 +197,7 @@ async function main() {
     process.env.DEV_SRP_SALT_HEX?.trim() && process.env.DEV_SRP_VERIFIER_HEX?.trim(),
   )
   console.info(
-    `  ${DEV_EMAIL} — SRP: ${usingEnvSrp ? 'from DEV_SRP_* (match your password, e.g. E2E_LOGIN_PASSWORD)' : 'built-in / password: dev'}`,
+    `  ${DEV_USERNAME} — SRP: ${usingEnvSrp ? 'from DEV_SRP_* (match your password, e.g. E2E_LOGIN_PASSWORD)' : 'built-in / password: dev'}`,
   )
   console.info(`  Feeds: ${FEED_SPECS.length}, articles: ${ARTICLE_SPECS.length}`)
 }

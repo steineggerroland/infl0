@@ -18,21 +18,20 @@ The board reuses the same source-health vocabulary as the user-facing
 
 ## Access model (Phase 1: env allowlist)
 
-Operator access is gated by **`NUXT_OPERATOR_EMAILS`**: a comma-separated
-list of emails. A request reaches `/operator/sources` or
-`GET /api/operator/source-statuses` only when the signed-in user's email —
+Operator access is gated by **`NUXT_OPERATOR_USERNAMES`**: a comma-separated
+list of usernames. A request reaches `/operator/sources` or
+`GET /api/operator/source-statuses` only when the signed-in user's username —
 after `trim().toLowerCase()` — appears in the list.
 
 ```bash
 # .env / deployment env
-NUXT_OPERATOR_EMAILS=ops@example.com, alice@example.org
+NUXT_OPERATOR_USERNAMES=ops, alice
 ```
 
 What this means concretely:
 
 - **Identity coupling is by string, not by foreign key.** Renaming a user's
-  email (when that ever becomes a feature) silently revokes their operator
-  access until the env var is updated.
+  username silently revokes their operator access until the env var is updated.
 - **No runtime management.** Adding or removing an operator requires a
   deploy / restart. There is no in-app UI to promote users.
 - **Empty or typo-only allowlist ⇒ 403 for everyone.** Operator access is
@@ -40,8 +39,8 @@ What this means concretely:
 - **Logged at boot.** The server prints one line at startup:
 
   ```text
-  [operator-access] 2 operator emails configured
-  [operator-access] ignoring 1 invalid operator email in NUXT_OPERATOR_EMAILS (missing `@…`): broken
+  [operator-access] 2 operator usernames configured
+  [operator-access] ignoring 1 invalid operator username in NUXT_OPERATOR_USERNAMES: @@bad
   ```
 
   Watch for those warnings the first time you deploy.
@@ -53,13 +52,13 @@ boundary. The follow-up plan (DB role / `User.isOperator`) is captured in
 ### Demo / preview deployments
 
 The Vercel deploy workflow seeds both demo accounts and sets
-`NUXT_OPERATOR_EMAILS=operator@localhost` on the deployed app so PR
+`NUXT_OPERATOR_USERNAMES=operator` on the deployed app so PR
 reviewers and curious visitors can log in immediately:
 
-| Email | Password | Role |
-|-------|----------|------|
-| `dev@localhost` | `dev` | regular user |
-| `operator@localhost` | `dev` | operator (`/operator/sources` reachable) |
+| Username | Password | Role |
+|----------|----------|------|
+| `dev` | `dev` | regular user |
+| `operator` | `dev` | operator (`/operator/sources` reachable) |
 
 How the demo credentials are seeded:
 
@@ -67,13 +66,13 @@ How the demo credentials are seeded:
   with the committed `.env.e2e` SRP pairs. Both pairs match password
   `dev`.
 - `npx dotenv -e .env.e2e -- npm run devData` adds the article /
-  timeline fixtures for `dev@localhost`.
+  timeline fixtures for `dev`.
 
 For a non-demo production instance, set the GitHub Actions secret
-`NUXT_OPERATOR_EMAILS` to real operator emails (the workflow uses
-`secrets.NUXT_OPERATOR_EMAILS || 'operator@localhost'`) and rotate the
+`NUXT_OPERATOR_USERNAMES` to real operator usernames (the workflow uses
+`secrets.NUXT_OPERATOR_USERNAMES || 'operator'`) and rotate the
 operator seed password by regenerating `OPERATOR_SRP_*` in `.env.e2e`
-via `SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp-env.ts operator@localhost`.
+via `SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp-env.ts operator`.
 
 ## Reading the board
 
@@ -111,8 +110,8 @@ Filters narrow the table to **Attention only**, **Failing / degraded**,
 
 | Symptom | Likely cause | Fix |
 |---------|--------------|-----|
-| Logged-in user gets `403` on `/operator/sources` | Email not in `NUXT_OPERATOR_EMAILS`, or only invalid entries (no `@…`) | Update the env var, restart; check boot log |
-| Boot log says `NUXT_OPERATOR_EMAILS is empty` | Env var unset in this environment | Set it in the deployment env (Vercel / docker-compose / shell) and restart |
+| Logged-in user gets `403` on `/operator/sources` | Username not in `NUXT_OPERATOR_USERNAMES`, or only invalid entries | Update the env var, restart; check boot log |
+| Boot log says `NUXT_OPERATOR_USERNAMES is empty` | Env var unset in this environment | Set it in the deployment env (Vercel / docker-compose / shell) and restart |
 | Table is empty | No `source_statuses` rows yet for this instance | Wait for the crawler to post, or invoke `POST /api/crawler/source-status` manually |
 | Attention column shows `Attention` without a reason | Crawler sent `operatorAttention: true` without `operatorAttentionReason` | Improve the crawler payload; the page falls back to `sourceHealthReason` |
 | Hints columns show `—` | Crawler did not attach `sourceHealthJson` / policy keys | Add `httpStatus`, `retryAfter`, `cacheControl` in the upsert payload |

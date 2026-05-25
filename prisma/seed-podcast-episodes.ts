@@ -7,10 +7,10 @@ import {
 
 const published = new Date('2026-05-10T08:00:00.000Z')
 
-export async function seedDevPodcastEpisodes(prisma: PrismaClient, devEmail: string): Promise<void> {
-  const user = await prisma.user.findUnique({ where: { email: devEmail } })
+export async function seedDevPodcastEpisodes(prisma: PrismaClient, devUsername: string): Promise<void> {
+  const user = await prisma.user.findUnique({ where: { username: devUsername } })
   if (!user) {
-    console.warn(`seed: skip podcast episodes — user ${devEmail} not found`)
+    console.warn(`seed: skip podcast episodes — user ${devUsername} not found`)
     return
   }
 
@@ -147,5 +147,5 @@ export async function seedDevPodcastEpisodes(prisma: PrismaClient, devEmail: str
     ],
   })
 
-  console.info('Seed OK: dev@localhost podcast episodes (rich + minimal) on Demo-Podcast feed')
+  console.info(`Seed OK: ${devUsername} podcast episodes (rich + minimal) on Demo-Podcast feed`)
 }

@@ -8,7 +8,8 @@ definePageMeta({
 
 const { t } = useI18n()
 
-const email = ref('')
+const username = ref('')
+const recoveryEmail = ref('')
 const name = ref('')
 const password = ref('')
 const inviteCode = ref('')
@@ -19,18 +20,20 @@ async function onSubmit() {
   errorMsg.value = ''
   pending.value = true
 
-  const emailNorm = email.value.trim().toLowerCase()
+  const usernameNorm = username.value.trim().toLowerCase()
+  const recoveryEmailNorm = recoveryEmail.value.trim().toLowerCase()
   const pwd = password.value
 
   try {
     const routines = new SRPRoutines(new SRPParameters())
-    const { s, v } = await createVerifierAndSalt(routines, emailNorm, pwd)
+    const { s, v } = await createVerifierAndSalt(routines, usernameNorm, pwd)
     password.value = ''
 
     await $fetch('/api/auth/srp/register', {
       method: 'POST',
       body: {
-        email: emailNorm,
+        username: usernameNorm,
+        recoveryEmail: recoveryEmailNorm || undefined,
         name: name.value.trim() || undefined,
         saltHex: s.toString(16),
         verifierHex: v.toString(16),
@@ -92,17 +95,32 @@ async function onSubmit() {
             >
           </div>
           <div class="space-y-1">
-            <label class="label w-full pb-0" for="register-email">
-              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('register.email') }}</span>
+            <label class="label w-full pb-0" for="register-username">
+              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('register.username') }}</span>
             </label>
             <input
-              id="register-email"
-              v-model="email"
-              type="email"
+              id="register-username"
+              v-model="username"
+              type="text"
               autocomplete="username"
               required
               class="input input-bordered infl0-field w-full"
             >
+          </div>
+          <div class="space-y-1">
+            <label class="label w-full pb-0" for="register-recovery-email">
+              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('register.recoveryEmailOptional') }}</span>
+            </label>
+            <input
+              id="register-recovery-email"
+              v-model="recoveryEmail"
+              type="email"
+              autocomplete="email"
+              class="input input-bordered infl0-field w-full"
+            >
+            <p class="infl0-panel-muted text-xs leading-snug">
+              {{ $t('register.recoveryEmailHint') }}
+            </p>
           </div>
           <div class="space-y-1">
             <label class="label w-full pb-0" for="register-name">

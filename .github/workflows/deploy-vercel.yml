@@ -34,9 +34,9 @@ jobs:
       NUXT_REGISTRATION_INVITE_CODE: ${{ secrets.NUXT_REGISTRATION_INVITE_CODE }}
       # Operator allowlist for /operator/sources. Defaults to the seeded
       # demo operator so PR reviewers can poke around without setup. Set
-      # `NUXT_OPERATOR_EMAILS` as a repo secret to override for a real
+      # `NUXT_OPERATOR_USERNAMES` as a repo secret to override for a real
       # (non-demo) production instance.
-      NUXT_OPERATOR_EMAILS: ${{ secrets.NUXT_OPERATOR_EMAILS || 'operator@localhost' }}
+      NUXT_OPERATOR_USERNAMES: ${{ secrets.NUXT_OPERATOR_USERNAMES || 'operator' }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -103,11 +103,11 @@ jobs:
         # `.env.e2e` is committed and carries SRP salt/verifier pairs for
         # the seeded demo accounts plus their plaintext passwords
         # (see header of `.env.e2e`). Sourcing it here gives the deploy:
-        #   - `dev@localhost` / `dev`                  (regular user)
-        #   - `operator@localhost` / `dev`             (operator role)
+        #   - `dev` / `dev`                            (regular user)
+        #   - `operator` / `dev`                       (operator role)
         # `prisma db seed` (`prisma/seed.ts`) upserts both users and the
-        # `dev@localhost` source-status matrix; `npm run devData` then
-        # adds demo articles / timeline rows for `dev@localhost`.
+        # `dev` source-status matrix; `npm run devData` then adds demo
+        # articles / timeline rows for `dev`.
         run: |
           npx dotenv -e .env.e2e -- npx prisma db seed
           npx dotenv -e .env.e2e -- npm run devData
@@ -130,7 +130,7 @@ jobs:
             --env "AUTH_JWT_SECRET=$AUTH_JWT_SECRET"
             --env "NUXT_REGISTRATION_INVITE_CODE=$NUXT_REGISTRATION_INVITE_CODE"
             --env "NUXT_CRAWLER_API_KEY=$NUXT_CRAWLER_API_KEY"
-            --env "NUXT_OPERATOR_EMAILS=$NUXT_OPERATOR_EMAILS"
+            --env "NUXT_OPERATOR_USERNAMES=$NUXT_OPERATOR_USERNAMES"
           )
 
           if [ "${{ github.event_name }}" != "pull_request" ]; then
@@ -156,8 +156,8 @@ jobs:
             ${url}
 
             Demo logins (seeded from \`.env.e2e\`):
-            - User: \`dev@localhost\` / \`dev\`
-            - Operator (can open \`/operator/sources\`): \`operator@localhost\` / \`dev\`
+            - User: \`dev\` / \`dev\`
+            - Operator (can open \`/operator/sources\`): \`operator\` / \`dev\`
 
             Database: isolated Neon preview branch \`${neonBranch}\``
 
@@ -239,7 +239,7 @@ jobs:
           PLAYWRIGHT_BASE_URL: ${{ needs.deploy.outputs.url }}
           NUXT_CRAWLER_API_KEY: ${{ secrets.NUXT_CRAWLER_API_KEY }}
           NUXT_REGISTRATION_INVITE_CODE: ${{ secrets.NUXT_REGISTRATION_INVITE_CODE }}
-          NUXT_OPERATOR_EMAILS: ${{ secrets.NUXT_OPERATOR_EMAILS || 'operator@localhost' }}
+          NUXT_OPERATOR_USERNAMES: ${{ secrets.NUXT_OPERATOR_USERNAMES || 'operator' }}
 
   remote-bdd-pr:
     name: Remote BDD (PR preview)
@@ -266,4 +266,4 @@ jobs:
           E2E_BASE_URL: ${{ needs.deploy.outputs.url }}
           NUXT_CRAWLER_API_KEY: ${{ secrets.NUXT_CRAWLER_API_KEY }}
           NUXT_REGISTRATION_INVITE_CODE: ${{ secrets.NUXT_REGISTRATION_INVITE_CODE }}
-          NUXT_OPERATOR_EMAILS: ${{ secrets.NUXT_OPERATOR_EMAILS || 'operator@localhost' }}
+          NUXT_OPERATOR_USERNAMES: ${{ secrets.NUXT_OPERATOR_USERNAMES || 'operator' }}

@@ -2,9 +2,8 @@
 
 ## Status
 
-In progress — most existing browser behavior has moved into persona-led
-Screenplay scenarios. Remaining scope is the article / episode content
-presentation feature.
+Done — existing browser behavior, including article / episode card presentation,
+now lives in persona-led Screenplay scenarios (Robin).
 
 ## Goal
 
@@ -38,8 +37,8 @@ and screen-object language instead of growing parallel step implementations.
    stays green.
 4. Done: migrated feature wording is named-actor based and avoids new
    `I`/`they` mixes.
-5. Remaining: `content_presentation.feature` still uses classic `I` wording and
-   should be migrated into Robin/content-card Screenplay coverage.
+5. Done: article / episode card presentation is covered in
+   `persona_active_reader_expectations.feature` via `active-reader-content.steps.js`.
 
 ## Implementation notes
 

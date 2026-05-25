@@ -61,15 +61,15 @@ Practical coverage targets:
 
 Use `features/README.md` for BDD authoring conventions and the current prioritized BDD gaps.
 
-### Playwright / E2E auth (`dev@localhost`)
+### Playwright / E2E auth (seed username `dev`)
 
-End-to-end tests use a **committed** `.env.e2e` with `DATABASE_URL`, `AUTH_JWT_SECRET`, SRP salt/verifier for `**dev@localhost`**, and `E2E_LOGIN_PASSWORD` (matches the verifier). The default local/E2E password is `dev`.
+End-to-end tests use a **committed** `.env.e2e` with `DATABASE_URL`, `AUTH_JWT_SECRET`, SRP salt/verifier for username **`dev`**, and `E2E_LOGIN_PASSWORD` (matches the verifier). The default local/E2E password is `dev`.
 
 1. Start Postgres (e.g. Docker Compose from `.env.example`) and ensure `DATABASE_URL` in `.env.e2e` matches.
-2. Apply schema and seed: `npx prisma migrate deploy` (or `db:push` in dev), then `**npx prisma db seed**` when you need seed data. For E2E, merge `**.env.e2e**` so `**DEV_SRP_***` are present (e.g. `**dotenv -e .env -e .env.e2e -- npx prisma db seed**` — `.env` wins on conflicts, `.env.e2e` fills missing keys). Plain `**npx prisma db seed**` only loads `**.env**`, so you miss `**DEV_***` unless they are copied into `**.env**`. Prisma 7 does not auto-run seed after migrate; seed is always explicit. `**db:seed**` also inserts eight placeholder feeds for `**dev@localhost**` (one per TopicKnowledgeCrawler `sourceHealthStatus`, URLs under `example.com/seed/source-status/…`) and matching `**source_statuses**` snapshots so `/feeds` shows every health variant locally (`utils/source-status-seed-urls.ts`).
+2. Apply schema and seed: `npx prisma migrate deploy` (or `db:push` in dev), then `**npx prisma db seed**` when you need seed data. For E2E, merge `**.env.e2e**` so `**DEV_SRP_***` are present (e.g. `**dotenv -e .env -e .env.e2e -- npx prisma db seed**` — `.env` wins on conflicts, `.env.e2e` fills missing keys). Plain `**npx prisma db seed**` only loads `**.env**`, so you miss `**DEV_***` unless they are copied into `**.env**`. Prisma 7 does not auto-run seed after migrate; seed is always explicit. `**db:seed**` also inserts eight placeholder feeds for **`dev`** (one per TopicKnowledgeCrawler `sourceHealthStatus`, URLs under `example.com/seed/source-status/…`) and matching `**source_statuses**` snapshots so `/feeds` shows every health variant locally (`utils/source-status-seed-urls.ts`).
 3. Run `**npm run test:e2e**`. `dotenv-cli` injects env for `nuxt build`, the Nitro server, and Playwright (same merge as `**tests/e2e/load-e2e-env.ts**`). The Playwright project `**fresh-setup**` runs `**tests/e2e/fresh-auth.setup.ts**`, registers a new account via SRP, and writes `**tests/e2e/.auth/fresh-user.json**` (gitignored) for the regular `**chromium-authed**` project. The `**setup**` project still writes `**tests/e2e/.auth/dev.json**` for remote smoke / demo-user checks, and `**operator-setup**` writes the seeded operator state. The `**chromium**` project (public a11y smokes) does not need auth, so `**playwright test --project chromium**` does not need seeded users. Full `**test:e2e**`, including authed and operator projects, needs `**DATABASE_URL**`, a reachable DB, merge-seeded demo/operator accounts, and a matching invite code for fresh-account setup. For a non-empty **timeline** in manual tests, run `**npm run devData`** before or alongside E2E; the README's [local try-out path](../README.md#try-it-locally) shows the short setup sequence, and onboarding fixture background is documented in `[docs/archive/26-04-30-onboarding-welcome-timeline.md](./archive/26-04-30-onboarding-welcome-timeline.md)`.
 
-To rotate the dev password: `SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp-env.ts dev@localhost` (prints `DEV_SRP_*`), update `.env.e2e` and `E2E_LOGIN_PASSWORD`, then re-seed. For the seeded operator account, run the same command with `operator@localhost` to print `OPERATOR_SRP_*`.
+To rotate the dev password: `SRP_GEN_PASSWORD='…' npx tsx scripts/generate-srp-env.ts dev` (prints `DEV_SRP_*`), update `.env.e2e` and `E2E_LOGIN_PASSWORD`, then re-seed. For the seeded operator account, run the same command with `operator` to print `OPERATOR_SRP_*`.
 
 **E2E troubleshooting:** If `**auth.setup.ts`** fails with **Prisma “credentials … are not valid”**, Nitro’s `**DATABASE_URL`** (from `**.env**` if set there — it wins over `**.env.e2e**`) does not match your running Postgres. Align `**.env**` (or remove `DATABASE_URL` there so `**.env.e2e**` applies), then `**npx prisma migrate deploy**` and merge-seed as in step 2.
 
@@ -149,15 +149,15 @@ normalized `crawlKey` into `**source_statuses**` (latest snapshot). Prefer **cam
 
 - The protected `/operator/sources` view and its API
   (`GET /api/operator/source-statuses`) are gated by the
-  `NUXT_OPERATOR_EMAILS` allowlist (Phase 1: env-based, see
+  `NUXT_OPERATOR_USERNAMES` allowlist (Phase 1: env-based, see
   [`OPERATOR.md`](./OPERATOR.md)).
 - Server boot prints one line summarising the parsed allowlist
-  (`[operator-access] N operator email(s) configured`, plus a warning
+  (`[operator-access] N operator username(s) configured`, plus a warning
   per invalid entry). When the line is missing or warns, fix the env
   before running operator-scoped tests.
 - Playwright project **`chromium-operator`** (`playwright.config.ts`)
   uses a dedicated SRP login via `tests/e2e/operator-auth.setup.ts` and
-  the seeded `operator@localhost` account from `.env.e2e`
+  the seeded `operator` account from `.env.e2e`
   (`OPERATOR_*` vars); the spec `tests/e2e/authed/operator-sources.spec.ts`
   is excluded from `chromium-authed` so the two roles never share
   storage state.

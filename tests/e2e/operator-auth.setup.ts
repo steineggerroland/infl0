@@ -6,10 +6,10 @@ import { loadE2eMergedEnv } from './load-e2e-env'
 
 const authFile = resolve(process.cwd(), 'tests/e2e/.auth/operator.json')
 
-setup('SRP login operator@localhost → storage state', async ({ request }) => {
+setup('SRP login operator → storage state', async ({ request }) => {
   loadE2eMergedEnv()
 
-  const email = (process.env.OPERATOR_LOGIN_EMAIL ?? 'operator@localhost').trim().toLowerCase()
+  const username = (process.env.OPERATOR_LOGIN_USERNAME ?? 'operator').trim().toLowerCase()
   const password = process.env.OPERATOR_LOGIN_PASSWORD
   if (!password) {
     throw new Error(
@@ -21,13 +21,13 @@ setup('SRP login operator@localhost → storage state', async ({ request }) => {
   mkdirSync(outDir, { recursive: true })
 
   const challengeRes = await request.post('/api/auth/srp/challenge', {
-    data: { email },
+    data: { username },
   })
   if (!challengeRes.ok()) {
     const body = await challengeRes.text()
     throw new Error(
       `SRP challenge failed (${challengeRes.status()}): ${body}. ` +
-        `Seed the operator user (OPERATOR_SEED_EMAIL / OPERATOR_SRP_*) via prisma db seed.`,
+        `Seed the operator user (OPERATOR_SEED_USERNAME / OPERATOR_SRP_*) via prisma db seed.`,
     )
   }
   const challenge = (await challengeRes.json()) as {
@@ -38,7 +38,7 @@ setup('SRP login operator@localhost → storage state', async ({ request }) => {
 
   const routines = new SRPRoutines(new SRPParameters())
   const client = new SRPClientSession(routines)
-  const clientStep1 = await client.step1(email, password)
+  const clientStep1 = await client.step1(username, password)
   const salt = BigInt(`0x${challenge.saltHex}`)
   const B = BigInt(`0x${challenge.BHex}`)
   const clientStep2 = await clientStep1.step2(salt, B)

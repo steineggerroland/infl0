@@ -24,32 +24,42 @@ export async function openRegistrationPage(page) {
 /**
  * @param {import('@playwright/test').Page} page
  * @param {{
- *   emailPrefix?: string
+ *   usernamePrefix?: string
  *   displayName?: string
- *   world?: { registeredEmail?: string, registeredPassword?: string }
+ *   recoveryEmail?: string
+ *   world?: {
+ *     registeredUsername?: string
+ *     registeredPassword?: string
+ *     registeredRecoveryEmail?: string
+ *   }
  * }} [options]
  */
 export async function registerFreshAccountViaUi(page, options = {}) {
   const inviteCode = requireRegistrationInviteCode()
   const unique = `${Date.now().toString(36)}-${randomBytes(4).toString('hex')}`
-  const prefix = options.emailPrefix ?? 'bdd-register'
-  const email = `${prefix}-${unique}@neurospicy.icu`
+  const prefix = options.usernamePrefix ?? options.emailPrefix ?? 'bdd-register'
+  const username = `${prefix}-${unique}`.toLowerCase().replace(/[^a-z0-9._-]+/gu, '-').replace(/^-|-$/gu, '')
   const password = randomBytes(16).toString('hex')
   const name = options.displayName ?? 'BDD Register User'
+  const recoveryEmail =
+    options.recoveryEmail ?? `${prefix}-recovery-${unique}@neurospicy.icu`
 
   if (options.world) {
-    options.world.registeredEmail = email
+    options.world.registeredUsername = username
     options.world.registeredPassword = password
+    options.world.registeredRecoveryEmail = recoveryEmail
+    options.world.registeredEmail = recoveryEmail
   }
 
   await page.getByLabel('Invite code').fill(inviteCode)
-  await page.getByLabel('Email').fill(email)
-  await page.getByLabel('Name (optional)').fill(name)
+  await page.getByLabel('Username').fill(username)
+  await page.getByLabel('Recovery email (optional)').fill(recoveryEmail)
+  await page.getByLabel('Display name (optional)').fill(name)
   await page.locator('input[autocomplete="new-password"]').fill(password)
   await Promise.all([
     page.waitForURL(/\/(\?|$)/u, { timeout: 60_000 }),
     page.getByRole('button', { name: 'Register' }).click(),
   ])
 
-  return { email, password }
+  return { username, password, recoveryEmail }
 }

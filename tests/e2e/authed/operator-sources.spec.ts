@@ -46,9 +46,9 @@ test.describe('operator sources page (signed in)', () => {
   test('shows summary for operator fixtures', async ({ page }) => {
     test.setTimeout(60_000)
     const crawlerKeyRaw = process.env.NUXT_CRAWLER_API_KEY?.trim()
-    const operatorEmailsRaw = process.env.NUXT_OPERATOR_EMAILS?.trim()
+    const operatorUsernamesRaw = process.env.NUXT_OPERATOR_USERNAMES?.trim()
     test.skip(!crawlerKeyRaw, 'NUXT_CRAWLER_API_KEY not set')
-    test.skip(!operatorEmailsRaw, 'NUXT_OPERATOR_EMAILS not set')
+    test.skip(!operatorUsernamesRaw, 'NUXT_OPERATOR_USERNAMES not set')
     const crawlerKey = crawlerKeyRaw as string
 
     await page.goto('/operator/sources')

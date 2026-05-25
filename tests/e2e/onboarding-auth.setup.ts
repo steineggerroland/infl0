@@ -47,16 +47,18 @@ setup('SRP register fresh onboarding account → storage state', async ({ reques
 
   const workerIndex = testInfo.workerIndex
   const unique = `${Date.now().toString(36)}-${randomBytes(4).toString('hex')}`
-  const email = `regression-test-${unique}-w${workerIndex}@neurospicy.icu`
+  const username = `regression-test-${unique}-w${workerIndex}`.toLowerCase()
+  const recoveryEmail = `regression-test-${unique}-w${workerIndex}@neurospicy.icu`
   const password = randomBytes(16).toString('hex')
   const name = `Regression Test ${workerIndex}`
 
   const routines = new SRPRoutines(new SRPParameters())
-  const { s, v } = await createVerifierAndSalt(routines, email, password)
+  const { s, v } = await createVerifierAndSalt(routines, username, password)
 
   const registerRes = await request.post('/api/auth/srp/register', {
     data: {
-      email,
+      username,
+      recoveryEmail,
       name,
       saltHex: s.toString(16),
       verifierHex: v.toString(16),

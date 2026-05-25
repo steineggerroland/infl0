@@ -16,16 +16,18 @@ setup('SRP register fresh E2E account → storage state', async ({ request }) =>
   }
 
   const unique = `${Date.now().toString(36)}-${randomBytes(4).toString('hex')}`
-  const email = `e2e-authed-${unique}@neurospicy.icu`
+  const username = `e2e-authed-${unique}`.toLowerCase()
+  const recoveryEmail = `e2e-authed-${unique}@neurospicy.icu`
   const password = randomBytes(16).toString('hex')
   const name = 'E2E Authed User'
 
   const routines = new SRPRoutines(new SRPParameters())
-  const { s, v } = await createVerifierAndSalt(routines, email, password)
+  const { s, v } = await createVerifierAndSalt(routines, username, password)
 
   const registerRes = await request.post('/api/auth/srp/register', {
     data: {
-      email,
+      username,
+      recoveryEmail,
       name,
       saltHex: s.toString(16),
       verifierHex: v.toString(16),

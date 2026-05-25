@@ -45,14 +45,16 @@ describe('/api/auth/me', () => {
     vi.mocked(getSessionUserId).mockResolvedValue('u1')
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
       id: 'u1',
-      email: 'u@example.com',
+      username: 'robin',
+      email: 'robin@example.com',
       name: 'U',
     } as never)
 
     await expect(handler({} as never)).resolves.toEqual({
       user: {
         id: 'u1',
-        email: 'u@example.com',
+        username: 'robin',
+        email: 'robin@example.com',
         name: 'U',
       },
     })

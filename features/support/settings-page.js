@@ -7,6 +7,12 @@ export class SettingsPage {
     this.page = page
   }
 
+  async openAccount() {
+    await this.page.goto('/settings#account')
+    await waitForNuxtAppReady(this.page)
+    await expect(this.page.getByTestId('account-sign-in-name')).toBeVisible({ timeout: 20_000 })
+  }
+
   async hideOnboardingCards() {
     await this.page.goto('/settings#onboarding')
     await waitForNuxtAppReady(this.page)

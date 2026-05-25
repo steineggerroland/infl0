@@ -42,11 +42,6 @@ This folder contains executable user-facing behavior specifications using Cucumb
 
 Covered in BDD today:
 
-- **`content_presentation.feature`** — new user registers via shared auth steps;
-  articles/episodes ingested per scenario (`Given I have an article/episode with …`);
-  rich vs minimal card front/back, episode actions, collapsible chapters/shownotes,
-  content/transcript tabs, and browser-level card shortcuts; negative checks for
-  absent optional fields.
 - **`add_infl0_to_home_screen.feature`** — install listing (name, EN/DE description,
   standalone app window, portrait/landscape), home-screen shortcuts to timeline /
   sources / settings, install icons, in-place updates.
@@ -56,10 +51,14 @@ Covered in BDD today:
   source, crawler content delivery, deliberate reader start, and return-context
   recovery.
 - **`persona_active_reader_expectations.feature`** — Screenplay-style active
-  returning reader checks for sign-in/sign-out, reader start, resume, URL calm,
-  read feedback, read shortcut, read without behaviour tracking, and returning
-  from Help without losing context; episode and deeper reading-control
-  expectations remain captured as `@pending`.
+  returning reader checks for sign-in/sign-out, account sign-in name visibility,
+  article/episode card presentation (without shortcut drills), reader start, resume,
+  URL calm, read feedback, read without behaviour tracking, and returning from
+  Help without losing context; episode dialog keyboard/tabs remain `@pending`.
+- **`persona_shorty_expectations.feature`** — Screenplay-style shortcut and card-
+  surface checks: rich episode metadata (chapters, shownotes, details tabs), help
+  reference (`/help#shortcuts-reference`), article and episode shortcuts,
+  read/unread via `m`; timeline `r` and mid-session tweaks are `@pending`.
 - **`persona_customizer_expectations.feature`** — Screenplay-style sensory
   customizer checks for saved display preferences, custom card-front colours,
   and onboarding readability shortcuts for font size and typeface; fuller
@@ -80,6 +79,10 @@ Covered in BDD today:
 - **`persona_operator_expectations.feature`** — Screenplay-style operator checks
   for source observability route protection, seeded operator access, summary
   visibility, attention-first row order, and blocked/quiet filtering.
+- **`persona_oblivia_expectations.feature`** — Screenplay-style forgetful-reader
+  checks for verified recovery email (settings OTP) and password recovery after
+  sign-out; requires SMTP and mailbox OTP helpers (`@pending`, see
+  `docs/planned/oblivia-recovery-email-verification.md`).
 
 Still sensible follow-ups:
 
@@ -89,14 +92,12 @@ Still sensible follow-ups:
 - **Tracking copy:** assert intro/label strings remain visible after toggling (optional).
 - **Personalization depth:** expand a timeline row, assert rank strip (optional).
 - **Help FAQ** expand/collapse regression (optional; component tests already exist).
-- **Content presentation migration:** move article / episode card presentation
-  into Robin's persona once the remaining content-card steps have Screenplay
-  Tasks / Questions.
 - **Integrator observability:** implement Ingo's pending dashboard scenarios
   once ingest request history is persisted and visible to operators.
 - **Pending persona expectations:** privacy-sensitive reader, active returning
-  reader, sensory customizer, curious explorer, timeline curator, and integrator
-  scenarios are captured as `@pending @persona` feature files.
+  reader, sensory customizer, curious explorer, timeline curator, integrator,
+  and Oblivia (recovery email verification / password reset) scenarios are
+  captured as `@pending @persona` feature files.
 
 ## Run commands
 

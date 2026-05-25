@@ -52,18 +52,18 @@ export const SignInAsSeededOperator = {
     if (!actor.world.browser) throw new Error('Browser not initialized.')
     await BrowseTheWeb.withFreshSession(actor)
 
-    const email = process.env.OPERATOR_LOGIN_EMAIL?.trim()
+    const username = (process.env.OPERATOR_LOGIN_USERNAME ?? 'operator').trim().toLowerCase()
     const password = process.env.OPERATOR_LOGIN_PASSWORD?.trim()
-    if (!email || !password) {
+    if (!username || !password) {
       throw new Error(
-        'OPERATOR_LOGIN_EMAIL and OPERATOR_LOGIN_PASSWORD are required for seeded operator login.',
+        'OPERATOR_LOGIN_USERNAME and OPERATOR_LOGIN_PASSWORD are required for seeded operator login.',
       )
     }
 
     const page = BrowseTheWeb.as(actor)
     await page.goto('/login')
     await waitForNuxtAppReady(page)
-    await page.getByLabel('Email').fill(email)
+    await page.getByLabel('Username').fill(username)
     await page.locator('input[autocomplete="current-password"]').fill(password)
     await Promise.all([
       page.waitForURL(/\/(\?|$)/u, { timeout: 60_000 }),

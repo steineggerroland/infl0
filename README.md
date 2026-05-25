@@ -19,10 +19,10 @@ direction.
 Open [`infl0.neurospicy.icu`](https://infl0.neurospicy.icu) and sign in with
 one of the two seeded demo accounts:
 
-| Email | Password | What you can see |
-|-------|----------|------------------|
-| `dev@localhost` | `dev` | regular user — timeline, sample feeds, settings |
-| `operator@localhost` | `operator` | also `/operator/sources` (technical source health board across the whole instance) |
+| Username | Password | What you can see |
+|----------|----------|------------------|
+| `dev` | `dev` | regular user — timeline, sample feeds, settings |
+| `operator` | `dev` | also `/operator/sources` (technical source health board across the whole instance) |
 
 This is a demo deployment. Data may be reset, and both accounts are shared
 by anyone using the public demo.
@@ -52,8 +52,7 @@ npm run devData
 npm run dev
 ```
 
-Open `http://localhost:3000` and sign in as `dev@localhost` with password
-`dev`.
+Open `http://localhost:3000` and sign in as `dev` with password `dev`.
 
 If you use `fish` (as this repo's maintainer does), run the wrapper
 `./scripts/with-nvm.sh` from a bash-compatible shell instead of invoking
