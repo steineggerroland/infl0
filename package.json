@@ -28,7 +28,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:bdd": "dotenv --quiet -e .env -e .env.e2e -- sh -c 'npm run build && npx start-server-and-test \"NITRO_HOST=127.0.0.1 NITRO_PORT=4275 node .output/server/index.mjs\" http://127.0.0.1:4275/help \"cucumber-js \\\"features/**/*.feature\\\" --import \\\"features/**/*.js\\\" --format pretty --parallel 1 --tags \\\"not @pending\\\"\"'",
-    "test:bdd:local": "dotenv --quiet -e .env -e .env.e2e -- cucumber-js \"features/**/*.feature\" --import \"features/**/*.js\" --format progress --parallel 1 --tags \"not @pending\"",
+    "test:bdd:local": "dotenv --quiet -e .env -e .env.e2e -- cucumber-js \"features/**/*.feature\" --import \"features/**/*.js\" --format pretty --parallel 1 --tags \"not @pending\"",
     "test:bdd:remote": "dotenv --quiet -e .env.e2e -- cucumber-js \"features/**/*.feature\" --import \"features/**/*.js\" --format progress --parallel 1 --tags \"not @pending\"",
     "test:e2e": "dotenv --quiet -e .env -e .env.e2e -- sh -c 'npm run build && npx start-server-and-test \"NITRO_HOST=127.0.0.1 NITRO_PORT=4275 node .output/server/index.mjs\" http://127.0.0.1:4275/help \"playwright test\"'",
     "test:e2e:remote": "dotenv --quiet -e .env.e2e -- playwright test",

@@ -1,4 +1,4 @@
-# Package: BDD persona coverage wave 3 — Privacy and Power User personas
+# Package: BDD persona coverage wave 3 — remaining privacy and power workflows
 
 ## Status
 
@@ -6,8 +6,9 @@ Draft
 
 ## Goal
 
-Add persona-led BDD coverage for privacy-sensitive and power-reader workflows,
-building on the Screenplay Tasks and Questions extracted in wave 2.
+Fill the remaining persona-led BDD gaps after the existing suite migration:
+deeper privacy confidence, richer active-reader / episode workflows, and
+power-reader adjustments that are still intentionally `@pending`.
 
 ## Non-goals
 
@@ -18,22 +19,23 @@ building on the Screenplay Tasks and Questions extracted in wave 2.
 ## Dependencies
 
 - Wave 1 New User / Screenplay foundation.
-- Wave 2 migration of shared flows into reusable Screenplay Tasks and
-  Questions.
+- Wave 2 migration of shared flows into reusable Screenplay Tasks and Questions
+  for existing behavior.
 - Stable privacy, tracking, personalization, source-management, and shortcut
   UI behavior.
 
 ## Acceptance criteria
 
-1. Privacy-sensitive persona has 2-4 meaningful scenarios covering tracking
-   choices, personalization visibility, and confidence that passive reading
-   does not create unwanted engagement.
-2. Power-reader persona has 2-4 meaningful scenarios covering source
-   management, read filtering, keyboard-heavy reading, and return context.
-3. Scenarios use named actors and shared Screenplay Tasks / Questions.
-4. Product gaps discovered during scenario authoring are either implemented or
+1. Priya's remaining scenarios cover passive open without unwanted engagement
+   and useful explanation of personalization signals after opt-in.
+2. Robin's remaining scenarios cover episode dialog keyboard/tab behavior and
+   mid-session reading-control changes.
+3. Sam's remaining scenarios cover source weighting and focused working sets
+   once those product affordances are ready.
+4. Scenarios use named actors and shared Screenplay Tasks / Questions.
+5. Product gaps discovered during scenario authoring are either implemented or
    represented as `@pending` with a one-line rationale.
-5. `npm run test:bdd` stays green for all non-pending scenarios.
+6. `npm run test:bdd` stays green for all non-pending scenarios.
 
 ## Implementation notes
 
