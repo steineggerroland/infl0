@@ -1,4 +1,4 @@
-import { Given, Then } from '@cucumber/cucumber'
+import { Given, Then, When } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
 import { ReaderTimeline } from '../support/reader-timeline.js'
 
@@ -8,6 +8,10 @@ Given('I am signed in with a fresh onboarding account', async function () {
 
 Given('I open the timeline', async function () {
   await new ReaderTimeline(this.page).open()
+})
+
+When('I start reading', async function () {
+  await new ReaderTimeline(this.page).startReading()
 })
 
 Given('I start as a signed-out visitor', async function () {

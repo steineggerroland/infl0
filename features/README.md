@@ -7,7 +7,6 @@ This folder contains executable user-facing behavior specifications using Cucumb
 - Feature files in `features/**/*.feature` are the primary source of truth for user journey behavior.
 - Shared, cross-feature actions/assertions live in `features/steps/shared.steps.js`.
 - Domain-specific behavior stays separated:
-  - reader return-context behavior in `features/steps/reader.steps.js`
   - registration/login behavior in `features/steps/auth.steps.js`
   - settings hub / tracking / personalization in `features/steps/settings.steps.js`
   - article/episode card presentation in `features/steps/content-presentation.steps.js`
@@ -42,11 +41,6 @@ This folder contains executable user-facing behavior specifications using Cucumb
 
 Covered in BDD today:
 
-- **`reader_return_context.feature`** — reader start, resume, URLs, read feedback,
-  read without behaviour tracking, read shortcut; return from Help with home
-  navigation restores the reader without reader start (Help via floating menu);
-  resume hidden when the
-  stored anchor is read while “hide read articles” applies.
 - **`content_presentation.feature`** — new user registers via shared auth steps;
   articles/episodes ingested per scenario (`Given I have an article/episode with …`);
   rich vs minimal card front/back, episode actions, collapsible chapters/shownotes,
@@ -61,8 +55,10 @@ Covered in BDD today:
   source, crawler content delivery, deliberate reader start, and return-context
   recovery.
 - **`persona_active_reader_expectations.feature`** — Screenplay-style active
-  returning reader access checks for sign-in and sign-out; deeper return-context,
-  episode, and reading-control expectations remain captured as `@pending`.
+  returning reader checks for sign-in/sign-out, reader start, resume, URL calm,
+  read feedback, read shortcut, read without behaviour tracking, and returning
+  from Help without losing context; episode and deeper reading-control
+  expectations remain captured as `@pending`.
 - **`persona_customizer_expectations.feature`** — Screenplay-style sensory
   customizer checks for saved display preferences, custom card-front colours,
   and onboarding readability shortcuts for font size and typeface; fuller
