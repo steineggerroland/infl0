@@ -47,9 +47,6 @@ Covered in BDD today:
   navigation restores the reader without reader start (Help via floating menu);
   resume hidden when the
   stored anchor is read while “hide read articles” applies.
-- **`operator_sources.feature`** — operator route protection (`403` for non-allowlisted
-  user), operator access for seeded account, summary band visibility, attention-first
-  row order, and filter behavior (blocked/quiet).
 - **`content_presentation.feature`** — new user registers via shared auth steps;
   articles/episodes ingested per scenario (`Given I have an article/episode with …`);
   rich vs minimal card front/back, episode actions, collapsible chapters/shownotes,
@@ -83,6 +80,9 @@ Covered in BDD today:
   curator checks for adding/removing sources, no-snapshot health, pause/resume,
   and `@crawler` health/status explanations when `NUXT_CRAWLER_API_KEY` is
   available; weighting and focused working sets remain captured as `@pending`.
+- **`persona_operator_expectations.feature`** — Screenplay-style operator checks
+  for source observability route protection, seeded operator access, summary
+  visibility, attention-first row order, and blocked/quiet filtering.
 
 Still sensible follow-ups:
 
@@ -94,8 +94,8 @@ Still sensible follow-ups:
 - **Help FAQ** expand/collapse regression (optional; component tests already exist).
 - **Persona waves:** privacy-sensitive reader and power reader journeys.
 - **Pending persona expectations:** privacy-sensitive reader, active returning
-  reader, sensory customizer, curious explorer, timeline curator, operator, and
-  integrator scenarios are captured as `@pending @persona` feature files.
+  reader, sensory customizer, curious explorer, timeline curator, and integrator
+  scenarios are captured as `@pending @persona` feature files.
 
 ## Run commands
 

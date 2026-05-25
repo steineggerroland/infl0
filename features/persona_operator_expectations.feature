@@ -1,20 +1,27 @@
-@pending @persona @screenplay
+@persona @screenplay
 Feature: Operator observability expectations
   Oli wants to keep an infl0 instance healthy without reading through user
   timelines.
 
+  @crawler
   Scenario: Oli sees an attention-first source health overview
     Given Oli is an operator
-    And crawler source health has been reported
+    And crawler source health has been reported for Oli
     When Oli opens operator source observability
     Then Oli should see the health summary
-    And sources needing attention should be listed first
+    And sources needing attention should be listed first for Oli
+    And Oli should see operator source rows
 
+  @crawler
   Scenario: Oli filters source health to the operational problem at hand
     Given Oli is reviewing operator source observability
-    When Oli filters to blocked sources
+    When Oli opens operator source observability
+    And Oli filters operator sources to "Blocked"
     Then Oli should see blocked sources
     And Oli should not see healthy sources in that filtered view
+    When Oli filters operator sources to "Quiet"
+    Then Oli should see quiet sources
+    And Oli should not see blocked sources in that filtered view
 
   Scenario: Oli denies access to non-operators
     Given a regular reader tries to open operator observability
