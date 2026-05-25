@@ -40,6 +40,11 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2025-07-15',
   i18n: {
+    baseUrl: process.env.NUXT_PUBLIC_SITE_URL
+      || process.env.NUXT_SITE_URL
+      || process.env.PLAYWRIGHT_BASE_URL
+      || process.env.E2E_BASE_URL
+      || 'http://127.0.0.1:3000',
     vueI18n: './i18n.config.ts',
     locales: [
       { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },

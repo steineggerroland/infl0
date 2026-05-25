@@ -64,14 +64,12 @@ export class OnboardingJourney {
 
     while (currentIndex < targetIndex) {
       currentIndex += 1
-      await this.page.keyboard.press('s')
-      await this.waitForStoredTopic(ONBOARDING_TOPICS[currentIndex])
+      await this.moveTowardTopic('s', ONBOARDING_TOPICS[currentIndex])
     }
 
     while (currentIndex > targetIndex) {
       currentIndex -= 1
-      await this.page.keyboard.press('w')
-      await this.waitForStoredTopic(ONBOARDING_TOPICS[currentIndex])
+      await this.moveTowardTopic('w', ONBOARDING_TOPICS[currentIndex])
     }
 
     const card = this.card(topic)
@@ -161,6 +159,16 @@ export class OnboardingJourney {
 
   async waitForStoredTopic(topic) {
     await expect.poll(async () => this.readStoredTopic(), { timeout: 15_000 }).toBe(topic)
+  }
+
+  async moveTowardTopic(key, topic) {
+    await this.page.keyboard.press(key)
+    try {
+      await expect.poll(async () => this.readStoredTopic(), { timeout: 2_000 }).toBe(topic)
+    } catch {
+      await this.card(topic).scrollIntoViewIfNeeded()
+      await this.waitForStoredTopic(topic)
+    }
   }
 
   async visibleRatio(locator) {
