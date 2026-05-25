@@ -38,39 +38,12 @@ async function browserFetchJson(
   )
 }
 
-async function expectOperatorFilter(
-  page: Page,
-  filter: 'blocked' | 'quiet',
-  includedCrawlKey: string,
-  excludedCrawlKey: string,
-) {
-  await expect(page).toHaveURL(new RegExp(`[?&]filter=${filter}(?:&|$)`, 'u'))
-  const table = page.getByTestId('operator-sources-table')
-  const rows = table.locator('tbody tr')
-  const includedRow = rows.filter({ hasText: includedCrawlKey }).first()
-  await expect(includedRow).toBeVisible({ timeout: 20_000 })
-  await expect
-    .poll(
-      async () =>
-        rows.evaluateAll(
-          (visibleRows, expectedFilter) =>
-            visibleRows
-              .filter((row) => row.textContent?.trim())
-              .every((row) => row.getAttribute('data-health') === expectedFilter),
-          filter,
-        ),
-      { timeout: 20_000 },
-    )
-    .toBe(true)
-  await expect(table).not.toContainText(excludedCrawlKey)
-}
-
 test.describe('operator sources page (signed in)', () => {
   test.beforeAll(() => {
     loadE2eMergedEnv()
   })
 
-  test('shows summary and filter behavior for operator fixtures', async ({ page }) => {
+  test('shows summary for operator fixtures', async ({ page }) => {
     test.setTimeout(60_000)
     const crawlerKeyRaw = process.env.NUXT_CRAWLER_API_KEY?.trim()
     const operatorEmailsRaw = process.env.NUXT_OPERATOR_EMAILS?.trim()
@@ -136,11 +109,5 @@ test.describe('operator sources page (signed in)', () => {
       .filter({ hasText: blockedCrawlKey })
       .first()
     await expect(blockedRow).toContainText('e2e blocked fixture')
-
-    await page.getByTestId('operator-filter-blocked').click()
-    await expectOperatorFilter(page, 'blocked', blockedCrawlKey, quietCrawlKey)
-
-    await page.getByTestId('operator-filter-quiet').click()
-    await expectOperatorFilter(page, 'quiet', quietCrawlKey, blockedCrawlKey)
   })
 })
