@@ -19,6 +19,25 @@ Feature: Privacy-sensitive reader expectations
     When Priya opens personalization
     Then Priya should see the personalization explainer
 
+  Scenario: Priya understands that scoring is transparent and adjustable
+    Given Priya is reviewing scoring transparency in onboarding
+    Then Priya should see algorithm control explained
+
+  Scenario: Priya sees that reading behaviour tracking is optional
+    Given Priya is reviewing scoring transparency in onboarding
+    When Priya flips the scoring explanation
+    Then Priya should see tracking described as optional but useful
+
+  Scenario: Priya reaches sorting controls from the scoring explanation
+    Given Priya is reviewing scoring transparency in onboarding
+    When Priya opens scoring controls from onboarding
+    Then Priya should land on sorting controls
+
+  Scenario: Priya finds all scoring-related controls from full text
+    Given Priya is reviewing scoring transparency in onboarding
+    When Priya opens the scoring full text
+    Then Priya should see scoring links to the relevant controls
+
   @pending
   Scenario: Priya opens infl0 passively without creating reading behaviour data
     Given Priya has unread articles in her inflow

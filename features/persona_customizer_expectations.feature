@@ -12,12 +12,26 @@ Feature: Sensory customizer expectations
     When Mira chooses custom card-front colours
     Then Mira's custom card-front colours should stay available
 
-  @pending
-  Scenario: Mira changes typography from onboarding before real articles
-    Given Mira is in onboarding
-    When Mira uses readability shortcuts on front, back, and full text
-    Then each active surface should respond predictably
-    And the onboarding card should remain selected
+  Scenario Outline: Mira changes onboarding font size before real articles
+    Given Mira is tuning onboarding readability
+    When Mira uses "<shortcut>" on the "<surface>" side of the "<topic>" onboarding card
+    Then Mira should see onboarding font size respond
+
+    Examples:
+      | topic   | surface   | shortcut |
+      | intro   | front     | +        |
+      | intro   | front     | -        |
+      | intro   | front     | 0        |
+      | scoring | back      | +        |
+      | scoring | back      | -        |
+      | intro   | full-text | +        |
+
+  Scenario: Mira cycles onboarding typefaces before real articles
+    Given Mira is tuning onboarding readability
+    When Mira uses "Shift+L" on the "back" side of the "themes" onboarding card
+    Then Mira should see onboarding typeface respond
+    When Mira uses "Shift+K" on the "back" side of the "themes" onboarding card
+    Then Mira should see onboarding typeface respond
 
   @pending
   Scenario: Mira chooses a low-stimulation reading setup
