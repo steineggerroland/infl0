@@ -51,8 +51,6 @@ Covered in BDD today:
   stored anchor is read while “hide read articles” applies.
 - **`settings_hub_navigation.feature`** — `/settings` deep links and a hub sidebar
   jump (wide viewport); not yet the narrow **Sections** drawer control.
-- **`settings_tracking_and_personalization.feature`** — `#tracking` affordance and
-  one toggle flip; **`/settings/personalization`** title + algorithm snapshot heading.
 - **`feeds_sources.feature`** — add a source from `/feeds`, list heading + row, remove,
   empty state again; **no snapshot** row shows `no_snapshot` and expands to the
   “no status yet” copy (EN locale); **pause / resume** toggles `data-active` on the
@@ -83,6 +81,10 @@ Covered in BDD today:
   customizer checks for saved display preferences and custom card-front colours;
   onboarding typography and fuller low-stimulation reading setup remain
   captured as `@pending`.
+- **`persona_privacy_expectations.feature`** — Screenplay-style privacy-sensitive
+  reader checks for the reading behaviour tracking deep link, one deliberate
+  tracking toggle change, and the personalization explainer; passive open
+  without tracking and deeper signal inspection remain captured as `@pending`.
 
 Still sensible follow-ups:
 
