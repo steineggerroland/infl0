@@ -11,7 +11,6 @@ This folder contains executable user-facing behavior specifications using Cucumb
   - reader return-context behavior in `features/steps/reader.steps.js`
   - registration/login behavior in `features/steps/auth.steps.js`
   - settings hub / tracking / personalization in `features/steps/settings.steps.js`
-  - feeds (sources) in `features/steps/feeds.steps.js`
   - article/episode card presentation in `features/steps/content-presentation.steps.js`
   - home-screen install listing in `features/steps/pwa.steps.js`
 - Browser locale is forced to English in `features/support/world.js` so scenario wording and assertions stay EN-consistent.
@@ -26,7 +25,7 @@ This folder contains executable user-facing behavior specifications using Cucumb
 - Avoid direct database access in step definitions whenever the behavior can be set up or asserted through UI flows.
 - **Allowed non-UI setup** (documented in `features/support/crawler-fixtures.js` and step comments):
   - **TopicKnowledgeCrawler** ingest and source-status posts (external system; no infl0 UI).
-  - **Reader scenario Background** (`my inflow contains reader articles`): `POST /api/feeds` plus hiding onboarding via `PATCH /api/me/ui-prefs` so the step stays within Cucumber’s step timeout; feeds UI add remains covered in `feeds_sources.feature`.
+  - **Reader scenario Background** (`my inflow contains reader articles`): `POST /api/feeds` plus hiding onboarding via `PATCH /api/me/ui-prefs` so the step stays within Cucumber’s step timeout; feeds UI add remains covered in `persona_timeline_curator_expectations.feature`.
   - **Backdating `lastReaderSessionStartedAt`** for the “new articles since last session” scenario (no UI to set a past session anchor).
   - **`@http-only` PWA scenarios** that read `manifest.webmanifest` without a browser session.
 - World `Before` hooks may still register accounts via API for speed; scenario steps should use the registration/login UI where the journey is under test.
@@ -49,12 +48,6 @@ Covered in BDD today:
   navigation restores the reader without reader start (Help via floating menu);
   resume hidden when the
   stored anchor is read while “hide read articles” applies.
-- **`feeds_sources.feature`** — add a source from `/feeds`, list heading + row, remove,
-  empty state again; **no snapshot** row shows `no_snapshot` and expands to the
-  “no status yet” copy (EN locale); **pause / resume** toggles `data-active` on the
-  row; **`@crawler`** scenarios assert `data-source-health` from TopicKnowledgeCrawler
-  (`needs_setup`) and user-facing expanded label for **`healthy`** (`All good`) when
-  `NUXT_CRAWLER_API_KEY` is available (merged `.env.e2e`).
 - **`operator_sources.feature`** — operator route protection (`403` for non-allowlisted
   user), operator access for seeded account, summary band visibility, attention-first
   row order, and filter behavior (blocked/quiet).
@@ -86,6 +79,10 @@ Covered in BDD today:
   checks for settings deep links, wide-layout section navigation, and phone
   install affordances before sign-in; full onboarding exploration remains
   captured as `@pending`.
+- **`persona_timeline_curator_expectations.feature`** — Screenplay-style timeline
+  curator checks for adding/removing sources, no-snapshot health, pause/resume,
+  and `@crawler` health/status explanations when `NUXT_CRAWLER_API_KEY` is
+  available; weighting and focused working sets remain captured as `@pending`.
 
 Still sensible follow-ups:
 
