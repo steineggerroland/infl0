@@ -9,8 +9,8 @@ import { config as loadEnv } from 'dotenv'
 function loadE2eMergedEnv(root = process.cwd()) {
   const envFile = resolve(root, '.env')
   const e2eFile = resolve(root, '.env.e2e')
-  if (existsSync(envFile)) loadEnv({ path: envFile })
-  if (existsSync(e2eFile)) loadEnv({ path: e2eFile })
+  if (existsSync(envFile)) loadEnv({ path: envFile, quiet: true })
+  if (existsSync(e2eFile)) loadEnv({ path: e2eFile, quiet: true })
 }
 
 async function createFreshOnboardingStorageState(baseURL) {
