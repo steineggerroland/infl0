@@ -26,9 +26,8 @@ Feature: Curious explorer expectations
     And Eli follows the settings section "display-palette"
     Then Eli should see the "theme" settings section
 
-  @pending
   Scenario: Eli checks install affordances before signing in on a phone
     Given Eli starts as a signed-out visitor
-    When Eli opens the sign-in page on a phone-sized viewport
-    Then the browser should know how to install infl0
+    When Eli opens the sign-in page on a phone
+    Then the browser should know how to install infl0 for Eli
     And Eli should see a layout that works for phone install

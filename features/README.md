@@ -65,8 +65,7 @@ Covered in BDD today:
   absent optional fields.
 - **`add_infl0_to_home_screen.feature`** — install listing (name, EN/DE description,
   standalone app window, portrait/landscape), home-screen shortcuts to timeline /
-  sources / settings, install icons, in-place updates, sign-in page ready for phone
-  install (manifest link, viewport).
+  sources / settings, install icons, in-place updates.
 - **`new_user_first_reading_session.feature`** — Screenplay-style New User persona
   journey from UI registration through onboarding order, intro-card learning,
   onboarding return context, finishing onboarding from a later card, first
@@ -84,9 +83,9 @@ Covered in BDD today:
   tracking toggle change, and the personalization explainer; passive open
   without tracking and deeper signal inspection remain captured as `@pending`.
 - **`persona_explorer_expectations.feature`** — Screenplay-style curious explorer
-  checks for settings deep links and wide-layout section navigation; full
-  onboarding exploration and phone install affordances remain captured as
-  `@pending`.
+  checks for settings deep links, wide-layout section navigation, and phone
+  install affordances before sign-in; full onboarding exploration remains
+  captured as `@pending`.
 
 Still sensible follow-ups:
 
