@@ -7,7 +7,6 @@ This folder contains executable user-facing behavior specifications using Cucumb
 - Feature files in `features/**/*.feature` are the primary source of truth for user journey behavior.
 - Shared, cross-feature actions/assertions live in `features/steps/shared.steps.js`.
 - Domain-specific behavior stays separated:
-  - onboarding behavior in `features/steps/onboarding.steps.js`
   - reader return-context behavior in `features/steps/reader.steps.js`
   - registration/login behavior in `features/steps/auth.steps.js`
   - settings hub / tracking / personalization in `features/steps/settings.steps.js`
@@ -68,13 +67,14 @@ Covered in BDD today:
   returning reader access checks for sign-in and sign-out; deeper return-context,
   episode, and reading-control expectations remain captured as `@pending`.
 - **`persona_customizer_expectations.feature`** — Screenplay-style sensory
-  customizer checks for saved display preferences and custom card-front colours;
-  onboarding typography and fuller low-stimulation reading setup remain
-  captured as `@pending`.
+  customizer checks for saved display preferences, custom card-front colours,
+  and onboarding readability shortcuts for font size and typeface; fuller
+  low-stimulation reading setup remains captured as `@pending`.
 - **`persona_privacy_expectations.feature`** — Screenplay-style privacy-sensitive
   reader checks for the reading behaviour tracking deep link, one deliberate
-  tracking toggle change, and the personalization explainer; passive open
-  without tracking and deeper signal inspection remain captured as `@pending`.
+  tracking toggle change, the personalization explainer, and onboarding scoring
+  transparency with control links; passive open without tracking and deeper
+  signal inspection remain captured as `@pending`.
 - **`persona_explorer_expectations.feature`** — Screenplay-style curious explorer
   checks for settings deep links, wide-layout section navigation, and phone
   install affordances before sign-in; full onboarding exploration remains
