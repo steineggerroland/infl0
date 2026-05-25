@@ -7,8 +7,9 @@ This folder contains executable user-facing behavior specifications using Cucumb
 - Feature files in `features/**/*.feature` are the primary source of truth for user journey behavior.
 - Shared, cross-feature actions/assertions live in `features/steps/shared.steps.js`.
 - Domain-specific behavior stays separated:
-  - registration/login behavior in `features/steps/auth.steps.js`
-  - settings hub / tracking / personalization in `features/steps/settings.steps.js`
+  - persona journeys in `features/steps/personas/*.steps.js`
+  - shared auth UI primitives in `features/steps/auth.steps.js`
+  - shared settings primitives in `features/steps/settings.steps.js`
   - article/episode card presentation in `features/steps/content-presentation.steps.js`
   - home-screen install listing in `features/steps/pwa.steps.js`
 - Browser locale is forced to English in `features/support/world.js` so scenario wording and assertions stay EN-consistent.
@@ -88,7 +89,11 @@ Still sensible follow-ups:
 - **Tracking copy:** assert intro/label strings remain visible after toggling (optional).
 - **Personalization depth:** expand a timeline row, assert rank strip (optional).
 - **Help FAQ** expand/collapse regression (optional; component tests already exist).
-- **Persona waves:** privacy-sensitive reader and power reader journeys.
+- **Content presentation migration:** move article / episode card presentation
+  into Robin's persona once the remaining content-card steps have Screenplay
+  Tasks / Questions.
+- **Integrator observability:** implement Ingo's pending dashboard scenarios
+  once ingest request history is persisted and visible to operators.
 - **Pending persona expectations:** privacy-sensitive reader, active returning
   reader, sensory customizer, curious explorer, timeline curator, and integrator
   scenarios are captured as `@pending @persona` feature files.
@@ -97,6 +102,9 @@ Still sensible follow-ups:
 
 - Production-like BDD run (build + server + scenarios): `npm run test:bdd`
 - Local BDD run against a running app: `npm run test:bdd:local`
+
+Both local BDD commands use the pretty formatter for readable behavior output.
+Remote BDD keeps the compact progress formatter for CI logs.
 
 ## Relationship to other test layers
 

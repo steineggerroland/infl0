@@ -51,6 +51,13 @@ new entries accrue under **Unreleased**.
   first deliberate reading session after adding a source and receiving crawler
   content. Shared Screenplay Actor / Task / Question support and
   `OnboardingJourney` keep selector details out of persona steps.
+- **BDD persona migration:** existing browser behavior for reader return
+  context, read-state feedback, privacy/tracking controls, display preferences,
+  onboarding readability, settings navigation, source curation, operator source
+  observability, and phone install affordances now lives in named persona
+  journeys (Robin, Priya, Mira, Eli, Sam, Oli). Planned gaps remain visible as
+  `@pending` scenarios, while `content_presentation.feature` stays as the
+  remaining classic content-card feature for a follow-up migration.
 
 ### Fixed
 
@@ -84,6 +91,9 @@ new entries accrue under **Unreleased**.
 - **Onboarding completion:** the onboarding finish action is now available on
   every onboarding card, not just the intro card, so readers can leave the
   guided flow once they have enough context.
+- **BDD output:** local production-like and already-running-app Cucumber runs
+  use the pretty formatter with quiet dotenv loading; remote BDD keeps compact
+  progress output for CI logs.
 
 ## [0.5.0] — 2026-05-15
 

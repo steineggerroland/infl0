@@ -32,58 +32,67 @@ each behavior serves and which future behavior is intentionally planned.
 **Need:** Register, understand enough, add a source, and reach the first
 article quickly without feeling lost.
 
-**Covered now:** `new_user_first_reading_session.feature`,
-`auth_registration_login.feature`, onboarding feature files.
+**Covered now:** `new_user_first_reading_session.feature`.
 
-**Next expectations:** reduce overlap between domain onboarding features and
-Nora's Screenplay journey during the wave 2 migration.
+**Next expectations:** keep onboarding changes in Nora's Screenplay journey
+unless a later feature clearly belongs to another persona.
 
 ### Priya — privacy-sensitive reader
 
 **Need:** Understand what is tracked, decide consciously, and verify passive
 use does not create unwanted reading-behavior data.
 
-**Covered now:** tracking toggle, personalization entry point, passive reader
-start/read-state behavior.
+**Covered now:** `persona_privacy_expectations.feature` covers tracking toggle,
+personalization entry point, scoring transparency, and control links. Passive
+reader start/read-state behavior is covered by Robin.
 
-**Planned tests:** `persona_privacy_expectations.feature`.
+**Planned tests:** passive use without engagement data and deeper
+personalization signal inspection remain pending in
+`persona_privacy_expectations.feature`.
 
 ### Robin — active returning reader
 
 **Need:** Re-enter a reading session quickly, use shortcuts, open original
 articles/podcast details, and return without losing context.
 
-**Covered now:** reader return context, card shortcuts, article/episode
-presentation.
+**Covered now:** `persona_active_reader_expectations.feature` covers sign-in,
+sign-out, reader start, resume, return context, read feedback, read shortcut,
+and read-without-tracking. `content_presentation.feature` still covers
+article/episode presentation and card shortcuts.
 
-**Planned tests:** `persona_active_reader_expectations.feature`.
+**Planned tests:** episode dialog keyboard/tab behavior and mid-session
+reading-control changes remain pending in
+`persona_active_reader_expectations.feature`.
 
 ### Mira — sensory customizer
 
 **Need:** Tune colors, type, density, and motion before reading so infl0 feels
 comfortable and legible.
 
-**Covered now:** display preferences, onboarding readability shortcuts.
+**Covered now:** `persona_customizer_expectations.feature` covers display
+preferences, custom card colors, and onboarding readability shortcuts.
 
-**Planned tests:** `persona_customizer_expectations.feature`.
+**Planned tests:** fuller low-stimulation reading setup remains pending.
 
 ### Eli — curious explorer
 
 **Need:** Explore navigation, onboarding detail, help, settings sections, and
 install affordances before committing to a reading routine.
 
-**Covered now:** onboarding detail scenarios, settings hub navigation, PWA
-install listing.
+**Covered now:** `persona_explorer_expectations.feature` covers settings deep
+links, wide-layout section navigation, and phone install affordance. HTTP-only
+PWA manifest behavior remains in `add_infl0_to_home_screen.feature`.
 
-**Planned tests:** `persona_explorer_expectations.feature`.
+**Planned tests:** full onboarding exploration remains pending.
 
 ### Sam — timeline curator
 
 **Need:** Actively manage feeds and podcasts, understand source health, weight
 sources, pause/resume, and eventually curate filters or favorites.
 
-**Covered now:** feeds/sources management, source health, operator observability
-for technical views.
+**Covered now:** `persona_timeline_curator_expectations.feature` covers
+feeds/sources management, source health, pause/resume, and crawler health
+explanations.
 
 **Planned tests:** `persona_timeline_curator_expectations.feature`.
 
@@ -93,8 +102,9 @@ for technical views.
 attention-first overview of source and crawler health without entering a
 reader's personal timeline.
 
-**Covered now:** `operator_sources.feature` covers allowlist protection,
-summary visibility, attention-first ordering, and filters for source statuses.
+**Covered now:** `persona_operator_expectations.feature` covers allowlist
+protection, summary visibility, attention-first ordering, and filters for
+source statuses.
 
 **Planned tests:** `persona_operator_expectations.feature`.
 
@@ -127,8 +137,9 @@ package: `integrator-ingest-observability-dashboard.md`.
 - `@pending` scenarios should be written as real acceptance tests, not notes.
 - Once a scenario becomes implementable, remove `@pending`, implement shared
   Screenplay Tasks/Questions, and keep the persona wording intact.
-- Wave 2 should migrate existing domain tests into reusable Screenplay
-  internals before Wave 3 expands Privacy and Power User breadth.
+- Wave 2 should finish migrating content presentation into reusable Screenplay
+  internals before Wave 3 expands the remaining privacy, active-reader, and
+  timeline-curator breadth.
 
 ## Links
 

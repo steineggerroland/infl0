@@ -2,7 +2,9 @@
 
 ## Status
 
-Draft
+In progress — most existing browser behavior has moved into persona-led
+Screenplay scenarios. Remaining scope is the article / episode content
+presentation feature.
 
 ## Goal
 
@@ -26,23 +28,25 @@ and screen-object language instead of growing parallel step implementations.
 
 ## Acceptance criteria
 
-1. Onboarding BDD steps use `OnboardingJourney` as their single navigation /
-   return-context implementation.
-2. Registration/login, sources, reader return-context, and card presentation
-   flows have reusable Screenplay Tasks and Questions where they are shared by
-   persona scenarios.
-3. Existing feature behavior remains covered and `npm run test:bdd` stays green.
-4. Step wording is language-consistent within each feature; no new `I`/`they`/
-   named-actor mix is introduced.
-5. Any feature not migrated yet is listed explicitly as a follow-up, not left
-   implicit.
+1. Done: onboarding flows use `OnboardingJourney` through Screenplay Tasks /
+   Questions in the Nora, Mira, and Priya persona scenarios.
+2. Done: registration/login, sources, reader return-context, operator
+   observability, privacy controls, display settings, install affordances, and
+   settings navigation have reusable Screenplay Tasks / Questions where they are
+   shared by persona scenarios.
+3. Done: existing migrated behavior remains covered and `npm run test:bdd`
+   stays green.
+4. Done: migrated feature wording is named-actor based and avoids new
+   `I`/`they` mixes.
+5. Remaining: `content_presentation.feature` still uses classic `I` wording and
+   should be migrated into Robin/content-card Screenplay coverage.
 
 ## Implementation notes
 
 - Prefer extracting Tasks/Questions behind existing screen/page objects rather
   than moving selectors into step definitions.
-- Migrate by behavior cluster: onboarding, auth, sources, reader, content
-  presentation.
+- Migrate by behavior cluster: onboarding, auth, sources, reader, operator,
+  then content presentation.
 - Keep domain feature files while migrating internals; only rename/reorganize
   feature files when the user-facing story becomes clearer.
 
