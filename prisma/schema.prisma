@@ -16,6 +16,7 @@ model User {
   username                  String   @unique
   /// Optional recovery contact; verification is a later product step.
   email                     String?
+  recoveryEmailVerifiedAt   DateTime? @map("recovery_email_verified_at")
   name                      String?
   /// Legacy bcrypt; login uses SRP (srpSalt + srpVerifier).
   passwordHash              String?  @map("password_hash")
@@ -37,8 +38,28 @@ model User {
   feedEngagement          UserFeedEngagement[]
   categoryEngagement      UserCategoryEngagement[]
   tagEngagement           UserTagEngagement[]
+  emailOtps               EmailOtp[]
 
   @@map("users")
+}
+
+model EmailOtp {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String?   @map("user_id") @db.Uuid
+  purpose      String
+  email        String
+  codeHash     String    @map("code_hash")
+  expiresAt    DateTime  @map("expires_at")
+  consumedAt   DateTime? @map("consumed_at")
+  attemptCount Int       @default(0) @map("attempt_count")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email, purpose, createdAt(sort: Desc)])
+  @@index([expiresAt])
+  @@index([userId])
+  @@map("email_otps")
 }
 
 /// Short-lived SRP login challenge state.

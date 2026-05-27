@@ -14,8 +14,8 @@ new entries accrue under **Unreleased**.
 ### Added
 
 - **Username login:** registration and sign-in use a unique **username** (SRP
-  identity). Optional **recovery email** is stored for future account recovery;
-  it is not verified yet. Existing users are migrated with `username = lower(email)`.
+  identity). Optional **recovery email** can be verified in Settings for future
+  account recovery. Existing users are migrated with `username = lower(email)`.
   Settings show the sign-in name and recovery email (`#account`). Seed accounts use
   usernames `dev` and `operator`; operator allowlist is
   `NUXT_OPERATOR_USERNAMES`.
@@ -27,7 +27,13 @@ new entries accrue under **Unreleased**.
   Mira low-stimulation before reading; Eli deep onboarding exploration; Sam
   source weighting and its effect on reader ranking; Sam source-focused working
   sets with a return path to the full inflow; Ingo integrator ingest
-  observability. Oblivia remains `@pending`.
+  observability; Oblivia recovery email verification and password reset.
+- **Recovery email verification:** Settings can send a plain-text OTP email to
+  verify a recovery address. The login page can send a password-recovery OTP to
+  that verified address and rotate the SRP salt/verifier after a new password is
+  chosen. Operators configure SMTP with `NUXT_SMTP_HOST`, `NUXT_SMTP_USER`, and
+  `NUXT_SMTP_PASS`; BDD `@email` runs use `NUXT_TEST_EMAIL_DOMAIN` plus
+  `NUXT_TEST_IMAP_HOST`, `NUXT_TEST_IMAP_USER`, and `NUXT_TEST_IMAP_PASS`.
 - **Reader source focus:** the sources view can open the reader scoped to one
   feed/podcast source. The focused reader shows a visible source banner and a
   "Full inflow" action to clear the working set.

@@ -65,6 +65,11 @@ export default defineNuxtConfig({
     crawlerApiKey: '',
     /** Set NUXT_REGISTRATION_INVITE_CODE; empty = registration API returns 403 */
     registrationInviteCode: '',
+    smtpHost: '',
+    smtpUser: '',
+    smtpPass: '',
+    emailOtpTtlSeconds: 600,
+    emailOtpResendCooldownSeconds: 60,
   },
   devtools: { enabled: true },
   vite: {

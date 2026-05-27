@@ -61,6 +61,12 @@ Practical coverage targets:
 
 Use `features/README.md` for BDD authoring conventions and the current prioritized BDD gaps.
 
+`@email` BDD scenarios exercise real recovery-email delivery. They need
+transactional SMTP (`NUXT_SMTP_HOST`, `NUXT_SMTP_USER`, `NUXT_SMTP_PASS`) and a
+catch-all IMAP inbox for reading OTPs in tests (`NUXT_TEST_EMAIL_DOMAIN`,
+`NUXT_TEST_IMAP_HOST`, `NUXT_TEST_IMAP_USER`, `NUXT_TEST_IMAP_PASS`). Keep those
+values in local `.env` / CI secrets, not in committed `.env.e2e`.
+
 ### Playwright / E2E auth (seed username `dev`)
 
 End-to-end tests use a **committed** `.env.e2e` with `DATABASE_URL`, `AUTH_JWT_SECRET`, SRP salt/verifier for username **`dev`**, and `E2E_LOGIN_PASSWORD` (matches the verifier). The default local/E2E password is `dev`.
