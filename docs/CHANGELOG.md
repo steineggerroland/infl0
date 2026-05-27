@@ -25,8 +25,13 @@ new entries accrue under **Unreleased**.
 - **BDD Wave 3 (partial):** Robin episode keyboard/tabs and mid-session readability;
   Shorty timeline `r` (show-read); Priya passive open and personalization signals;
   Mira low-stimulation before reading; Eli deep onboarding exploration; Sam
-  source weighting and its effect on reader ranking. Sam focused working sets,
-  Oblivia, and integrator scenarios remain `@pending`.
+  source weighting and its effect on reader ranking; Ingo integrator ingest
+  observability. Sam focused working sets and Oblivia remain `@pending`.
+- **Integrator ingest observability:** crawler ingest calls are recorded in an
+  append-only request history. Operators can inspect recent accepted/rejected
+  requests at `/operator/ingest`, including accepted article/episode/subscriber
+  counts, auth/validation/unsupported-content diagnostics, and bounded payload
+  previews without exposing crawler keys.
 - **BDD persona Shorty:** keyboard shortcut scenarios and rich episode card
   surface drills (chapters, shownotes, details tabs) live in
   `persona_shorty_expectations.feature`; moved out of Robin's feature file.

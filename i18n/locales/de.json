@@ -517,6 +517,34 @@
       "hints": "HTTP / Retry / Cache"
     }
   },
+  "operatorIngest": {
+    "title": "Integrator · Ingest",
+    "intro": "Aktuelle TopicKnowledgeCrawler-Lieferungen an infl0, inklusive angenommener Inhalte und abgelehnter Payloads.",
+    "errorLoad": "Ingest-Anfragen konnten nicht geladen werden",
+    "green": "Grün",
+    "attention": "Prüfen",
+    "unknownKind": "Unbekanntes Payload",
+    "empty": "Es wurden noch keine Ingest-Anfragen aufgezeichnet.",
+    "summary": {
+      "latestTen": "Letzte 10",
+      "success": "Angenommen",
+      "rejected": "Abgelehnt",
+      "articles": "Artikel",
+      "episodes": "Episoden",
+      "subscribers": "Abonnements"
+    },
+    "fields": {
+      "createdAt": "Empfangen",
+      "httpStatus": "HTTP",
+      "crawlKey": "Crawl-Key",
+      "articles": "Artikel angenommen",
+      "episodes": "Episoden angenommen",
+      "timelineInserted": "Timeline-Zeilen",
+      "subscribers": "Betroffene Abos",
+      "failureCategory": "Fehler",
+      "failureMessage": "Details"
+    }
+  },
   "login": {
     "title": "infl0",
     "tagline": "Deine ruhige Nachrichten-Timeline",

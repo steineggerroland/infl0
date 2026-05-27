@@ -2,10 +2,10 @@
 
 ## Status
 
-In progress — Robin, Shorty, Priya, Mira, Eli, and Sam source-weighting
-`@pending` scenarios are implemented on `feat/wave-3-pending-bdd`. Sam focused
-working sets, Oblivia (SMTP recovery), and Ingo (integrator dashboard) stay
-`@pending` until product work lands.
+In progress — Robin, Shorty, Priya, Mira, Eli, Sam source-weighting, and Ingo
+integrator-observability `@pending` scenarios are implemented on
+`feat/wave-3-pending-bdd`. Sam focused working sets and Oblivia (SMTP recovery)
+stay `@pending` until product work lands.
 
 ## Goal
 
@@ -37,10 +37,13 @@ power-reader adjustments that are still intentionally `@pending`.
    article/episode shortcut scenarios.
 3. Sam's source-weighting scenario covers saved preference and reader ranking;
    focused working sets remain pending until that product affordance is ready.
-4. Scenarios use named actors and shared Screenplay Tasks / Questions.
-5. Product gaps discovered during scenario authoring are either implemented or
+4. Ingo's integrator dashboard scenarios cover recent successful ingest,
+   accepted article/episode/subscriber counts, auth rejection without key
+   exposure, invalid structure previews, and unsupported section diagnostics.
+5. Scenarios use named actors and shared Screenplay Tasks / Questions.
+6. Product gaps discovered during scenario authoring are either implemented or
    represented as `@pending` with a one-line rationale.
-6. `npm run test:bdd` stays green for all non-pending scenarios.
+7. `npm run test:bdd` stays green for all non-pending scenarios.
 
 ## Implementation notes
 
