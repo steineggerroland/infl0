@@ -86,3 +86,55 @@ For Playwright and accessibility:
 - Prefer user-path checks: keyboard navigation, focus movement, dialog
   open/close, and screen-reader-relevant state.
 - Prefer behavioral reduced-motion checks over CSS selector assertions.
+
+## Cursor Cloud specific instructions
+
+### Services overview
+
+| Service | How to start | Notes |
+|---------|-------------|-------|
+| PostgreSQL 16 | `docker compose up -d postgres` | Must be running before the app or any test suite |
+| Nuxt dev server | `npm run dev` (with `.env` sourced) | Runs at `http://127.0.0.1:3000`; requires `DATABASE_URL` and `AUTH_JWT_SECRET` |
+
+### Environment setup
+
+- Docker must be running before `docker compose up -d postgres`. In Cloud Agent
+  VMs, start the daemon with `sudo dockerd &>/tmp/dockerd.log &` and
+  `sudo chmod 666 /var/run/docker.sock` if needed.
+- `.env` is created from `.env.example`. To avoid `.env` empty values masking
+  `.env.e2e` defaults during E2E tests, comment out (rather than leave empty)
+  any key you want `.env.e2e` to supply: `DEV_SRP_SALT_HEX`,
+  `DEV_SRP_VERIFIER_HEX`, `OPERATOR_SRP_SALT_HEX`, `OPERATOR_SRP_VERIFIER_HEX`,
+  `E2E_LOGIN_PASSWORD`, `OPERATOR_LOGIN_PASSWORD`. The `dotenv-cli` used by
+  `test:e2e` / `test:bdd` does **not** override earlier files.
+- Before running any npm/npx command, activate Node 24:
+  `export NVM_DIR="${NVM_DIR:-$HOME/.nvm}" && . "$NVM_DIR/nvm.sh" && nvm use`
+
+### Running tests and lint
+
+Standard commands from `package.json` (see also `docs/DEVELOPING.md`):
+
+- **Lint**: `npm run lint`
+- **Unit tests**: `npm run test` (Vitest, 487 tests)
+- **Typecheck**: `npm run typecheck`
+- **Full verify**: `npm run verify` (lint + test + typecheck)
+- **E2E**: `npm run test:e2e` (builds, starts Nitro on :4275, runs Playwright)
+- **BDD**: `npm run test:bdd` (builds, starts Nitro on :4275, runs Cucumber)
+
+### Database seeding
+
+- `npx prisma migrate deploy` applies the schema.
+- For dev data (sample feeds/articles for manual testing): source `.env` then
+  `npm run devData`.
+- For E2E seed users with SRP credentials: `npx dotenv -e .env -e .env.e2e -- npx prisma db seed`.
+  Make sure the shell does not already export empty SRP vars, or `unset` them first.
+
+### Known caveats
+
+- The `[chromium-onboarding] welcome.spec.ts` test may fail because
+  fresh-registered users are redirected to `/inflow/onboarding/intro` instead
+  of the inline onboarding expected by the assertion. This is a pre-existing
+  test/code mismatch, not an environment issue.
+- `devData` and Prisma seed scripts need `DATABASE_URL` in the process
+  environment (they do not auto-load `.env`). Either `source .env` before
+  running or use `dotenv -e .env --`.
