@@ -3,6 +3,8 @@ import { actorCalled, currentActor } from '../../support/screenplay/actor.js'
 import { StartSignedInToInfl0 } from '../../support/screenplay/tasks/access.js'
 import {
   AddRememberedSource,
+  HaveMultipleActiveSources,
+  IncreaseRememberedSourceWeight,
   PauseRememberedSource,
   PrepareSourceCuration,
   ReceiveCrawlerHealth,
@@ -16,7 +18,9 @@ import {
   RememberedSourceIsActive,
   RememberedSourceIsListed,
   RememberedSourceIsPaused,
+  RememberedSourcePreferenceIsSaved,
   SourceListIsEmpty,
+  WeightedSourceLeadsFutureTimeline,
 } from '../../support/screenplay/questions/source-curation.js'
 
 Given('{word} is ready to curate timeline sources', async function (name) {
@@ -34,6 +38,10 @@ Given('{word} is ready to pause and resume a source', async function (name) {
 Given('{word} is ready to inspect crawler health {string}', async function (name, status) {
   const profile = status === 'healthy' ? 'healthy' : 'needsSetup'
   await actorCalled(this, name).attemptsTo(StartSignedInToInfl0, PrepareSourceCuration(profile))
+})
+
+Given('{word} has multiple active sources', async function (name) {
+  await actorCalled(this, name).attemptsTo(StartSignedInToInfl0, HaveMultipleActiveSources)
 })
 
 Given('{word} has crawler status reporting available', async function (name) {
@@ -60,6 +68,10 @@ When('{word} receives crawler health {string} for that source', async function (
   await currentActor(this, name).attemptsTo(ReceiveCrawlerHealth(status))
 })
 
+When("{word} increases one source's weight", async function (name) {
+  await currentActor(this, name).attemptsTo(IncreaseRememberedSourceWeight)
+})
+
 Then('{word} should see an empty source list', async function (name) {
   await currentActor(this, name).asksFor(SourceListIsEmpty)
 })
@@ -82,4 +94,12 @@ Then('{word} should see source health {string}', async function (name, status) {
 
 Then('{word} should see source health explained as {string}', async function (name, label) {
   await currentActor(this, name).asksFor(RememberedSourceHealthExplains(label))
+})
+
+Then('{word} should see that the source preference was saved', async function (name) {
+  await currentActor(this, name).asksFor(RememberedSourcePreferenceIsSaved)
+})
+
+Then('future timeline ranking should respect that preference', async function () {
+  await currentActor(this).asksFor(WeightedSourceLeadsFutureTimeline)
 })

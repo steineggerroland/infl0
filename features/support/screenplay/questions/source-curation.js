@@ -1,4 +1,6 @@
+import { expect } from '@playwright/test'
 import { SourcesPage } from '../../sources-page.js'
+import { ReaderTimeline } from '../../reader-timeline.js'
 import { BrowseTheWeb } from '../abilities/browse-the-web.js'
 
 function sourceFor(actor) {
@@ -57,4 +59,25 @@ export function RememberedSourceHealthExplains(substring) {
       await sourcesPage(actor).expectExpandedHealthLabel(source.address, substring)
     },
   }
+}
+
+export const RememberedSourcePreferenceIsSaved = {
+  async answeredBy(actor) {
+    const source = sourceFor(actor)
+    await sourcesPage(actor).expectSourcePreference(source.address, 1)
+  },
+}
+
+export const WeightedSourceLeadsFutureTimeline = {
+  async answeredBy(actor) {
+    const articleId = actor.recall('weightedSourceArticleId')
+    if (!articleId) throw new Error(`${actor.name} has no remembered weighted-source article.`)
+    const page = BrowseTheWeb.as(actor)
+    const timeline = new ReaderTimeline(page)
+    await timeline.open()
+    await timeline.startReading()
+    const firstCard = page.getByTestId('article-card').first()
+    await expect(firstCard).toBeVisible({ timeout: 20_000 })
+    await expect(firstCard).toHaveAttribute('data-article-id', articleId)
+  },
 }

@@ -53,7 +53,6 @@ Feature: Timeline curator expectations
     When Sam removes that source
     Then Sam should see an empty source list
 
-  @pending
   Scenario: Sam weights a source to shape future ranking
     Given Sam has multiple active sources
     When Sam increases one source's weight

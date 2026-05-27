@@ -185,6 +185,43 @@ export class SourcesPage {
     await expect(this.row(snippet)).toHaveAttribute('data-active', 'false')
   }
 
+  async setSourcePreference(snippet, value) {
+    const row = await this.expandRow(snippet)
+    const feedId = await row.getAttribute('data-feed-id')
+    if (!feedId) throw new Error(`Source row for ${snippet} is missing data-feed-id.`)
+    const weighting = row.getByTestId(`feed-weighting-${feedId}`)
+    await expect(weighting).toBeVisible({ timeout: 15_000 })
+    const slider = weighting.locator('input[type="range"]')
+    await expect(slider).toBeEnabled()
+    const responsePromise = this.page.waitForResponse(
+      (response) =>
+        response.request().method() === 'PATCH' &&
+        new URL(response.url()).pathname === `/api/feeds/${feedId}/preference`,
+      { timeout: 30_000 },
+    )
+    await slider.evaluate((el, next) => {
+      const input = /** @type {HTMLInputElement} */ (el)
+      input.value = String(next)
+      input.dispatchEvent(new Event('change', { bubbles: true }))
+    }, value)
+    const response = await responsePromise
+    if (!response.ok()) {
+      throw new Error(`PATCH /api/feeds/${feedId}/preference failed (${response.status()}): ${await response.text()}`)
+    }
+    await expect(weighting).toHaveAttribute('data-pref-value', String(value), { timeout: 15_000 })
+  }
+
+  async expectSourcePreference(snippet, value) {
+    const row = await this.expandRow(snippet)
+    const feedId = await row.getAttribute('data-feed-id')
+    if (!feedId) throw new Error(`Source row for ${snippet} is missing data-feed-id.`)
+    await expect(row.getByTestId(`feed-weighting-${feedId}`)).toHaveAttribute(
+      'data-pref-value',
+      String(value),
+      { timeout: 15_000 },
+    )
+  }
+
   async expectListHeading() {
     await expect(this.page.locator('#feeds-list-heading')).toBeVisible({ timeout: 15_000 })
   }
