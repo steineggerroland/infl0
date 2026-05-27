@@ -81,3 +81,26 @@ export const WeightedSourceLeadsFutureTimeline = {
     await expect(firstCard).toHaveAttribute('data-article-id', articleId)
   },
 }
+
+export const FocusedWorkingSetIsVisible = {
+  async answeredBy(actor) {
+    const articleId = actor.recall('weightedSourceArticleId')
+    if (!articleId) throw new Error(`${actor.name} has no remembered working-set article.`)
+    const page = BrowseTheWeb.as(actor)
+    await expect(page.getByTestId('source-focus-banner')).toBeVisible({ timeout: 20_000 })
+    await new ReaderTimeline(page).startReading()
+    await expect(new ReaderTimeline(page).articleCard(articleId)).toBeVisible({ timeout: 20_000 })
+  },
+}
+
+export const FullInflowIsVisibleAgain = {
+  async answeredBy(actor) {
+    const baseline = actor.recall('baselineSourceArticleId')
+    if (!baseline) throw new Error(`${actor.name} has no remembered baseline article.`)
+    const page = BrowseTheWeb.as(actor)
+    const timeline = new ReaderTimeline(page)
+    await expect(page.getByTestId('source-focus-banner')).toHaveCount(0, { timeout: 15_000 })
+    await timeline.startReading()
+    await expect(timeline.articleCard(baseline)).toBeVisible({ timeout: 20_000 })
+  },
+}

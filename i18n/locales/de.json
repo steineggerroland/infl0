@@ -315,7 +315,9 @@
     "readerResumeCta": "Zu letztem Artikel springen",
     "allReadTitle": "Alles gelesen",
     "allReadBody": "Alle Artikel in deiner Timeline sind als gelesen markiert. Schalte den Schalter ein, um gelesene Artikel wieder anzuzeigen.",
-    "showReadLabel": "Gelesene anzeigen"
+    "showReadLabel": "Gelesene anzeigen",
+    "sourceFocusActive": "Fokus auf {source}",
+    "sourceFocusClear": "Ganzer Inflow"
   },
   "onboarding": {
     "skipIntro": "Einführung überspringen",
@@ -389,6 +391,8 @@
     "copySource": "URL kopieren",
     "copySourceDone": "Kopiert",
     "copySourceAria": "Adresse der Quelle in die Zwischenablage kopieren",
+    "focusSource": "Im Inflow fokussieren",
+    "focusSourceAria": "Inflow auf {name} fokussieren",
     "errorCopyUrl": "URL konnte nicht kopiert werden",
     "health": {
       "listNote": "Wenn wir einen Status zu einer Quelle haben, erscheint er hier. So siehst du, ob eine Quelle funktioniert und wie oft sie aktualisiert wird.",

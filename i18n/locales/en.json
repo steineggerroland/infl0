@@ -315,7 +315,9 @@
     "readerResumeCta": "Jump to last article",
     "allReadTitle": "You're all caught up",
     "allReadBody": "Every article on your timeline is marked as read. Turn on the switch below to show read articles again.",
-    "showReadLabel": "Show read articles"
+    "showReadLabel": "Show read articles",
+    "sourceFocusActive": "Focused on {source}",
+    "sourceFocusClear": "Full inflow"
   },
   "onboarding": {
     "skipIntro": "Skip introduction",
@@ -389,6 +391,8 @@
     "copySource": "Copy URL",
     "copySourceDone": "Copied",
     "copySourceAria": "Copy source URL to the clipboard",
+    "focusSource": "Focus in inflow",
+    "focusSourceAria": "Focus inflow on {name}",
     "errorCopyUrl": "URL could not be copied",
     "health": {
       "listNote": "When we have a status for a source, it appears here. You can use this to see whether a feed is working and how often it updates.",

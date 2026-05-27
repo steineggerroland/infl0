@@ -25,8 +25,12 @@ new entries accrue under **Unreleased**.
 - **BDD Wave 3 (partial):** Robin episode keyboard/tabs and mid-session readability;
   Shorty timeline `r` (show-read); Priya passive open and personalization signals;
   Mira low-stimulation before reading; Eli deep onboarding exploration; Sam
-  source weighting and its effect on reader ranking; Ingo integrator ingest
-  observability. Sam focused working sets and Oblivia remain `@pending`.
+  source weighting and its effect on reader ranking; Sam source-focused working
+  sets with a return path to the full inflow; Ingo integrator ingest
+  observability. Oblivia remains `@pending`.
+- **Reader source focus:** the sources view can open the reader scoped to one
+  feed/podcast source. The focused reader shows a visible source banner and a
+  "Full inflow" action to clear the working set.
 - **Integrator ingest observability:** crawler ingest calls are recorded in an
   append-only request history. Operators can inspect recent accepted/rejected
   requests at `/operator/ingest`, including accepted article/episode/subscriber

@@ -222,6 +222,14 @@ export class SourcesPage {
     )
   }
 
+  async focusSourceInInflow(snippet) {
+    const row = await this.expandRow(snippet)
+    const feedId = await row.getAttribute('data-feed-id')
+    if (!feedId) throw new Error(`Source row for ${snippet} is missing data-feed-id.`)
+    await row.getByTestId(`feed-source-focus-${feedId}`).click()
+    await expect(this.page).toHaveURL(/[?&]source=/u)
+  }
+
   async expectListHeading() {
     await expect(this.page.locator('#feeds-list-heading')).toBeVisible({ timeout: 15_000 })
   }

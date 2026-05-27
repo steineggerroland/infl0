@@ -43,6 +43,7 @@ export interface InflowArticleItem {
   category?: string[]
   tags: string[]
   rawMarkdown?: string
+  crawl_key: string
   insertedAt: string
   readAt: string | null
 }
@@ -116,6 +117,7 @@ function mapArticle(a: ArticleWithEnrichment): Omit<InflowArticleItem, 'type' | 
     category: e?.category?.length ? e.category : undefined,
     tags: e?.tags ?? [],
     rawMarkdown: a.contentMd ?? undefined,
+    crawl_key: a.crawlKey,
   }
 }
 
@@ -232,8 +234,9 @@ export async function loadInflowPage(opts: {
   limit: number
   offset: number
   showRead: boolean
+  source?: string | null
 }): Promise<InflowResponse> {
-  const { userId, limit, offset, showRead } = opts
+  const { userId, limit, offset, showRead, source } = opts
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -246,23 +249,38 @@ export async function loadInflowPage(opts: {
   const prefs = resolveUiPrefs(user.uiPrefs)
   const onboardingItems = prefs.onboardingHidden ? [] : buildOnboardingItems()
 
+  const sourceFilter = source?.trim()
+  const sourceWhere: Prisma.UserTimelineItemWhereInput | undefined = sourceFilter
+    ? {
+        OR: [
+          { contentKind: 'article', article: { crawlKey: sourceFilter } },
+          { contentKind: 'episode', episode: { crawlKey: sourceFilter } },
+        ],
+      }
+    : undefined
+
+  const baseWhere: Prisma.UserTimelineItemWhereInput = {
+    userId,
+    ...(sourceWhere ?? {}),
+  }
+
   const listWhere: Prisma.UserTimelineItemWhereInput = showRead
-    ? { userId }
-    : { userId, readAt: null }
+    ? baseWhere
+    : { ...baseWhere, readAt: null }
 
   const lastReaderSessionStartedAt = prefs.lastReaderSessionStartedAt
     ? new Date(prefs.lastReaderSessionStartedAt)
     : null
   const newSinceLastReaderSessionWhere: Prisma.UserTimelineItemWhereInput = {
-    userId,
+    ...baseWhere,
     ...(lastReaderSessionStartedAt && Number.isFinite(lastReaderSessionStartedAt.getTime())
       ? { insertedAt: { gt: lastReaderSessionStartedAt } }
       : {}),
   }
 
   const [totalCount, unreadCount, newSinceLastReaderSession] = await Promise.all([
-    prisma.userTimelineItem.count({ where: { userId } }),
-    prisma.userTimelineItem.count({ where: { userId, readAt: null } }),
+    prisma.userTimelineItem.count({ where: baseWhere }),
+    prisma.userTimelineItem.count({ where: { ...baseWhere, readAt: null } }),
     prisma.userTimelineItem.count({ where: newSinceLastReaderSessionWhere }),
   ])
 
@@ -305,6 +323,7 @@ export async function handleInflowRequest(event: H3Event): Promise<InflowRespons
   const limit = Math.min(100, Math.max(1, Number(q.limit) || 20))
   const offset = Math.max(0, Math.min(50_000, Number(q.offset) || 0))
   const showRead = queryShowRead(q as Record<string, unknown>)
+  const source = typeof q.source === 'string' && q.source.trim() ? q.source.trim() : null
 
-  return loadInflowPage({ userId, limit, offset, showRead })
+  return loadInflowPage({ userId, limit, offset, showRead, source })
 }

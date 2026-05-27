@@ -74,8 +74,8 @@ Covered in BDD today:
 - **`persona_timeline_curator_expectations.feature`** — Screenplay-style timeline
   curator checks for adding/removing sources, no-snapshot health, pause/resume,
   and `@crawler` health/status explanations when `NUXT_CRAWLER_API_KEY` is
-  available, plus source weighting and its effect on future reader ranking;
-  focused working sets remain captured as `@pending`.
+  available, plus source weighting and its effect on future reader ranking, and
+  source-focused working sets with a return path to the full inflow.
 - **`persona_operator_expectations.feature`** — Screenplay-style operator checks
   for source observability route protection, seeded operator access, summary
   visibility, attention-first row order, and blocked/quiet filtering.
@@ -95,9 +95,8 @@ Still sensible follow-ups:
 - **Auth negative path:** invalid credentials → visible **`alert`** (optional).
 - **Tracking copy:** assert intro/label strings remain visible after toggling (optional).
 - **Help FAQ** expand/collapse regression (optional; component tests already exist).
-- **Pending persona expectations:** timeline curator working sets and Oblivia
-  recovery email verification / password reset scenarios are captured as
-  `@pending @persona` feature files.
+- **Pending persona expectations:** Oblivia recovery email verification /
+  password reset scenarios are captured as `@pending @persona` feature files.
 
 ## Run commands
 
