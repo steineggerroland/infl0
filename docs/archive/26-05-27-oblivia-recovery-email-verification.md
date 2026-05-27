@@ -56,5 +56,4 @@ See [`DEPLOYING.md`](../DEPLOYING.md#transactional-email-recovery-otp) and
 
 ## Links
 
-- Expectation map: [`persona-expectation-map-v1.md`](../planned/persona-expectation-map-v1.md)
 - Developing / BDD mail setup: [`DEVELOPING.md`](../DEVELOPING.md)

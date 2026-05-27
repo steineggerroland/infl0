@@ -57,5 +57,5 @@ power-reader adjustments that are still intentionally `@pending`.
 
 ## Links
 
-- PR:
+- PR: #49
 - Discussion:

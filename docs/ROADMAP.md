@@ -77,11 +77,10 @@ stronger, clearer, or calmer.
 
 ## Persona lens
 
-Concrete behavior work is now planned through personas and executable BDD
-expectations. The current map lives in
-[`planned/persona-expectation-map-v1.md`](./planned/persona-expectation-map-v1.md)
-and uses `@pending` feature files to hold planned, not-yet-implemented
-scenarios.
+Concrete behavior work is planned through personas and executable BDD
+expectations. Persona needs live in the feature files themselves; larger future
+work should get a focused package in [`planned/`](./planned/) when it is ready
+to implement.
 
 The first persona set is:
 
