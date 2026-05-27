@@ -3,6 +3,7 @@ import type { PrismaClient } from '~/generated/prisma/client'
 import { crawlKeyFromIngestBody, parseIngestBody, type IngestBodyResult } from './crawler-ingest'
 
 type Db = Pick<PrismaClient, 'crawlerIngestRequest'>
+type MutableInputJsonObject = { [key: string]: Prisma.InputJsonValue | null }
 
 const MAX_STRING_LENGTH = 800
 const MAX_ARRAY_ITEMS = 20
@@ -15,24 +16,29 @@ function redactKey(key: string, value: unknown): unknown {
     : value
 }
 
-function boundedPreview(value: unknown, depth = 0): Prisma.InputJsonValue | typeof Prisma.JsonNull {
-  if (value == null) return Prisma.JsonNull
+function boundedJsonValue(value: unknown, depth = 0): Prisma.InputJsonValue | null {
+  if (value == null) return null
   if (typeof value === 'string') {
     return value.length > MAX_STRING_LENGTH ? `${value.slice(0, MAX_STRING_LENGTH)}…` : value
   }
   if (typeof value === 'number' || typeof value === 'boolean') return value
   if (depth >= MAX_DEPTH) return '[truncated]'
   if (Array.isArray(value)) {
-    return value.slice(0, MAX_ARRAY_ITEMS).map((item) => boundedPreview(item, depth + 1)) as Prisma.InputJsonArray
+    return value.slice(0, MAX_ARRAY_ITEMS).map((item) => boundedJsonValue(item, depth + 1)) as Prisma.InputJsonArray
   }
   if (typeof value === 'object') {
-    const out: Record<string, Prisma.InputJsonValue | typeof Prisma.JsonNull> = {}
+    const out: MutableInputJsonObject = {}
     for (const [key, raw] of Object.entries(value).slice(0, MAX_OBJECT_KEYS)) {
-      out[key] = boundedPreview(redactKey(key, raw), depth + 1)
+      out[key] = boundedJsonValue(redactKey(key, raw), depth + 1)
     }
-    return out
+    return out as Prisma.InputJsonObject
   }
   return String(value)
+}
+
+function boundedPreview(value: unknown): Prisma.InputJsonValue | typeof Prisma.JsonNull {
+  const preview = boundedJsonValue(value)
+  return preview === null ? Prisma.JsonNull : preview
 }
 
 function categorizeFailure(message: string): string {
