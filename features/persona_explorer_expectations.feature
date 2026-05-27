@@ -3,7 +3,6 @@ Feature: Curious explorer expectations
   Eli wants to understand the app by exploring navigation and explanations
   before committing to regular reading.
 
-  @pending
   Scenario: Eli explores onboarding deeply before finishing it
     Given Eli is a new reader
     When Eli moves through every onboarding card

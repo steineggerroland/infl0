@@ -52,26 +52,25 @@ Covered in BDD today:
   recovery.
 - **`persona_active_reader_expectations.feature`** — Screenplay-style active
   returning reader checks for sign-in/sign-out, account sign-in name visibility,
-  article/episode card presentation (without shortcut drills), reader start, resume,
-  URL calm, read feedback, read without behaviour tracking, and returning from
-  Help without losing context; episode dialog keyboard/tabs remain `@pending`.
+  article/episode card presentation, reader start, resume, URL calm, read
+  feedback, read without behaviour tracking, episode dialog keyboard/tabs,
+  mid-session reading controls, and returning from Help without losing context.
 - **`persona_shorty_expectations.feature`** — Screenplay-style shortcut and card-
   surface checks: rich episode metadata (chapters, shownotes, details tabs), help
   reference (`/help#shortcuts-reference`), article and episode shortcuts,
-  read/unread via `m`; timeline `r` and mid-session tweaks are `@pending`.
+  read/unread via `m`, and timeline show-read via `r`.
 - **`persona_customizer_expectations.feature`** — Screenplay-style sensory
   customizer checks for saved display preferences, custom card-front colours,
-  and onboarding readability shortcuts for font size and typeface; fuller
-  low-stimulation reading setup remains captured as `@pending`.
+  onboarding readability shortcuts for font size and typeface, and a
+  low-stimulation reading setup before entering the reader.
 - **`persona_privacy_expectations.feature`** — Screenplay-style privacy-sensitive
   reader checks for the reading behaviour tracking deep link, one deliberate
   tracking toggle change, the personalization explainer, and onboarding scoring
-  transparency with control links; passive open without tracking and deeper
-  signal inspection remain captured as `@pending`.
+  transparency with control links, passive open without tracking, and
+  personalization signal inspection after opting in.
 - **`persona_explorer_expectations.feature`** — Screenplay-style curious explorer
-  checks for settings deep links, wide-layout section navigation, and phone
-  install affordances before sign-in; full onboarding exploration remains
-  captured as `@pending`.
+  checks for deep onboarding exploration, settings deep links, wide-layout
+  section navigation, and phone install affordances before sign-in.
 - **`persona_timeline_curator_expectations.feature`** — Screenplay-style timeline
   curator checks for adding/removing sources, no-snapshot health, pause/resume,
   and `@crawler` health/status explanations when `NUXT_CRAWLER_API_KEY` is
@@ -90,14 +89,12 @@ Still sensible follow-ups:
   a link, assert hash + visible block (mobile drawer).
 - **Auth negative path:** invalid credentials → visible **`alert`** (optional).
 - **Tracking copy:** assert intro/label strings remain visible after toggling (optional).
-- **Personalization depth:** expand a timeline row, assert rank strip (optional).
 - **Help FAQ** expand/collapse regression (optional; component tests already exist).
 - **Integrator observability:** implement Ingo's pending dashboard scenarios
   once ingest request history is persisted and visible to operators.
-- **Pending persona expectations:** privacy-sensitive reader, active returning
-  reader, sensory customizer, curious explorer, timeline curator, integrator,
-  and Oblivia (recovery email verification / password reset) scenarios are
-  captured as `@pending @persona` feature files.
+- **Pending persona expectations:** timeline curator weighting / working sets,
+  integrator observability, and Oblivia recovery email verification / password
+  reset scenarios are captured as `@pending @persona` feature files.
 
 ## Run commands
 

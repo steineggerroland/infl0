@@ -74,7 +74,6 @@ Feature: Shorty keyboard shortcut expectations
     When Shorty uses the font-family shortcuts on the focused card
     Then Shorty's focused card font family should respond to shortcuts
 
-  @pending
   Scenario: Shorty toggles show-read from the timeline with a shortcut
     Given Shorty has reader articles
     And Shorty's first reader article is already read

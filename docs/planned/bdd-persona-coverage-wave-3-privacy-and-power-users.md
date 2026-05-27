@@ -2,7 +2,10 @@
 
 ## Status
 
-Draft
+In progress — Robin, Shorty, Priya, Mira, and Eli `@pending` scenarios are
+implemented on `feat/wave-3-pending-bdd`. Sam (source weighting / working
+sets), Oblivia (SMTP recovery), and Ingo (integrator dashboard) stay
+`@pending` until product work lands.
 
 ## Goal
 

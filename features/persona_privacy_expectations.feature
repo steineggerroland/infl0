@@ -38,14 +38,12 @@ Feature: Privacy-sensitive reader expectations
     When Priya opens the scoring full text
     Then Priya should see scoring links to the relevant controls
 
-  @pending
   Scenario: Priya opens infl0 passively without creating reading behaviour data
     Given Priya has unread articles in her inflow
     When Priya opens infl0 without starting the reader
     And Priya leaves for settings
     Then Priya should still have no reading behaviour event for that article
 
-  @pending
   Scenario: Priya can inspect why personalization changed after opting in
     Given Priya has enabled reading behaviour tracking
     And Priya has read articles from multiple sources
