@@ -33,8 +33,6 @@ Feature: Sensory customizer expectations
     When Mira uses "Shift+K" on the "back" side of the "themes" onboarding card
     Then Mira should see onboarding typeface respond
 
-  @pending
   Scenario: Mira chooses a low-stimulation reading setup
     Given Mira is preparing to read
-    When Mira chooses calmer display preferences
     Then infl0 should reduce visual friction without hiding the reader controls

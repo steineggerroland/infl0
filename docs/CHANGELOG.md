@@ -22,6 +22,10 @@ new entries accrue under **Unreleased**.
 - **BDD Wave 2:** article and episode card presentation scenarios moved into
   `persona_active_reader_expectations.feature` (Robin). Account settings scenarios
   assert sign-in name and recovery email match registration.
+- **BDD Wave 3 (partial):** Robin episode keyboard/tabs and mid-session readability;
+  Shorty timeline `r` (show-read); Priya passive open and personalization signals;
+  Mira low-stimulation before reading; Eli deep onboarding exploration. Sam
+  weighting/working sets, Oblivia, and integrator scenarios remain `@pending`.
 - **BDD persona Shorty:** keyboard shortcut scenarios and rich episode card
   surface drills (chapters, shownotes, details tabs) live in
   `persona_shorty_expectations.feature`; moved out of Robin's feature file.
