@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test'
-import { crawlerIngest, prepareReaderInflowFixture } from '../../crawler-fixtures.js'
+import { browserFetchJson, crawlerIngest, prepareReaderInflowFixture } from '../../crawler-fixtures.js'
 import { ReaderTimeline } from '../../reader-timeline.js'
 import { SettingsPage } from '../../settings-page.js'
 import { UserMenu } from '../../user-menu.js'
@@ -38,6 +38,23 @@ async function ensureAppOrigin(actor) {
   if (page.url() === 'about:blank') {
     await page.goto('/help')
   }
+}
+
+async function waitForReaderArticles(page, articles) {
+  const ids = new Set(articles.map((article) => article.id))
+  await expect.poll(async () => {
+    const res = await browserFetchJson(page, '/api/inflow?limit=20&showRead=1')
+    if (!res.ok) return { ready: false, detail: `GET /api/inflow failed (${res.status})` }
+    const items = Array.isArray(res.data?.items) ? res.data.items : []
+    const seen = items.filter((item) => ids.has(item?.id)).length
+    return {
+      ready: seen === ids.size && (res.data?.stats?.total ?? 0) >= ids.size,
+      detail: `saw ${seen}/${ids.size} reader articles`,
+    }
+  }, {
+    message: 'reader fixture articles should be visible through /api/inflow',
+    timeout: 20_000,
+  }).toMatchObject({ ready: true })
 }
 
 export const HaveReaderArticles = {
@@ -86,6 +103,7 @@ export const HaveReaderArticles = {
       })
     }
 
+    await waitForReaderArticles(page, articles)
     actor.remember('readerArticles', articles)
     await page.goto('/')
   },

@@ -1,4 +1,4 @@
-import { browserFetchJson, crawlerIngest, prepareReaderInflowFixture } from '../../crawler-fixtures.js'
+import { browserFetchJson, crawlerIngest } from '../../crawler-fixtures.js'
 import { OperatorIngestPage } from '../../operator-ingest-page.js'
 import { BrowseTheWeb } from '../abilities/browse-the-web.js'
 import { SignInAsSeededOperator } from './operator-observability.js'
@@ -53,22 +53,19 @@ function episodePayload(crawlKey, suffix) {
   }
 }
 
-async function prepareIngestFeed(actor, displayTitle) {
+function prepareIngestSource(actor, displayTitle) {
   const suffix = `${Date.now().toString(36)}-${Math.random().toString(16).slice(2)}`
-  await prepareReaderInflowFixture(
-    page(actor),
-    actor.world,
-    `https://example.com/bdd-ingo/${suffix}.xml`,
-    displayTitle,
-  )
-  return { suffix, crawlKey: actor.world.lastCrawlKey }
+  return {
+    suffix,
+    crawlKey: `https://example.com/bdd-ingo/${encodeURIComponent(displayTitle.toLowerCase().replace(/\s+/gu, '-'))}-${suffix}.xml`,
+  }
 }
 
 export const SignInAsIntegratorOperator = SignInAsSeededOperator
 
 export const SendRecentSuccessfulIngestRequests = {
   async performAs(actor) {
-    const { suffix, crawlKey } = await prepareIngestFeed(actor, 'Ingo successful source')
+    const { suffix, crawlKey } = prepareIngestSource(actor, 'Ingo successful source')
     for (let index = 1; index <= 9; index += 1) {
       await crawlerIngest(page(actor), articlePayload(crawlKey, suffix, index))
     }
@@ -80,7 +77,7 @@ export const SendRecentSuccessfulIngestRequests = {
 
 export const SendMixedSuccessfulIngestRequests = {
   async performAs(actor) {
-    const { suffix, crawlKey } = await prepareIngestFeed(actor, 'Ingo count source')
+    const { suffix, crawlKey } = prepareIngestSource(actor, 'Ingo count source')
     await crawlerIngest(page(actor), articlePayload(crawlKey, suffix, 1))
     await crawlerIngest(page(actor), episodePayload(crawlKey, suffix))
     actor.remember('ingoExpectedCounts', { articles: 1, episodes: 1, subscribers: 2 })
@@ -90,7 +87,7 @@ export const SendMixedSuccessfulIngestRequests = {
 
 export const SendWrongKeyIngestRequest = {
   async performAs(actor) {
-    const { suffix, crawlKey } = await prepareIngestFeed(actor, 'Ingo rejected auth source')
+    const { suffix, crawlKey } = prepareIngestSource(actor, 'Ingo rejected auth source')
     const body = articlePayload(crawlKey, suffix, 'wrong-key')
     await browserFetchJson(page(actor), '/api/crawler/ingest', {
       method: 'POST',
