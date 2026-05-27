@@ -1,4 +1,4 @@
-@pending @persona @screenplay
+@persona @screenplay
 Feature: Integrator ingest observability expectations
   Ingo wants to know whether TopicKnowledgeCrawler delivery into infl0 is
   working and why individual requests failed.

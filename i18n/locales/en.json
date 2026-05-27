@@ -517,6 +517,34 @@
       "hints": "HTTP / retry / cache"
     }
   },
+  "operatorIngest": {
+    "title": "Integrator · ingest",
+    "intro": "Recent TopicKnowledgeCrawler delivery into infl0, including accepted items and rejected payloads.",
+    "errorLoad": "Could not load ingest requests",
+    "green": "Green",
+    "attention": "Check",
+    "unknownKind": "Unknown payload",
+    "empty": "No ingest requests have been recorded yet.",
+    "summary": {
+      "latestTen": "Last 10",
+      "success": "Accepted",
+      "rejected": "Rejected",
+      "articles": "Articles",
+      "episodes": "Episodes",
+      "subscribers": "Subscribers"
+    },
+    "fields": {
+      "createdAt": "Received",
+      "httpStatus": "HTTP",
+      "crawlKey": "Crawl key",
+      "articles": "Articles accepted",
+      "episodes": "Episodes accepted",
+      "timelineInserted": "Timeline rows",
+      "subscribers": "Subscribers affected",
+      "failureCategory": "Failure",
+      "failureMessage": "Details"
+    }
+  },
   "login": {
     "title": "infl0",
     "tagline": "Your calm news timeline",

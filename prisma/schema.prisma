@@ -110,6 +110,29 @@ model SourceStatus {
   @@map("source_statuses")
 }
 
+/// Append-only ingest request history for operator / integrator observability.
+model CrawlerIngestRequest {
+  id                  String   @id @default(uuid()) @db.Uuid
+  endpoint            String   @default("ingest")
+  status              String
+  httpStatus          Int      @map("http_status")
+  failureCategory     String?  @map("failure_category")
+  failureMessage      String?  @map("failure_message") @db.Text
+  crawlKey            String?  @map("crawl_key")
+  itemKind            String?  @map("item_kind")
+  contentId           String?  @map("content_id")
+  articlesAccepted    Int      @default(0) @map("articles_accepted")
+  episodesAccepted    Int      @default(0) @map("episodes_accepted")
+  timelineInserted    Int      @default(0) @map("timeline_inserted")
+  subscribersAffected Int      @default(0) @map("subscribers_affected")
+  requestPreview      Json?    @map("request_preview")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt(sort: Desc)])
+  @@index([status, createdAt(sort: Desc)])
+  @@map("crawler_ingest_requests")
+}
+
 /// Globally stored articles (one row per content id, e.g. content hash / GUID).
 model Article {
   id          String    @id

@@ -79,6 +79,10 @@ Covered in BDD today:
 - **`persona_operator_expectations.feature`** — Screenplay-style operator checks
   for source observability route protection, seeded operator access, summary
   visibility, attention-first row order, and blocked/quiet filtering.
+- **`persona_integrator_expectations.feature`** — Screenplay-style integrator
+  checks for recent crawler ingest delivery, accepted article/episode/subscriber
+  counts, rejected auth / invalid-structure requests, bounded payload previews,
+  and unsupported section diagnostics.
 - **`persona_oblivia_expectations.feature`** — Screenplay-style forgetful-reader
   checks for verified recovery email (settings OTP) and password recovery after
   sign-out; requires SMTP and mailbox OTP helpers (`@pending`, see
@@ -91,11 +95,9 @@ Still sensible follow-ups:
 - **Auth negative path:** invalid credentials → visible **`alert`** (optional).
 - **Tracking copy:** assert intro/label strings remain visible after toggling (optional).
 - **Help FAQ** expand/collapse regression (optional; component tests already exist).
-- **Integrator observability:** implement Ingo's pending dashboard scenarios
-  once ingest request history is persisted and visible to operators.
-- **Pending persona expectations:** timeline curator working sets, integrator
-  observability, and Oblivia recovery email verification / password reset
-  scenarios are captured as `@pending @persona` feature files.
+- **Pending persona expectations:** timeline curator working sets and Oblivia
+  recovery email verification / password reset scenarios are captured as
+  `@pending @persona` feature files.
 
 ## Run commands
 
