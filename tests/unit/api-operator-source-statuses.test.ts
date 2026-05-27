@@ -44,6 +44,7 @@ describe('GET /api/operator/source-statuses', () => {
       id: 'u1',
       username: 'reader',
       email: null,
+      recoveryEmailVerifiedAt: null,
       name: null,
     })
     await expect(handler(ev())).rejects.toMatchObject({ statusCode: 403 })
@@ -54,6 +55,7 @@ describe('GET /api/operator/source-statuses', () => {
       id: 'u-op',
       username: 'ops',
       email: null,
+      recoveryEmailVerifiedAt: null,
       name: null,
     })
     const at = new Date('2026-06-01T10:00:00.000Z')
@@ -198,6 +200,7 @@ describe('GET /api/operator/source-statuses', () => {
       id: 'u-op',
       username: 'ops',
       email: null,
+      recoveryEmailVerifiedAt: null,
       name: null,
     })
     vi.mocked(getQuery).mockReturnValue({ filter: 'blocked' })
@@ -273,6 +276,7 @@ describe('GET /api/operator/source-statuses', () => {
       id: 'u-op',
       username: 'ops',
       email: null,
+      recoveryEmailVerifiedAt: null,
       name: null,
     })
     vi.mocked(getQuery).mockReturnValue({ filter })

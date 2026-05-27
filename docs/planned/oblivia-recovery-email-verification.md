@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Implemented on `feat/wave-3-pending-bdd`; archive after PR merge.
 
 ## Goal
 
@@ -35,12 +35,13 @@ get back in after forgetting her password — without staff intervention.
 **Wordplay:** *Oblivia* ≈ *oblivious* — the reader who forgot the password but
 remembered to set up recovery.
 
-**Covered now:** Robin can register with an optional unverified recovery email
-and see sign-in name + recovery email in settings (`#account`). Username login
-and migration from legacy email-as-username are shipped.
+**Covered now:** Robin can register with an optional recovery email and see
+sign-in name + recovery email in settings (`#account`). Oblivia can verify a
+recovery email with a plain-text OTP and recover a forgotten password through
+that verified address.
 
-**Planned tests:** `persona_oblivia_expectations.feature` (`@pending` until SMTP
-+ OTP APIs + UI exist).
+**Tests:** `persona_oblivia_expectations.feature` (`@email`; requires SMTP and
+catch-all IMAP env vars).
 
 ## User flows
 
@@ -82,10 +83,8 @@ New deployment env (names indicative — align with `.env.example` when implemen
 
 | Variable | Purpose |
 |----------|---------|
-| `NUXT_SMTP_HOST` | Outbound mail server |
-| `NUXT_SMTP_PORT` | Typically `587` (STARTTLS) or provider default |
-| `NUXT_SMTP_USER` / `NUXT_SMTP_PASS` | Auth (if required) |
-| `NUXT_SMTP_FROM` | From address, e.g. `infl0@neonnormal.eu` |
+| `NUXT_SMTP_HOST` | Outbound mail server; may include `:port`, defaults to implicit TLS on `465` |
+| `NUXT_SMTP_USER` / `NUXT_SMTP_PASS` | SMTP auth; user is also used as From address |
 | `NUXT_EMAIL_OTP_TTL_SECONDS` | OTP validity window |
 | `NUXT_EMAIL_OTP_RESEND_COOLDOWN_SECONDS` | Anti-abuse between sends |
 

@@ -66,15 +66,25 @@ async function onTrackingToggle(e: Event) {
 const { prefs: uiPrefs, update: updateUiPrefs } = useUiPrefs()
 const onboardingVisible = computed(() => !uiPrefs.value.onboardingHidden)
 
-const accountUser = ref<{ username: string; email: string | null } | null>(null)
+const accountUser = ref<{
+  username: string
+  email: string | null
+  recoveryEmailVerifiedAt: string | null
+} | null>(null)
+const recoveryEmailInput = ref('')
+const recoveryCode = ref('')
+const recoveryPending = ref(false)
+const recoveryMessage = ref('')
+const recoveryError = ref('')
 
 onMounted(async () => {
   await ensureTrackingLoaded()
   try {
-    const res = await $fetch<{ user: { username: string; email: string | null } }>('/api/auth/me', {
-      credentials: 'include',
-    })
+    const res = await $fetch<{
+      user: { username: string; email: string | null; recoveryEmailVerifiedAt: string | null }
+    }>('/api/auth/me', { credentials: 'include' })
     accountUser.value = res.user
+    recoveryEmailInput.value = res.user.email ?? ''
   } catch {
     accountUser.value = null
   }
@@ -83,6 +93,48 @@ onMounted(async () => {
 function onOnboardingToggle(e: Event) {
   const checked = (e.target as HTMLInputElement).checked
   updateUiPrefs({ onboardingHidden: !checked })
+}
+
+async function requestRecoveryEmailVerification() {
+  recoveryPending.value = true
+  recoveryMessage.value = ''
+  recoveryError.value = ''
+  try {
+    await $fetch('/api/auth/recovery-email/request', {
+      method: 'POST',
+      body: { email: recoveryEmailInput.value },
+      credentials: 'include',
+    })
+    recoveryMessage.value = t('settingsIndex.recoveryCodeSent')
+  } catch (e: unknown) {
+    const { message } = parseFetchError(e)
+    recoveryError.value = message.trim() || t('settingsIndex.recoveryRequestFailed')
+  } finally {
+    recoveryPending.value = false
+  }
+}
+
+async function confirmRecoveryEmailVerification() {
+  recoveryPending.value = true
+  recoveryMessage.value = ''
+  recoveryError.value = ''
+  try {
+    const res = await $fetch<{
+      user: { username: string; email: string | null; recoveryEmailVerifiedAt: string | null }
+    }>('/api/auth/recovery-email/confirm', {
+      method: 'POST',
+      body: { email: recoveryEmailInput.value, code: recoveryCode.value },
+      credentials: 'include',
+    })
+    accountUser.value = res.user
+    recoveryCode.value = ''
+    recoveryMessage.value = t('settingsIndex.recoveryVerified')
+  } catch (e: unknown) {
+    const { message } = parseFetchError(e)
+    recoveryError.value = message.trim() || t('settingsIndex.recoveryConfirmFailed')
+  } finally {
+    recoveryPending.value = false
+  }
 }
 </script>
 
@@ -131,6 +183,79 @@ function onOnboardingToggle(e: Event) {
               data-testid="account-recovery-email"
             >
               {{ accountUser.email ?? t('settingsIndex.accountRecoveryEmailUnset') }}
+            </p>
+            <p
+              class="mt-1 text-xs"
+              :class="accountUser.recoveryEmailVerifiedAt ? 'text-success' : 'infl0-panel-muted'"
+              data-testid="account-recovery-email-status"
+            >
+              {{
+                accountUser.recoveryEmailVerifiedAt
+                  ? t('settingsIndex.accountRecoveryEmailVerified')
+                  : t('settingsIndex.accountRecoveryEmailUnverified')
+              }}
+            </p>
+          </div>
+
+          <div class="space-y-3 border-t border-base-300/60 pt-4">
+            <div class="space-y-1">
+              <label class="label w-full pb-0" for="settings-recovery-email">
+                <span class="label-text text-[var(--infl0-panel-text)]">
+                  {{ t('settingsIndex.recoveryEmailInput') }}
+                </span>
+              </label>
+              <input
+                id="settings-recovery-email"
+                v-model="recoveryEmailInput"
+                type="email"
+                autocomplete="email"
+                class="input input-bordered infl0-field w-full"
+                data-testid="recovery-email-input"
+              >
+            </div>
+            <button
+              type="button"
+              class="btn btn-outline btn-sm"
+              :disabled="recoveryPending"
+              data-testid="request-recovery-email-code"
+              @click="requestRecoveryEmailVerification"
+            >
+              {{ t('settingsIndex.recoverySendCode') }}
+            </button>
+            <div class="flex flex-col gap-2 sm:flex-row">
+              <input
+                v-model="recoveryCode"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                autocomplete="one-time-code"
+                class="input input-bordered infl0-field min-w-0 flex-1"
+                :placeholder="t('settingsIndex.recoveryCodePlaceholder')"
+                data-testid="recovery-email-code"
+              >
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                :disabled="recoveryPending"
+                data-testid="confirm-recovery-email-code"
+                @click="confirmRecoveryEmailVerification"
+              >
+                {{ t('settingsIndex.recoveryConfirmCode') }}
+              </button>
+            </div>
+            <p
+              v-if="recoveryMessage"
+              class="text-sm text-success"
+              data-testid="recovery-email-message"
+            >
+              {{ recoveryMessage }}
+            </p>
+            <p
+              v-if="recoveryError"
+              role="alert"
+              class="text-sm text-error"
+              data-testid="recovery-email-error"
+            >
+              {{ recoveryError }}
             </p>
           </div>
         </div>

@@ -2,10 +2,9 @@
 
 ## Status
 
-In progress — Robin, Shorty, Priya, Mira, Eli, Sam source-weighting, Sam focused
-working sets, and Ingo integrator-observability `@pending` scenarios are
-implemented on `feat/wave-3-pending-bdd`. Oblivia (SMTP recovery) stays
-`@pending` until product work lands.
+Implemented — Robin, Shorty, Priya, Mira, Eli, Sam source-weighting, Sam
+focused working sets, Ingo integrator observability, and Oblivia recovery
+email/password reset scenarios are implemented on `feat/wave-3-pending-bdd`.
 
 ## Goal
 
@@ -41,10 +40,12 @@ power-reader adjustments that are still intentionally `@pending`.
 4. Ingo's integrator dashboard scenarios cover recent successful ingest,
    accepted article/episode/subscriber counts, auth rejection without key
    exposure, invalid structure previews, and unsupported section diagnostics.
-5. Scenarios use named actors and shared Screenplay Tasks / Questions.
-6. Product gaps discovered during scenario authoring are either implemented or
+5. Oblivia's recovery scenarios cover recovery email verification, recovery
+   after sign-out, unverified-email refusal, and invalid-code refusal.
+6. Scenarios use named actors and shared Screenplay Tasks / Questions.
+7. Product gaps discovered during scenario authoring are either implemented or
    represented as `@pending` with a one-line rationale.
-7. `npm run test:bdd` stays green for all non-pending scenarios.
+8. `npm run test:bdd` stays green for all non-pending scenarios.
 
 ## Implementation notes
 

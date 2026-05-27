@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SRPClientSession, SRPParameters, SRPRoutines } from 'tssrp6a'
+import { createVerifierAndSalt, SRPClientSession, SRPParameters, SRPRoutines } from 'tssrp6a'
 
 definePageMeta({
   layout: false,
@@ -12,6 +12,15 @@ const username = ref('')
 const password = ref('')
 const errorMsg = ref('')
 const pending = ref(false)
+const recoveryMode = ref(false)
+const recoveryStep = ref<'email' | 'code'>('email')
+const recoveryEmail = ref('')
+const recoveryCode = ref('')
+const recoveryPassword = ref('')
+const recoveryUsername = ref('')
+const recoveryError = ref('')
+const recoveryMessage = ref('')
+const recoveryPending = ref(false)
 
 async function onSubmit() {
   errorMsg.value = ''
@@ -62,6 +71,55 @@ async function onSubmit() {
     pending.value = false
   }
 }
+
+async function requestPasswordReset() {
+  recoveryPending.value = true
+  recoveryError.value = ''
+  recoveryMessage.value = ''
+  try {
+    const res = await $fetch<{ username: string }>('/api/auth/password-reset/request', {
+      method: 'POST',
+      body: { email: recoveryEmail.value },
+    })
+    recoveryUsername.value = res.username
+    recoveryStep.value = 'code'
+    recoveryMessage.value = t('login.recoveryCodeSent')
+  } catch (e: unknown) {
+    const { message } = parseFetchError(e)
+    recoveryError.value = message.trim() || t('login.recoveryRequestFailed')
+  } finally {
+    recoveryPending.value = false
+  }
+}
+
+async function confirmPasswordReset() {
+  recoveryPending.value = true
+  recoveryError.value = ''
+  recoveryMessage.value = ''
+  try {
+    const emailNorm = recoveryEmail.value.trim().toLowerCase()
+    const pwd = recoveryPassword.value
+    const routines = new SRPRoutines(new SRPParameters())
+    const { s, v } = await createVerifierAndSalt(routines, recoveryUsername.value, pwd)
+    recoveryPassword.value = ''
+    await $fetch('/api/auth/password-reset/confirm', {
+      method: 'POST',
+      body: {
+        email: emailNorm,
+        code: recoveryCode.value,
+        saltHex: s.toString(16),
+        verifierHex: v.toString(16),
+      },
+      credentials: 'include',
+    })
+    await navigateTo('/')
+  } catch (e: unknown) {
+    const { message } = parseFetchError(e)
+    recoveryError.value = message.trim() || t('login.recoveryConfirmFailed')
+  } finally {
+    recoveryPending.value = false
+  }
+}
 </script>
 
 <template>
@@ -88,7 +146,7 @@ async function onSubmit() {
       <div class="mb-4 flex justify-center">
         <SecurityBadge align="center" />
       </div>
-      <form class="contents" @submit.prevent="onSubmit">
+      <form v-if="!recoveryMode" class="contents" @submit.prevent="onSubmit">
         <!-- DaisyUI Fieldset + labels: https://daisyui.com/components/fieldset/ -->
         <fieldset class="fieldset mt-1 gap-4 border-0 bg-transparent p-0">
           <legend class="fieldset-legend sr-only">
@@ -139,6 +197,105 @@ async function onSubmit() {
         >
           {{ $t('login.createAccount') }}
         </NuxtLink>
+        <button
+          type="button"
+          class="infl0-panel-muted mt-3 block w-full text-center text-sm underline-offset-2 hover:underline hover:text-[var(--infl0-panel-text)]"
+          data-testid="open-password-recovery"
+          @click="recoveryMode = true"
+        >
+          {{ $t('login.forgotPassword') }}
+        </button>
+      </form>
+
+      <form
+        v-else
+        class="contents"
+        @submit.prevent="recoveryStep === 'email' ? requestPasswordReset() : confirmPasswordReset()"
+      >
+        <fieldset class="fieldset mt-1 gap-4 border-0 bg-transparent p-0">
+          <legend class="fieldset-legend sr-only">
+            {{ $t('login.recoveryLegend') }}
+          </legend>
+
+          <div class="space-y-1">
+            <label class="label w-full pb-0" for="password-reset-email">
+              <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('login.recoveryEmail') }}</span>
+            </label>
+            <input
+              id="password-reset-email"
+              v-model="recoveryEmail"
+              type="email"
+              autocomplete="email"
+              required
+              class="input input-bordered infl0-field w-full"
+              data-testid="password-reset-email"
+            >
+          </div>
+
+          <template v-if="recoveryStep === 'code'">
+            <div class="space-y-1">
+              <label class="label w-full pb-0" for="password-reset-code">
+                <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('login.recoveryCode') }}</span>
+              </label>
+              <input
+                id="password-reset-code"
+                v-model="recoveryCode"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                autocomplete="one-time-code"
+                required
+                class="input input-bordered infl0-field w-full"
+                data-testid="password-reset-code"
+              >
+            </div>
+            <div class="space-y-1">
+              <label class="label w-full pb-0" for="password-reset-password">
+                <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('login.newPassword') }}</span>
+              </label>
+              <input
+                id="password-reset-password"
+                v-model="recoveryPassword"
+                type="password"
+                autocomplete="new-password"
+                required
+                class="input input-bordered infl0-field w-full"
+                data-testid="password-reset-password"
+              >
+            </div>
+          </template>
+
+          <div
+            v-if="recoveryMessage"
+            class="alert alert-success py-3 text-sm"
+            data-testid="password-reset-message"
+          >
+            {{ recoveryMessage }}
+          </div>
+          <div
+            v-if="recoveryError"
+            role="alert"
+            class="alert alert-error py-3 text-sm"
+            data-testid="password-reset-error"
+          >
+            {{ recoveryError }}
+          </div>
+          <button type="submit" class="btn btn-primary w-full" :disabled="recoveryPending">
+            {{
+              recoveryPending
+                ? $t('common.loading')
+                : recoveryStep === 'email'
+                  ? $t('login.sendRecoveryCode')
+                  : $t('login.resetPassword')
+            }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-ghost w-full"
+            @click="recoveryMode = false"
+          >
+            {{ $t('common.back') }}
+          </button>
+        </fieldset>
       </form>
     </main>
   </div>

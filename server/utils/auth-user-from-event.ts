@@ -11,6 +11,7 @@ export async function getAuthUserForEvent(event: H3Event): Promise<{
     id: string
     username: string
     email: string | null
+    recoveryEmailVerifiedAt: Date | null
     name: string | null
 } | null> {
     const userId = await getSessionUserId(event)
@@ -18,7 +19,7 @@ export async function getAuthUserForEvent(event: H3Event): Promise<{
 
     const user = await prisma.user.findUnique({
         where: { id: userId },
-        select: { id: true, username: true, email: true, name: true },
+        select: { id: true, username: true, email: true, recoveryEmailVerifiedAt: true, name: true },
     })
 
     return user

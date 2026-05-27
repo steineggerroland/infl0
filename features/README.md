@@ -85,7 +85,7 @@ Covered in BDD today:
   and unsupported section diagnostics.
 - **`persona_oblivia_expectations.feature`** — Screenplay-style forgetful-reader
   checks for verified recovery email (settings OTP) and password recovery after
-  sign-out; requires SMTP and mailbox OTP helpers (`@pending`, see
+  sign-out; requires SMTP and catch-all IMAP OTP helpers for `@email` runs (see
   `docs/planned/oblivia-recovery-email-verification.md`).
 
 Still sensible follow-ups:
@@ -95,8 +95,8 @@ Still sensible follow-ups:
 - **Auth negative path:** invalid credentials → visible **`alert`** (optional).
 - **Tracking copy:** assert intro/label strings remain visible after toggling (optional).
 - **Help FAQ** expand/collapse regression (optional; component tests already exist).
-- **Pending persona expectations:** Oblivia recovery email verification /
-  password reset scenarios are captured as `@pending @persona` feature files.
+- **Email-gated persona expectations:** Oblivia recovery scenarios are active
+  `@email` scenarios and require SMTP/IMAP env vars in the run environment.
 
 ## Run commands
 
