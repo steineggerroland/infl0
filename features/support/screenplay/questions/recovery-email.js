@@ -20,6 +20,16 @@ export const RecoveryIsUnavailable = {
   },
 }
 
+export const RecoveryAlreadyVerified = {
+  async answeredBy(actor) {
+    const page = BrowseTheWeb.as(actor)
+    await expect(page.getByTestId('recovery-email-already-verified')).toContainText('already verified', {
+      timeout: 20_000,
+    })
+    await expect(page.getByTestId('request-recovery-email-code')).toBeDisabled()
+  },
+}
+
 export const PasswordRecoveryFailed = {
   async answeredBy(actor) {
     const page = BrowseTheWeb.as(actor)

@@ -62,6 +62,20 @@ function parseSearchIds(reply) {
     .filter(Number.isFinite)
 }
 
+function extractOtpFromMessage(message) {
+  if (!message) return null
+  const patterns = [
+    /recovery email verification code is:\s*(\d{6})/iu,
+    /password recovery code is:\s*(\d{6})/iu,
+    /\b(\d{6})\b/u,
+  ]
+  for (const pattern of patterns) {
+    const match = message.match(pattern)
+    if (match?.[1]) return match[1]
+  }
+  return null
+}
+
 async function latestMessageFor(recipient) {
   const host = env('NUXT_TEST_IMAP_HOST')
   const user = env('NUXT_TEST_IMAP_USER')
@@ -94,8 +108,8 @@ export class ReadOtpFromMailbox {
     const deadline = Date.now() + 60_000
     while (Date.now() < deadline) {
       const message = await latestMessageFor(recipient)
-      const match = message?.match(/\b(\d{6})\b/u)
-      if (match?.[1]) return match[1]
+      const code = extractOtpFromMessage(message)
+      if (code) return code
       await new Promise((resolve) => setTimeout(resolve, 2_000))
     }
     throw new Error(`No OTP email arrived for ${recipient}.`)
