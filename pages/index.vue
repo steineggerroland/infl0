@@ -31,6 +31,7 @@ type InflowArticle = {
     readAt?: string | null
     category?: string[]
     tags?: string[]
+    crawl_key?: string
     source_type: string
     tld?: string
     author?: string
@@ -97,6 +98,7 @@ type UserFeedRow = {
 const { t } = useI18n()
 const toast = useToast()
 const route = useRoute()
+const router = useRouter()
 
 const PAGE_SIZE = 20
 /** Load next page when the user is this many pixels from the bottom (prefetch). */
@@ -120,6 +122,11 @@ const readerSessionStarted = ref(false)
 const readerStartReady = ref(false)
 /** Null until checked client-side: resume anchor visible under current show-read filter. */
 const resumeAnchorEligible = ref<boolean | null>(null)
+const sourceFocus = computed(() =>
+    typeof route.query.source === 'string' && route.query.source.trim()
+        ? route.query.source.trim()
+        : null,
+)
 
 /** SSR: forward `Cookie` from the incoming request to internal API calls (plain `$fetch` does not). */
 const requestFetch = useRequestFetch()
@@ -140,6 +147,7 @@ async function loadInflowPage(reset: boolean) {
                 limit: PAGE_SIZE,
                 offset: articleOffset,
                 ...(showRead.value ? { showRead: '1' } : {}),
+                ...(sourceFocus.value ? { source: sourceFocus.value } : {}),
             },
         })
         if (res.stats) {
@@ -247,6 +255,14 @@ watch(
 )
 
 const feedList = computed(() => feedsData.value?.feeds ?? [])
+const focusedFeed = computed(() => {
+    const source = sourceFocus.value
+    if (!source) return null
+    return feedList.value.find((f) => f.crawlKey === source) ?? null
+})
+const focusedSourceLabel = computed(() =>
+    focusedFeed.value?.displayTitle ?? focusedFeed.value?.feedUrl ?? sourceFocus.value ?? '',
+)
 
 function feedContextForEpisode(episode: InflowEpisode): {
     podcastTitle: string | null
@@ -293,6 +309,7 @@ const storedReturnContext = computed(() => {
 })
 const canResumeReader = computed(
     () =>
+        !sourceFocus.value &&
         storedReturnContext.value?.anchor.type === 'article' &&
         resumeAnchorEligible.value === true,
 )
@@ -342,6 +359,19 @@ watch(showRead, () => {
         }
     })
 })
+
+watch(sourceFocus, () => {
+    readerSessionStarted.value = false
+    restoreAttempted.value = false
+    void loadInflowPage(true).then(async () => {
+        await nextTick()
+        await refreshResumeEligibility()
+    })
+})
+
+async function clearSourceFocus() {
+    await router.push({ path: '/', query: {} })
+}
 
 async function refreshAll() {
     await refreshFeeds()
@@ -640,6 +670,24 @@ onBeforeUnmount(() => {
 
 <template>
     <div class="h-dvh w-full flex justify-center items-center relative text-[var(--infl0-canvas-fg)]">
+        <div
+            v-if="sourceFocus"
+            class="absolute inset-x-3 top-3 z-30 mx-auto flex max-w-xl items-center justify-between gap-3 rounded-box border bg-base-100/95 px-4 py-2 text-sm shadow-lg backdrop-blur"
+            data-testid="source-focus-banner"
+        >
+            <span class="min-w-0 truncate">
+                {{ $t('index.sourceFocusActive', { source: focusedSourceLabel }) }}
+            </span>
+            <button
+                type="button"
+                class="btn btn-ghost btn-xs shrink-0"
+                data-testid="source-focus-clear"
+                @click="clearSourceFocus"
+            >
+                {{ $t('index.sourceFocusClear') }}
+            </button>
+        </div>
+
         <div
             v-if="showOnboardingEmpty"
             class="relative z-10 mx-auto w-full max-w-md px-4 py-8"

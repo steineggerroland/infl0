@@ -652,6 +652,14 @@ async function removeFeed(id: string) {
                                         </svg>
                                         {{ copiedFeedId === f.id ? $t('feeds.copySourceDone') : $t('feeds.copySource') }}
                                     </button>
+                                    <NuxtLink
+                                        :to="{ path: '/', query: { source: f.crawlKey } }"
+                                        class="btn btn-ghost btn-xs gap-1"
+                                        :data-testid="`feed-source-focus-${f.id}`"
+                                        :aria-label="$t('feeds.focusSourceAria', { name: f.displayTitle || f.feedUrl })"
+                                    >
+                                        {{ $t('feeds.focusSource') }}
+                                    </NuxtLink>
                                 </div>
                                 <FeedSourceHealthSummary
                                     :latest="latestByFeedId[f.id] ?? null"

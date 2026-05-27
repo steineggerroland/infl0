@@ -3,6 +3,7 @@ import { actorCalled, currentActor } from '../../support/screenplay/actor.js'
 import { StartSignedInToInfl0 } from '../../support/screenplay/tasks/access.js'
 import {
   AddRememberedSource,
+  CreateRememberedSourceWorkingSet,
   HaveMultipleActiveSources,
   IncreaseRememberedSourceWeight,
   PauseRememberedSource,
@@ -20,6 +21,8 @@ import {
   RememberedSourceIsPaused,
   RememberedSourcePreferenceIsSaved,
   SourceListIsEmpty,
+  FocusedWorkingSetIsVisible,
+  FullInflowIsVisibleAgain,
   WeightedSourceLeadsFutureTimeline,
 } from '../../support/screenplay/questions/source-curation.js'
 
@@ -41,6 +44,10 @@ Given('{word} is ready to inspect crawler health {string}', async function (name
 })
 
 Given('{word} has multiple active sources', async function (name) {
+  await actorCalled(this, name).attemptsTo(StartSignedInToInfl0, HaveMultipleActiveSources)
+})
+
+Given('{word} has many feeds and podcasts', async function (name) {
   await actorCalled(this, name).attemptsTo(StartSignedInToInfl0, HaveMultipleActiveSources)
 })
 
@@ -70,6 +77,10 @@ When('{word} receives crawler health {string} for that source', async function (
 
 When("{word} increases one source's weight", async function (name) {
   await currentActor(this, name).attemptsTo(IncreaseRememberedSourceWeight)
+})
+
+When('{word} creates a filter or favorites list', async function (name) {
+  await currentActor(this, name).attemptsTo(CreateRememberedSourceWorkingSet)
 })
 
 Then('{word} should see an empty source list', async function (name) {
@@ -102,4 +113,14 @@ Then('{word} should see that the source preference was saved', async function (n
 
 Then('future timeline ranking should respect that preference', async function () {
   await currentActor(this).asksFor(WeightedSourceLeadsFutureTimeline)
+})
+
+Then('{word} should be able to focus the timeline on that working set', async function (name) {
+  await currentActor(this, name).asksFor(FocusedWorkingSetIsVisible)
+})
+
+Then('{word} should be able to return to the full inflow', async function (name) {
+  const actor = currentActor(this, name)
+  await actor.page.getByTestId('source-focus-clear').click()
+  await actor.asksFor(FullInflowIsVisibleAgain)
 })

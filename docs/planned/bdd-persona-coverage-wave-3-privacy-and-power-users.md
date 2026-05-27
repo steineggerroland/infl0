@@ -2,10 +2,10 @@
 
 ## Status
 
-In progress — Robin, Shorty, Priya, Mira, Eli, Sam source-weighting, and Ingo
-integrator-observability `@pending` scenarios are implemented on
-`feat/wave-3-pending-bdd`. Sam focused working sets and Oblivia (SMTP recovery)
-stay `@pending` until product work lands.
+In progress — Robin, Shorty, Priya, Mira, Eli, Sam source-weighting, Sam focused
+working sets, and Ingo integrator-observability `@pending` scenarios are
+implemented on `feat/wave-3-pending-bdd`. Oblivia (SMTP recovery) stays
+`@pending` until product work lands.
 
 ## Goal
 
@@ -36,7 +36,8 @@ power-reader adjustments that are still intentionally `@pending`.
    (show-read); mid-session font shortcuts are already green in Shorty's
    article/episode shortcut scenarios.
 3. Sam's source-weighting scenario covers saved preference and reader ranking;
-   focused working sets remain pending until that product affordance is ready.
+   focused working sets cover narrowing the reader to one source and returning
+   to the full inflow.
 4. Ingo's integrator dashboard scenarios cover recent successful ingest,
    accepted article/episode/subscriber counts, auth rejection without key
    exposure, invalid structure previews, and unsupported section diagnostics.

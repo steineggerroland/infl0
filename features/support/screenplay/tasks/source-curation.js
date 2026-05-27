@@ -115,9 +115,12 @@ export const HaveMultipleActiveSources = {
     }
 
     const preferred = sources.find((source) => source.role === 'preferred')
+    const baseline = sources.find((source) => source.role === 'baseline')
     if (!preferred) throw new Error('Preferred source fixture was not created.')
+    if (!baseline) throw new Error('Baseline source fixture was not created.')
     actor.remember('sourceToCurate', preferred)
     actor.remember('weightedSourceArticleId', preferred.articleId)
+    actor.remember('baselineSourceArticleId', baseline.articleId)
     actor.remember('weightedSources', sources)
     await sourcesPage(actor).open()
   },
@@ -127,6 +130,13 @@ export const IncreaseRememberedSourceWeight = {
   async performAs(actor) {
     const source = sourceFor(actor)
     await sourcesPage(actor).setSourcePreference(source.address, 1)
+  },
+}
+
+export const CreateRememberedSourceWorkingSet = {
+  async performAs(actor) {
+    const source = sourceFor(actor)
+    await sourcesPage(actor).focusSourceInInflow(source.address)
   },
 }
 

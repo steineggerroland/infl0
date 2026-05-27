@@ -59,7 +59,6 @@ Feature: Timeline curator expectations
     Then Sam should see that the source preference was saved
     And future timeline ranking should respect that preference
 
-  @pending
   Scenario: Sam curates a smaller working set
     Given Sam has many feeds and podcasts
     When Sam creates a filter or favorites list
