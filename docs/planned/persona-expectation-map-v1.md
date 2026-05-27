@@ -130,12 +130,10 @@ forgotten password via that address without operator help.
 **Wordplay:** *Oblivia* ≈ *oblivious* — forgot the password, not the recovery
 setup.
 
-**Covered now:** optional unverified recovery email at registration; settings
-show sign-in name and stored recovery email (Robin).
-
-**Planned tests:** `persona_oblivia_expectations.feature` — verify in settings,
-OTP by SMTP, sign out, forgot-password flow. Package:
-[`oblivia-recovery-email-verification.md`](./oblivia-recovery-email-verification.md).
+**Covered now:** verify recovery email in Settings (OTP), resend, password
+recovery via verified address, progressive account UI. BDD:
+`persona_oblivia_expectations.feature` (`@email`; needs SMTP + catch-all IMAP).
+Operators: [`DEPLOYING.md`](../DEPLOYING.md#transactional-email-recovery-otp).
 
 ### Ingo — integrator
 

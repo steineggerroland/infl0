@@ -31,9 +31,19 @@ new entries accrue under **Unreleased**.
 - **Recovery email verification:** Settings can send a plain-text OTP email to
   verify a recovery address. The login page can send a password-recovery OTP to
   that verified address and rotate the SRP salt/verifier after a new password is
-  chosen. Operators configure SMTP with `NUXT_SMTP_HOST`, `NUXT_SMTP_USER`, and
-  `NUXT_SMTP_PASS`; BDD `@email` runs use `NUXT_TEST_EMAIL_DOMAIN` plus
-  `NUXT_TEST_IMAP_HOST`, `NUXT_TEST_IMAP_USER`, and `NUXT_TEST_IMAP_PASS`.
+  chosen. UI includes progressive-disclosure account editor, six-digit OTP input
+  with auto-verify, resend cooldown, spam-folder hint, and guards against
+  re-verifying an already verified address.
+- **Operators — transactional email (recovery OTP):** infl0 **sends outbound
+  email** when users verify a recovery address (Settings → Account) or use
+  **Forgot password** on the login page. Configure **`NUXT_SMTP_HOST`**,
+  **`NUXT_SMTP_USER`**, and **`NUXT_SMTP_PASS`** on every deployment where
+  recovery should work; without SMTP the API fails and **no mail is sent**. See
+  [`DEPLOYING.md`](./DEPLOYING.md#transactional-email-recovery-otp). Optional:
+  `NUXT_EMAIL_OTP_TTL_SECONDS`, `NUXT_EMAIL_OTP_RESEND_COOLDOWN_SECONDS`,
+  `NUXT_PUBLIC_EMAIL_OTP_RESEND_COOLDOWN_SECONDS`. BDD `@email` runs additionally
+  need `NUXT_TEST_EMAIL_DOMAIN`, `NUXT_TEST_IMAP_HOST`, `NUXT_TEST_IMAP_USER`,
+  and `NUXT_TEST_IMAP_PASS` (scenarios skip when unset).
 - **Reader source focus:** the sources view can open the reader scoped to one
   feed/podcast source. The focused reader shows a visible source banner and a
   "Full inflow" action to clear the working set.

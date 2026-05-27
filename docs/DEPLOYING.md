@@ -20,6 +20,16 @@ infl0 is a Nuxt SSR app backed by PostgreSQL. A small deployment needs:
   `403` for everyone; the server prints the parsed allowlist size and any
   invalid entries once at boot. See [`OPERATOR.md`](./OPERATOR.md) for the
   access model, columns, filters, and troubleshooting.
+- **Transactional email (recovery OTP):** when users verify a recovery address
+  in **Settings → Account** or request **Forgot password** on the login page,
+  infl0 **sends outbound plain-text email** with a six-digit one-time code.
+  This is **not optional** for those flows to work: set **`NUXT_SMTP_HOST`**,
+  **`NUXT_SMTP_USER`**, and **`NUXT_SMTP_PASS`** on every deployment where
+  recovery should be available. Without SMTP, the API rejects the request and
+  **no mail is sent**. Optional tuning: `NUXT_EMAIL_OTP_TTL_SECONDS`,
+  `NUXT_EMAIL_OTP_RESEND_COOLDOWN_SECONDS`, and
+  `NUXT_PUBLIC_EMAIL_OTP_RESEND_COOLDOWN_SECONDS` (UI resend countdown). See
+  [Transactional email (recovery OTP)](#transactional-email-recovery-otp) below.
 - **Seeded operator accounts (optional):** `prisma db seed` creates `dev` and
   `operator` via `DEV_SEED_USERNAME` / `OPERATOR_SEED_USERNAME` (+ SRP envs).
   To grant operator access, include the operator username in
@@ -30,6 +40,32 @@ infl0 is a Nuxt SSR app backed by PostgreSQL. A small deployment needs:
 
 See [`.env.example`](../.env.example) and [`docker-compose.yaml`](../docker-compose.yaml)
 for the local/prod-like configuration shape.
+
+## Transactional email (recovery OTP)
+
+Recovery email verification and password reset depend on **outbound SMTP**.
+infl0 sends **plain-text transactional mail** (six-digit OTP codes) when:
+
+- a signed-in user requests verification for a recovery address in Settings, or
+- a visitor starts **Forgot password** on the login page (verified recovery
+  email required).
+
+**Operators must configure SMTP** on any instance where these user flows should
+work. If `NUXT_SMTP_HOST`, `NUXT_SMTP_USER`, or `NUXT_SMTP_PASS` is missing or
+wrong, the recovery API returns an error and **no email is sent**.
+
+| Variable | Required | Purpose |
+|----------|:--------:|---------|
+| `NUXT_SMTP_HOST` | yes | SMTP server; optional `:port` (default TLS port `465`) |
+| `NUXT_SMTP_USER` | yes | SMTP auth user; also used as the From address |
+| `NUXT_SMTP_PASS` | yes | SMTP password |
+| `NUXT_EMAIL_OTP_TTL_SECONDS` | no | Code validity (default 600) |
+| `NUXT_EMAIL_OTP_RESEND_COOLDOWN_SECONDS` | no | Minimum seconds between sends per email (default 60) |
+| `NUXT_PUBLIC_EMAIL_OTP_RESEND_COOLDOWN_SECONDS` | no | UI resend countdown; should match server cooldown |
+
+Privacy / abuse notes: codes are single-use, hashed server-side, and rate-limited.
+Do not point SMTP at a shared mailbox unless you accept that recovery traffic
+will deliver there. For local BDD with real mail, see [`DEVELOPING.md`](./DEVELOPING.md).
 
 ## What runs automatically
 
