@@ -2,9 +2,9 @@
 
 ## Status
 
-In progress — Robin, Shorty, Priya, Mira, and Eli `@pending` scenarios are
-implemented on `feat/wave-3-pending-bdd`. Sam (source weighting / working
-sets), Oblivia (SMTP recovery), and Ingo (integrator dashboard) stay
+In progress — Robin, Shorty, Priya, Mira, Eli, and Sam source-weighting
+`@pending` scenarios are implemented on `feat/wave-3-pending-bdd`. Sam focused
+working sets, Oblivia (SMTP recovery), and Ingo (integrator dashboard) stay
 `@pending` until product work lands.
 
 ## Goal
@@ -35,8 +35,8 @@ power-reader adjustments that are still intentionally `@pending`.
    mid-session reading-control changes. Shorty's `@pending` covers timeline `r`
    (show-read); mid-session font shortcuts are already green in Shorty's
    article/episode shortcut scenarios.
-3. Sam's remaining scenarios cover source weighting and focused working sets
-   once those product affordances are ready.
+3. Sam's source-weighting scenario covers saved preference and reader ranking;
+   focused working sets remain pending until that product affordance is ready.
 4. Scenarios use named actors and shared Screenplay Tasks / Questions.
 5. Product gaps discovered during scenario authoring are either implemented or
    represented as `@pending` with a one-line rationale.
