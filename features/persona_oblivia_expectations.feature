@@ -4,7 +4,6 @@ Feature: Oblivia recovery email and password reset
   She verifies that address in settings, signs out, and recovers access with
   one-time codes sent by email.
 
-  # End-to-end journey (matches docs/planned/oblivia-recovery-email-verification.md)
   Scenario: Oblivia verifies recovery email then resets a forgotten password
     Given Oblivia is signed in to infl0 without a verified recovery email
     When Oblivia opens account settings

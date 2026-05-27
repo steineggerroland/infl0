@@ -86,7 +86,8 @@ Covered in BDD today:
 - **`persona_oblivia_expectations.feature`** — Screenplay-style forgetful-reader
   checks for verified recovery email (settings OTP) and password recovery after
   sign-out; requires SMTP and catch-all IMAP OTP helpers for `@email` runs (see
-  `docs/planned/oblivia-recovery-email-verification.md`).
+  [`docs/DEPLOYING.md`](../docs/DEPLOYING.md#transactional-email-recovery-otp)
+  and [`docs/DEVELOPING.md`](../docs/DEVELOPING.md)).
 
 Still sensible follow-ups:
 
