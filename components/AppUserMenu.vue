@@ -7,6 +7,19 @@ const { showRead } = useTimelinePreferences()
 const menuRoot = ref<HTMLDetailsElement | null>(null)
 const isOpen = ref(false)
 
+const navItems = computed(() => [
+    { to: '/', label: t('menu.timeline') },
+    { to: '/feeds', label: t('menu.feeds') },
+    { to: '/settings', label: t('menu.settings') },
+    { to: '/settings/personalization', label: t('menu.personalization') },
+    { to: '/settings/privacy', label: t('menu.privacy') },
+    { to: '/help', label: t('menu.help') },
+])
+
+function isCurrentRoute(path: string) {
+    return route.path === path
+}
+
 function closeMenu() {
     if (menuRoot.value) menuRoot.value.open = false
     isOpen.value = false
@@ -23,6 +36,8 @@ async function onLogout() {
 
 const linkClass =
     'infl0-menu-link no-underline visited:[color:inherit]'
+const currentLinkClass =
+    'app-user-menu__current pointer-events-none font-semibold'
 </script>
 
 <template>
@@ -40,39 +55,14 @@ const linkClass =
         >
             <nav :aria-label="t('menu.navLandmark')">
                 <ul class="menu menu-sm app-user-menu__list m-0 w-full list-none gap-1 p-0">
-                    <li v-if="route.path !== '/'">
-                        <NuxtLink to="/" :class="linkClass" @click="closeMenu">
-                            {{ t('menu.timeline') }}
-                        </NuxtLink>
-                    </li>
-                    <li v-if="route.path !== '/feeds'">
-                        <NuxtLink to="/feeds" :class="linkClass" @click="closeMenu">
-                            {{ t('menu.feeds') }}
-                        </NuxtLink>
-                    </li>
-                    <!--
-                        Settings hub + two sibling info surfaces: personalization
-                        explainability and privacy philosophy — each stays a distinct
-                        menu entry and route (drawer anchors exist only on /settings).
-                    -->
-                    <li v-if="route.path !== '/settings'">
-                        <NuxtLink to="/settings" :class="linkClass" @click="closeMenu">
-                            {{ t('menu.settings') }}
-                        </NuxtLink>
-                    </li>
-                    <li v-if="route.path !== '/settings/personalization'">
-                        <NuxtLink to="/settings/personalization" :class="linkClass" @click="closeMenu">
-                            {{ t('menu.personalization') }}
-                        </NuxtLink>
-                    </li>
-                    <li v-if="route.path !== '/settings/privacy'">
-                        <NuxtLink to="/settings/privacy" :class="linkClass" @click="closeMenu">
-                            {{ t('menu.privacy') }}
-                        </NuxtLink>
-                    </li>
-                    <li v-if="route.path !== '/help'">
-                        <NuxtLink to="/help" :class="linkClass" @click="closeMenu">
-                            {{ t('menu.help') }}
+                    <li v-for="item in navItems" :key="item.to">
+                        <NuxtLink
+                            :to="item.to"
+                            :class="[linkClass, isCurrentRoute(item.to) ? currentLinkClass : '']"
+                            :aria-current="isCurrentRoute(item.to) ? 'page' : undefined"
+                            @click="closeMenu"
+                        >
+                            {{ item.label }}
                         </NuxtLink>
                     </li>
                 </ul>
@@ -134,6 +124,11 @@ const linkClass =
 
 .app-user-menu__panel :deep(.menu-title) {
     color: var(--infl0-chrome-fg-subtle);
+}
+
+.app-user-menu__current {
+    background-color: color-mix(in srgb, var(--infl0-chrome-fg) 12%, transparent);
+    color: var(--infl0-chrome-fg);
 }
 
 .app-user-menu__logout {

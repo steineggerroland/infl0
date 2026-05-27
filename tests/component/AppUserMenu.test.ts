@@ -139,25 +139,26 @@ describe('AppUserMenu navigation', () => {
     expect(hrefs).toEqual(expect.arrayContaining(['/', '/feeds', '/help', '/settings']))
   })
 
-  it('hides only the current-route entry so the rest of the menu stays navigable', async () => {
-    // On /settings the Settings link is hidden, but "Why at the top?" and
-    // Privacy stay reachable — they are siblings, not children of
-    // Settings.
+  it('keeps the same navigation entries visible on every route', async () => {
     const wrapper = await mountMenu('/settings')
     const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
-    expect(hrefs).not.toContain('/settings')
     expect(hrefs).toEqual(
-      expect.arrayContaining([
+      [
+        '/',
+        '/feeds',
+        '/settings',
         '/settings/personalization',
         '/settings/privacy',
-      ]),
+        '/help',
+      ],
     )
   })
 
-  it('hides Privacy when the user is already on the privacy page', async () => {
+  it('marks the current route instead of removing it from the menu', async () => {
     const wrapper = await mountMenu('/settings/privacy')
-    const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
-    expect(hrefs).not.toContain('/settings/privacy')
-    expect(hrefs).toContain('/settings')
+    const privacyLink = wrapper.find('a[href="/settings/privacy"]')
+    expect(privacyLink.exists()).toBe(true)
+    expect(privacyLink.attributes('aria-current')).toBe('page')
+    expect(privacyLink.classes()).toContain('app-user-menu__current')
   })
 })

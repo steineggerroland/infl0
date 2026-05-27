@@ -104,6 +104,9 @@ new entries accrue under **Unreleased**.
 
 ### Fixed
 
+- **Navigation menu stability:** the app menu keeps Timeline, Sources,
+  Settings, "Why at the top?", Privacy, and Help visible on every route and
+  marks the current page with `aria-current` instead of removing that entry.
 - **SRP login on serverless deploys:** short-lived SRP challenge state is now
   persisted in Postgres instead of process memory, so challenge/verify can
   succeed when Vercel routes the two requests to different runtime instances.

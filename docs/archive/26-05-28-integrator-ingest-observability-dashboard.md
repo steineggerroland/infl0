@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Done — shipped in PR #49 as `/operator/ingest` with Ingo persona coverage.
 
 ## Goal
 
@@ -54,5 +54,5 @@ request, and why was a request rejected?
 
 ## Links
 
-- PR:
+- PR: #49
 - Discussion:
