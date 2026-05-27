@@ -1,4 +1,4 @@
-import { createHash, randomInt, timingSafeEqual } from 'node:crypto'
+import { randomInt, scryptSync, timingSafeEqual } from 'node:crypto'
 import { createError } from 'h3'
 import { prisma } from './prisma'
 import { sendTransactionalEmail } from './transactional-email'
@@ -37,9 +37,7 @@ export function generateOtpCode(): string {
 }
 
 export function hashOtpCode(email: string, purpose: EmailOtpPurpose, code: string): string {
-  return createHash('sha256')
-    .update(`${secret()}:${purpose}:${email}:${code}`)
-    .digest('hex')
+  return scryptSync(code, `${secret()}:${purpose}:${email}`, 32).toString('hex')
 }
 
 function matchesHash(left: string, right: string): boolean {
