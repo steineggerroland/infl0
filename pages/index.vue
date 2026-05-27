@@ -8,6 +8,7 @@ import {
     parseInflowReturnContext,
     serializeInflowReturnContext,
     type InflowReturnAnchor,
+    type InflowReturnContext,
 } from '~/utils/inflow-return-context'
 import { parseInflowAnchorPath, pathForInflowAnchor } from '~/utils/inflow-route'
 import type { InflowEpisodeChapter } from '~/utils/inflow-episode'
@@ -297,7 +298,9 @@ const showAllReadEmpty = computed(
         !showRead.value &&
         !hasOnboarding.value,
 )
-const storedReturnContext = computed(() => {
+const storedReturnContext = ref<InflowReturnContext | null>(null)
+
+function readStoredReturnContext(): InflowReturnContext | null {
     if (!import.meta.client) return null
     try {
         return parseInflowReturnContext(
@@ -306,7 +309,13 @@ const storedReturnContext = computed(() => {
     } catch {
         return null
     }
-})
+}
+
+function syncStoredReturnContext(): InflowReturnContext | null {
+    storedReturnContext.value = readStoredReturnContext()
+    return storedReturnContext.value
+}
+
 const canResumeReader = computed(
     () =>
         !sourceFocus.value &&
@@ -326,7 +335,7 @@ const readerIsInteractive = computed(() => readerSessionStarted.value || hasOnbo
 
 async function refreshResumeEligibility() {
     if (!import.meta.client) return
-    const anchor = storedReturnContext.value?.anchor
+    const anchor = syncStoredReturnContext()?.anchor
     if (!anchor || anchor.type !== 'article') {
         resumeAnchorEligible.value = false
         return
@@ -441,10 +450,13 @@ function persistInflowContext(index = currentIndex.value) {
     const item = items.value[index]
     if (!item) return
     try {
-        window.localStorage.setItem(
-            INFLOW_RETURN_CONTEXT_STORAGE_KEY,
-            serializeInflowReturnContext(anchorForItem(item), index, articleOffsetBeforeIndex(index)),
+        const serialized = serializeInflowReturnContext(
+            anchorForItem(item),
+            index,
+            articleOffsetBeforeIndex(index),
         )
+        window.localStorage.setItem(INFLOW_RETURN_CONTEXT_STORAGE_KEY, serialized)
+        storedReturnContext.value = parseInflowReturnContext(serialized)
     } catch {
         /* private mode / quota — return context is a comfort feature */
     }
@@ -502,9 +514,7 @@ function fallbackIndexForStoredContext(itemIndex: number, articleOffset: number)
 async function restoreInflowContext() {
     if (!import.meta.client || restoreAttempted.value) return
     const routeAnchor = parseInflowAnchorPath(route.path)
-    const stored = parseInflowReturnContext(
-        window.localStorage.getItem(INFLOW_RETURN_CONTEXT_STORAGE_KEY),
-    )
+    const stored = syncStoredReturnContext()
     restoreAttempted.value = true
     const anchor = routeAnchor ?? stored?.anchor
     if (!anchor) return
@@ -564,7 +574,7 @@ async function startReader() {
 
 async function resumeReader() {
     await markReaderSessionStarted()
-    const stored = storedReturnContext.value
+    const stored = syncStoredReturnContext()
     let targetIndex = stored?.anchor ? findAnchorIndex(stored.anchor) : -1
     while (targetIndex < 0 && stored?.anchor.type === 'article' && inflowHasMore.value) {
         const beforeCount = items.value.length
