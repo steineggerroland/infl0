@@ -70,6 +70,9 @@ export default defineNuxtConfig({
     smtpPass: '',
     emailOtpTtlSeconds: 600,
     emailOtpResendCooldownSeconds: 60,
+    public: {
+      emailOtpResendCooldownSeconds: 60,
+    },
   },
   devtools: { enabled: true },
   vite: {

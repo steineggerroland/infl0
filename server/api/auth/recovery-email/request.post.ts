@@ -15,6 +15,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Valid recovery email required' })
   }
 
+  if (user.recoveryEmailVerifiedAt && user.email === email) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'This recovery email is already verified',
+    })
+  }
+
   await requestEmailOtp({
     userId: user.id,
     email,

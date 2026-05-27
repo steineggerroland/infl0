@@ -74,6 +74,24 @@ Before({ tags: '@http-only' }, async function () {
   loadE2eMergedEnv()
 })
 
+Before({ tags: '@email' }, function () {
+  loadE2eMergedEnv()
+  const required = [
+    'NUXT_TEST_EMAIL_DOMAIN',
+    'NUXT_TEST_IMAP_HOST',
+    'NUXT_TEST_IMAP_USER',
+    'NUXT_TEST_IMAP_PASS',
+    'NUXT_SMTP_HOST',
+    'NUXT_SMTP_USER',
+    'NUXT_SMTP_PASS',
+  ]
+  for (const name of required) {
+    if (!process.env[name]?.trim()) {
+      return 'skipped'
+    }
+  }
+})
+
 Before({ tags: '@screenplay and not @http-only' }, async function () {
   loadE2eMergedEnv()
   this.browser = await chromium.launch({ headless: true })

@@ -7,15 +7,18 @@ import {
   RememberPasswordRecoveryCode,
   RememberRecoveryEmailVerificationCode,
   RequestRecoveryEmailVerification,
+  ResendRecoveryEmailVerification,
   SignOutOfInfl0,
   StartPasswordRecoveryWithRememberedEmail,
   StartPasswordRecoveryWithUnverifiedEmail,
   StartSignedInWithoutVerifiedRecoveryEmail,
+  TryToVerifySameRecoveryEmailAgain,
   VerifyRecoveryEmailInSettings,
 } from '../../support/screenplay/tasks/recovery-email.js'
 import {
   ObliviaIsSignedIn,
   PasswordRecoveryFailed,
+  RecoveryAlreadyVerified,
   RecoveryEmailIsVerified,
   RecoveryIsUnavailable,
 } from '../../support/screenplay/questions/recovery-email.js'
@@ -34,6 +37,14 @@ Given('{word} is signed out of infl0', async function (name) {
 
 When('{word} requests verification for a recovery email address', async function (name) {
   await currentActor(this, name).attemptsTo(RequestRecoveryEmailVerification)
+})
+
+When('{word} resends the verification code for that recovery email', async function (name) {
+  await currentActor(this, name).attemptsTo(ResendRecoveryEmailVerification)
+})
+
+When('{word} tries to verify the same recovery email again', async function (name) {
+  await currentActor(this, name).attemptsTo(TryToVerifySameRecoveryEmailAgain)
 })
 
 Then('{word} should receive a verification code for that recovery email', async function (name) {
@@ -78,6 +89,10 @@ Then('{word} should be signed in to infl0', async function (name) {
 
 Then('{word} should be told recovery is not available yet', async function (name) {
   await currentActor(this, name).asksFor(RecoveryIsUnavailable)
+})
+
+Then('{word} should be told that recovery email is already verified', async function (name) {
+  await currentActor(this, name).asksFor(RecoveryAlreadyVerified)
 })
 
 Then('{word} should not be signed in to infl0', async function (name) {

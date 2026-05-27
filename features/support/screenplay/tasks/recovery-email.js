@@ -14,6 +14,14 @@ function usernamePrefixFor(actor) {
   return `bdd-${actor.name.toLowerCase().replace(/[^a-z0-9]+/gu, '-') || 'reader'}`
 }
 
+async function openRecoveryEmailEditor(page) {
+  const editor = page.getByTestId('recovery-email-editor')
+  if (!(await editor.isVisible())) {
+    await page.getByTestId('edit-recovery-email').click()
+    await expect(editor).toBeVisible()
+  }
+}
+
 export const StartSignedInWithoutVerifiedRecoveryEmail = {
   async performAs(actor) {
     await BrowseTheWeb.withFreshSession(actor)
@@ -35,9 +43,35 @@ export const RequestRecoveryEmailVerification = {
     const page = BrowseTheWeb.as(actor)
     const email = ReadOtpFromMailbox.recoveryEmailFor(actor)
     actor.remember('recoveryEmail', email)
+    await openRecoveryEmailEditor(page)
     await page.getByTestId('recovery-email-input').fill(email)
     await page.getByTestId('request-recovery-email-code').click()
-    await expect(page.getByTestId('recovery-email-message')).toBeVisible({ timeout: 20_000 })
+    await expect(page.getByTestId('app-toast-success')).toContainText('verification code', {
+      timeout: 20_000,
+    })
+    await expect(page.getByTestId('recovery-email-code')).toBeVisible()
+    await expect(page.getByTestId('recovery-email-spam-hint')).toBeVisible()
+  },
+}
+
+export const ResendRecoveryEmailVerification = {
+  async performAs(actor) {
+    const page = BrowseTheWeb.as(actor)
+    const resend = page.getByTestId('resend-recovery-email-code')
+    await expect(resend).toBeEnabled({ timeout: 20_000 })
+    await resend.click()
+    await expect(page.getByTestId('app-toast-success')).toContainText('verification code', {
+      timeout: 20_000,
+    })
+  },
+}
+
+export const TryToVerifySameRecoveryEmailAgain = {
+  async performAs(actor) {
+    const page = BrowseTheWeb.as(actor)
+    await openRecoveryEmailEditor(page)
+    await expect(page.getByTestId('recovery-email-already-verified')).toBeVisible()
+    await expect(page.getByTestId('request-recovery-email-code')).toBeDisabled()
   },
 }
 
@@ -52,11 +86,25 @@ export const RememberRecoveryEmailVerificationCode = {
 export const ConfirmRecoveryEmailVerification = {
   async performAs(actor) {
     const page = BrowseTheWeb.as(actor)
+    const email = actor.recall('recoveryEmail')
     const code = actor.recall('recoveryEmailVerificationCode')
+    if (!email) throw new Error(`${actor.name} has no remembered recovery email.`)
     if (!code) throw new Error(`${actor.name} has no remembered verification code.`)
-    await page.getByTestId('recovery-email-code').fill(code)
-    await page.getByTestId('confirm-recovery-email-code').click()
-    await expect(page.getByTestId('recovery-email-message')).toContainText('verified', { timeout: 20_000 })
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        (r) => r.url().includes('/api/auth/recovery-email/confirm') && r.request().method() === 'POST',
+      ),
+      page.getByTestId('recovery-email-code').fill(code),
+    ])
+    if (!response.ok()) {
+      const body = await response.text()
+      throw new Error(`Recovery email confirm failed (${response.status()}): ${body}`)
+    }
+    await expect(page.getByTestId('account-recovery-email')).toHaveText(email, { timeout: 20_000 })
+    await expect(page.getByTestId('account-recovery-email-status')).toContainText('Verified', {
+      timeout: 20_000,
+    })
+    await expect(page.getByTestId('recovery-email-editor')).toBeHidden()
   },
 }
 
@@ -80,7 +128,9 @@ export const StartPasswordRecoveryWithRememberedEmail = {
     await page.getByTestId('open-password-recovery').click()
     await page.getByTestId('password-reset-email').fill(email)
     await page.getByRole('button', { name: 'Send recovery code' }).click()
-    await expect(page.getByTestId('password-reset-message')).toBeVisible({ timeout: 20_000 })
+    await expect(page.getByTestId('password-reset-email-sent')).toBeVisible({ timeout: 20_000 })
+    await expect(page.getByTestId('password-reset-code')).toBeVisible()
+    await expect(page.getByTestId('password-reset-spam-hint')).toBeVisible()
   },
 }
 

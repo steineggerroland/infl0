@@ -8,6 +8,7 @@ definePageMeta({
 
 const route = useRoute()
 const { t } = useI18n()
+const toast = useToast()
 const username = ref('')
 const password = ref('')
 const errorMsg = ref('')
@@ -21,6 +22,16 @@ const recoveryUsername = ref('')
 const recoveryError = ref('')
 const recoveryMessage = ref('')
 const recoveryPending = ref(false)
+
+const runtimeConfig = useRuntimeConfig()
+const resendCooldownSeconds = runtimeConfig.public.emailOtpResendCooldownSeconds
+const { canResend, secondsLeft, startCooldown } = useOtpResendCooldown(resendCooldownSeconds)
+
+const resendLabel = computed(() =>
+  canResend.value
+    ? t('login.recoveryResendCode')
+    : t('login.recoveryResendIn', { seconds: secondsLeft.value }),
+)
 
 async function onSubmit() {
   errorMsg.value = ''
@@ -83,10 +94,14 @@ async function requestPasswordReset() {
     })
     recoveryUsername.value = res.username
     recoveryStep.value = 'code'
-    recoveryMessage.value = t('login.recoveryCodeSent')
+    recoveryMessage.value = t('login.recoveryCodeSentTo', { email: recoveryEmail.value.trim() })
+    recoveryCode.value = ''
+    startCooldown()
+    toast.push({ message: recoveryMessage.value, variant: 'success' })
   } catch (e: unknown) {
-    const { message } = parseFetchError(e)
+    const { statusCode, message } = parseFetchError(e)
     recoveryError.value = message.trim() || t('login.recoveryRequestFailed')
+    if (statusCode === 429) startCooldown()
   } finally {
     recoveryPending.value = false
   }
@@ -112,6 +127,7 @@ async function confirmPasswordReset() {
       },
       credentials: 'include',
     })
+    toast.push({ message: t('login.recoverySuccess'), variant: 'success' })
     await navigateTo('/')
   } catch (e: unknown) {
     const { message } = parseFetchError(e)
@@ -119,6 +135,11 @@ async function confirmPasswordReset() {
   } finally {
     recoveryPending.value = false
   }
+}
+
+async function resendPasswordResetCode() {
+  if (!canResend.value || recoveryPending.value || recoveryStep.value !== 'code') return
+  await requestPasswordReset()
 }
 </script>
 
@@ -217,7 +238,7 @@ async function confirmPasswordReset() {
             {{ $t('login.recoveryLegend') }}
           </legend>
 
-          <div class="space-y-1">
+          <div v-if="recoveryStep === 'email'" class="space-y-1">
             <label class="label w-full pb-0" for="password-reset-email">
               <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('login.recoveryEmail') }}</span>
             </label>
@@ -232,22 +253,25 @@ async function confirmPasswordReset() {
             >
           </div>
 
-          <template v-if="recoveryStep === 'code'">
-            <div class="space-y-1">
-              <label class="label w-full pb-0" for="password-reset-code">
-                <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('login.recoveryCode') }}</span>
-              </label>
-              <input
-                id="password-reset-code"
-                v-model="recoveryCode"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                autocomplete="one-time-code"
-                required
-                class="input input-bordered infl0-field w-full"
-                data-testid="password-reset-code"
-              >
-            </div>
+          <template v-else>
+            <p
+              class="infl0-panel-muted text-sm leading-snug"
+              data-testid="password-reset-email-sent"
+            >
+              {{ recoveryMessage }}
+            </p>
+            <p class="infl0-panel-muted text-xs leading-snug" data-testid="password-reset-spam-hint">
+              {{ $t('common.checkSpamFolder') }}
+            </p>
+
+            <EmailOtpInput
+              id="password-reset-code"
+              v-model="recoveryCode"
+              :label="$t('login.recoveryCode')"
+              test-id="password-reset-code"
+              :pending="recoveryPending"
+            />
+
             <div class="space-y-1">
               <label class="label w-full pb-0" for="password-reset-password">
                 <span class="label-text text-[var(--infl0-panel-text)]">{{ $t('login.newPassword') }}</span>
@@ -262,15 +286,19 @@ async function confirmPasswordReset() {
                 data-testid="password-reset-password"
               >
             </div>
+
+            <button
+              type="button"
+              class="btn btn-ghost btn-sm w-full"
+              :disabled="!canResend || recoveryPending"
+              data-testid="resend-password-reset-code"
+              @click="resendPasswordResetCode"
+            >
+              <span v-if="recoveryPending" class="loading loading-spinner loading-xs" aria-hidden="true" />
+              {{ resendLabel }}
+            </button>
           </template>
 
-          <div
-            v-if="recoveryMessage"
-            class="alert alert-success py-3 text-sm"
-            data-testid="password-reset-message"
-          >
-            {{ recoveryMessage }}
-          </div>
           <div
             v-if="recoveryError"
             role="alert"
@@ -280,6 +308,7 @@ async function confirmPasswordReset() {
             {{ recoveryError }}
           </div>
           <button type="submit" class="btn btn-primary w-full" :disabled="recoveryPending">
+            <span v-if="recoveryPending" class="loading loading-spinner loading-sm" aria-hidden="true" />
             {{
               recoveryPending
                 ? $t('common.loading')
@@ -291,7 +320,12 @@ async function confirmPasswordReset() {
           <button
             type="button"
             class="btn btn-ghost w-full"
-            @click="recoveryMode = false"
+            @click="
+              recoveryMode = false;
+              recoveryStep = 'email';
+              recoveryError = '';
+              recoveryMessage = '';
+            "
           >
             {{ $t('common.back') }}
           </button>
