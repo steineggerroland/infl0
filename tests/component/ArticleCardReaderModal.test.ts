@@ -190,7 +190,7 @@ describe('ArticleCard reader modal + modal stack', () => {
     const content = wrapper.get('[id$="-reader-content"]')
     expect(content.attributes('tabindex')).toBe('-1')
     expect(document.activeElement).toBe(content.element)
-    expect(wrapper.get('form button:last-child').attributes('aria-label')).toBe('Close')
+    expect(wrapper.get('dialog button[aria-label="Close"]').attributes('aria-label')).toBe('Close')
     expect(wrapper.html()).toContain('<h1>Hello</h1>')
 
     ;(dialog.element as HTMLDialogElement).close()
