@@ -1,6 +1,6 @@
 
 @planned @persona @screenplay
-Feature: Knowledge Inbox
+Feature: knowledge-inbox
 
   Robin wants to save interesting articles into a knowledge inbox
   so that they can find and process them later in a focused environment.
