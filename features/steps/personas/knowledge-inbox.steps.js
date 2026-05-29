@@ -34,7 +34,7 @@ When('{word} saves an article {string} to the knowledge inbox', async function (
     .first()
   await timeline.focusCard(card)
   actor.remember('currentReaderArticleId', await card.getAttribute('data-testid'))
-  await SaveToKnowledgeInbox.performAs(actor)
+  await SaveToKnowledgeInbox().performAs(actor)
 })
 
 Then('{word} should see a calm confirmation that it was saved', async function (name) {
@@ -76,7 +76,7 @@ Given('{word} has saved articles in the following order:', async function (name,
       .first()
     await timeline.focusCard(card)
     actor.remember('currentReaderArticleId', await card.getAttribute('data-testid'))
-    await SaveToKnowledgeInbox.performAs(actor)
+    await SaveToKnowledgeInbox().performAs(actor)
   }
 })
 
@@ -128,7 +128,7 @@ Given('{word} has an article {string} in the knowledge inbox', async function (n
     .first()
   await timeline.focusCard(card)
   actor.remember('currentReaderArticleId', await card.getAttribute('data-testid'))
-  await SaveToKnowledgeInbox.performAs(actor)
+  await SaveToKnowledgeInbox().performAs(actor)
 })
 
 When('{word} clicks on the entry for {string}', async function (name, title) {
