@@ -24,6 +24,7 @@
     "feeds": "Manage sources",
     "settings": "Settings",
     "privacy": "Privacy",
+    "knowledgeInbox": "Knowledge Inbox",
     "personalization": "Why at the top?",
     "help": "Help",
     "view": "View",
@@ -677,7 +678,19 @@
           "title": "Timeline",
           "summary": "Move between articles and decide whether already-read items are shown."
         },
-        "article": {
+  "knowledgeInbox": {
+    "title": "Knowledge Inbox",
+    "intro": "Articles you saved to read later, sorted by capture date.",
+    "empty": "No articles saved yet. Save articles from your timeline to build your knowledge inbox.",
+    "errorLoad": "Could not load knowledge inbox",
+    "errorRemove": "Could not remove article from inbox",
+    "remove": "Remove",
+    "removeAria": "Remove \"{title}\" from inbox",
+    "saveToInbox": "Save to knowledge inbox",
+    "savedToInbox": "Saved",
+    "errorSave": "Could not save article to inbox"
+  },
+  "article": {
           "title": "Reading an article",
           "summary": "Flip the focused card, open the original, or close whatever overlay is on top."
         },

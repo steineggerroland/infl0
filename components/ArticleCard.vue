@@ -233,6 +233,7 @@ function toggleReadState() {
 
 onMounted(async () => {
   await engagement.ensureLoaded()
+  await ensureLoaded()
   if (import.meta.client) {
     document.addEventListener('visibilitychange', onVisibilityForEngagement)
     syncEngagementDwell()
@@ -305,6 +306,29 @@ defineShortcuts({
 })
 
 const { prefs, update } = useUiPrefs()
+
+const { isSaved: isSavedInbox, save: saveToInboxApi, ensureLoaded } = useKnowledgeInbox()
+const toast = useToast()
+const inboxSaveBusy = ref(false)
+
+const isArticleSavedInInbox = computed(() => isSavedInbox(props.article.id))
+
+async function saveToInbox() {
+  if (isSavedInbox(props.article.id)) return
+  inboxSaveBusy.value = true
+  try {
+    const ok = await saveToInboxApi(props.article.id)
+    if (ok) {
+      toast.push({
+        message: t('knowledgeInbox.savedToInbox'),
+        variant: 'success',
+        durationMs: 2000,
+      })
+    }
+  } finally {
+    inboxSaveBusy.value = false
+  }
+}
 
 function activeSurfaceId(): SurfaceId {
   if (modalVisible.value) return 'reader'
@@ -436,6 +460,35 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             <span class="read-status-eye" aria-hidden="true" />
             <span class="sr-only">{{ readStatusTip }}</span>
           </button>
+          <button
+            type="button"
+            class="btn btn-ghost btn-xs ms-1 tooltip inline-flex items-center justify-center p-0.5 text-[var(--infl0-article-front-fg-dim)] hover:text-[var(--infl0-article-front-fg)]"
+            :class="{ 'text-[var(--infl0-card-grad-a)] hover:text-[var(--infl0-card-grad-a)]': isSavedInbox }"
+            :data-tip="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-label="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            :disabled="inboxSaveBusy"
+            data-testid="article-save-inbox"
+            @click.stop="saveToInbox"
+          >
+            <svg
+              v-if="isArticleSavedInInbox"
+
+              aria-hidden="true"
+              class="h-3.5 w-3.5 fill-current"
+              viewBox="0 0 16 16"
+            >
+              <path d="M2 2v13l6-3 6 3V2z" />
+            </svg>
+            <svg
+              v-else
+              aria-hidden="true"
+              class="h-3.5 w-3.5 stroke-current fill-none"
+              viewBox="0 0 16 16"
+              stroke-width="1.5"
+            >
+              <path d="M2 2v13l6-3 6 3V2z" />
+            </svg>
+          </button>
         </div>
         <div v-if="article.category" class="mb-2 text-[var(--infl0-article-front-fg-mute)]">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
@@ -514,6 +567,34 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             <span class="read-status-eye" aria-hidden="true" />
             <span class="sr-only">{{ readStatusTip }}</span>
           </button>
+          <button
+            type="button"
+            class="btn btn-ghost btn-xs ms-1 tooltip inline-flex items-center justify-center p-0.5 text-[var(--infl0-article-back-fg-dim)] hover:text-[var(--infl0-article-back-fg)]"
+            :class="{ 'text-[var(--infl0-card-grad-a)] hover:text-[var(--infl0-card-grad-a)]': isSavedInbox }"
+            :data-tip="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-label="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            :disabled="inboxSaveBusy"
+            data-testid="article-save-inbox-back"
+            @click.stop="saveToInbox"
+          >
+            <svg
+              v-if="isArticleSavedInInbox"
+              aria-hidden="true"
+              class="h-3.5 w-3.5 fill-current"
+              viewBox="0 0 16 16"
+            >
+              <path d="M2 2v13l6-3 6 3V2z" />
+            </svg>
+            <svg
+              v-else
+              aria-hidden="true"
+              class="h-3.5 w-3.5 stroke-current fill-none"
+              viewBox="0 0 16 16"
+              stroke-width="1.5"
+            >
+              <path d="M2 2v13l6-3 6 3V2z" />
+            </svg>
+          </button>
         </div>
         <div v-if="article.category" class="mb-1 text-[var(--infl0-article-back-fg-mute)]">
           {{ Array.isArray(article.category) ? article.category.join(', ') : article.category }}
@@ -533,7 +614,35 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
       <div
         class="modal-box max-w-[100vw] w-[640px] border border-[var(--infl0-surface-reader-border)] bg-[var(--infl0-surface-reader-bg)] text-[var(--infl0-surface-reader-text)]"
       >
-        <form method="dialog" class="mb-2 flex justify-end">
+        <form method="dialog" class="mb-2 flex items-center justify-between">
+          <button
+            type="button"
+            class="btn btn-ghost btn-xs tooltip inline-flex items-center gap-1.5 text-[var(--infl0-surface-reader-text)]/70 hover:text-[var(--infl0-surface-reader-text)]"
+            :class="{ 'text-[var(--infl0-card-grad-a)] hover:text-[var(--infl0-card-grad-a)]': isSavedInbox }"
+            :data-tip="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-label="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            :disabled="inboxSaveBusy"
+            @click.stop="saveToInbox"
+          >
+            <svg
+              v-if="isArticleSavedInInbox"
+              aria-hidden="true"
+              class="h-4 w-4 fill-current"
+              viewBox="0 0 16 16"
+            >
+              <path d="M2 2v13l6-3 6 3V2z" />
+            </svg>
+            <svg
+              v-else
+              aria-hidden="true"
+              class="h-4 w-4 stroke-current fill-none"
+              viewBox="0 0 16 16"
+              stroke-width="1.5"
+            >
+              <path d="M2 2v13l6-3 6 3V2z" />
+            </svg>
+            <span class="text-xs">{{ isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox') }}</span>
+          </button>
           <button
             class="btn btn-sm btn-circle btn-ghost"
             type="submit"

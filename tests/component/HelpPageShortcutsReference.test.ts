@@ -174,7 +174,7 @@ describe('help page · shortcuts reference', () => {
         expect(section.text()).toContain(
             deMessages.help.shortcutsReference.title,
         )
-        const groups = deMessages.help.shortcutsReference.groups as Record<
+        const groups = deMessages.help.shortcutsReference.groups as unknown as Record<
             string,
             { title: string; summary: string }
         >

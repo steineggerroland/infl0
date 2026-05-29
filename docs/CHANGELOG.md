@@ -48,6 +48,11 @@ new entries accrue under **Unreleased**.
   feed/podcast source. The focused reader shows a visible source banner and a
   "Full inflow" action to clear the working set.
 - **Integrator ingest observability:** crawler ingest calls are recorded in an
+- **Knowledge Inbox:** Users can save articles to a personal knowledge inbox for
+  later processing. Includes UI buttons in timeline/reader, a dedicated inbox
+  view (`/knowledge/inbox`) with chronological list, metadata snapshots for
+  provenance, and API endpoints for save/list/remove. BDD scenarios and component
+  tests included.
   append-only request history. Operators can inspect recent accepted/rejected
   requests at `/operator/ingest`, including accepted article/episode/subscriber
   counts, auth/validation/unsupported-content diagnostics, and bounded payload

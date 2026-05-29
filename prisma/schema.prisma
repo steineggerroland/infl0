@@ -39,6 +39,7 @@ model User {
   categoryEngagement      UserCategoryEngagement[]
   tagEngagement           UserTagEngagement[]
   emailOtps               EmailOtp[]
+  knowledgeInboxItems     KnowledgeInboxItem[]
 
   @@map("users")
 }
@@ -174,6 +175,7 @@ model Article {
   timelineItems           UserTimelineItem[]
   articleEngagementEvents ArticleEngagementEvent[]
   feedEngagement          UserFeedEngagement[]
+  knowledgeInboxItems     KnowledgeInboxItem[]
 
   @@index([crawlKey])
   @@index([publishedAt])
@@ -351,4 +353,25 @@ model UserTagEngagement {
   @@unique([userId, tag])
   @@index([userId])
   @@map("user_tag_engagement")
+}
+
+/// Items a user has intentionally saved to their knowledge inbox for later processing.
+/// Captures a metadata snapshot at save time for provenance.
+model KnowledgeInboxItem {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  articleId      String   @map("article_id")
+  capturedAt     DateTime @default(now()) @map("captured_at")
+
+  /// Snapshot provenance: values at the moment of saving.
+  titleSnapshot  String   @map("title_snapshot")
+  sourceSnapshot String   @map("source_snapshot")
+  teaserSnapshot String   @map("teaser_snapshot") @db.VarChar(500)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId])
+  @@index([userId, capturedAt(sort: Desc)])
+  @@map("knowledge_inbox_items")
 }
