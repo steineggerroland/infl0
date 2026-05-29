@@ -6,6 +6,7 @@ import { ReaderTimeline } from '../../support/reader-timeline.js'
 import { KnowledgeInboxPage } from '../../support/knowledge-inbox.js'
 import { BrowseTheWeb } from '../../support/screenplay/abilities/browse-the-web.js'
 import { ingestKnowledgeInboxArticle } from '../../support/knowledge-inbox-fixtures.js'
+import { SaveToKnowledgeInbox } from '../../support/screenplay/tasks/knowledge-inbox.js'
 
 Given('{word} is logged in', async function (name) {
   await actorCalled(this, name).attemptsTo(StartSignedInToInfl0)
@@ -32,7 +33,8 @@ When('{word} saves an article {string} to the knowledge inbox', async function (
     .filter({ hasText: title })
     .first()
   await timeline.focusCard(card)
-  await card.getByTestId('article-save-inbox').click()
+  actor.remember('currentReaderArticleId', await card.getAttribute('data-testid'))
+  await SaveToKnowledgeInbox.performAs(actor)
 })
 
 Then('{word} should see a calm confirmation that it was saved', async function (name) {
@@ -73,8 +75,8 @@ Given('{word} has saved articles in the following order:', async function (name,
       .filter({ hasText: row.title })
       .first()
     await timeline.focusCard(card)
-    await card.getByTestId('article-save-inbox').click()
-    await page.getByRole('alert').filter({ hasText: /saved/i }).first().waitFor({ timeout: 10_000 })
+    actor.remember('currentReaderArticleId', await card.getAttribute('data-testid'))
+    await SaveToKnowledgeInbox.performAs(actor)
   }
 })
 
@@ -125,8 +127,8 @@ Given('{word} has an article {string} in the knowledge inbox', async function (n
     .filter({ hasText: title })
     .first()
   await timeline.focusCard(card)
-  await card.getByTestId('article-save-inbox').click()
-  await page.getByRole('alert').filter({ hasText: /saved/i }).first().waitFor({ timeout: 10_000 })
+  actor.remember('currentReaderArticleId', await card.getAttribute('data-testid'))
+  await SaveToKnowledgeInbox.performAs(actor)
 })
 
 When('{word} clicks on the entry for {string}', async function (name, title) {
