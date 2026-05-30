@@ -32,9 +32,9 @@ When('{word} saves an article {string} to the knowledge inbox', async function (
     .getByTestId('article-card')
     .filter({ hasText: title })
     .first()
-  await timeline.focusCard(card)
-  actor.remember('currentReaderArticleId', await card.getAttribute('data-testid'))
-  await SaveToKnowledgeInbox().performAs(actor)
+   await timeline.focusCard(card)
+   actor.remember('currentReaderArticleId', await card.getAttribute('data-article-id'))
+   await SaveToKnowledgeInbox().performAs(actor)
 })
 
 Then('{word} should see a calm confirmation that it was saved', async function (name) {
@@ -126,9 +126,9 @@ Given('{word} has an article {string} in the knowledge inbox', async function (n
     .getByTestId('article-card')
     .filter({ hasText: title })
     .first()
-  await timeline.focusCard(card)
-  actor.remember('currentReaderArticleId', await card.getAttribute('data-testid'))
-  await SaveToKnowledgeInbox().performAs(actor)
+   await timeline.focusCard(card)
+   actor.remember('currentReaderArticleId', await card.getAttribute('data-article-id'))
+   await SaveToKnowledgeInbox().performAs(actor)
 })
 
 When('{word} clicks on the entry for {string}', async function (name, title) {
