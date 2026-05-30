@@ -13,7 +13,7 @@ export function SaveToKnowledgeInbox(contentType = 'article') {
           : timeline.articleCard(actor.recall('currentReaderArticleId'))
       await timeline.focusCard(cardSelector)
       await cardSelector.getByTestId(testId).click()
-      await BrowseTheWeb.as(actor).getByRole('alert').filter({ hasText: /saved/i }).waitFor({ timeout: 10_000 })
+      await BrowseTheWeb.as(actor).getByTestId('app-toast-success').first().waitFor({ timeout: 10_000 })
     },
   }
 }
