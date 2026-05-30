@@ -654,6 +654,18 @@
     "closeModal": "Close",
     "modalKeyboardHint": "Esc closes · use w/s after closing to navigate"
   },
+  "knowledgeInbox": {
+    "title": "Knowledge Inbox",
+    "intro": "Articles you saved to read later, sorted by capture date.",
+    "empty": "No articles saved yet. Save articles from your timeline to build your knowledge inbox.",
+    "errorLoad": "Could not load knowledge inbox",
+    "errorRemove": "Could not remove article from inbox",
+    "remove": "Remove",
+    "removeAria": "Remove \"{title}\" from inbox",
+    "saveToInbox": "Save to knowledge inbox",
+    "savedToInbox": "Saved",
+    "errorSave": "Could not save article to inbox"
+  },
   "help": {
     "title": "Help & frequently asked questions",
     "intro": "Short answers in plain language. Expand the details if you'd like to know more.",
@@ -678,19 +690,7 @@
           "title": "Timeline",
           "summary": "Move between articles and decide whether already-read items are shown."
         },
-  "knowledgeInbox": {
-    "title": "Knowledge Inbox",
-    "intro": "Articles you saved to read later, sorted by capture date.",
-    "empty": "No articles saved yet. Save articles from your timeline to build your knowledge inbox.",
-    "errorLoad": "Could not load knowledge inbox",
-    "errorRemove": "Could not remove article from inbox",
-    "remove": "Remove",
-    "removeAria": "Remove \"{title}\" from inbox",
-    "saveToInbox": "Save to knowledge inbox",
-    "savedToInbox": "Saved",
-    "errorSave": "Could not save article to inbox"
-  },
-  "article": {
+        "article": {
           "title": "Reading an article",
           "summary": "Flip the focused card, open the original, or close whatever overlay is on top."
         },

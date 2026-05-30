@@ -654,6 +654,18 @@
     "closeModal": "Schließen",
     "modalKeyboardHint": "Esc schließt · w/s navigieren nach dem Schließen"
   },
+  "knowledgeInbox": {
+    "title": "Wissens-Inbox",
+    "intro": "Artikel, die du zum später Lesen gespeichert hast — sortiert nach Speicherdatum.",
+    "empty": "Noch keine Artikel gespeichert. Speichere Artikel aus deiner Timeline, um deine Wissens-Inbox zu füllen.",
+    "errorLoad": "Wissens-Inbox konnte nicht geladen werden",
+    "errorRemove": "Artikel konnte nicht aus der Wissens-Inbox entfernt werden",
+    "remove": "Entfernen",
+    "removeAria": "„{title}“ aus der Wissens-Inbox entfernen",
+    "saveToInbox": "In Wissens-Inbox speichern",
+    "savedToInbox": "Gespeichert",
+    "errorSave": "Artikel konnte nicht in der Wissens-Inbox gespeichert werden"
+  },
   "help": {
     "title": "Hilfe & häufige Fragen",
     "intro": "Hier findest du kurze Antworten in einfacher Sprache. Wenn du mehr wissen willst, klappe die Details aus.",
@@ -678,19 +690,7 @@
           "title": "Timeline",
           "summary": "Zwischen Artikeln wechseln und entscheiden, ob gelesene Artikel angezeigt werden."
         },
-  "knowledgeInbox": {
-    "title": "Wissens-Inbox",
-    "intro": "Artikel, die du zum später Lesen gespeichert hast — sortiert nach Speicherdatum.",
-    "empty": "Noch keine Artikel gespeichert. Speichere Artikel aus deiner Timeline, um deine Wissens-Inbox zu füllen.",
-    "errorLoad": "Wissens-Inbox konnte nicht geladen werden",
-    "errorRemove": "Artikel konnte nicht aus der Wissens-Inbox entfernt werden",
-    "remove": "Entfernen",
-    "removeAria": "„{title}“ aus der Wissens-Inbox entfernen",
-    "saveToInbox": "In Wissens-Inbox speichern",
-    "savedToInbox": "Gespeichert",
-    "errorSave": "Artikel konnte nicht in der Wissens-Inbox gespeichert werden"
-  },
-  "article": {
+        "article": {
           "title": "Einen Artikel lesen",
           "summary": "Die fokussierte Karte umdrehen, das Original öffnen oder eine Überlagerung schließen."
         },
