@@ -25,6 +25,14 @@ vi.stubGlobal('useUiPrefs', () => ({
   update: vi.fn(),
 }))
 
+vi.stubGlobal('useKnowledgeInbox', () => ({
+  isEpisodeSaved: () => false,
+  saveEpisode: vi.fn(),
+  ensureLoaded: vi.fn(),
+}))
+
+vi.stubGlobal('useToast', () => ({ push: vi.fn() }))
+
 const EpisodeCard = (await import('../../components/EpisodeCard.vue')).default
 
 function makeI18n() {
@@ -57,7 +65,12 @@ function makeI18n() {
     closeModal: 'Close',
     modalKeyboardHint: 'Esc',
   }
-  const messages = { en: { episode, article }, de: { episode, article } }
+  const knowledgeInbox = {
+    savedToInbox: 'Saved to inbox',
+    saveToInbox: 'Save to inbox',
+    errorSave: 'Could not save',
+  }
+  const messages = { en: { episode, article, knowledgeInbox }, de: { episode, article, knowledgeInbox } }
   return createI18n({ legacy: false, locale: 'en', messages })
 }
 
@@ -207,6 +220,6 @@ describe('EpisodeCard', () => {
     })
 
     await wrapper.get('[data-testid="episode-details-link"]').trigger('click')
-    expect(wrapper.get('form[method="dialog"] button').attributes('aria-label')).toBe('Close')
+    expect(wrapper.find('form[method="dialog"] button[aria-label="Close"]').exists()).toBe(true)
   })
 })

@@ -24,6 +24,7 @@ export default defineConfig({
     environment: 'node',
     include: ['tests/**/*.test.ts'],
     passWithNoTests: false,
+    setupFiles: ['tests/setup/suppress-console-warnings.ts'],
   },
   resolve: {
     alias: {

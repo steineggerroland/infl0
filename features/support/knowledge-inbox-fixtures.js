@@ -37,3 +37,26 @@ export async function ingestKnowledgeInboxArticle(page, world, title, options = 
   }
   await crawlerIngest(page, payload)
 }
+
+export async function ingestKnowledgeInboxEpisode(page, world, title, options = {}) {
+  const state = ensureKbState(world)
+  const crawlKey = await ensureInboxFeed(page, world)
+  const safeId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  const id = `bdd-kb-ep-${safeId}-${state.suffix}`
+  const payload = {
+    crawlKey,
+    id,
+    item_kind: 'episode',
+    title,
+    link: `https://example.com/bdd/kb/${state.suffix}/${id}`,
+    publishedAt: options.publishedAt || new Date().toISOString(),
+    content_hash: `${id}-hash`,
+    content_md: `# ${title}\n\nBody for ${title}.`,
+    source_type: 'podcast',
+    tld: 'example.com',
+    teaser: options.teaser || `${title} teaser for the knowledge inbox.`,
+    seriousness_rating: 'low',
+    duration_seconds: options.durationSeconds ?? 1800,
+  }
+  await crawlerIngest(page, payload)
+}

@@ -9,7 +9,9 @@ definePageMeta({
 
 type InboxItem = {
   id: string
-  articleId: string
+  contentKind: 'article' | 'episode'
+  articleId: string | null
+  episodeId: string | null
   capturedAt: string
   titleSnapshot: string
   sourceSnapshot: string
@@ -63,8 +65,10 @@ async function removeItem(id: string) {
   }
 }
 
-function openArticle(articleId: string) {
-  void router.push(`/inflow/article/${encodeURIComponent(articleId)}`)
+function openItem(item: InboxItem) {
+  if (item.articleId) {
+    void router.push(`/inflow/article/${encodeURIComponent(item.articleId)}`)
+  }
 }
 
 function formatCaptured(dateString: string) {
@@ -108,6 +112,7 @@ await loadInbox()
     <div
       v-else-if="items.length === 0"
       class="py-16 text-center text-sm text-[var(--infl0-canvas-fg-muted)]"
+      data-testid="knowledge-inbox-empty"
     >
       {{ t('knowledgeInbox.empty') }}
     </div>
@@ -127,7 +132,7 @@ await loadInbox()
         <button
           type="button"
           class="w-full text-start"
-          @click="openArticle(item.articleId)"
+          @click="openItem(item)"
         >
           <h2 class="text-base font-semibold leading-snug text-[var(--infl0-panel-text)]">
             {{ item.titleSnapshot }}

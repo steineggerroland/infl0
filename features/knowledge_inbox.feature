@@ -37,3 +37,25 @@ Feature: knowledge-inbox
     And Savy removes "Old News" from the inbox
     Then Savy should no longer see "Old News" in the knowledge inbox list
     But the original article should still be available in the system
+
+  Scenario: Saving a podcast episode to the knowledge inbox
+    When Savy saves an episode "Deep Dive into Rust" to the knowledge inbox
+    Then Savy should see a calm confirmation that it was saved
+    And Savy should see the episode marked as "saved" in the timeline
+
+  Scenario: Episode is listed in the knowledge inbox
+    Given Savy has saved an episode "The Science of Sleep" in the knowledge inbox
+    When Savy navigates to the knowledge inbox
+    Then Savy should see an entry for "The Science of Sleep" in the knowledge inbox list
+    And Savy should see a teaser snippet for each entry
+
+  Scenario: Mixed article and episode items in the knowledge inbox
+    Given Savy has saved the following items in the knowledge inbox:
+      | title         | type    | date       |
+      | Tech Article  | article | 2026-05-01 |
+      | Cool Episode  | episode | 2026-05-02 |
+    When Savy navigates to the knowledge inbox
+    Then Savy should see "Cool Episode" as the first item in the list
+    And Savy should see an entry for "Tech Article" in the knowledge inbox list
+    And Savy should see an entry for "Cool Episode" in the knowledge inbox list
+    And Savy should see a teaser snippet for each entry

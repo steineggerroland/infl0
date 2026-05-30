@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "prisma generate && nuxt build",
+    "build:quiet": "prisma generate 2>/dev/null && nuxt build --log-level 1",
     "dev": "nuxt dev --host 127.0.0.1 --port 3000",
     "generate": "nuxt generate",
     "preview": "NITRO_HOST=127.0.0.1 NITRO_PORT=3001 nuxt preview",
@@ -27,12 +28,13 @@
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:bdd": "dotenv --quiet -e .env -e .env.e2e -- sh -c 'npm run build && npx start-server-and-test \"NITRO_HOST=127.0.0.1 NITRO_PORT=4275 node .output/server/index.mjs\" http://127.0.0.1:4275/help \"cucumber-js \\\"features/**/*.feature\\\" --import \\\"features/**/*.js\\\" --format pretty --parallel 1 --tags \\\"not @pending\\\"\"'",
+    "test:bdd": "dotenv --quiet -e .env -e .env.e2e -- sh -c 'npm run build:quiet && npx start-server-and-test --silent \"NITRO_HOST=127.0.0.1 NITRO_PORT=4275 node .output/server/index.mjs\" http://127.0.0.1:4275/help \"cucumber-js \\\"features/**/*.feature\\\" --import \\\"features/**/*.js\\\" --parallel 1 --tags \\\"not @pending\\\"\"'",
     "test:bdd:local": "dotenv --quiet -e .env -e .env.e2e -- cucumber-js \"features/**/*.feature\" --import \"features/**/*.js\" --format pretty --parallel 1 --tags \"not @pending\"",
     "test:bdd:remote": "dotenv --quiet -e .env.e2e -- cucumber-js \"features/**/*.feature\" --import \"features/**/*.js\" --format progress --parallel 1 --tags \"not @pending\"",
-    "test:e2e": "dotenv --quiet -e .env -e .env.e2e -- sh -c 'npm run build && npx start-server-and-test \"NITRO_HOST=127.0.0.1 NITRO_PORT=4275 node .output/server/index.mjs\" http://127.0.0.1:4275/help \"playwright test\"'",
+    "test:e2e": "dotenv --quiet -e .env -e .env.e2e -- sh -c 'npm run build:quiet && npx start-server-and-test --silent \"NITRO_HOST=127.0.0.1 NITRO_PORT=4275 node .output/server/index.mjs\" http://127.0.0.1:4275/help \"playwright test\"'",
     "test:e2e:remote": "dotenv --quiet -e .env.e2e -- playwright test",
     "test:e2e:remote-smoke": "dotenv --quiet -e .env.e2e -- playwright test --config playwright.remote-smoke.config.ts",
+    "check": "npm run lint -- --quiet && npm run test -- --reporter dot && npm run typecheck",
     "verify": "npm run lint && npm run test && npm run typecheck",
     "typecheck": "nuxi typecheck"
   },

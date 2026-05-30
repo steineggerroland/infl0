@@ -15,7 +15,7 @@ export class KnowledgeInboxPage {
 
   async waitForList() {
     await expect(
-      this.page.getByTestId('knowledge-inbox-list').or(this.page.locator('text=No articles saved yet')),
+      this.page.getByTestId('knowledge-inbox-list').or(this.page.getByTestId('knowledge-inbox-empty')),
     ).toBeVisible({ timeout: 15_000 })
   }
 

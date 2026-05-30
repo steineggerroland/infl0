@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
   const [items, total] = await Promise.all([
     prisma.knowledgeInboxItem.findMany({
       where: { userId },
-      orderBy: { capturedAt: 'desc' },
+      orderBy: [{ capturedAt: 'desc' }, { id: 'asc' }],
       take: limit,
       skip: offset,
     }),
