@@ -75,7 +75,7 @@ Given('{word} has saved articles in the following order:', async function (name,
       .filter({ hasText: row.title })
       .first()
     await timeline.focusCard(card)
-    actor.remember('currentReaderArticleId', await card.getAttribute('data-testid'))
+    actor.remember('currentReaderArticleId', await card.getAttribute('data-article-id'))
     await SaveToKnowledgeInbox().performAs(actor)
   }
 })
