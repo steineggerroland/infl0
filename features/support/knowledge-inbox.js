@@ -29,5 +29,6 @@ export class KnowledgeInboxPage {
   async removeItem(title) {
     const item = this.itemByTitle(title)
     await item.getByTestId('knowledge-inbox-remove').click()
+    await expect(this.page.getByTestId('knowledge-inbox-item').filter({ hasText: title })).toHaveCount(0, { timeout: 15_000 })
   }
 }

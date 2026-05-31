@@ -121,14 +121,15 @@ await loadInbox()
       <li
         v-for="item in items"
         :key="item.id"
-        class="infl0-panel group flex items-start gap-3 rounded-xl border p-4 transition-colors hover:border-[var(--infl0-reader-link)]/60 hover:bg-[color-mix(in_srgb,var(--infl0-reader-link)_5%,transparent)]"
+        class="infl0-panel group flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors hover:border-[var(--infl0-reader-link)]/60 hover:bg-[color-mix(in_srgb,var(--infl0-reader-link)_5%,transparent)]"
         :class="{ 'pointer-events-none opacity-60': removing.has(item.id) }"
         data-testid="knowledge-inbox-item"
+        @click="openItem(item)"
       >
         <button
           type="button"
           class="min-w-0 flex-1 cursor-pointer text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--infl0-reader-link)]"
-          @click="openItem(item)"
+          @click.stop="openItem(item)"
         >
           <h2 class="text-base font-semibold leading-snug text-[var(--infl0-panel-text)]">
             {{ item.titleSnapshot }}
@@ -142,7 +143,7 @@ await loadInbox()
             v-if="item.teaserSnapshot"
             class="mt-2 text-sm leading-relaxed text-[var(--infl0-panel-text-dim)] line-clamp-2"
           >
-              {{ item.teaserSnapshot }}
+            {{ item.teaserSnapshot }}
           </p>
         </button>
 

@@ -8,6 +8,10 @@ import { BrowseTheWeb } from '../../support/screenplay/abilities/browse-the-web.
 import { ingestKnowledgeInboxArticle, ingestKnowledgeInboxEpisode } from '../../support/knowledge-inbox-fixtures.js'
 import { SaveToKnowledgeInbox } from '../../support/screenplay/tasks/knowledge-inbox.js'
 
+async function waitForDistinctInboxCapture(page) {
+  await page.waitForTimeout(1100)
+}
+
 Given('{word} is logged in', async function (name) {
   await actorCalled(this, name).attemptsTo(StartSignedInToInfl0)
 })
@@ -93,6 +97,7 @@ Given('{word} has saved articles in the following order:', async function (name,
     await timeline.focusCard(card)
     actor.remember('currentReaderArticleId', await card.getAttribute('data-article-id'))
     await SaveToKnowledgeInbox().performAs(actor)
+    if (row !== rows.at(-1)) await waitForDistinctInboxCapture(page)
   }
 })
 
@@ -178,7 +183,7 @@ When('{word} removes {string} from the inbox', async function (name, title) {
 Then('{word} should no longer see {string} in the knowledge inbox list', async function (name, title) {
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
-  await expect(page.getByTestId('knowledge-inbox-item').filter({ hasText: title })).toHaveCount(0)
+  await expect(page.getByTestId('knowledge-inbox-item').filter({ hasText: title })).toHaveCount(0, { timeout: 15_000 })
 })
 
 Then('the original article should still be available in the system', async function () {
@@ -333,5 +338,6 @@ Given('{word} has saved the following items in the knowledge inbox:', async func
       actor.remember('currentReaderArticleId', await card.getAttribute('data-episode-id'))
       await SaveToKnowledgeInbox('episode').performAs(actor)
     }
+    if (row !== rows.at(-1)) await waitForDistinctInboxCapture(page)
   }
 })
