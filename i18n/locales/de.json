@@ -656,15 +656,24 @@
   },
   "knowledgeInbox": {
     "title": "Wissens-Inbox",
-    "intro": "Artikel, die du zum später Lesen gespeichert hast — sortiert nach Speicherdatum.",
-    "empty": "Noch keine Artikel gespeichert. Speichere Artikel aus deiner Timeline, um deine Wissens-Inbox zu füllen.",
+    "intro": "Einträge, die du für später gespeichert hast — sortiert nach Speicherdatum.",
+    "empty": "Noch nichts gespeichert. Speichere Artikel oder Episoden aus deiner Timeline, um deine Wissens-Inbox zu füllen.",
     "errorLoad": "Wissens-Inbox konnte nicht geladen werden",
-    "errorRemove": "Artikel konnte nicht aus der Wissens-Inbox entfernt werden",
+    "errorRemove": "Eintrag konnte nicht aus der Wissens-Inbox entfernt werden",
     "remove": "Entfernen",
     "removeAria": "„{title}“ aus der Wissens-Inbox entfernen",
     "saveToInbox": "In Wissens-Inbox speichern",
     "savedToInbox": "Gespeichert",
-    "errorSave": "Artikel konnte nicht in der Wissens-Inbox gespeichert werden"
+    "errorSave": "Eintrag konnte nicht in der Wissens-Inbox gespeichert werden",
+    "episodePending": "Episoden-Detailseite folgt"
+  },
+  "articleDetail": {
+    "backToInbox": "Zurück zur Wissens-Inbox",
+    "byline": "Von {author}",
+    "savedAt": "Gespeichert am {date}",
+    "readAt": "Gelesen am {date}",
+    "openOriginal": "Original öffnen",
+    "errorLoad": "Dieser Artikel konnte nicht geladen werden"
   },
   "help": {
     "title": "Hilfe & häufige Fragen",

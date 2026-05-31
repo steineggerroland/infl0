@@ -656,15 +656,24 @@
   },
   "knowledgeInbox": {
     "title": "Knowledge Inbox",
-    "intro": "Articles you saved to read later, sorted by capture date.",
-    "empty": "No articles saved yet. Save articles from your timeline to build your knowledge inbox.",
+    "intro": "Items you saved to process later, sorted by capture date.",
+    "empty": "Nothing saved yet. Save articles or episodes from your timeline to build your knowledge inbox.",
     "errorLoad": "Could not load knowledge inbox",
-    "errorRemove": "Could not remove article from inbox",
+    "errorRemove": "Could not remove item from inbox",
     "remove": "Remove",
     "removeAria": "Remove \"{title}\" from inbox",
     "saveToInbox": "Save to knowledge inbox",
     "savedToInbox": "Saved",
-    "errorSave": "Could not save article to inbox"
+    "errorSave": "Could not save item to inbox",
+    "episodePending": "Episode detail page pending"
+  },
+  "articleDetail": {
+    "backToInbox": "Back to knowledge inbox",
+    "byline": "By {author}",
+    "savedAt": "Saved {date}",
+    "readAt": "Read {date}",
+    "openOriginal": "Open original",
+    "errorLoad": "Could not load this article"
   },
   "help": {
     "title": "Help & frequently asked questions",

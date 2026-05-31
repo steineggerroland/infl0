@@ -12,32 +12,29 @@ type InboxItem = {
   contentKind: 'article' | 'episode'
   articleId: string | null
   episodeId: string | null
-  capturedAt: string
+  capturedAt: string | Date
   titleSnapshot: string
   sourceSnapshot: string
   teaserSnapshot: string
 }
 
 const { t, locale } = useI18n()
-const toast = useToast()
 const router = useRouter()
-const requestFetch = useRequestFetch()
+const inbox = useKnowledgeInbox()
 
-const items = ref<InboxItem[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 const removing = ref<Set<string>>(new Set())
 
 const dateLocale = computed(() => (locale.value === 'de' ? de : enUS))
+const items = computed(() => inbox.items.value as InboxItem[])
 
 async function loadInbox() {
   loading.value = true
   error.value = null
   try {
-    const res = await requestFetch<{ items: InboxItem[] }>('/api/knowledge/inbox', {
-      credentials: 'include',
-    })
-    items.value = res.items
+    inbox.resetLoaded()
+    await inbox.ensureLoaded({ throwOnError: true })
   } catch (e: unknown) {
     const { message } = parseFetchError(e)
     error.value = message?.trim() || t('knowledgeInbox.errorLoad')
@@ -49,17 +46,7 @@ async function loadInbox() {
 async function removeItem(id: string) {
   removing.value.add(id)
   try {
-    await requestFetch(`/api/knowledge/inbox/${encodeURIComponent(id)}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    })
-    items.value = items.value.filter((i) => i.id !== id)
-  } catch (e: unknown) {
-    const { message } = parseFetchError(e)
-    toast.push({
-      message: message?.trim() || t('knowledgeInbox.errorRemove'),
-      variant: 'error',
-    })
+    await inbox.remove(id)
   } finally {
     removing.value.delete(id)
   }
@@ -67,12 +54,16 @@ async function removeItem(id: string) {
 
 function openItem(item: InboxItem) {
   if (item.articleId) {
-    void router.push(`/inflow/article/${encodeURIComponent(item.articleId)}`)
+    void router.push(`/articles/${encodeURIComponent(item.articleId)}`)
   }
 }
 
-function formatCaptured(dateString: string) {
-  return format(new Date(dateString), 'PPP', { locale: dateLocale.value })
+function capturedDateTime(value: string | Date) {
+  return new Date(value).toISOString()
+}
+
+function formatCaptured(value: string | Date) {
+  return format(new Date(value), 'PPP', { locale: dateLocale.value })
 }
 
 await loadInbox()
@@ -130,6 +121,7 @@ await loadInbox()
         data-testid="knowledge-inbox-item"
       >
         <button
+          v-if="item.articleId"
           type="button"
           class="w-full text-start"
           @click="openItem(item)"
@@ -140,7 +132,7 @@ await loadInbox()
           <div class="mt-1 flex items-center gap-2 text-xs text-[var(--infl0-panel-muted)]">
             <span>{{ item.sourceSnapshot }}</span>
             <span aria-hidden="true">·</span>
-            <time :datetime="item.capturedAt">{{ formatCaptured(item.capturedAt) }}</time>
+            <time :datetime="capturedDateTime(item.capturedAt)">{{ formatCaptured(item.capturedAt) }}</time>
           </div>
           <p
             v-if="item.teaserSnapshot"
@@ -149,6 +141,28 @@ await loadInbox()
             {{ item.teaserSnapshot }}
           </p>
         </button>
+        <div
+          v-else
+          class="w-full text-start"
+          :aria-label="t('knowledgeInbox.episodePending')"
+        >
+          <h2 class="text-base font-semibold leading-snug text-[var(--infl0-panel-text)]">
+            {{ item.titleSnapshot }}
+          </h2>
+          <div class="mt-1 flex items-center gap-2 text-xs text-[var(--infl0-panel-muted)]">
+            <span>{{ item.sourceSnapshot }}</span>
+            <span aria-hidden="true">·</span>
+            <time :datetime="capturedDateTime(item.capturedAt)">{{ formatCaptured(item.capturedAt) }}</time>
+            <span aria-hidden="true">·</span>
+            <span>{{ t('knowledgeInbox.episodePending') }}</span>
+          </div>
+          <p
+            v-if="item.teaserSnapshot"
+            class="mt-2 text-sm leading-relaxed text-[var(--infl0-panel-text-dim)] line-clamp-2"
+          >
+            {{ item.teaserSnapshot }}
+          </p>
+        </div>
         <button
           type="button"
           class="btn btn-ghost btn-xs absolute end-2 top-2 text-[var(--infl0-panel-muted)] opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"

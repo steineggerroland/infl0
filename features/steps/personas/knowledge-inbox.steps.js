@@ -141,7 +141,8 @@ When('{word} clicks on the entry for {string}', async function (name, title) {
 Then('{word} should be taken to the full reader view of that article', async function (name) {
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
-  await expect(page).toHaveURL(/\/inflow\/article\//u, { timeout: 15_000 })
+  await expect(page).toHaveURL(/\/articles\//u, { timeout: 15_000 })
+  await expect(page.getByTestId('article-detail')).toBeVisible({ timeout: 15_000 })
 })
 
 When('{word} removes {string} from the inbox', async function (name, title) {

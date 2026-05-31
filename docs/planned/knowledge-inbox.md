@@ -54,9 +54,11 @@ To ensure stability and provenance, a metadata snapshot is created upon saving (
 7. Functionality remains consistent when multiple items are saved (no index errors, correct ordering).
 
 ## Definition of Done
-- [ ] Documentation in `docs/planned/` completed.
-- [ ] Feature file created with `@planned` and Screenplay pattern.
-- [ ] API endpoints for Save/List/Delete defined and implemented.
-- [ ] UI for compact list view implemented.
-- [ ] Integration of theme fonts verified.
-- [ ] BDD tests (when activated) pass successfully.
+- [x] Documentation in `docs/planned/` drafted.
+- [x] Feature file created with `@planned` and Screenplay pattern.
+- [x] API endpoints for Save/List/Delete defined and implemented.
+- [x] UI for compact list view implemented.
+- [x] Integration of theme fonts uses the existing app surfaces.
+- [x] Stable article detail page verified in BDD.
+- [ ] Episode detail navigation decided and implemented.
+- [ ] BDD tests pass in CI/local runs.
