@@ -37,6 +37,14 @@ Feature: knowledge-inbox
     And Savy removes "Old News" from the inbox
     Then Savy should no longer see "Old News" in the knowledge inbox list
     But the original article should still be available in the system
+    And Savy should see the article "Old News" marked as "not saved" in the timeline
+
+  Scenario: Removing an article from the knowledge inbox on its card
+    Given Savy has an article "Card Cleanup" in the knowledge inbox
+    When Savy removes the article "Card Cleanup" from the knowledge inbox on its card
+    Then Savy should see the article "Card Cleanup" marked as "not saved" in the timeline
+    When Savy navigates to the knowledge inbox
+    Then Savy should no longer see "Card Cleanup" in the knowledge inbox list
 
   Scenario: Saving a podcast episode to the knowledge inbox
     When Savy saves an episode "Deep Dive into Rust" to the knowledge inbox
@@ -48,6 +56,19 @@ Feature: knowledge-inbox
     When Savy navigates to the knowledge inbox
     Then Savy should see an entry for "The Science of Sleep" in the knowledge inbox list
     And Savy should see a teaser snippet for each entry
+
+  Scenario: Removing an episode from the knowledge inbox
+    Given Savy has saved an episode "The History of Sound" in the knowledge inbox
+    When Savy navigates to the knowledge inbox
+    And Savy removes "The History of Sound" from the inbox
+    Then Savy should no longer see "The History of Sound" in the knowledge inbox list
+
+  Scenario: Removing an episode from the knowledge inbox on its card
+    Given Savy has saved an episode "Card Episode Cleanup" in the knowledge inbox
+    When Savy removes the episode "Card Episode Cleanup" from the knowledge inbox on its card
+    Then Savy should see the episode "Card Episode Cleanup" marked as "not saved" in the timeline
+    When Savy navigates to the knowledge inbox
+    Then Savy should no longer see "Card Episode Cleanup" in the knowledge inbox list
 
   Scenario: Mixed article and episode items in the knowledge inbox
     Given Savy has saved the following items in the knowledge inbox:

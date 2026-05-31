@@ -28,6 +28,7 @@ vi.stubGlobal('useUiPrefs', () => ({
 vi.stubGlobal('useKnowledgeInbox', () => ({
   isEpisodeSaved: () => false,
   saveEpisode: vi.fn(),
+  removeEpisode: vi.fn(),
   ensureLoaded: vi.fn(),
 }))
 
@@ -68,6 +69,7 @@ function makeI18n() {
   const knowledgeInbox = {
     savedToInbox: 'Saved to inbox',
     saveToInbox: 'Save to inbox',
+    removeFromInbox: 'Remove from inbox',
     errorSave: 'Could not save',
   }
   const messages = { en: { episode, article, knowledgeInbox }, de: { episode, article, knowledgeInbox } }

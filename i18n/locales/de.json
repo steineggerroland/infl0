@@ -663,7 +663,9 @@
     "remove": "Entfernen",
     "removeAria": "„{title}“ aus der Wissens-Inbox entfernen",
     "saveToInbox": "In Wissens-Inbox speichern",
+    "removeFromInbox": "Aus Wissens-Inbox entfernen",
     "savedToInbox": "Gespeichert",
+    "removedFromInbox": "Entfernt",
     "errorSave": "Eintrag konnte nicht in der Wissens-Inbox gespeichert werden",
     "episodePending": "Episoden-Detailseite folgt"
   },

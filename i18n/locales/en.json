@@ -663,7 +663,9 @@
     "remove": "Remove",
     "removeAria": "Remove \"{title}\" from inbox",
     "saveToInbox": "Save to knowledge inbox",
+    "removeFromInbox": "Remove from knowledge inbox",
     "savedToInbox": "Saved",
+    "removedFromInbox": "Removed",
     "errorSave": "Could not save item to inbox",
     "episodePending": "Episode detail page pending"
   },

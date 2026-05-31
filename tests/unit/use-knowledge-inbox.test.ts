@@ -58,4 +58,34 @@ describe('useKnowledgeInbox', () => {
 
     expect(requestFetch).toHaveBeenCalledTimes(1)
   })
+
+  it('removes saved article and episode items by content id', async () => {
+    requestFetch
+      .mockResolvedValueOnce({
+        items: [
+          { id: 'i1', articleId: 'a1', episodeId: null },
+          { id: 'i2', articleId: null, episodeId: 'e1' },
+        ],
+        total: 2,
+        hasMore: false,
+      })
+      .mockResolvedValueOnce({ ok: true })
+      .mockResolvedValueOnce({ ok: true })
+
+    const inbox = useKnowledgeInbox()
+    await inbox.ensureLoaded()
+    await expect(inbox.removeArticle('a1')).resolves.toBe(true)
+    await expect(inbox.removeEpisode('e1')).resolves.toBe(true)
+
+    expect(requestFetch).toHaveBeenNthCalledWith(2, '/api/knowledge/inbox/i1', {
+      method: 'DELETE',
+      credentials: 'include',
+    })
+    expect(requestFetch).toHaveBeenNthCalledWith(3, '/api/knowledge/inbox/i2', {
+      method: 'DELETE',
+      credentials: 'include',
+    })
+    expect(inbox.isSaved('a1')).toBe(false)
+    expect(inbox.isEpisodeSaved('e1')).toBe(false)
+  })
 })

@@ -307,20 +307,27 @@ defineShortcuts({
 
 const { prefs, update } = useUiPrefs()
 
-const { isSaved: isSavedInbox, save: saveToInboxApi, ensureLoaded } = useKnowledgeInbox()
+const {
+  isSaved: isSavedInbox,
+  save: saveToInboxApi,
+  removeArticle: removeFromInboxApi,
+  ensureLoaded,
+} = useKnowledgeInbox()
 const toast = useToast()
 const inboxSaveBusy = ref(false)
 
 const isArticleSavedInInbox = computed(() => isSavedInbox(props.article.id))
 
 async function saveToInbox() {
-  if (isSavedInbox(props.article.id)) return
   inboxSaveBusy.value = true
   try {
-    const ok = await saveToInboxApi(props.article.id)
+    const wasSaved = isSavedInbox(props.article.id)
+    const ok = wasSaved
+      ? await removeFromInboxApi(props.article.id)
+      : await saveToInboxApi(props.article.id)
     if (ok) {
       toast.push({
-        message: t('knowledgeInbox.savedToInbox'),
+        message: wasSaved ? t('knowledgeInbox.removedFromInbox') : t('knowledgeInbox.savedToInbox'),
         variant: 'success',
         durationMs: 2000,
       })
@@ -462,19 +469,19 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
           </button>
           <button
             type="button"
-            class="btn btn-ghost btn-xs ms-1 tooltip inline-flex items-center justify-center p-0.5 text-[var(--infl0-article-front-fg-dim)] hover:text-[var(--infl0-article-front-fg)]"
-            :class="{ 'text-[var(--infl0-card-grad-a)] hover:text-[var(--infl0-card-grad-a)]': isSavedInbox }"
-            :data-tip="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
-            :aria-label="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            class="inbox-status badge badge-sm tooltip ms-1"
+            :class="{ 'inbox-status--saved': isArticleSavedInInbox }"
+            :data-tip="isArticleSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-label="isArticleSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-pressed="isArticleSavedInInbox ? 'true' : 'false'"
             :disabled="inboxSaveBusy"
             data-testid="article-save-inbox"
             @click.stop="saveToInbox"
           >
             <svg
               v-if="isArticleSavedInInbox"
-
               aria-hidden="true"
-              class="h-3.5 w-3.5 fill-current"
+              class="inbox-status-icon inbox-status-icon--filled"
               viewBox="0 0 16 16"
             >
               <path d="M2 2v13l6-3 6 3V2z" />
@@ -482,12 +489,14 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             <svg
               v-else
               aria-hidden="true"
-              class="h-3.5 w-3.5 stroke-current fill-none"
+              class="inbox-status-icon"
               viewBox="0 0 16 16"
-              stroke-width="1.5"
             >
               <path d="M2 2v13l6-3 6 3V2z" />
             </svg>
+            <span class="sr-only">
+              {{ isArticleSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox') }}
+            </span>
           </button>
         </div>
         <div v-if="article.category" class="mb-2 text-[var(--infl0-article-front-fg-mute)]">
@@ -569,10 +578,11 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
           </button>
           <button
             type="button"
-            class="btn btn-ghost btn-xs ms-1 tooltip inline-flex items-center justify-center p-0.5 text-[var(--infl0-article-back-fg-dim)] hover:text-[var(--infl0-article-back-fg)]"
-            :class="{ 'text-[var(--infl0-card-grad-a)] hover:text-[var(--infl0-card-grad-a)]': isSavedInbox }"
-            :data-tip="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
-            :aria-label="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            class="inbox-status badge badge-sm tooltip ms-1"
+            :class="{ 'inbox-status--saved': isArticleSavedInInbox }"
+            :data-tip="isArticleSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-label="isArticleSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-pressed="isArticleSavedInInbox ? 'true' : 'false'"
             :disabled="inboxSaveBusy"
             data-testid="article-save-inbox-back"
             @click.stop="saveToInbox"
@@ -580,7 +590,7 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             <svg
               v-if="isArticleSavedInInbox"
               aria-hidden="true"
-              class="h-3.5 w-3.5 fill-current"
+              class="inbox-status-icon inbox-status-icon--filled"
               viewBox="0 0 16 16"
             >
               <path d="M2 2v13l6-3 6 3V2z" />
@@ -588,12 +598,14 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             <svg
               v-else
               aria-hidden="true"
-              class="h-3.5 w-3.5 stroke-current fill-none"
+              class="inbox-status-icon"
               viewBox="0 0 16 16"
-              stroke-width="1.5"
             >
               <path d="M2 2v13l6-3 6 3V2z" />
             </svg>
+            <span class="sr-only">
+              {{ isArticleSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox') }}
+            </span>
           </button>
         </div>
         <div v-if="article.category" class="mb-1 text-[var(--infl0-article-back-fg-mute)]">
@@ -619,8 +631,8 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             type="button"
             class="btn btn-ghost btn-xs tooltip inline-flex items-center gap-1.5 text-[var(--infl0-surface-reader-text)]/70 hover:text-[var(--infl0-surface-reader-text)]"
             :class="{ 'text-[var(--infl0-card-grad-a)] hover:text-[var(--infl0-card-grad-a)]': isSavedInbox }"
-            :data-tip="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
-            :aria-label="isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            :data-tip="isArticleSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-label="isArticleSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
             :disabled="inboxSaveBusy"
             @click.stop="saveToInbox"
           >
@@ -641,7 +653,7 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
             >
               <path d="M2 2v13l6-3 6 3V2z" />
             </svg>
-            <span class="text-xs">{{ isArticleSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox') }}</span>
+            <span class="text-xs">{{ isArticleSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox') }}</span>
           </button>
           <button
             class="btn btn-sm btn-circle btn-ghost"
@@ -748,6 +760,47 @@ v-if="article?.author" class="ms-1 mdh:ms-3 tooltip" :data-tip="article.author"
 .read-status:disabled {
   cursor: wait;
   opacity: 0.7;
+}
+
+.inbox-status {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.65rem;
+  width: 1.65rem;
+  height: 1.35rem;
+  padding: 0;
+  border: 2px solid currentColor;
+  color: var(--infl0-article-front-fg);
+  background: transparent;
+  cursor: pointer;
+  opacity: 1;
+}
+
+.inbox-status--saved {
+  border-color: var(--infl0-article-front-fg);
+  color: var(--infl0-card-grad-a);
+  background: var(--infl0-article-front-fg);
+}
+
+.inbox-status:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.inbox-status-icon {
+  width: 0.9em;
+  height: 0.9em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.inbox-status-icon--filled {
+  fill: currentColor;
+  stroke: currentColor;
 }
 
 .read-status:not(.read-status--read) .read-status-eye::after {

@@ -65,6 +65,14 @@ export function useKnowledgeInbox() {
     return savedEpisodeIds.value.has(episodeId)
   }
 
+  function savedArticleItem(articleId: string): KnowledgeInboxItem | undefined {
+    return inboxState.value.items.find((i) => i.articleId === articleId)
+  }
+
+  function savedEpisodeItem(episodeId: string): KnowledgeInboxItem | undefined {
+    return inboxState.value.items.find((i) => i.episodeId === episodeId)
+  }
+
   async function save(articleId: string): Promise<boolean> {
     await ensureLoaded()
     if (isSaved(articleId)) return true
@@ -131,6 +139,18 @@ export function useKnowledgeInbox() {
     }
   }
 
+  async function removeArticle(articleId: string): Promise<boolean> {
+    await ensureLoaded()
+    const item = savedArticleItem(articleId)
+    return item ? remove(item.id) : true
+  }
+
+  async function removeEpisode(episodeId: string): Promise<boolean> {
+    await ensureLoaded()
+    const item = savedEpisodeItem(episodeId)
+    return item ? remove(item.id) : true
+  }
+
   return {
     ensureLoaded,
     resetLoaded,
@@ -138,9 +158,13 @@ export function useKnowledgeInbox() {
     savedEpisodeIds,
     isSaved,
     isEpisodeSaved,
+    savedArticleItem,
+    savedEpisodeItem,
     save,
     saveEpisode,
     remove,
+    removeArticle,
+    removeEpisode,
     items: computed(() => inboxState.value.items as KnowledgeInboxItem[]),
     loaded: computed(() => inboxState.value.loaded),
     total: computed(() => inboxState.value.total),

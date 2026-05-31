@@ -372,20 +372,27 @@ defineShortcuts({
 
 const { prefs, update } = useUiPrefs()
 
-const { isEpisodeSaved: isSavedInbox, saveEpisode: saveToInboxApi, ensureLoaded } = useKnowledgeInbox()
+const {
+  isEpisodeSaved: isSavedInbox,
+  saveEpisode: saveToInboxApi,
+  removeEpisode: removeFromInboxApi,
+  ensureLoaded,
+} = useKnowledgeInbox()
 const toast = useToast()
 const inboxSaveBusy = ref(false)
 
 const isEpisodeSavedInInbox = computed(() => isSavedInbox(props.episode.id))
 
 async function saveToInbox() {
-  if (isSavedInbox(props.episode.id)) return
   inboxSaveBusy.value = true
   try {
-    const ok = await saveToInboxApi(props.episode.id)
+    const wasSaved = isSavedInbox(props.episode.id)
+    const ok = wasSaved
+      ? await removeFromInboxApi(props.episode.id)
+      : await saveToInboxApi(props.episode.id)
     if (ok) {
       toast.push({
-        message: t('knowledgeInbox.savedToInbox'),
+        message: wasSaved ? t('knowledgeInbox.removedFromInbox') : t('knowledgeInbox.savedToInbox'),
         variant: 'success',
         durationMs: 2000,
       })
@@ -566,10 +573,11 @@ watch(
           </button>
           <button
             type="button"
-            class="btn btn-ghost btn-xs ms-1 tooltip inline-flex items-center justify-center p-0.5 text-[var(--infl0-article-front-fg-dim)] hover:text-[var(--infl0-article-front-fg)]"
-            :class="{ 'text-[var(--infl0-card-grad-a)] hover:text-[var(--infl0-card-grad-a)]': isEpisodeSavedInInbox }"
-            :data-tip="isEpisodeSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
-            :aria-label="isEpisodeSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            class="inbox-status badge badge-sm tooltip ms-1"
+            :class="{ 'inbox-status--saved': isEpisodeSavedInInbox }"
+            :data-tip="isEpisodeSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-label="isEpisodeSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-pressed="isEpisodeSavedInInbox ? 'true' : 'false'"
             :disabled="inboxSaveBusy"
             data-testid="episode-save-inbox"
             @click.stop="saveToInbox"
@@ -577,7 +585,7 @@ watch(
             <svg
               v-if="isEpisodeSavedInInbox"
               aria-hidden="true"
-              class="h-3.5 w-3.5 fill-current"
+              class="inbox-status-icon inbox-status-icon--filled"
               viewBox="0 0 16 16"
             >
               <path d="M2 2v13l6-3 6 3V2z" />
@@ -585,12 +593,14 @@ watch(
             <svg
               v-else
               aria-hidden="true"
-              class="h-3.5 w-3.5 stroke-current fill-none"
+              class="inbox-status-icon"
               viewBox="0 0 16 16"
-              stroke-width="1.5"
             >
               <path d="M2 2v13l6-3 6 3V2z" />
             </svg>
+            <span class="sr-only">
+              {{ isEpisodeSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox') }}
+            </span>
           </button>
         </div>
         <p v-if="podcastLabel" class="mb-1 truncate text-[0.85em] text-[var(--infl0-article-front-fg-mute)]">
@@ -789,10 +799,11 @@ watch(
           </button>
           <button
             type="button"
-            class="btn btn-ghost btn-xs ms-1 tooltip inline-flex items-center justify-center p-0.5 text-[var(--infl0-article-back-fg-dim)] hover:text-[var(--infl0-article-back-fg)]"
-            :class="{ 'text-[var(--infl0-card-grad-a)] hover:text-[var(--infl0-card-grad-a)]': isEpisodeSavedInInbox }"
-            :data-tip="isEpisodeSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
-            :aria-label="isEpisodeSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            class="inbox-status badge badge-sm tooltip ms-1"
+            :class="{ 'inbox-status--saved': isEpisodeSavedInInbox }"
+            :data-tip="isEpisodeSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-label="isEpisodeSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-pressed="isEpisodeSavedInInbox ? 'true' : 'false'"
             :disabled="inboxSaveBusy"
             data-testid="episode-save-inbox-back"
             @click.stop="saveToInbox"
@@ -800,7 +811,7 @@ watch(
             <svg
               v-if="isEpisodeSavedInInbox"
               aria-hidden="true"
-              class="h-3.5 w-3.5 fill-current"
+              class="inbox-status-icon inbox-status-icon--filled"
               viewBox="0 0 16 16"
             >
               <path d="M2 2v13l6-3 6 3V2z" />
@@ -808,12 +819,14 @@ watch(
             <svg
               v-else
               aria-hidden="true"
-              class="h-3.5 w-3.5 stroke-current fill-none"
+              class="inbox-status-icon"
               viewBox="0 0 16 16"
-              stroke-width="1.5"
             >
               <path d="M2 2v13l6-3 6 3V2z" />
             </svg>
+            <span class="sr-only">
+              {{ isEpisodeSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox') }}
+            </span>
           </button>
         </div>
       </div>
@@ -837,8 +850,8 @@ watch(
             type="button"
             class="btn btn-ghost btn-xs tooltip inline-flex items-center gap-1.5 text-[var(--infl0-surface-reader-text)]/70 hover:text-[var(--infl0-surface-reader-text)]"
             :class="{ 'text-[var(--infl0-card-grad-a)] hover:text-[var(--infl0-card-grad-a)]': isEpisodeSavedInInbox }"
-            :data-tip="isEpisodeSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
-            :aria-label="isEpisodeSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox')"
+            :data-tip="isEpisodeSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
+            :aria-label="isEpisodeSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox')"
             :disabled="inboxSaveBusy"
             @click.stop="saveToInbox"
           >
@@ -859,7 +872,7 @@ watch(
             >
               <path d="M2 2v13l6-3 6 3V2z" />
             </svg>
-            <span class="text-xs">{{ isEpisodeSavedInInbox ? t('knowledgeInbox.savedToInbox') : t('knowledgeInbox.saveToInbox') }}</span>
+            <span class="text-xs">{{ isEpisodeSavedInInbox ? t('knowledgeInbox.removeFromInbox') : t('knowledgeInbox.saveToInbox') }}</span>
           </button>
           <button
             class="btn btn-sm btn-circle btn-ghost"
@@ -1019,6 +1032,47 @@ watch(
 .read-status:disabled {
   cursor: wait;
   opacity: 0.7;
+}
+
+.inbox-status {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.65rem;
+  width: 1.65rem;
+  height: 1.35rem;
+  padding: 0;
+  border: 2px solid currentColor;
+  color: var(--infl0-article-front-fg);
+  background: transparent;
+  cursor: pointer;
+  opacity: 1;
+}
+
+.inbox-status--saved {
+  border-color: var(--infl0-article-front-fg);
+  color: var(--infl0-card-grad-a);
+  background: var(--infl0-article-front-fg);
+}
+
+.inbox-status:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.inbox-status-icon {
+  width: 0.9em;
+  height: 0.9em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.inbox-status-icon--filled {
+  fill: currentColor;
+  stroke: currentColor;
 }
 
 .read-status:not(.read-status--read) .read-status-eye::after {

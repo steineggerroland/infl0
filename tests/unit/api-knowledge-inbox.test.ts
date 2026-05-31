@@ -132,4 +132,14 @@ describe('/api/knowledge/inbox', () => {
     await expect(deleteHandler(mockEvent())).rejects.toMatchObject({ statusCode: 403 })
     expect(prisma.knowledgeInboxItem.delete).not.toHaveBeenCalled()
   })
+
+  it('deletes an owned inbox item', async () => {
+    vi.mocked(prisma.knowledgeInboxItem.findUnique).mockResolvedValue({ userId: 'u1' } as never)
+    vi.mocked(prisma.knowledgeInboxItem.delete).mockResolvedValue({ id: '11111111-1111-4111-8111-111111111111' } as never)
+
+    await expect(deleteHandler(mockEvent())).resolves.toEqual({ ok: true })
+    expect(prisma.knowledgeInboxItem.delete).toHaveBeenCalledWith({
+      where: { id: '11111111-1111-4111-8111-111111111111' },
+    })
+  })
 })

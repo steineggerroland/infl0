@@ -38,6 +38,7 @@ vi.stubGlobal('useUiPrefs', () => ({
 vi.stubGlobal('useKnowledgeInbox', () => ({
   isSaved: () => false,
   save: vi.fn().mockResolvedValue(true),
+  removeArticle: vi.fn().mockResolvedValue(true),
   ensureLoaded: vi.fn().mockResolvedValue(undefined),
   savedArticleIds: ref(new Set()),
   items: ref([]),
@@ -63,6 +64,7 @@ function makeI18n() {
     },
     knowledgeInbox: {
       saveToInbox: 'Save to knowledge inbox',
+      removeFromInbox: 'Remove from knowledge inbox',
       savedToInbox: 'Saved',
       errorSave: 'Could not save',
     },

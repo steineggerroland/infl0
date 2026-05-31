@@ -50,9 +50,25 @@ Then('{word} should see the article marked as {string} in the timeline', async f
   const button = page.getByTestId('article-save-inbox').first()
   await expect(button).toBeVisible()
   if (status === 'saved') {
-    const svg = button.locator('svg.fill-current')
-    await expect(svg).toBeVisible()
+    await expect(button).toHaveAttribute('aria-pressed', 'true')
   }
+})
+
+Then('{word} should see the article {string} marked as {string} in the timeline', async function (name, title, status) {
+  const actor = currentActor(this, name)
+  const page = BrowseTheWeb.as(actor)
+  const timeline = new ReaderTimeline(page)
+  await timeline.open()
+  await timeline.waitForShell()
+  await timeline.startReading()
+  const card = page
+    .getByTestId('article-card')
+    .filter({ hasText: title })
+    .first()
+  await timeline.focusCard(card)
+  const button = card.getByTestId('article-save-inbox')
+  await expect(button).toBeVisible()
+  await expect(button).toHaveAttribute('aria-pressed', status === 'saved' ? 'true' : 'false')
 })
 
 Given('{word} has saved articles in the following order:', async function (name, dataTable) {
@@ -168,6 +184,24 @@ Then('the original article should still be available in the system', async funct
   await expect(card).toBeVisible({ timeout: 10_000 })
 })
 
+When('{word} removes the article {string} from the knowledge inbox on its card', async function (name, title) {
+  const actor = currentActor(this, name)
+  const page = BrowseTheWeb.as(actor)
+  const timeline = new ReaderTimeline(page)
+  await timeline.open()
+  await timeline.waitForShell()
+  await timeline.startReading()
+  const card = page
+    .getByTestId('article-card')
+    .filter({ hasText: title })
+    .first()
+  await timeline.focusCard(card)
+  const button = card.getByTestId('article-save-inbox')
+  await expect(button).toHaveAttribute('aria-pressed', 'true')
+  await button.click()
+  await expect(button).toHaveAttribute('aria-pressed', 'false', { timeout: 10_000 })
+})
+
 When('{word} saves an episode {string} to the knowledge inbox', async function (name, title) {
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
@@ -191,9 +225,25 @@ Then('{word} should see the episode marked as {string} in the timeline', async f
   const button = page.getByTestId('episode-save-inbox').first()
   await expect(button).toBeVisible()
   if (status === 'saved') {
-    const svg = button.locator('svg.fill-current')
-    await expect(svg).toBeVisible()
+    await expect(button).toHaveAttribute('aria-pressed', 'true')
   }
+})
+
+Then('{word} should see the episode {string} marked as {string} in the timeline', async function (name, title, status) {
+  const actor = currentActor(this, name)
+  const page = BrowseTheWeb.as(actor)
+  const timeline = new ReaderTimeline(page)
+  await timeline.open()
+  await timeline.waitForShell()
+  await timeline.startReading()
+  const card = page
+    .getByTestId('episode-card')
+    .filter({ hasText: title })
+    .first()
+  await timeline.focusCard(card)
+  const button = card.getByTestId('episode-save-inbox')
+  await expect(button).toBeVisible()
+  await expect(button).toHaveAttribute('aria-pressed', status === 'saved' ? 'true' : 'false')
 })
 
 Given('{word} has saved an episode {string} in the knowledge inbox', async function (name, title) {
@@ -211,6 +261,24 @@ Given('{word} has saved an episode {string} in the knowledge inbox', async funct
   await timeline.focusCard(card)
   actor.remember('currentReaderArticleId', await card.getAttribute('data-episode-id'))
   await SaveToKnowledgeInbox('episode').performAs(actor)
+})
+
+When('{word} removes the episode {string} from the knowledge inbox on its card', async function (name, title) {
+  const actor = currentActor(this, name)
+  const page = BrowseTheWeb.as(actor)
+  const timeline = new ReaderTimeline(page)
+  await timeline.open()
+  await timeline.waitForShell()
+  await timeline.startReading()
+  const card = page
+    .getByTestId('episode-card')
+    .filter({ hasText: title })
+    .first()
+  await timeline.focusCard(card)
+  const button = card.getByTestId('episode-save-inbox')
+  await expect(button).toHaveAttribute('aria-pressed', 'true')
+  await button.click()
+  await expect(button).toHaveAttribute('aria-pressed', 'false', { timeout: 10_000 })
 })
 
 Then('{word} should see an entry for {string} in the knowledge inbox list', async function (name, title) {
