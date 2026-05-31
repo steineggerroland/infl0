@@ -91,8 +91,6 @@ For Playwright and accessibility:
 
 - Before presenting code, always run `npm run check` (lint --quiet + vitest dot
   reporter + typecheck). This is fast (~4s) and quiet.
-- Never run BDD/Playwright tests (`test:e2e`, `test:bdd`) unless the user
-  explicitly asks. They take 3-4 minutes and exhaust context budget.
 - `test:bdd` and `test:e2e` use `build:quiet` (suppressed output, errors only)
   and `start-server-and-test --silent` for a calm run. Cucumber uses the
   `progress` formatter (from `cucumber.mjs`). Playwright uses `list` reporter.
