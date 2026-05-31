@@ -667,7 +667,8 @@
     "savedToInbox": "Gespeichert",
     "removedFromInbox": "Entfernt",
     "errorSave": "Eintrag konnte nicht in der Wissens-Inbox gespeichert werden",
-    "episodePending": "Episoden-Detailseite folgt"
+    "openDetails": "Details",
+    "openDetailsAria": "Details zu „{title}“ öffnen"
   },
   "articleDetail": {
     "backToInbox": "Zurück zur Wissens-Inbox",
@@ -676,6 +677,15 @@
     "readAt": "Gelesen am {date}",
     "openOriginal": "Original öffnen",
     "errorLoad": "Dieser Artikel konnte nicht geladen werden"
+  },
+  "episodeDetail": {
+    "backToInbox": "Zurück zur Wissens-Inbox",
+    "savedAt": "Gespeichert am {date}",
+    "readAt": "Gelesen am {date}",
+    "openMedia": "Audio öffnen",
+    "openMediaTooltip": "Audiodatei der Episode öffnen",
+    "metadata": "Episoden-Metadaten",
+    "errorLoad": "Diese Episode konnte nicht geladen werden"
   },
   "help": {
     "title": "Hilfe & häufige Fragen",

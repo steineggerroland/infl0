@@ -161,6 +161,13 @@ Then('{word} should be taken to the full reader view of that article', async fun
   await expect(page.getByTestId('article-detail')).toBeVisible({ timeout: 15_000 })
 })
 
+Then('{word} should be taken to the full episode detail view', async function (name) {
+  const actor = currentActor(this, name)
+  const page = BrowseTheWeb.as(actor)
+  await expect(page).toHaveURL(/\/episodes\//u, { timeout: 15_000 })
+  await expect(page.getByTestId('episode-detail')).toBeVisible({ timeout: 15_000 })
+})
+
 When('{word} removes {string} from the inbox', async function (name, title) {
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)

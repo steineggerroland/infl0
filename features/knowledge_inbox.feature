@@ -57,6 +57,12 @@ Feature: knowledge-inbox
     Then Savy should see an entry for "The Science of Sleep" in the knowledge inbox list
     And Savy should see a teaser snippet for each entry
 
+  Scenario: Returning to episode detail view from the inbox
+    Given Savy has saved an episode "The Sound of Details" in the knowledge inbox
+    When Savy navigates to the knowledge inbox
+    And Savy clicks on the entry for "The Sound of Details"
+    Then Savy should be taken to the full episode detail view
+
   Scenario: Removing an episode from the knowledge inbox
     Given Savy has saved an episode "The History of Sound" in the knowledge inbox
     When Savy navigates to the knowledge inbox

@@ -667,7 +667,8 @@
     "savedToInbox": "Saved",
     "removedFromInbox": "Removed",
     "errorSave": "Could not save item to inbox",
-    "episodePending": "Episode detail page pending"
+    "openDetails": "Details",
+    "openDetailsAria": "Open details for \"{title}\""
   },
   "articleDetail": {
     "backToInbox": "Back to knowledge inbox",
@@ -676,6 +677,15 @@
     "readAt": "Read {date}",
     "openOriginal": "Open original",
     "errorLoad": "Could not load this article"
+  },
+  "episodeDetail": {
+    "backToInbox": "Back to knowledge inbox",
+    "savedAt": "Saved {date}",
+    "readAt": "Read {date}",
+    "openMedia": "Open audio",
+    "openMediaTooltip": "Open the episode audio file",
+    "metadata": "Episode metadata",
+    "errorLoad": "Could not load this episode"
   },
   "help": {
     "title": "Help & frequently asked questions",

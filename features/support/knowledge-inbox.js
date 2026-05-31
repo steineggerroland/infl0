@@ -28,6 +28,6 @@ export class KnowledgeInboxPage {
 
   async removeItem(title) {
     const item = this.itemByTitle(title)
-    await item.getByRole('button', { name: /remove/i }).click()
+    await item.getByTestId('knowledge-inbox-remove').click()
   }
 }
