@@ -12,6 +12,15 @@ async function waitForDistinctInboxCapture(page) {
   await page.waitForTimeout(1100)
 }
 
+async function focusTimelineCard(page, timeline, card) {
+  if (!(await card.isVisible().catch(() => false))) {
+    await timeline.open()
+    await timeline.waitForShell()
+    await timeline.startReading()
+  }
+  await timeline.focusCard(card)
+}
+
 Given('{word} is logged in', async function (name) {
   await actorCalled(this, name).attemptsTo(StartSignedInToInfl0)
 })
@@ -62,14 +71,11 @@ Then('{word} should see the article {string} marked as {string} in the timeline'
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
   const timeline = new ReaderTimeline(page)
-  await timeline.open()
-  await timeline.waitForShell()
-  await timeline.startReading()
   const card = page
     .getByTestId('article-card')
     .filter({ hasText: title })
     .first()
-  await timeline.focusCard(card)
+  await focusTimelineCard(page, timeline, card)
   const button = card.getByTestId('article-save-inbox')
   await expect(button).toBeVisible()
   await expect(button).toHaveAttribute('aria-pressed', status === 'saved' ? 'true' : 'false')
@@ -200,14 +206,11 @@ When('{word} removes the article {string} from the knowledge inbox on its card',
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
   const timeline = new ReaderTimeline(page)
-  await timeline.open()
-  await timeline.waitForShell()
-  await timeline.startReading()
   const card = page
     .getByTestId('article-card')
     .filter({ hasText: title })
     .first()
-  await timeline.focusCard(card)
+  await focusTimelineCard(page, timeline, card)
   const button = card.getByTestId('article-save-inbox')
   await expect(button).toHaveAttribute('aria-pressed', 'true')
   await button.click()
@@ -245,14 +248,11 @@ Then('{word} should see the episode {string} marked as {string} in the timeline'
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
   const timeline = new ReaderTimeline(page)
-  await timeline.open()
-  await timeline.waitForShell()
-  await timeline.startReading()
   const card = page
     .getByTestId('episode-card')
     .filter({ hasText: title })
     .first()
-  await timeline.focusCard(card)
+  await focusTimelineCard(page, timeline, card)
   const button = card.getByTestId('episode-save-inbox')
   await expect(button).toBeVisible()
   await expect(button).toHaveAttribute('aria-pressed', status === 'saved' ? 'true' : 'false')
@@ -279,14 +279,11 @@ When('{word} removes the episode {string} from the knowledge inbox on its card',
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
   const timeline = new ReaderTimeline(page)
-  await timeline.open()
-  await timeline.waitForShell()
-  await timeline.startReading()
   const card = page
     .getByTestId('episode-card')
     .filter({ hasText: title })
     .first()
-  await timeline.focusCard(card)
+  await focusTimelineCard(page, timeline, card)
   const button = card.getByTestId('episode-save-inbox')
   await expect(button).toHaveAttribute('aria-pressed', 'true')
   await button.click()
