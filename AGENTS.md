@@ -94,7 +94,7 @@ For Playwright and accessibility:
 - `test:bdd` and `test:e2e` use `build:quiet` (suppressed output, errors only)
   and `start-server-and-test --silent` for a calm run. Cucumber uses the
   `progress` formatter (from `cucumber.mjs`). Playwright uses `list` reporter.
-- Vue/i18n console warnings are suppressed in vitest by a setup file
-  (`tests/setup/suppress-console-warnings.ts`).
+- Vue/i18n console warnings are suppressed in vitest by a setup file; other
+  warnings are sanitized before logging (`tests/setup/sanitize-console-warnings.ts`).
 - `npm run check` includes: `eslint . --quiet` → `vitest run --reporter dot` →
   `nuxi typecheck`.
