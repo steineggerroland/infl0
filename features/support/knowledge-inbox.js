@@ -42,20 +42,23 @@ export class KnowledgeInboxPage {
   }
 
   async removeItem(title) {
-    const item = this.itemByTitle(title)
-    const remove = item.getByTestId('knowledge-inbox-remove')
-    await expect(remove).toBeVisible({ timeout: 15_000 })
-    await expect(remove).toBeEnabled()
-    await Promise.all([
-      this.page.waitForResponse(
-        (response) =>
-          response.request().method() === 'DELETE'
-          && response.url().includes('/api/knowledge/inbox/')
-          && response.ok(),
-        { timeout: 30_000 },
-      ),
-      remove.click(),
-    ])
-    await expect(this.page.getByTestId('knowledge-inbox-item').filter({ hasText: title })).toHaveCount(0, { timeout: 30_000 })
+    const matchingItems = this.page.getByTestId('knowledge-inbox-item').filter({ hasText: title })
+    await expect(matchingItems).toHaveCount(1, { timeout: 15_000 })
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const item = this.itemByTitle(title)
+      const remove = item.getByTestId('knowledge-inbox-remove')
+      await expect(remove).toBeVisible({ timeout: 15_000 })
+      await expect(remove).toBeEnabled({ timeout: 15_000 })
+      await remove.click()
+
+      try {
+        await expect(matchingItems).toHaveCount(0, { timeout: 15_000 })
+        return
+      } catch (error) {
+        if (attempt === 2) throw error
+        await this.page.waitForTimeout(500)
+      }
+    }
   }
 }

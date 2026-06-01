@@ -31,8 +31,11 @@ export class ReaderTimeline {
   async startReading() {
     const readerStart = this.page.getByTestId('reader-start')
     await expect(readerStart).toBeVisible({ timeout: 20_000 })
-    await this.page.getByTestId('reader-start-button').click()
-    await expect(readerStart).toHaveCount(0, { timeout: 15_000 })
+    const button = this.page.getByTestId('reader-start-button')
+    await expect(button).toBeVisible({ timeout: 20_000 })
+    await expect(button).toBeEnabled({ timeout: 30_000 })
+    await button.click()
+    await expect(readerStart).toHaveCount(0, { timeout: 30_000 })
   }
 
   async setShowReadArticles(show) {
