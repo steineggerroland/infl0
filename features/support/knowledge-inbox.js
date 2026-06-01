@@ -26,9 +26,36 @@ export class KnowledgeInboxPage {
       .first()
   }
 
+  entryLinkByTitle(title) {
+    return this.itemByTitle(title).getByTestId('knowledge-inbox-entry-link')
+  }
+
+  async openItem(title) {
+    const link = this.entryLinkByTitle(title)
+    await expect(link).toBeVisible({ timeout: 15_000 })
+    await expect(link).toBeEnabled()
+    await Promise.all([
+      this.page.waitForURL(/\/(?:articles|episodes)\//u, { timeout: 30_000 }),
+      link.click(),
+    ])
+    await waitForNuxtAppReady(this.page)
+  }
+
   async removeItem(title) {
     const item = this.itemByTitle(title)
-    await item.getByTestId('knowledge-inbox-remove').click()
-    await expect(this.page.getByTestId('knowledge-inbox-item').filter({ hasText: title })).toHaveCount(0, { timeout: 15_000 })
+    const remove = item.getByTestId('knowledge-inbox-remove')
+    await expect(remove).toBeVisible({ timeout: 15_000 })
+    await expect(remove).toBeEnabled()
+    await Promise.all([
+      this.page.waitForResponse(
+        (response) =>
+          response.request().method() === 'DELETE'
+          && response.url().includes('/api/knowledge/inbox/')
+          && response.ok(),
+        { timeout: 30_000 },
+      ),
+      remove.click(),
+    ])
+    await expect(this.page.getByTestId('knowledge-inbox-item').filter({ hasText: title })).toHaveCount(0, { timeout: 30_000 })
   }
 }

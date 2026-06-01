@@ -156,7 +156,7 @@ When('{word} clicks on the entry for {string}', async function (name, title) {
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
   const inbox = new KnowledgeInboxPage(page)
-  await inbox.itemByTitle(title).click()
+  await inbox.openItem(title)
 })
 
 Then('{word} should be taken to the full reader view of that article', async function (name) {

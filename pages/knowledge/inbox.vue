@@ -19,7 +19,6 @@ type InboxItem = {
 }
 
 const { t, locale } = useI18n()
-const router = useRouter()
 const inbox = useKnowledgeInbox()
 
 const loading = ref(true)
@@ -50,11 +49,6 @@ async function removeItem(id: string) {
   } finally {
     removing.value.delete(id)
   }
-}
-
-function openItem(item: InboxItem) {
-  const path = detailPath(item)
-  if (path) void router.push(path)
 }
 
 function detailPath(item: InboxItem) {
@@ -121,15 +115,15 @@ await loadInbox()
       <li
         v-for="item in items"
         :key="item.id"
-        class="infl0-panel group flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors hover:border-[var(--infl0-reader-link)]/60 hover:bg-[color-mix(in_srgb,var(--infl0-reader-link)_5%,transparent)]"
+        class="infl0-panel group flex items-start gap-3 rounded-xl border p-4 transition-colors hover:border-[var(--infl0-reader-link)]/60 hover:bg-[color-mix(in_srgb,var(--infl0-reader-link)_5%,transparent)]"
         :class="{ 'pointer-events-none opacity-60': removing.has(item.id) }"
         data-testid="knowledge-inbox-item"
-        @click="openItem(item)"
       >
-        <button
-          type="button"
+        <NuxtLink
+          v-if="detailPath(item)"
+          :to="detailPath(item)!"
           class="min-w-0 flex-1 cursor-pointer text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--infl0-reader-link)]"
-          @click.stop="openItem(item)"
+          data-testid="knowledge-inbox-entry-link"
         >
           <h2 class="text-base font-semibold leading-snug text-[var(--infl0-panel-text)]">
             {{ item.titleSnapshot }}
@@ -145,7 +139,26 @@ await loadInbox()
           >
             {{ item.teaserSnapshot }}
           </p>
-        </button>
+        </NuxtLink>
+        <div
+          v-else
+          class="min-w-0 flex-1 text-start"
+        >
+          <h2 class="text-base font-semibold leading-snug text-[var(--infl0-panel-text)]">
+            {{ item.titleSnapshot }}
+          </h2>
+          <div class="mt-1 flex items-center gap-2 text-xs text-[var(--infl0-panel-muted)]">
+            <span>{{ item.sourceSnapshot }}</span>
+            <span aria-hidden="true">·</span>
+            <time :datetime="capturedDateTime(item.capturedAt)">{{ formatCaptured(item.capturedAt) }}</time>
+          </div>
+          <p
+            v-if="item.teaserSnapshot"
+            class="mt-2 text-sm leading-relaxed text-[var(--infl0-panel-text-dim)] line-clamp-2"
+          >
+            {{ item.teaserSnapshot }}
+          </p>
+        </div>
 
         <div class="flex shrink-0 items-center gap-1">
           <NuxtLink
@@ -154,6 +167,7 @@ await loadInbox()
             class="btn btn-square btn-ghost btn-sm tooltip text-[var(--infl0-reader-link)] hover:bg-[color-mix(in_srgb,var(--infl0-reader-link)_14%,transparent)]"
             :data-tip="t('knowledgeInbox.openDetails')"
             :aria-label="t('knowledgeInbox.openDetailsAria', { title: item.titleSnapshot })"
+            data-testid="knowledge-inbox-details"
             @click.stop
           >
             <Infl0Icon
