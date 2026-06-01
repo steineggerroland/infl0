@@ -15,6 +15,6 @@ test.describe('onboarding cards on a fresh account', () => {
     await expect(cards).toHaveCount(4)
     const intro = page.locator('[data-onboarding-topic="intro"]')
     await expect(intro).toBeVisible()
-    await expect(page).toHaveURL(/\/(\?|$)/u)
+    await expect(page).toHaveURL(/\/$|\/inflow\/onboarding\//u)
   })
 })

@@ -35,6 +35,20 @@ vi.stubGlobal('useUiPrefs', () => ({
   update: vi.fn(),
 }))
 
+vi.stubGlobal('useKnowledgeInbox', () => ({
+  isSaved: () => false,
+  save: vi.fn().mockResolvedValue(true),
+  removeArticle: vi.fn().mockResolvedValue(true),
+  ensureLoaded: vi.fn().mockResolvedValue(undefined),
+  savedArticleIds: ref(new Set()),
+  items: ref([]),
+  loaded: ref(true),
+}))
+
+vi.stubGlobal('useToast', () => ({
+  push: vi.fn(),
+}))
+
 const ArticleCard = (await import('../../components/ArticleCard.vue')).default
 
 function makeI18n() {
@@ -47,6 +61,12 @@ function makeI18n() {
       markUnread: 'Mark as unread',
       closeModal: 'Close',
       modalKeyboardHint: 'Esc',
+    },
+    knowledgeInbox: {
+      saveToInbox: 'Save to knowledge inbox',
+      removeFromInbox: 'Remove from knowledge inbox',
+      savedToInbox: 'Saved',
+      errorSave: 'Could not save',
     },
   }
   return createI18n({ legacy: false, locale: 'en', messages: { en: messages, de: messages } })
@@ -172,7 +192,7 @@ describe('ArticleCard reader modal + modal stack', () => {
     const content = wrapper.get('[id$="-reader-content"]')
     expect(content.attributes('tabindex')).toBe('-1')
     expect(document.activeElement).toBe(content.element)
-    expect(wrapper.get('form[method="dialog"] button').attributes('aria-label')).toBe('Close')
+    expect(wrapper.get('dialog button[aria-label="Close"]').attributes('aria-label')).toBe('Close')
     expect(wrapper.html()).toContain('<h1>Hello</h1>')
 
     ;(dialog.element as HTMLDialogElement).close()

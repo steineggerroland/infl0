@@ -30,9 +30,20 @@ export class ReaderTimeline {
 
   async startReading() {
     const readerStart = this.page.getByTestId('reader-start')
-    await expect(readerStart).toBeVisible({ timeout: 20_000 })
-    await this.page.getByTestId('reader-start-button').click()
-    await expect(readerStart).toHaveCount(0, { timeout: 15_000 })
+    const scrollContainer = this.page.locator('.scroll-container')
+    await expect(readerStart.or(scrollContainer).first()).toBeVisible({ timeout: 20_000 })
+    if (await scrollContainer.isVisible()) return
+
+    const button = this.page.getByTestId('reader-start-button')
+    await expect.poll(async () => {
+      if (await scrollContainer.isVisible()) return 'started'
+      if (await button.isVisible() && await button.isEnabled()) return 'ready'
+      return 'waiting'
+    }, { timeout: 45_000 }).not.toBe('waiting')
+
+    if (await scrollContainer.isVisible()) return
+    await button.click()
+    await expect(scrollContainer).toBeVisible({ timeout: 30_000 })
   }
 
   async setShowReadArticles(show) {

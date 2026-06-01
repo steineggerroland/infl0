@@ -24,6 +24,7 @@
     "feeds": "Manage sources",
     "settings": "Settings",
     "privacy": "Privacy",
+    "knowledgeInbox": "Knowledge Inbox",
     "personalization": "Why at the top?",
     "help": "Help",
     "view": "View",
@@ -652,6 +653,39 @@
     "markUnread": "Mark as unread",
     "closeModal": "Close",
     "modalKeyboardHint": "Esc closes · use w/s after closing to navigate"
+  },
+  "knowledgeInbox": {
+    "title": "Knowledge Inbox",
+    "intro": "Items you saved to process later, sorted by capture date.",
+    "empty": "Nothing saved yet. Save articles or episodes from your timeline to build your knowledge inbox.",
+    "errorLoad": "Could not load knowledge inbox",
+    "errorRemove": "Could not remove item from inbox",
+    "remove": "Remove",
+    "removeAria": "Remove \"{title}\" from inbox",
+    "saveToInbox": "Save to knowledge inbox",
+    "removeFromInbox": "Remove from knowledge inbox",
+    "savedToInbox": "Saved",
+    "removedFromInbox": "Removed",
+    "errorSave": "Could not save item to inbox",
+    "openDetails": "Details",
+    "openDetailsAria": "Open details for \"{title}\""
+  },
+  "articleDetail": {
+    "backToInbox": "Back to knowledge inbox",
+    "byline": "By {author}",
+    "savedAt": "Saved {date}",
+    "readAt": "Read {date}",
+    "openOriginal": "Open original",
+    "errorLoad": "Could not load this article"
+  },
+  "episodeDetail": {
+    "backToInbox": "Back to knowledge inbox",
+    "savedAt": "Saved {date}",
+    "readAt": "Read {date}",
+    "openMedia": "Open audio",
+    "openMediaTooltip": "Open the episode audio file",
+    "metadata": "Episode metadata",
+    "errorLoad": "Could not load this episode"
   },
   "help": {
     "title": "Help & frequently asked questions",

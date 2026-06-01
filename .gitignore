@@ -25,6 +25,7 @@ test-results/
 .vercel
 .fleet
 .idea
+opencode.json
 
 # Local env files
 .env

@@ -10,6 +10,7 @@ const isOpen = ref(false)
 const navItems = computed(() => [
     { to: '/', label: t('menu.timeline') },
     { to: '/feeds', label: t('menu.feeds') },
+    { to: '/knowledge/inbox', label: t('menu.knowledgeInbox') },
     { to: '/settings', label: t('menu.settings') },
     { to: '/settings/personalization', label: t('menu.personalization') },
     { to: '/settings/privacy', label: t('menu.privacy') },

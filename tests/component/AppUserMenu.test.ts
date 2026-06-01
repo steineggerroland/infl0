@@ -46,6 +46,7 @@ function makeI18n() {
       close: 'Close menu',
       timeline: 'Timeline',
       feeds: 'Manage sources',
+      knowledgeInbox: 'Knowledge Inbox',
       settings: 'Settings',
       personalization: 'Why at the top?',
       privacy: 'Privacy',
@@ -146,6 +147,7 @@ describe('AppUserMenu navigation', () => {
       [
         '/',
         '/feeds',
+        '/knowledge/inbox',
         '/settings',
         '/settings/personalization',
         '/settings/privacy',

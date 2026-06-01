@@ -86,3 +86,15 @@ For Playwright and accessibility:
 - Prefer user-path checks: keyboard navigation, focus movement, dialog
   open/close, and screen-reader-relevant state.
 - Prefer behavioral reduced-motion checks over CSS selector assertions.
+
+## Session Workflow
+
+- Before presenting code, always run `npm run check` (lint --quiet + vitest dot
+  reporter + typecheck). This is fast (~4s) and quiet.
+- `test:bdd` and `test:e2e` use `build:quiet` (suppressed output, errors only)
+  and `start-server-and-test --silent` for a calm run. Cucumber uses the
+  `progress` formatter (from `cucumber.mjs`). Playwright uses `list` reporter.
+- Vue/i18n console warnings are suppressed in vitest by a setup file; other
+  warnings are sanitized before logging (`tests/setup/sanitize-console-warnings.ts`).
+- `npm run check` includes: `eslint . --quiet` → `vitest run --reporter dot` →
+  `nuxi typecheck`.

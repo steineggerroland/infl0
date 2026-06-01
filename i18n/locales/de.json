@@ -24,6 +24,7 @@
     "feeds": "Quellen verwalten",
     "settings": "Einstellungen",
     "privacy": "Privatsphäre",
+    "knowledgeInbox": "Wissens-Inbox",
     "personalization": "Warum oben?",
     "help": "Hilfe",
     "view": "Ansicht",
@@ -652,6 +653,39 @@
     "markUnread": "Als nicht gelesen markieren",
     "closeModal": "Schließen",
     "modalKeyboardHint": "Esc schließt · w/s navigieren nach dem Schließen"
+  },
+  "knowledgeInbox": {
+    "title": "Wissens-Inbox",
+    "intro": "Einträge, die du für später gespeichert hast — sortiert nach Speicherdatum.",
+    "empty": "Noch nichts gespeichert. Speichere Artikel oder Episoden aus deiner Timeline, um deine Wissens-Inbox zu füllen.",
+    "errorLoad": "Wissens-Inbox konnte nicht geladen werden",
+    "errorRemove": "Eintrag konnte nicht aus der Wissens-Inbox entfernt werden",
+    "remove": "Entfernen",
+    "removeAria": "„{title}“ aus der Wissens-Inbox entfernen",
+    "saveToInbox": "In Wissens-Inbox speichern",
+    "removeFromInbox": "Aus Wissens-Inbox entfernen",
+    "savedToInbox": "Gespeichert",
+    "removedFromInbox": "Entfernt",
+    "errorSave": "Eintrag konnte nicht in der Wissens-Inbox gespeichert werden",
+    "openDetails": "Details",
+    "openDetailsAria": "Details zu „{title}“ öffnen"
+  },
+  "articleDetail": {
+    "backToInbox": "Zurück zur Wissens-Inbox",
+    "byline": "Von {author}",
+    "savedAt": "Gespeichert am {date}",
+    "readAt": "Gelesen am {date}",
+    "openOriginal": "Original öffnen",
+    "errorLoad": "Dieser Artikel konnte nicht geladen werden"
+  },
+  "episodeDetail": {
+    "backToInbox": "Zurück zur Wissens-Inbox",
+    "savedAt": "Gespeichert am {date}",
+    "readAt": "Gelesen am {date}",
+    "openMedia": "Audio öffnen",
+    "openMediaTooltip": "Audiodatei der Episode öffnen",
+    "metadata": "Episoden-Metadaten",
+    "errorLoad": "Diese Episode konnte nicht geladen werden"
   },
   "help": {
     "title": "Hilfe & häufige Fragen",
