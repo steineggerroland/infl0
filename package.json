@@ -63,7 +63,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.2",
-    "@cucumber/cucumber": "^12.9.0",
+    "@cucumber/cucumber": "^13.0.0",
     "@nuxt/eslint": "^1.15.0",
     "@playwright/test": "^1.60.0",
     "@types/node": "^25.9.1",
