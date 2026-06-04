@@ -73,7 +73,7 @@
     "@vue/test-utils": "^2.4.8",
     "dotenv-cli": "^11.0.0",
     "eslint": "^10.4.0",
-    "happy-dom": "^20.9.0",
+    "happy-dom": "^20.10.1",
     "sharp": "^0.34.5",
     "start-server-and-test": "^3.0.5",
     "tsx": "^4.22.3",
