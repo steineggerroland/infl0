@@ -23,16 +23,23 @@ order, acceptance criteria — separate from the larger idea pool in
 ## Index
 
 | Package | Summary | Status |
-|--------|--------|--------|
+|-----|-----|-----|
+| [`knowledge-base-textwork.md`](knowledge-base-textwork.md) | Extract quotes, summaries, notes from articles; tag and view inline | 🎯 Next |
+| [`knowledge-base-editing.md`](knowledge-base-editing.md) | Edit existing knowledge fragments | 📋 After textwork |
+| [`knowledge-base-connections.md`](knowledge-base-connections.md) | Visualize and manage connections between fragments | 📋 Later |
+| [`knowledge-base-learning.md`](knowledge-base-learning.md) | Spaced repetition and active recall for fragments | 📋 Later |
+| [`knowledge-base-tags.md`](knowledge-base-tags.md) | Tag suggestions, clouds, merging, organization | 📋 Later |
 
 *(Add a row when a new package markdown is created.)*
 
 ## Prioritized backlog (recommended working order)
 
-Use this order when choosing what to implement next. **Revisit** after each
-package ships or when dependencies change.
-
 | Priority | Package | Rationale |
-|:--------:|---------|-----------|
+|:-----:|-----|-----|
+| 1 | `knowledge-base-textwork.md` | Core workflow: extract, tag, view fragments inline. Blocking for all later features. |
+| 2 | `knowledge-base-editing.md` | Refine extracted content. High UX value, low complexity. |
+| 3 | `knowledge-base-tags.md` | Improve tag management. Improves discoverability of fragments. |
+| 4 | `knowledge-base-connections.md` | Visual graph of connections. More complex, visual. |
+| 5 | `knowledge-base-learning.md` | Spaced repetition. Depends on fragments having sufficient quality. |
 
 *(Revisit after each package ships.)*
