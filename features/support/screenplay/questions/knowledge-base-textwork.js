@@ -1,67 +1,64 @@
 import { expect } from '@playwright/test'
 import { BrowseTheWeb } from '../abilities/browse-the-web.js'
 
-function currentArticleCard(actor) {
-  const id = actor.recall('currentReaderArticleId')
-  if (!id) throw new Error(`${actor.name} has no current reader article.`)
-  return timeline(actor).articleCard(id)
-}
-
-function timeline(actor) {
-  return BrowseTheWeb.as(actor)
-}
-
-export const CurrentReaderArticleHasNoFragmentToolbar = {
-  async answeredBy(actor) {
-    const toolbar = currentArticleCard(actor).locator('[data-testid="fragment-selection-toolbar"]')
-    await expect(toolbar).toBeHidden()
-  },
-}
-
-export const FragmentExtractionButtonsAreVisible = {
-  async answeredBy(actor) {
-    const card = currentArticleCard(actor)
-    await expect(card.getByTestId('fragment-extract-quote')).toBeVisible()
-    await expect(card.getByTestId('fragment-summarize')).toBeVisible()
-    await expect(card.getByTestId('fragment-add-note')).toBeVisible()
-  },
-}
-
-export function FragmentListSectionIsVisible(sectionName) {
-  return {
-    async answeredBy(actor) {
-      const sectionTitle =sectionName === 'Quotes' ? 'Quotes' : sectionName === 'Summaries' ? 'Summaries' : 'Notes'
-      const section = BrowseTheWeb.as(actor).getByRole('region').filter({ hasText: sectionTitle })
-      await expect(section).toBeVisible()
-    },
-  }
-}
-
-export function FragmentWithContentIsVisible(content) {
+export function ReadingNoteHighlightIsVisible(type) {
   return {
     async answeredBy(actor) {
       const page = BrowseTheWeb.as(actor)
-      await expect(page.getByTestId('knowledge-fragment-card').filter({ hasText: content })).toBeVisible()
+      const hl = page.locator(`[data-reading-note-type="${type}"]`)
+      await expect(hl.first()).toBeVisible()
     },
   }
 }
 
-export function FragmentWithContentIsNotVisible(content) {
+export function ReadingNoteHighlightCount(type, count) {
   return {
     async answeredBy(actor) {
       const page = BrowseTheWeb.as(actor)
-      await expect(page.getByTestId('knowledge-fragment-card').filter({ hasText: content })).toHaveCount(0)
+      const hl = page.locator(`[data-reading-note-type="${type}"]`)
+      await expect(hl).toHaveCount(count)
     },
   }
 }
 
-export function FragmentCountInSection(sectionName, count) {
+export function ReadingNoteHighlightIsNotVisible(content) {
   return {
     async answeredBy(actor) {
-      const sectionTitle = sectionName === 'Quotes' ? 'Quotes' : sectionName === 'Summaries' ? 'Summaries' : 'Notes'
-      const section = BrowseTheWeb.as(actor).getByRole('region').filter({ hasText: sectionTitle })
-      const fragments = section.getByTestId('knowledge-fragment-card')
-      await expect(fragments).toHaveCount(count)
+      const page = BrowseTheWeb.as(actor)
+      const hl = page.locator('[data-reading-note-id]').filter({ hasText: content })
+      await expect(hl).toHaveCount(0, { timeout: 10_000 })
+    },
+  }
+}
+
+export function ActiveReadingNoteHighlightTextIs(text) {
+  return {
+    async answeredBy(actor) {
+      const page = BrowseTheWeb.as(actor)
+      await expect.poll(async () => {
+        return page.locator('.reading-note-highlight--active').evaluateAll(elements =>
+          elements.map(element => element.textContent || '').join(''),
+        )
+      }).toBe(text)
+    },
+  }
+}
+
+export function LearningFocusGuidanceIsVisible() {
+  return {
+    async answeredBy(actor) {
+      const page = BrowseTheWeb.as(actor)
+      await expect(page.locator('[data-testid="learning-focus-status"]')).toBeVisible()
+    },
+  }
+}
+
+export function ReadingNoteCountIs(count) {
+  return {
+    async answeredBy(actor) {
+      const page = BrowseTheWeb.as(actor)
+      const cards = page.locator('[data-testid="reading-note-card"]')
+      await expect(cards).toHaveCount(count)
     },
   }
 }
@@ -70,18 +67,9 @@ export function TagsIndexShowsTag(tag, count) {
   return {
     async answeredBy(actor) {
       const page = BrowseTheWeb.as(actor)
-      const tagRow = page.locator('[data-testid="tag-index-row"]').filter({ hasText: tag })
-      await expect(tagRow).toBeVisible()
-      await expect(tagRow).toContainText(`${count}`)
-    },
-  }
-}
-
-export function FragmentCountIs(count) {
-  return {
-    async answeredBy(actor) {
-      const page = BrowseTheWeb.as(actor)
-      await expect(page.getByTestId('knowledge-fragment-card')).toHaveCount(count)
+      const tagEntry = page.locator(`[data-testid^="tag-index-row-${tag}-"]`)
+      await expect(tagEntry).toBeVisible()
+      await expect(tagEntry).toContainText(`${count}`)
     },
   }
 }

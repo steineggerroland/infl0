@@ -58,7 +58,7 @@ Improve tag management for knowledge fragments — smart suggestions, tag clouds
 - **Tag similarity**: Use fuzzy match (e.g., `string-similarity` package) for merge suggestions.
 - **Tag autocomplete**: Debounced API call to `/api/knowledge/tags/suggestions?query=xxx`.
 - **Tag cloud calculation**: In `utils/tag-cloud.ts`, compute percentile-based font sizes.
-- **Performance**: GIN index on `knowledge_fragments.userTags` for fast filtering.
+- **Performance**: GIN index on `reading_notes.userTags` for fast filtering.
 
 ## API additions
 

@@ -15,7 +15,7 @@ Users can visualize and manage connections between knowledge fragments — see h
 
 - Package 1 (Text Work): fragments must exist before linking.
 - Package 1.5 (Editing): optional — edit connection metadata in future.
-- `knowledge_fragments` table (schema in Package 1).
+- `reading_notes` table (schema in Package 1).
 
 ## Acceptance criteria
 

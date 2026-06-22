@@ -21,6 +21,7 @@ export async function ingestKnowledgeInboxArticle(page, world, title, options = 
   const crawlKey = await ensureInboxFeed(page, world)
   const safeId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
   const id = `bdd-kb-${safeId}-${state.suffix}`
+  const defaultContent = `# ${title}\n\nBody for ${title}.`
   const payload = {
     crawlKey,
     id,
@@ -29,7 +30,7 @@ export async function ingestKnowledgeInboxArticle(page, world, title, options = 
     link: `https://example.com/bdd/kb/${state.suffix}/${id}`,
     publishedAt: options.publishedAt || new Date().toISOString(),
     content_hash: `${id}-hash`,
-    content_md: `# ${title}\n\nBody for ${title}.`,
+    content_md: options.contentMd ?? defaultContent,
     source_type: 'rss',
     tld: 'example.com',
     teaser: options.teaser || `${title} teaser for the knowledge inbox.`,
@@ -43,6 +44,7 @@ export async function ingestKnowledgeInboxEpisode(page, world, title, options = 
   const crawlKey = await ensureInboxFeed(page, world)
   const safeId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
   const id = `bdd-kb-ep-${safeId}-${state.suffix}`
+  const defaultContent = `# ${title}\n\nBody for ${title}.`
   const payload = {
     crawlKey,
     id,
@@ -51,7 +53,7 @@ export async function ingestKnowledgeInboxEpisode(page, world, title, options = 
     link: `https://example.com/bdd/kb/${state.suffix}/${id}`,
     publishedAt: options.publishedAt || new Date().toISOString(),
     content_hash: `${id}-hash`,
-    content_md: `# ${title}\n\nBody for ${title}.`,
+    content_md: options.contentMd ?? defaultContent,
     source_type: 'podcast',
     tld: 'example.com',
     teaser: options.teaser || `${title} teaser for the knowledge inbox.`,

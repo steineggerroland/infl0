@@ -14,7 +14,7 @@ Users can edit existing knowledge fragments (quotes, summaries, notes) to refine
 ## Dependencies
 
 - Package 1 (Text Work) — fragments must exist before they can be edited.
-- `knowledge_fragments` table (schema in Package 1).
+- `reading_notes` table (schema in Package 1).
 
 ## Acceptance criteria
 

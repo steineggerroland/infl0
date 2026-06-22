@@ -1,125 +1,142 @@
-import { expect } from '@playwright/test'
 import { BrowseTheWeb } from '../abilities/browse-the-web.js'
 
-function getSelectionText() {
-  return window.getSelection().toString()
-}
-
-export function ExtractQuote() {
+export function CreateReadingNote(content, type) {
   return {
-    description: 'Extract the selected text as a quote',
+    description: `Create a ${type} reading note from "${content}"`,
     async performAs(actor) {
       const page = BrowseTheWeb.as(actor)
-      
-      // Get the selected text
-      const selectedText = await page.evaluate(getSelectionText)
-      if (!selectedText.trim()) {
-        throw new Error('No text selected')
-      }
-      
-      // Click the quote extraction button (should appear on text selection)
-      const quoteButton = page.locator('[data-testid="fragment-extract-quote"]')
-      await expect(quoteButton).toBeVisible({ timeout: 5000 })
-      await quoteButton.click()
-      
-      // Fill in the context modal
-      await page.fill('[data-testid="fragment-context-input"]', '')
-      await page.fill('[data-testid="fragment-tags-input"]', '')
-      await page.click('[data-testid="fragment-submit"]')
-      
-      // Wait for success toast
-      await page.waitForSelector('[data-testid="app-toast-success"]', { timeout: 5000 })
+      const root = page.locator('[data-testid="annotatable-text-content"]').first()
+      await root.waitFor({ state: 'visible', timeout: 5_000 })
+
+      const selected = await root.evaluate((element, text) => {
+        const textNodes = []
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT)
+        let fullText = ''
+        while (walker.nextNode()) {
+          const node = walker.currentNode
+          const nodeText = node.textContent || ''
+          textNodes.push({ node, start: fullText.length, end: fullText.length + nodeText.length })
+          fullText += nodeText
+        }
+
+        const start = fullText.indexOf(text)
+        if (start === -1) return false
+        const end = start + text.length
+        const startNode = textNodes.find(entry => start >= entry.start && start <= entry.end)
+        const endNode = textNodes.find(entry => end >= entry.start && end <= entry.end)
+        if (!startNode || !endNode) return false
+
+        const range = new Range()
+        range.setStart(startNode.node, start - startNode.start)
+        range.setEnd(endNode.node, end - endNode.start)
+        window.getSelection()?.removeAllRanges()
+        window.getSelection()?.addRange(range)
+        element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
+        return true
+      }, content)
+      if (!selected) throw new Error(`Text "${content}" was not found in the annotatable text`)
+
+      const action = page.locator(`[data-testid="create-reading-note-${type}"]`)
+      await action.waitFor({ state: 'visible', timeout: 5_000 })
+      await action.click()
+
+      const editor = page.locator('[data-testid="reading-note-content"]')
+      await editor.waitFor({ state: 'visible', timeout: 5_000 })
+      await page.locator('[data-testid="reading-note-submit"]').click()
+      await editor.waitFor({ state: 'hidden', timeout: 5_000 })
     },
   }
 }
 
-export function SummarizeSelection() {
+export function DeleteReadingNote(content) {
   return {
-    description: 'Summarize the selected text',
+    description: `Delete the reading note "${content}"`,
     async performAs(actor) {
       const page = BrowseTheWeb.as(actor)
-      
-      const selectedText = await page.evaluate(getSelectionText)
-      if (!selectedText.trim()) {
-        throw new Error('No text selected')
-      }
-      
-      const summarizeButton = page.locator('[data-testid="fragment-summarize"]')
-      await expect(summarizeButton).toBeVisible({ timeout: 5000 })
-      await summarizeButton.click()
-      
-      await page.fill('[data-testid="fragment-context-input"]', '')
-      await page.fill('[data-testid="fragment-tags-input"]', '')
-      await page.click('[data-testid="fragment-submit"]')
-      
-      await page.waitForSelector('[data-testid="app-toast-success"]', { timeout: 5000 })
+      const highlight = page.locator('[data-reading-note-id]').filter({ hasText: content }).first()
+      await highlight.waitFor({ state: 'visible', timeout: 5_000 })
+      await highlight.click()
+      const popover = page.locator('[data-testid="reading-note-popover"]')
+      await popover.waitFor({ state: 'visible', timeout: 5_000 })
+      await popover.locator('[data-testid="reading-note-delete"]').click()
+      await popover.waitFor({ state: 'hidden', timeout: 10_000 })
     },
   }
 }
 
-export function AddNote() {
+export function HoverReadingNoteCard(content) {
   return {
-    description: 'Add a personal note',
+    description: `Hover the reading note card "${content}"`,
     async performAs(actor) {
       const page = BrowseTheWeb.as(actor)
-      
-      const noteButton = page.locator('[data-testid="fragment-add-note"]')
-      await expect(noteButton).toBeVisible({ timeout: 5000 })
-      await noteButton.click()
-      
-      await page.fill('[data-testid="fragment-context-input"]', '')
-      await page.fill('[data-testid="fragment-tags-input"]', '')
-      await page.click('[data-testid="fragment-submit"]')
-      
-      await page.waitForSelector('[data-testid="app-toast-success"]', { timeout: 5000 })
+      const card = page.locator('[data-testid="reading-note-card"]').filter({ hasText: content }).first()
+      await card.waitFor({ state: 'visible', timeout: 5_000 })
+      await card.hover()
     },
   }
 }
 
-export function DeleteFragment(type, content) {
+export function StartLearningFocus() {
   return {
-    description: `Delete a ${type} fragment`,
+    description: 'Start learning focus',
     async performAs(actor) {
       const page = BrowseTheWeb.as(actor)
-      const fragmentCard = page
-        .getByTestId('knowledge-fragment-card')
-        .filter({ hasText: content })
-        .first()
-      
-      await expect(fragmentCard).toBeVisible({ timeout: 5000 })
-      
-      const deleteButton = fragmentCard.getByTestId('fragment-delete')
-      await deleteButton.click()
+      await page.locator('[data-testid="learning-focus-toggle"]').click()
     },
   }
 }
 
-export function FilterFragmentsByTag(tag) {
+export function NavigateToGlobalReadingNotes() {
   return {
-    description: `Filter fragments by tag "${tag}"`,
+    description: 'Navigate to the global reading notes page',
     async performAs(actor) {
-      const page = BrowseTheWeb.as(actor)
-      await page.goto(`/knowledge/fragments?tag=${encodeURIComponent(tag)}`)
+      await BrowseTheWeb.as(actor).goto('/knowledge/reading-notes')
     },
   }
 }
 
 export function NavigateToTagsIndex() {
   return {
-    description: 'Navigate to the tags index page',
+    description: 'Navigate to the reading note tags index',
     async performAs(actor) {
-      const page = BrowseTheWeb.as(actor)
-      await page.goto('/knowledge/tags')
+      await BrowseTheWeb.as(actor).goto('/knowledge/tags')
     },
   }
 }
 
-export function NavigateToGlobalFragments() {
+export function FilterReadingNotesByTag(tag) {
   return {
-    description: 'Navigate to the global fragments page',
+    description: `Filter reading notes by tag "${tag}"`,
+    async performAs(actor) {
+      await BrowseTheWeb.as(actor).goto(`/knowledge/reading-notes?tag=${encodeURIComponent(tag)}`)
+    },
+  }
+}
+
+export function CreateReadingNoteViaApi(content, type, tags) {
+  return {
+    description: `Create a ${type} reading note via API`,
     async performAs(actor) {
       const page = BrowseTheWeb.as(actor)
-      await page.goto('/knowledge/fragments')
+      const articleId = actor.recall('currentReaderArticleId')
+      const body = {
+        articleId,
+        content,
+        type,
+        tags: tags ? tags.split(',').map(tag => tag.trim()).filter(Boolean) : [],
+      }
+      const result = await page.evaluate(async (requestBody) => {
+        const response = await fetch('/api/knowledge/reading-notes', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody),
+        })
+        return { ok: response.ok, status: response.status, text: await response.text() }
+      }, body)
+      if (!result.ok) {
+        throw new Error(`API create reading note failed (${result.status}): ${result.text}`)
+      }
     },
   }
 }

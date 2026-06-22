@@ -56,10 +56,12 @@ export async function registerFreshAccountViaUi(page, options = {}) {
   await page.getByLabel('Recovery email (optional)').fill(recoveryEmail)
   await page.getByLabel('Display name (optional)').fill(name)
   await page.locator('input[autocomplete="new-password"]').fill(password)
-  await Promise.all([
-    page.waitForURL(/\/(\?|$)/u, { timeout: 60_000 }),
-    page.getByRole('button', { name: 'Register' }).click(),
-  ])
+  // Use waitForFunction because waitForURL with negative lookahead can be flaky
+  await page.getByRole('button', { name: 'Register' }).click()
+  await page.waitForFunction(
+    () => !window.location.pathname.startsWith('/register'),
+    { timeout: 60_000 },
+  )
 
   return { username, password, recoveryEmail }
 }

@@ -11,26 +11,26 @@ datasource db {
 
 /// Beta: multiple users later; single account for now.
 model User {
-  id                        String   @id @default(uuid()) @db.Uuid
+  id                        String    @id @default(uuid()) @db.Uuid
   /// Login identity (SRP); migrated from legacy email for existing rows.
-  username                  String   @unique
+  username                  String    @unique
   /// Optional recovery contact; verification is a later product step.
   email                     String?
   recoveryEmailVerifiedAt   DateTime? @map("recovery_email_verified_at")
   name                      String?
   /// Legacy bcrypt; login uses SRP (srpSalt + srpVerifier).
-  passwordHash              String?  @map("password_hash")
+  passwordHash              String?   @map("password_hash")
   /// Hex-encoded (no 0x prefix); see scripts/generate-srp-env.ts
-  srpSalt                   String?  @map("srp_salt")
-  srpVerifier               String?  @map("srp_verifier")
-  createdAt                 DateTime @default(now()) @map("created_at")
-  updatedAt                 DateTime @updatedAt @map("updated_at")
+  srpSalt                   String?   @map("srp_salt")
+  srpVerifier               String?   @map("srp_verifier")
+  createdAt                 DateTime  @default(now()) @map("created_at")
+  updatedAt                 DateTime  @updatedAt @map("updated_at")
   /// JSON: { v, weights, contentLengthPreference } — timeline ranking sliders (see utils/timeline-score-factors).
-  timelineScorePrefs        Json?    @map("timeline_score_prefs")
+  timelineScorePrefs        Json?     @map("timeline_score_prefs")
   /// JSON: { v, theme, motion, surfaces, seenFeatureAnnouncements } — readability / theme / motion (see utils/ui-prefs).
-  uiPrefs                   Json?    @map("ui_prefs")
+  uiPrefs                   Json?     @map("ui_prefs")
   /// When false, the app does not record article engagement (dwell) events.
-  engagementTrackingEnabled Boolean  @default(false) @map("engagement_tracking_enabled")
+  engagementTrackingEnabled Boolean   @default(false) @map("engagement_tracking_enabled")
 
   feeds                   UserFeed[]
   timelineItems           UserTimelineItem[]
@@ -40,6 +40,7 @@ model User {
   tagEngagement           UserTagEngagement[]
   emailOtps               EmailOtp[]
   knowledgeInboxItems     KnowledgeInboxItem[]
+  readingNotes            ReadingNote[]
 
   @@map("users")
 }
@@ -70,8 +71,8 @@ model EmailOtp {
 model SrpChallenge {
   id         String   @id @default(uuid()) @db.Uuid
   serialized String   @db.Text
-  expiresAt DateTime @map("expires_at")
-  createdAt DateTime @default(now()) @map("created_at")
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
 
   @@index([expiresAt])
   @@map("srp_challenges")
@@ -176,6 +177,7 @@ model Article {
   articleEngagementEvents ArticleEngagementEvent[]
   feedEngagement          UserFeedEngagement[]
   knowledgeInboxItems     KnowledgeInboxItem[]
+  readingNotes            ReadingNote[]
 
   @@index([crawlKey])
   @@index([publishedAt])
@@ -236,6 +238,7 @@ model Episode {
   enrichment          EpisodeEnrichment?
   timelineItems       UserTimelineItem[]
   knowledgeInboxItems KnowledgeInboxItem[]
+  readingNotes        ReadingNote[]
 
   @@index([crawlKey])
   @@index([publishedAt])
@@ -359,17 +362,17 @@ model UserTagEngagement {
 /// Items a user has intentionally saved to their knowledge inbox for later processing.
 /// Captures a metadata snapshot at save time for provenance.
 model KnowledgeInboxItem {
-  id             String              @id @default(uuid()) @db.Uuid
-  userId         String              @map("user_id") @db.Uuid
-  contentKind    TimelineContentKind @default(article) @map("content_kind")
-  articleId      String?             @map("article_id")
-  episodeId      String?             @map("episode_id")
-  capturedAt     DateTime            @default(now()) @map("captured_at")
+  id          String              @id @default(uuid()) @db.Uuid
+  userId      String              @map("user_id") @db.Uuid
+  contentKind TimelineContentKind @default(article) @map("content_kind")
+  articleId   String?             @map("article_id")
+  episodeId   String?             @map("episode_id")
+  capturedAt  DateTime            @default(now()) @map("captured_at")
 
   /// Snapshot provenance: values at the moment of saving.
-  titleSnapshot  String   @map("title_snapshot")
-  sourceSnapshot String   @map("source_snapshot")
-  teaserSnapshot String   @map("teaser_snapshot") @db.VarChar(500)
+  titleSnapshot  String @map("title_snapshot")
+  sourceSnapshot String @map("source_snapshot")
+  teaserSnapshot String @map("teaser_snapshot") @db.VarChar(500)
 
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   article Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
@@ -379,4 +382,36 @@ model KnowledgeInboxItem {
   @@unique([userId, episodeId])
   @@index([userId, capturedAt(sort: Desc)])
   @@map("knowledge_inbox_items")
+}
+
+/// Source-bound result of working with an article or episode.
+enum ReadingNoteType {
+  quote // Exact text extraction
+  summary // User-written summary of a section
+  note // Personal note, paraphrase, or reflection
+}
+
+model ReadingNote {
+  id                String          @id @default(uuid()) @db.Uuid
+  userId            String          @map("user_id") @db.Uuid
+  articleId         String?         @map("article_id")
+  episodeId         String?         @map("episode_id")
+  type              ReadingNoteType @default(note)
+  content           String          @map("content") @db.Text
+  context           String?         @map("context")
+  userTags          String[]        @default([]) @map("user_tags")
+  anchorText        String?         @map("anchor_text") @db.Text
+  anchorStartOffset Int?            @map("anchor_start_offset")
+  contentSource     String          @default("body") @map("content_source")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  episode Episode? @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([userId, type])
+  @@index([userTags], type: Gin)
+  @@map("reading_notes")
 }

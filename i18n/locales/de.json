@@ -25,6 +25,7 @@
     "settings": "Einstellungen",
     "privacy": "Privatsphäre",
     "knowledgeInbox": "Wissens-Inbox",
+    "readingNotes": "Lesenotizen",
     "personalization": "Warum oben?",
     "help": "Hilfe",
     "view": "Ansicht",
@@ -653,6 +654,63 @@
     "markUnread": "Als nicht gelesen markieren",
     "closeModal": "Schließen",
     "modalKeyboardHint": "Esc schließt · w/s navigieren nach dem Schließen"
+  },
+  "readingNotes": {
+    "title": "Lesenotizen",
+    "intro": "Zitate, Zusammenfassungen und eigene Gedanken, die bei deiner Arbeit mit Texten entstanden sind.",
+    "sectionTitle": "Deine Lesenotizen",
+    "selectionHint": "Markiere Text, um daraus eine Lesenotiz zu machen.",
+    "toolbarLabel": "Auswahl als Lesenotiz bearbeiten",
+    "openReadingNote": "Lesenotiz öffnen",
+    "sourceTextLabel": "Markierter Text",
+    "contentLabel": "Inhalt der Lesenotiz",
+    "contextPlaceholder": "Kontext, Kapitel oder eigene Einordnung (optional)",
+    "tagsPlaceholder": "Tags, durch Kommas getrennt",
+    "save": "Lesenotiz speichern",
+    "delete": "Lesenotiz löschen",
+    "empty": "Noch keine Lesenotizen. Öffne einen Artikel oder eine Episode und markiere eine wichtige Textstelle.",
+    "emptyInline": "Noch keine Lesenotizen zu diesem Text.",
+    "emptyType": "In diesem Bereich gibt es noch keine Lesenotizen.",
+    "errorLoad": "Lesenotizen konnten nicht geladen werden",
+    "errorCreate": "Lesenotiz konnte nicht gespeichert werden",
+    "errorRemove": "Lesenotiz konnte nicht gelöscht werden",
+    "createSuccess": "Lesenotiz gespeichert",
+    "browseTags": "Tags ansehen",
+    "tagsTitle": "Tags deiner Lesenotizen",
+    "tagsIntro": "Öffne einen Tag, um die zugehörigen Lesenotizen zu sehen.",
+    "noTags": "Noch keine Tags",
+    "openSource": "Im Ursprungstext öffnen",
+    "types": {
+      "quote": "Zitat",
+      "summary": "Zusammenfassung",
+      "note": "Eigene Notiz"
+    },
+    "sections": {
+      "quote": "Zitate",
+      "summary": "Zusammenfassungen",
+      "note": "Eigene Notizen"
+    },
+    "actions": {
+      "quote": "Als Zitat übernehmen",
+      "summary": "Zusammenfassen",
+      "note": "Gedanken notieren"
+    },
+    "editorTitle": {
+      "quote": "Zitat übernehmen",
+      "summary": "Textstelle zusammenfassen",
+      "note": "Gedanken festhalten"
+    },
+    "editorHint": {
+      "quote": "Prüfe das Zitat und ergänze bei Bedarf Kontext und Tags.",
+      "summary": "Formuliere die Kernaussage möglichst in deinen eigenen Worten.",
+      "note": "Halte fest, was dir dazu auffällt, welche Frage bleibt oder welche Verbindung du siehst."
+    },
+    "learningFocus": {
+      "start": "Lernfokus starten",
+      "stop": "Lernfokus beenden",
+      "active": "Lernfokus",
+      "status": "{count} Lesenotizen · Markiere Text oder notiere einen Gedanken."
+    }
   },
   "knowledgeInbox": {
     "title": "Wissens-Inbox",
