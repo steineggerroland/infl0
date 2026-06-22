@@ -1,5 +1,5 @@
 @persona @screenplay
-Feature: Curious explorer expectations
+Feature: Eli explorer
   Eli wants to understand the app by exploring navigation and explanations
   before committing to regular reading.
 

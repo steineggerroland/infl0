@@ -26,7 +26,7 @@ recovery flows fail at request time and **no email is sent**.
   address.
 - **Login:** forgot-password wizard (email → OTP + new password) with shared
   `EmailOtpInput`, resend, and success toasts.
-- **BDD:** `persona_oblivia_expectations.feature` (`@email`) — full journey,
+- **BDD:** `persona_oblivia_recovery_email.feature` (`@email`) — full journey,
   resend, already-verified guard, unverified recovery refusal, invalid code.
   `@email` scenarios skip automatically when SMTP/IMAP env vars are missing.
 
@@ -52,7 +52,7 @@ See [`DEPLOYING.md`](../DEPLOYING.md#transactional-email-recovery-otp) and
 
 ## Persona: Oblivia
 
-**Tests:** [`features/persona_oblivia_expectations.feature`](../../features/persona_oblivia_expectations.feature)
+**Tests:** [`features/persona_oblivia_recovery_email.feature`](../../features/persona_oblivia_recovery_email.feature)
 
 ## Links
 

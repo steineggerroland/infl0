@@ -1,6 +1,5 @@
-
-@planned @persona @screenplay
-Feature: knowledge-inbox
+@persona @screenplay
+Feature: Savy knowledge inbox
 
   Savy wants to save interesting articles into a knowledge inbox
   so that they can find and process them later in a focused environment.

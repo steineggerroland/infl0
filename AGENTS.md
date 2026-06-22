@@ -41,7 +41,7 @@
 - **Integration**: `AnnotatableText` is embedded in article bodies and all episode text sources.
 - **Navigation**: `/knowledge/reading-notes` is exposed as `menu.readingNotes`.
 - **i18n**: `readingNotes` section in both `en.json` and `de.json`.
-- **BDD**: `features/knowledge-base-textwork.feature` covers reading-note creation, tag browsing/filtering, learning focus, and overlapping anchors.
+- **BDD**: `features/persona_savy_reading_notes.feature` covers reading-note creation, tag browsing/filtering, learning focus, and overlapping anchors.
 
 ## Known Caveats
 - `[chromium-onboarding] welcome.spec.ts` may fail due to a redirect mismatch (`/inflow/onboarding/intro`) vs expected assertion; this is known and not an env issue.

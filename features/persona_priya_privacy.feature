@@ -1,5 +1,5 @@
 @persona @screenplay
-Feature: Privacy-sensitive reader expectations
+Feature: Priya privacy
   Priya wants to understand and control what infl0 learns from her reading.
 
   Scenario: Priya finds reading behaviour tracking directly

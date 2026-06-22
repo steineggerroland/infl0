@@ -1,9 +1,8 @@
-Feature: New user first reading session
-  As someone trying infl0 for the first time
-  I want to move from onboarding into a deliberate reading session
-  So that I understand where I am and can return to my place
+@persona @screenplay
+Feature: Nora first reading session
+  Nora wants to move from onboarding into a deliberate reading session
+  so that she understands where she is and can return to her place.
 
-  @persona @screenplay
   Scenario: Nora sees the onboarding journey before regular reading
     Given Nora is a new reader
     When Nora registers for infl0
@@ -11,7 +10,6 @@ Feature: New user first reading session
     And Nora's onboarding cards should appear before regular articles
     And Nora's onboarding topics should be ordered
 
-  @persona @screenplay
   Scenario: Nora learns how cards work from the intro card
     Given Nora is a new reader
     When Nora registers for infl0
@@ -22,7 +20,6 @@ Feature: New user first reading session
     When Nora opens full text on the "intro" onboarding card
     Then Nora should see intro full-text guidance
 
-  @persona @screenplay
   Scenario: Nora returns to the same onboarding card after reload
     Given Nora is a new reader
     When Nora registers for infl0
@@ -31,14 +28,12 @@ Feature: New user first reading session
     When Nora reloads infl0
     Then Nora should return to the "scoring" onboarding card
 
-  @persona @screenplay
   Scenario: Nora can finish onboarding from a later card
     Given Nora is a new reader
     When Nora registers for infl0
     And Nora finishes onboarding from the "sources" card
     Then Nora's onboarding should be finished
 
-  @persona @screenplay
   Scenario: Nora starts her first reading session deliberately
     Given Nora is a new reader
     When Nora registers for infl0

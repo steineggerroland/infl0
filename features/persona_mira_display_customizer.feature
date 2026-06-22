@@ -1,5 +1,5 @@
 @persona @screenplay
-Feature: Sensory customizer expectations
+Feature: Mira display customizer
   Mira wants to tune infl0 before reading so the experience feels comfortable.
 
   Scenario: Mira saves a calmer display setup

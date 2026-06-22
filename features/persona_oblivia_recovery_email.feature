@@ -1,5 +1,5 @@
 @persona @screenplay @email
-Feature: Oblivia recovery email and password reset
+Feature: Oblivia recovery email
   Oblivia forgets her password but keeps a verified recovery address.
   She verifies that address in settings, signs out, and recovers access with
   one-time codes sent by email.

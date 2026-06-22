@@ -1,5 +1,5 @@
 @persona @screenplay
-Feature: Timeline curator expectations
+Feature: Sam timeline curator
   Sam wants to actively shape the inflow by managing sources, podcasts, and
   future filtering tools.
 
@@ -32,7 +32,6 @@ Feature: Timeline curator expectations
     When Sam removes that source
     Then Sam should see an empty source list
 
-  @crawler
   Scenario: Sam sees canonical crawler health
     Given Sam is ready to inspect crawler health "needs_setup"
     And Sam has crawler status reporting available
@@ -42,7 +41,6 @@ Feature: Timeline curator expectations
     When Sam removes that source
     Then Sam should see an empty source list
 
-  @crawler
   Scenario: Sam reads crawler health explanations
     Given Sam is ready to inspect crawler health "healthy"
     And Sam has crawler status reporting available
