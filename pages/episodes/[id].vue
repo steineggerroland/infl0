@@ -47,6 +47,7 @@ const route = useRoute()
 const { t, locale } = useI18n()
 const requestFetch = useRequestFetch()
 const learningFocus = ref(false)
+const pageRef = ref<HTMLElement | null>(null)
 const readingNoteCounts = reactive({ body: 0, shownotes: 0, transcript: 0 })
 const readingNoteCount = computed(() => (
   readingNoteCounts.body + readingNoteCounts.shownotes + readingNoteCounts.transcript
@@ -90,12 +91,53 @@ const episodeTypeLabel = computed(() => {
 function formatDate(value: string) {
   return format(new Date(value), 'PPP', { locale: dateLocale.value })
 }
+
+function textWorkElements() {
+  return Array.from(pageRef.value?.querySelectorAll<HTMLElement>('[data-testid="annotatable-text"]') ?? [])
+}
+
+function firstTextWorkElement() {
+  return textWorkElements()[0] ?? null
+}
+
+function visibleTextWorkElement() {
+  return textWorkElements().find((element) => {
+    const rect = element.getBoundingClientRect()
+    return rect.bottom > 80
+  }) ?? firstTextWorkElement()
+}
+
+function scrollToFirstTextWork() {
+  const element = firstTextWorkElement()
+  if (!element || typeof element.scrollIntoView !== 'function') return
+  const behavior: ScrollBehavior = document.documentElement.dataset.motion === 'reduced' ? 'auto' : 'smooth'
+  element.scrollIntoView({ block: 'start', behavior })
+}
+
+async function setLearningFocus(next: boolean) {
+  if (learningFocus.value === next) return
+
+  const anchor = visibleTextWorkElement()
+  const beforeTop = anchor?.getBoundingClientRect().top ?? null
+  learningFocus.value = next
+  await nextTick()
+
+  if (next) {
+    scrollToFirstTextWork()
+    return
+  }
+
+  if (!anchor || beforeTop === null || typeof window.scrollBy !== 'function') return
+  const afterTop = anchor.getBoundingClientRect().top
+  window.scrollBy({ top: afterTop - beforeTop, behavior: 'auto' })
+}
 </script>
 
 <template>
   <main
+    ref="pageRef"
     class="mx-auto w-full px-4 py-8 transition-[max-width]"
-    :class="learningFocus ? 'max-w-4xl' : 'max-w-3xl'"
+    :class="learningFocus ? 'max-w-4xl reading-work-focus' : 'max-w-3xl'"
   >
     <div
       v-if="error"
@@ -124,7 +166,7 @@ function formatDate(value: string) {
             :class="learningFocus ? 'btn-primary' : 'btn-ghost'"
             :aria-pressed="learningFocus"
             data-testid="learning-focus-toggle"
-            @click="learningFocus = !learningFocus"
+            @click="setLearningFocus(!learningFocus)"
           >
             {{ learningFocus ? t('readingNotes.learningFocus.stop') : t('readingNotes.learningFocus.start') }}
           </button>
@@ -310,23 +352,26 @@ function formatDate(value: string) {
       <section
         v-if="!learningFocus && episode.chapters?.length"
         class="infl0-panel rounded-xl border p-4"
+        data-testid="episode-chapters"
       >
         <h2 class="text-base font-semibold text-[var(--infl0-panel-text)]">
           {{ t('episode.chapters') }}
         </h2>
-        <ol class="mt-3 space-y-2">
+        <ol class="mt-3 list-none space-y-2 p-0" data-testid="episode-chapters-list">
           <li
-            v-for="chapter in episode.chapters"
+            v-for="(chapter, index) in episode.chapters"
             :key="`${chapter.start_seconds}-${chapter.title}`"
           >
             <a
               :href="chapterJumpHref(chapter, episode.link, episode.mediaUrl)"
               target="_blank"
               rel="noopener noreferrer"
-              class="flex gap-3 rounded-md px-2 py-1 text-sm text-[var(--infl0-panel-text-dim)] hover:bg-[color-mix(in_srgb,var(--infl0-reader-link)_8%,transparent)] hover:text-[var(--infl0-reader-link)]"
+              class="grid grid-cols-[2rem_auto_1fr] gap-3 rounded-md px-2 py-1 text-sm text-[var(--infl0-panel-text-dim)] hover:bg-[color-mix(in_srgb,var(--infl0-reader-link)_8%,transparent)] hover:text-[var(--infl0-reader-link)]"
+              data-testid="episode-chapter-link"
             >
-              <span class="tabular-nums text-[var(--infl0-panel-muted)]">{{ formatChapterTimestamp(chapter.start_seconds) }}</span>
-              <span>{{ chapter.title }}</span>
+              <span class="text-right tabular-nums text-[var(--infl0-panel-muted)]" data-testid="episode-chapter-number">{{ index + 1 }}.</span>
+              <span class="tabular-nums text-[var(--infl0-panel-muted)]" data-testid="episode-chapter-time">{{ formatChapterTimestamp(chapter.start_seconds) }}</span>
+              <span data-testid="episode-chapter-title">{{ chapter.title }}</span>
             </a>
           </li>
         </ol>
@@ -334,7 +379,7 @@ function formatDate(value: string) {
 
       <aside
         v-if="learningFocus"
-        class="sticky top-3 z-20 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--infl0-panel-border)] bg-[var(--infl0-canvas-bg)]/95 px-4 py-3 shadow-lg backdrop-blur"
+        class="learning-focus-status sticky top-3 z-20 flex flex-wrap items-center justify-between gap-2 rounded-xl border px-4 py-3 shadow-lg"
         data-testid="learning-focus-status"
       >
         <div>
@@ -343,7 +388,7 @@ function formatDate(value: string) {
             {{ t('readingNotes.learningFocus.status', { count: readingNoteCount }) }}
           </p>
         </div>
-        <button type="button" class="btn btn-ghost btn-sm" @click="learningFocus = false">
+        <button type="button" class="btn btn-ghost btn-sm" @click="setLearningFocus(false)">
           {{ t('readingNotes.learningFocus.stop') }}
         </button>
       </aside>

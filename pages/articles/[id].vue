@@ -32,6 +32,7 @@ const { t, locale } = useI18n()
 const requestFetch = useRequestFetch()
 const learningFocus = ref(false)
 const readingNoteCount = ref(0)
+const pageRef = ref<HTMLElement | null>(null)
 
 const articleId = computed(() => {
   const raw = route.params.id
@@ -50,12 +51,53 @@ const { data: article, error } = await useAsyncData(
 function formatDate(value: string) {
   return format(new Date(value), 'PPP', { locale: dateLocale.value })
 }
+
+function textWorkElements() {
+  return Array.from(pageRef.value?.querySelectorAll<HTMLElement>('[data-testid="annotatable-text"]') ?? [])
+}
+
+function firstTextWorkElement() {
+  return textWorkElements()[0] ?? null
+}
+
+function visibleTextWorkElement() {
+  return textWorkElements().find((element) => {
+    const rect = element.getBoundingClientRect()
+    return rect.bottom > 80
+  }) ?? firstTextWorkElement()
+}
+
+function scrollToFirstTextWork() {
+  const element = firstTextWorkElement()
+  if (!element || typeof element.scrollIntoView !== 'function') return
+  const behavior: ScrollBehavior = document.documentElement.dataset.motion === 'reduced' ? 'auto' : 'smooth'
+  element.scrollIntoView({ block: 'start', behavior })
+}
+
+async function setLearningFocus(next: boolean) {
+  if (learningFocus.value === next) return
+
+  const anchor = visibleTextWorkElement()
+  const beforeTop = anchor?.getBoundingClientRect().top ?? null
+  learningFocus.value = next
+  await nextTick()
+
+  if (next) {
+    scrollToFirstTextWork()
+    return
+  }
+
+  if (!anchor || beforeTop === null || typeof window.scrollBy !== 'function') return
+  const afterTop = anchor.getBoundingClientRect().top
+  window.scrollBy({ top: afterTop - beforeTop, behavior: 'auto' })
+}
 </script>
 
 <template>
   <main
+    ref="pageRef"
     class="mx-auto w-full px-4 py-8 transition-[max-width]"
-    :class="learningFocus ? 'max-w-4xl' : 'max-w-3xl'"
+    :class="learningFocus ? 'max-w-4xl reading-work-focus' : 'max-w-3xl'"
   >
     <div
       v-if="error"
@@ -84,7 +126,7 @@ function formatDate(value: string) {
             :class="learningFocus ? 'btn-primary' : 'btn-ghost'"
             :aria-pressed="learningFocus"
             data-testid="learning-focus-toggle"
-            @click="learningFocus = !learningFocus"
+            @click="setLearningFocus(!learningFocus)"
           >
             {{ learningFocus ? t('readingNotes.learningFocus.stop') : t('readingNotes.learningFocus.start') }}
           </button>
@@ -184,7 +226,7 @@ function formatDate(value: string) {
 
       <aside
         v-if="learningFocus"
-        class="sticky top-3 z-20 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--infl0-panel-border)] bg-[var(--infl0-canvas-bg)]/95 px-4 py-3 shadow-lg backdrop-blur"
+        class="learning-focus-status sticky top-3 z-20 flex flex-wrap items-center justify-between gap-2 rounded-xl border px-4 py-3 shadow-lg"
         data-testid="learning-focus-status"
       >
         <div>
@@ -193,7 +235,7 @@ function formatDate(value: string) {
             {{ t('readingNotes.learningFocus.status', { count: readingNoteCount }) }}
           </p>
         </div>
-        <button type="button" class="btn btn-ghost btn-sm" @click="learningFocus = false">
+        <button type="button" class="btn btn-ghost btn-sm" @click="setLearningFocus(false)">
           {{ t('readingNotes.learningFocus.stop') }}
         </button>
       </aside>

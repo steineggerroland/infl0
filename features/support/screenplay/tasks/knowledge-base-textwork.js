@@ -4,48 +4,67 @@ export function CreateReadingNote(content, type) {
   return {
     description: `Create a ${type} reading note from "${content}"`,
     async performAs(actor) {
-      const page = BrowseTheWeb.as(actor)
-      const root = page.locator('[data-testid="annotatable-text-content"]').first()
-      await root.waitFor({ state: 'visible', timeout: 5_000 })
-
-      const selected = await root.evaluate((element, text) => {
-        const textNodes = []
-        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT)
-        let fullText = ''
-        while (walker.nextNode()) {
-          const node = walker.currentNode
-          const nodeText = node.textContent || ''
-          textNodes.push({ node, start: fullText.length, end: fullText.length + nodeText.length })
-          fullText += nodeText
-        }
-
-        const start = fullText.indexOf(text)
-        if (start === -1) return false
-        const end = start + text.length
-        const startNode = textNodes.find(entry => start >= entry.start && start <= entry.end)
-        const endNode = textNodes.find(entry => end >= entry.start && end <= entry.end)
-        if (!startNode || !endNode) return false
-
-        const range = new Range()
-        range.setStart(startNode.node, start - startNode.start)
-        range.setEnd(endNode.node, end - endNode.start)
-        window.getSelection()?.removeAllRanges()
-        window.getSelection()?.addRange(range)
-        element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
-        return true
-      }, content)
-      if (!selected) throw new Error(`Text "${content}" was not found in the annotatable text`)
-
-      const action = page.locator(`[data-testid="create-reading-note-${type}"]`)
-      await action.waitFor({ state: 'visible', timeout: 5_000 })
-      await action.click()
-
-      const editor = page.locator('[data-testid="reading-note-content"]')
-      await editor.waitFor({ state: 'visible', timeout: 5_000 })
-      await page.locator('[data-testid="reading-note-submit"]').click()
-      await editor.waitFor({ state: 'hidden', timeout: 5_000 })
+      await createReadingNoteFromRoot(actor, content, type, '[data-testid="annotatable-text"]')
     },
   }
+}
+
+export function CreateReadingNoteInSource(content, type, source) {
+  return {
+    description: `Create a ${type} reading note from "${content}" in ${source}`,
+    async performAs(actor) {
+      await createReadingNoteFromRoot(
+        actor,
+        content,
+        type,
+        `[data-testid="annotatable-text"][data-content-source="${source}"]`,
+      )
+    },
+  }
+}
+
+async function createReadingNoteFromRoot(actor, content, type, rootSelector) {
+  const page = BrowseTheWeb.as(actor)
+  const annotatableText = page.locator(rootSelector).first()
+  const root = annotatableText.locator('[data-testid="annotatable-text-content"]')
+  await root.waitFor({ state: 'visible', timeout: 5_000 })
+
+  const selected = await root.evaluate((element, text) => {
+    const textNodes = []
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT)
+    let fullText = ''
+    while (walker.nextNode()) {
+      const node = walker.currentNode
+      const nodeText = node.textContent || ''
+      textNodes.push({ node, start: fullText.length, end: fullText.length + nodeText.length })
+      fullText += nodeText
+    }
+
+    const start = fullText.indexOf(text)
+    if (start === -1) return false
+    const end = start + text.length
+    const startNode = textNodes.find(entry => start >= entry.start && start <= entry.end)
+    const endNode = textNodes.find(entry => end >= entry.start && end <= entry.end)
+    if (!startNode || !endNode) return false
+
+    const range = new Range()
+    range.setStart(startNode.node, start - startNode.start)
+    range.setEnd(endNode.node, end - endNode.start)
+    window.getSelection()?.removeAllRanges()
+    window.getSelection()?.addRange(range)
+    element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
+    return true
+  }, content)
+  if (!selected) throw new Error(`Text "${content}" was not found in ${rootSelector}`)
+
+  const action = page.locator(`[data-testid="create-reading-note-${type}"]`)
+  await action.waitFor({ state: 'visible', timeout: 5_000 })
+  await action.click()
+
+  const editor = annotatableText.locator('[data-testid="reading-note-content"]')
+  await editor.waitFor({ state: 'visible', timeout: 5_000 })
+  await annotatableText.locator('[data-testid="reading-note-submit"]').click()
+  await editor.waitFor({ state: 'hidden', timeout: 5_000 })
 }
 
 export function DeleteReadingNote(content) {

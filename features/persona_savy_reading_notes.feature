@@ -84,6 +84,15 @@ Feature: Savy reading notes
     And Savy extracts a quote "Sound waves propagate through air" from the episode
     Then Savy should see a quote highlighted in the episode
 
+  Scenario: Work with episode-specific text sources
+    Given Savy has a rich episode "The Detailed Sound" in her timeline
+    When Savy opens the episode "The Detailed Sound" for reading
+    Then Savy should see episode chapters, shownotes, and transcript text work
+    When Savy extracts a quote "Mentioned tool: Tuning Fork" from the episode source "shownotes"
+    And Savy extracts a quote "Transcript insight about resonance" from the episode source "transcript"
+    Then Savy should see 2 highlighted quote
+    And Savy should see 2 reading note cards
+
   Scenario: See all reading notes globally
     Given Savy has extracted the following from "The Future of AI":
       | type  | content          |

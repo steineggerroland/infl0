@@ -23,6 +23,7 @@ const toast = useToast()
 const contentRef = ref<HTMLElement | null>(null)
 const editorDialog = ref<HTMLDialogElement | null>(null)
 const editorContentRef = ref<HTMLTextAreaElement | null>(null)
+const toolbarRef = ref<HTMLElement | null>(null)
 const readingNotes = ref<ReadingNote[]>([])
 const loaded = ref(false)
 const deletingId = ref<string | null>(null)
@@ -30,6 +31,8 @@ const creating = ref(false)
 const selectedReadingNote = ref<ReadingNote | null>(null)
 const selectedReadingNotePosition = ref<{ top: number, left: number } | null>(null)
 const activeReadingNoteId = ref<string | null>(null)
+const editorReturnFocusElement = ref<HTMLElement | null>(null)
+const popoverReturnFocusElement = ref<HTMLElement | null>(null)
 
 type SelectionDraft = {
   text: string
@@ -209,7 +212,27 @@ function selectionOffset(range: Range, root: HTMLElement) {
   return prefix.toString().length
 }
 
-function updateSelectionToolbar() {
+function focusElement(element: HTMLElement | null) {
+  if (!element?.isConnected) return
+  element.focus({ preventScroll: true })
+}
+
+function focusToolbarFirstButton() {
+  const button = toolbarRef.value?.querySelector<HTMLButtonElement>('button:not(:disabled)')
+  focusElement(button ?? null)
+}
+
+function focusToolbarButton(offset: number) {
+  const buttons = Array.from(toolbarRef.value?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)') ?? [])
+  if (!buttons.length) return
+  const currentIndex = buttons.findIndex(button => button === document.activeElement)
+  const nextIndex = currentIndex >= 0
+    ? (currentIndex + offset + buttons.length) % buttons.length
+    : 0
+  focusElement(buttons[nextIndex] ?? null)
+}
+
+function updateSelectionToolbar(input: 'pointer' | 'keyboard' = 'pointer') {
   nextTick(() => {
     const selection = window.getSelection()
     const root = contentRef.value
@@ -233,7 +256,7 @@ function updateSelectionToolbar() {
 
     const leadingWhitespace = rawText.length - rawText.trimStart().length
     const rect = range.getBoundingClientRect()
-    const toolbarWidth = 330
+    const toolbarWidth = Math.min(544, window.innerWidth - 16)
     const left = Math.min(
       Math.max(8, rect.left + rect.width / 2 - toolbarWidth / 2),
       Math.max(8, window.innerWidth - toolbarWidth - 8),
@@ -245,11 +268,15 @@ function updateSelectionToolbar() {
       top,
       left,
     }
+    if (input === 'keyboard') {
+      nextTick(focusToolbarFirstButton)
+    }
   })
 }
 
-function openEditor(type: ReadingNoteType, selection = selectionDraft.value) {
+function openEditor(type: ReadingNoteType, selection = selectionDraft.value, returnFocusElement?: HTMLElement | null) {
   editorType.value = type
+  editorReturnFocusElement.value = selection ? contentRef.value : returnFocusElement ?? contentRef.value
   if (selection) {
     editorContent.value = selection.text
     editorAnchorText.value = selection.text
@@ -265,6 +292,10 @@ function openEditor(type: ReadingNoteType, selection = selectionDraft.value) {
 
 function closeEditor() {
   editorDialog.value?.close()
+}
+
+function onEditorClose() {
+  nextTick(() => focusElement(editorReturnFocusElement.value ?? contentRef.value))
 }
 
 async function createReadingNote() {
@@ -332,6 +363,7 @@ function activateHighlight(target: EventTarget | null) {
     ? target.closest<HTMLElement>('[data-reading-note-ids]')
     : null
   if (!element) return
+  popoverReturnFocusElement.value = element
   const readingNoteId = element.dataset.readingNoteId
   selectedReadingNote.value = readingNotes.value.find(note => note.id === readingNoteId) ?? null
   if (!selectedReadingNote.value) return
@@ -354,10 +386,12 @@ function closeReadingNotePopover() {
   selectedReadingNote.value = null
   selectedReadingNotePosition.value = null
   clearAnchorFocus()
+  nextTick(() => focusElement(popoverReturnFocusElement.value))
 }
 
 function onContentKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') {
+    window.getSelection()?.removeAllRanges()
     closeReadingNotePopover()
     selectionDraft.value = null
     return
@@ -365,6 +399,29 @@ function onContentKeydown(event: KeyboardEvent) {
   if ((event.key === 'Enter' || event.key === ' ') && (event.target as HTMLElement).closest('[data-reading-note-ids]')) {
     event.preventDefault()
     activateHighlight(event.target)
+  }
+}
+
+function onContentKeyup(event: KeyboardEvent) {
+  if (event.key === 'Escape') return
+  updateSelectionToolbar('keyboard')
+}
+
+function onToolbarKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    window.getSelection()?.removeAllRanges()
+    selectionDraft.value = null
+    nextTick(() => focusElement(contentRef.value))
+    return
+  }
+  if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+    event.preventDefault()
+    focusToolbarButton(1)
+  }
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+    event.preventDefault()
+    focusToolbarButton(-1)
   }
 }
 
@@ -382,6 +439,7 @@ function onDocumentPointerDown(event: PointerEvent) {
 
 function onDocumentKeydown(event: KeyboardEvent) {
   if (event.key !== 'Escape') return
+  window.getSelection()?.removeAllRanges()
   selectionDraft.value = null
   closeReadingNotePopover()
 }
@@ -408,7 +466,11 @@ watch(() => props.markdown, async () => {
 </script>
 
 <template>
-  <section class="space-y-4" data-testid="annotatable-text">
+  <section
+    class="space-y-4"
+    data-testid="annotatable-text"
+    :data-content-source="contentSource"
+  >
     <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--infl0-panel-border)] bg-[color-mix(in_srgb,var(--infl0-reader-link)_5%,transparent)] px-3 py-2">
       <p class="text-sm text-[var(--infl0-canvas-fg-muted)]">
         {{ t('readingNotes.selectionHint') }}
@@ -417,7 +479,7 @@ watch(() => props.markdown, async () => {
         type="button"
         class="btn btn-ghost btn-sm"
         data-testid="reading-note-free-note"
-        @click="openEditor('note', null)"
+        @click="openEditor('note', null, $event.currentTarget as HTMLElement)"
       >
         {{ t('readingNotes.actions.note') }}
       </button>
@@ -429,12 +491,15 @@ watch(() => props.markdown, async () => {
       <h2 v-if="heading">{{ heading }}</h2>
       <div
         ref="contentRef"
+        tabindex="0"
+        role="article"
+        :aria-label="t('readingNotes.textRegionLabel')"
         data-testid="annotatable-text-content"
         @click="activateHighlight($event.target)"
         @keydown="onContentKeydown"
-        @mouseup="updateSelectionToolbar"
-        @keyup="updateSelectionToolbar"
-        @pointerup="updateSelectionToolbar"
+        @mouseup="updateSelectionToolbar('pointer')"
+        @keyup="onContentKeyup"
+        @pointerup="updateSelectionToolbar('pointer')"
       />
     </div>
 
@@ -479,19 +544,21 @@ watch(() => props.markdown, async () => {
 
     <Teleport to="body">
       <div
+        ref="toolbarRef"
         v-if="selectionDraft"
         class="reading-note-toolbar"
         role="toolbar"
         :aria-label="t('readingNotes.toolbarLabel')"
         :style="{ top: `${selectionDraft.top}px`, left: `${selectionDraft.left}px` }"
+        @keydown="onToolbarKeydown"
       >
-        <button type="button" data-testid="create-reading-note-quote" @click="openEditor('quote')">
+        <button type="button" data-testid="create-reading-note-quote" @click="openEditor('quote', selectionDraft, $event.currentTarget as HTMLElement)">
           {{ t('readingNotes.actions.quote') }}
         </button>
-        <button type="button" data-testid="create-reading-note-summary" @click="openEditor('summary')">
+        <button type="button" data-testid="create-reading-note-summary" @click="openEditor('summary', selectionDraft, $event.currentTarget as HTMLElement)">
           {{ t('readingNotes.actions.summary') }}
         </button>
-        <button type="button" data-testid="create-reading-note-note" @click="openEditor('note')">
+        <button type="button" data-testid="create-reading-note-note" @click="openEditor('note', selectionDraft, $event.currentTarget as HTMLElement)">
           {{ t('readingNotes.actions.note') }}
         </button>
       </div>
@@ -501,12 +568,18 @@ watch(() => props.markdown, async () => {
       ref="editorDialog"
       class="modal"
       :aria-labelledby="`reading-note-editor-${contentSource}`"
+      :aria-describedby="editorAnchorText ? `reading-note-editor-hint-${contentSource}` : undefined"
+      @close="onEditorClose"
     >
       <div class="modal-box infl0-panel max-w-xl border border-[var(--infl0-panel-border)] text-[var(--infl0-panel-text)]">
         <h2 :id="`reading-note-editor-${contentSource}`" class="text-lg font-semibold text-[var(--infl0-canvas-fg)]">
           {{ t(`readingNotes.editorTitle.${editorType}`) }}
         </h2>
-        <p v-if="editorAnchorText" class="mt-1 text-sm text-[var(--infl0-canvas-fg-muted)]">
+        <p
+          v-if="editorAnchorText"
+          :id="`reading-note-editor-hint-${contentSource}`"
+          class="mt-1 text-sm text-[var(--infl0-canvas-fg-muted)]"
+        >
           {{ t(`readingNotes.editorHint.${editorType}`) }}
         </p>
         <div class="mt-4 space-y-3">
@@ -521,18 +594,20 @@ watch(() => props.markdown, async () => {
           <input
             v-model="editorContext"
             class="input input-bordered w-full bg-[var(--infl0-panel-bg)] text-[var(--infl0-panel-text)]"
+            :aria-label="t('readingNotes.contextLabel')"
             :placeholder="t('readingNotes.contextPlaceholder')"
             data-testid="reading-note-context"
           >
           <input
             v-model="editorTags"
             class="input input-bordered w-full bg-[var(--infl0-panel-bg)] text-[var(--infl0-panel-text)]"
+            :aria-label="t('readingNotes.tagsLabel')"
             :placeholder="t('readingNotes.tagsPlaceholder')"
             data-testid="reading-note-tags"
           >
         </div>
         <div class="modal-action">
-          <button type="button" class="btn btn-ghost" @click="closeEditor">
+          <button type="button" class="btn btn-ghost" data-testid="reading-note-cancel" @click="closeEditor">
             {{ t('common.close') }}
           </button>
           <button
@@ -555,6 +630,7 @@ watch(() => props.markdown, async () => {
       :open="Boolean(selectedReadingNote)"
       class="reading-note-popover"
       data-testid="reading-note-popover"
+      :aria-label="selectedReadingNote ? `${t('readingNotes.openReadingNote')}: ${selectedReadingNote.content}` : undefined"
       :style="selectedReadingNotePosition ? {
         top: `${selectedReadingNotePosition.top}px`,
         left: `${selectedReadingNotePosition.left}px`,
@@ -607,37 +683,42 @@ watch(() => props.markdown, async () => {
 .reading-note-toolbar {
   position: fixed;
   z-index: 9999;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.25rem;
+  width: min(34rem, calc(100vw - 1rem));
   max-width: calc(100vw - 1rem);
-  border: 1px solid var(--infl0-panel-border);
+  border: 1px solid color-mix(in srgb, var(--infl0-panel-text) 24%, var(--infl0-panel-border));
   border-radius: 0.6rem;
   padding: 0.3rem;
-  background: var(--infl0-canvas-bg);
-  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.3);
+  background: var(--infl0-panel-bg);
+  color: var(--infl0-panel-text);
+  box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 0.35);
 }
 
 .reading-note-toolbar button {
   border-radius: 0.35rem;
   padding: 0.35rem 0.6rem;
-  color: var(--infl0-canvas-fg);
+  color: var(--infl0-panel-text);
   font-size: 0.75rem;
   font-weight: 600;
+  text-align: center;
 }
 
 .reading-note-toolbar button:hover,
 .reading-note-toolbar button:focus-visible {
-  background: var(--infl0-panel-border);
+  background: color-mix(in srgb, var(--infl0-reader-link) 18%, transparent);
 }
 
 .reading-note-popover {
   position: fixed;
   z-index: 9998;
   width: min(24rem, calc(100vw - 2rem));
-  border: 1px solid var(--infl0-panel-border);
+  border: 1px solid color-mix(in srgb, var(--infl0-panel-text) 24%, var(--infl0-panel-border));
   border-radius: 0.75rem;
   padding: 0.75rem;
-  background: var(--infl0-canvas-bg);
-  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.25);
+  background: var(--infl0-panel-bg);
+  color: var(--infl0-panel-text);
+  box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 0.35);
 }
 </style>

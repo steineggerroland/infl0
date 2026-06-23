@@ -164,8 +164,8 @@ Existing `KnowledgeFragment`, `FragmentType`, API, route, component, composable,
 
 - [x] Make tag chips link to `/knowledge/reading-notes?tag=...`.
 - [x] Make tag-index rows link to their filtered reading-note views and expose the tag index from the reading-note page.
-- [ ] Support keyboard-driven text work, including opening the toolbar/form, moving focus into it, submitting, cancelling, and returning focus.
-- [ ] Add appropriate toolbar/dialog semantics and make existing highlights keyboard-focusable.
+- [x] Support keyboard-driven text work, including opening the toolbar/form, moving focus into it, submitting, cancelling, and returning focus.
+- [x] Add appropriate toolbar/dialog semantics and make existing highlights keyboard-focusable.
 - [x] Keep floating controls within the viewport on narrow screens and support pointer/touch selection where browsers expose it.
 
 ### Correctness and verification
@@ -175,11 +175,21 @@ Existing `KnowledgeFragment`, `FragmentType`, API, route, component, composable,
 - [x] Restore the missing German `knowledgeInbox.title` translation.
 - [x] Require exactly one of `articleId` or `episodeId` when creating a reading note.
 - [x] Return HTTP 204 from successful reading-note deletion as specified.
-- [ ] Add component tests for the creation form, learning-focus transitions, highlight visibility, repeated anchor text, and keyboard focus.
+- [x] Add component tests for creation submission, learning-focus transitions, highlight visibility, and repeated anchor text.
+- [x] Add component coverage for keyboard focus through selection toolbar, editor cancellation, and highlight popovers.
 - [x] Extend BDD tasks to complete the creation dialog and verify the resulting visible highlights and reading-note cards.
 - [x] Add BDD coverage for learning focus and overlapping reading-note anchors.
 - [x] Remove temporary debug scripts.
 - [x] Resolve `git diff --check` findings before completing the package.
+
+### Visual QA follow-up
+
+- [x] Fix low-contrast global link hover styling in knowledge views.
+- [x] Keep episode chapter numbering inside the chapter panel.
+- [x] Strengthen learning focus visually, scroll to text work on entry, and preserve the current text-work position on exit.
+- [x] Make text-selection toolbar and reading-note popover opaque enough to read.
+- [x] Ensure Escape closes the selection toolbar without reopening it while text is still selected.
+- [x] Add episode-detail component coverage for chapter layout and learning-focus behavior.
 
 ## Database schema
 
