@@ -1,3 +1,4 @@
+import { expect } from '@playwright/test'
 import { BrowseTheWeb } from '../abilities/browse-the-web.js'
 
 export function CreateReadingNote(content, type) {
@@ -100,7 +101,15 @@ export function StartLearningFocus() {
     description: 'Start learning focus',
     async performAs(actor) {
       const page = BrowseTheWeb.as(actor)
-      await page.locator('[data-testid="learning-focus-toggle"]').click()
+      const toggle = page.locator('[data-testid="learning-focus-toggle"]').first()
+      await toggle.waitFor({ state: 'visible', timeout: 10_000 })
+
+      if (await toggle.getAttribute('aria-pressed') !== 'true') {
+        await toggle.click()
+      }
+
+      await expect(toggle).toHaveAttribute('aria-pressed', 'true', { timeout: 10_000 })
+      await expect(page.locator('[data-testid="learning-focus-status"]')).toBeVisible({ timeout: 10_000 })
     },
   }
 }
