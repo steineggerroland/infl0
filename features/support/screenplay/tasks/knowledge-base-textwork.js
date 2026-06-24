@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test'
+import { waitForNuxtAppReady } from '../../app-ready.js'
 import { BrowseTheWeb } from '../abilities/browse-the-web.js'
 
 export function CreateReadingNote(content, type) {
@@ -101,6 +102,7 @@ export function StartLearningFocus() {
     description: 'Start learning focus',
     async performAs(actor) {
       const page = BrowseTheWeb.as(actor)
+      await waitForNuxtAppReady(page)
       const toggle = page.locator('[data-testid="learning-focus-toggle"]').first()
       await toggle.waitFor({ state: 'visible', timeout: 10_000 })
 
