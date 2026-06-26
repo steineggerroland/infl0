@@ -94,6 +94,7 @@ watch(activeTag, loadReadingNotes)
           :show-type="true"
           :show-anchor="true"
           @delete="removeReadingNote"
+          @updated="readingNotes.replaceById"
         />
         <div class="mt-1 flex items-center justify-between px-2 text-xs text-[var(--infl0-canvas-fg-muted)]">
           <time :datetime="new Date(readingNote.createdAt).toISOString()">
