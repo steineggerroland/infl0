@@ -35,6 +35,7 @@ const selectedReadingNotePosition = ref<{ top: number, left: number } | null>(nu
 const activeReadingNoteId = ref<string | null>(null)
 const editorReturnFocusElement = ref<HTMLElement | null>(null)
 const popoverReturnFocusElement = ref<HTMLElement | null>(null)
+const readingNotePopoverRef = ref<HTMLDialogElement | null>(null)
 
 type SelectionDraft = {
   text: string
@@ -360,6 +361,15 @@ async function deleteReadingNote(id: string) {
   }
 }
 
+async function updateReadingNote(updated: ReadingNote) {
+  readingNotes.value = readingNotes.value.map(note => note.id === updated.id ? updated : note)
+  if (selectedReadingNote.value?.id === updated.id) {
+    selectedReadingNote.value = updated
+  }
+  await nextTick()
+  renderHighlights()
+}
+
 function activateHighlight(target: EventTarget | null) {
   const element = target instanceof HTMLElement
     ? target.closest<HTMLElement>('[data-reading-note-ids]')
@@ -382,6 +392,10 @@ function activateHighlight(target: EventTarget | null) {
     top: Math.min(Math.max(8, top), Math.max(8, window.innerHeight - 260)),
     left,
   }
+  nextTick(() => {
+    const card = readingNotePopoverRef.value?.querySelector<HTMLElement>('[data-testid="reading-note-card"]') ?? null
+    focusElement(card)
+  })
 }
 
 function closeReadingNotePopover() {
@@ -539,6 +553,7 @@ watch(() => props.markdown, async () => {
             @focus-anchor="focusAnchor"
             @clear-anchor="clearAnchorFocus"
             @delete="deleteReadingNote"
+            @updated="updateReadingNote"
           />
         </div>
       </details>
@@ -629,6 +644,7 @@ watch(() => props.markdown, async () => {
     </dialog>
 
     <dialog
+      ref="readingNotePopoverRef"
       :open="Boolean(selectedReadingNote)"
       class="reading-note-popover"
       data-testid="reading-note-popover"
@@ -646,6 +662,7 @@ watch(() => props.markdown, async () => {
         :show-anchor="true"
         :active="true"
         @delete="deleteReadingNote"
+        @updated="updateReadingNote"
       />
       <button type="button" class="btn btn-ghost btn-sm mt-2" @click="closeReadingNotePopover">
         {{ t('common.close') }}

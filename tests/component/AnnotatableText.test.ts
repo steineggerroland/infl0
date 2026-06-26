@@ -230,6 +230,12 @@ describe('AnnotatableText', () => {
 
     expect(wrapper.get('[data-testid="reading-note-popover"]').attributes('open')).toBe('')
     expect(wrapper.get('.reading-note-highlight--active').text()).toBe('Alpha beta')
+    const popoverCard = wrapper.get('[data-testid="reading-note-popover"] [data-testid="reading-note-card"]')
+    expect(document.activeElement).toBe(popoverCard.element)
+
+    await popoverCard.trigger('keydown', { key: 'e' })
+    await settle()
+    expect(wrapper.find('[data-testid="reading-note-edit-content"]').exists()).toBe(true)
 
     await highlight.trigger('keydown', { key: 'Escape' })
     await settle()

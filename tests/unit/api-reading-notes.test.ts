@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import deleteHandler from '../../server/api/knowledge/reading-notes/[readingNoteId].delete'
+import patchHandler from '../../server/api/knowledge/reading-notes/[readingNoteId].patch'
 import getHandler from '../../server/api/knowledge/reading-notes.get'
 import postHandler from '../../server/api/knowledge/reading-notes.post'
 import { getSessionUserId } from '../../server/utils/auth-session'
@@ -18,6 +19,7 @@ vi.mock('../../server/utils/prisma', () => ({
       findMany: vi.fn(),
       count: vi.fn(),
       create: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
       deleteMany: vi.fn(),
     },
@@ -170,6 +172,41 @@ describe('/api/knowledge/reading-notes', () => {
     vi.mocked(prisma.readingNote.findUnique).mockResolvedValue({ userId: 'u2' } as never)
     await expect(deleteHandler(mockEvent())).rejects.toMatchObject({ statusCode: 403 })
     expect(prisma.readingNote.deleteMany).not.toHaveBeenCalled()
+  })
+
+  it('updates an owned reading note and normalizes tags', async () => {
+    vi.mocked(prisma.readingNote.findUnique).mockResolvedValue({ userId: 'u1' } as never)
+    vi.mocked(readBody).mockResolvedValueOnce({
+      content: ' Updated note ',
+      context: '  Chapter 1 ',
+      tags: [' AI ', 'ai', 'Learning'],
+    })
+    vi.mocked(prisma.readingNote.update).mockResolvedValue({ id: validUuid, content: 'Updated note' } as never)
+
+    await expect(patchHandler(mockEvent())).resolves.toEqual({ id: validUuid, content: 'Updated note' })
+    expect(prisma.readingNote.update).toHaveBeenCalledWith({
+      where: { id: validUuid },
+      data: {
+        content: 'Updated note',
+        context: 'Chapter 1',
+        userTags: ['ai', 'learning'],
+      },
+    })
+  })
+
+  it('prevents updating another user reading note', async () => {
+    vi.mocked(prisma.readingNote.findUnique).mockResolvedValue({ userId: 'u2' } as never)
+
+    await expect(patchHandler(mockEvent())).rejects.toMatchObject({ statusCode: 403 })
+    expect(prisma.readingNote.update).not.toHaveBeenCalled()
+  })
+
+  it('rejects empty update payloads', async () => {
+    vi.mocked(prisma.readingNote.findUnique).mockResolvedValue({ userId: 'u1' } as never)
+    vi.mocked(readBody).mockResolvedValueOnce({})
+
+    await expect(patchHandler(mockEvent())).rejects.toMatchObject({ statusCode: 400 })
+    expect(prisma.readingNote.update).not.toHaveBeenCalled()
   })
 
   it('deletes an owned reading note with HTTP 204, scoped to the owner', async () => {

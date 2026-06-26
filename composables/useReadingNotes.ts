@@ -61,11 +61,18 @@ export function useReadingNotes() {
     }
   }
 
+  function replaceById(readingNote: ReadingNote) {
+    state.value.items = state.value.items.map(item =>
+      item.id === readingNote.id ? readingNote : item,
+    )
+  }
+
   return {
     items: computed(() => state.value.items),
     total: computed(() => state.value.total),
     ensureLoaded,
     load,
     removeById,
+    replaceById,
   }
 }

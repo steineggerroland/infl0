@@ -5,8 +5,8 @@ import { StartSignedInToInfl0 } from '../../support/screenplay/tasks/access.js'
 import { ReaderTimeline } from '../../support/reader-timeline.js'
 import { BrowseTheWeb } from '../../support/screenplay/abilities/browse-the-web.js'
 import { PrepareArticleForKnowledgeInbox, PrepareEpisodeForKnowledgeInbox } from '../../support/screenplay/tasks/knowledge-content.js'
-import { CreateReadingNote, CreateReadingNoteInSource, CreateReadingNoteViaApi, DeleteReadingNote, FilterReadingNotesByTag, HoverReadingNoteCard, NavigateToGlobalReadingNotes, NavigateToTagsIndex, StartLearningFocus } from '../../support/screenplay/tasks/knowledge-base-textwork.js'
-import { ActiveReadingNoteHighlightTextIs, LearningFocusGuidanceIsVisible, ReadingNoteCountIs, ReadingNoteHighlightCount, ReadingNoteHighlightIsNotVisible, ReadingNoteHighlightIsVisible, TagsIndexShowsTag } from '../../support/screenplay/questions/knowledge-base-textwork.js'
+import { CreateReadingNote, CreateReadingNoteInSource, CreateReadingNoteViaApi, DeleteReadingNote, EditReadingNoteCard, FilterReadingNotesByTag, HoverReadingNoteCard, NavigateToGlobalReadingNotes, NavigateToTagsIndex, StartLearningFocus } from '../../support/screenplay/tasks/knowledge-base-textwork.js'
+import { ActiveReadingNoteHighlightTextIs, LearningFocusGuidanceIsVisible, ReadingNoteCardIsVisible, ReadingNoteCountIs, ReadingNoteHighlightCount, ReadingNoteHighlightIsNotVisible, ReadingNoteHighlightIsVisible, TagsIndexShowsTag } from '../../support/screenplay/questions/knowledge-base-textwork.js'
 
 const KB_ARTICLE_CONTENT = `# The Future of AI
 
@@ -152,6 +152,16 @@ Then('{word} should see learning focus guidance', async function (name) {
 When('{word} hovers the reading note card {string}', async function (name, content) {
   const actor = currentActor(this, name)
   await actor.attemptsTo(HoverReadingNoteCard(content))
+})
+
+When('{word} refines the reading note {string} to {string}', async function (name, content, updatedContent) {
+  const actor = currentActor(this, name)
+  await actor.attemptsTo(EditReadingNoteCard(content, updatedContent))
+})
+
+Then('{word} should see the reading note card {string}', async function (name, content) {
+  const actor = currentActor(this, name)
+  await actor.asksFor(ReadingNoteCardIsVisible(content))
 })
 
 Then('{word} should see the active reading note highlight text {string}', async function (name, content) {

@@ -33,6 +33,13 @@ Feature: Savy reading notes
     And Savy should see 1 highlighted summary
     And Savy should see 1 highlighted note
 
+  Scenario: Refine an existing reading note
+    Given Savy has extracted the following from "The Future of AI":
+      | type | content                 |
+      | note | Interesting perspective |
+    When Savy refines the reading note "Interesting perspective" to "Interesting perspective with a research question"
+    Then Savy should see the reading note card "Interesting perspective with a research question"
+
   Scenario: Work with the text in learning focus
     When Savy starts learning focus
     Then Savy should see learning focus guidance

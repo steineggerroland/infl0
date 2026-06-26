@@ -63,6 +63,16 @@ export function ReadingNoteCountIs(count) {
   }
 }
 
+export function ReadingNoteCardIsVisible(content) {
+  return {
+    async answeredBy(actor) {
+      const page = BrowseTheWeb.as(actor)
+      const card = page.locator('[data-testid="reading-note-card"]').filter({ hasText: content }).first()
+      await expect(card).toBeVisible()
+    },
+  }
+}
+
 export function TagsIndexShowsTag(tag, count) {
   return {
     async answeredBy(actor) {

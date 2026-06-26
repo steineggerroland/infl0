@@ -97,6 +97,28 @@ export function HoverReadingNoteCard(content) {
   }
 }
 
+export function EditReadingNoteCard(content, updatedContent) {
+  return {
+    description: `Edit the reading note card "${content}"`,
+    async performAs(actor) {
+      const page = BrowseTheWeb.as(actor)
+      const card = page.locator('[data-testid="reading-note-card"]').filter({ hasText: content }).first()
+      await card.waitFor({ state: 'visible', timeout: 5_000 })
+      await card.focus()
+      await page.keyboard.press('e')
+      const editor = page.locator('[data-testid="reading-note-edit-content"]').first()
+      if (!await editor.isVisible({ timeout: 1_000 }).catch(() => false)) {
+        await card.locator('[data-testid="reading-note-edit"]').click()
+      }
+      await editor.waitFor({ state: 'visible', timeout: 5_000 })
+      await editor.fill(updatedContent)
+      await page.locator('[data-testid="reading-note-edit-save"]').first().click()
+      await expect(page.locator('[data-testid="reading-note-card"]').filter({ hasText: updatedContent }).first())
+        .toBeVisible({ timeout: 10_000 })
+    },
+  }
+}
+
 export function StartLearningFocus() {
   return {
     description: 'Start learning focus',
