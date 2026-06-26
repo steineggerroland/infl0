@@ -1,5 +1,9 @@
 # Package: Knowledge Base — Text Editing
 
+## Status
+
+Done — completed in PR #73 as ReadingNote editing across inline text work, popovers, and the global reading-notes overview.
+
 ## Goal
 
 Users can edit existing reading notes (quotes, summaries, notes) to refine their understanding or correct mistakes. Editing is distinct from creation — it updates existing source-bound reading notes without deleting and recreating them.
@@ -13,7 +17,7 @@ Users can edit existing reading notes (quotes, summaries, notes) to refine their
 
 ## Dependencies
 
-- Package 1 (Text Work) — fragments must exist before they can be edited.
+- Package 1 (Text Work) — reading notes must exist before they can be edited.
 - `reading_notes` table (schema in Package 1).
 
 ## Acceptance criteria
@@ -28,7 +32,7 @@ Users can edit existing reading notes (quotes, summaries, notes) to refine their
    - Pre-populated with current values.
 
 3. **Save confirmation**
-   - Submit updates fragment in DB.
+   - Submit updates the reading note in DB.
    - UI updates immediately (no reload needed).
    - Toast message: "Reading note updated".
 
@@ -56,5 +60,6 @@ Users can edit existing reading notes (quotes, summaries, notes) to refine their
 
 ## Links
 
+- PR: #73
 - Depends on: Knowledge Base Text Work (Package 1, archived after PR #71)
 - Precedes: `knowledge-base-connections.md` (Package 2)
