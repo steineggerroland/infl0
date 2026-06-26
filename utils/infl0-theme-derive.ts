@@ -479,6 +479,7 @@ export function deriveInfl0TokensFromSource(s: ThemeSource): Record<string, stri
 
   return {
     '--infl0-app-bg': appBg,
+    '--infl0-canvas-bg': appBg,
     '--infl0-surface-front-bg': surfaceFrontBg,
     '--infl0-surface-front-text': surfaceFrontText,
     '--infl0-surface-front-border': surfaceFrontBorder,

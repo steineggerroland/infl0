@@ -20,7 +20,7 @@ new entries accrue under **Unreleased**.
   usernames `dev` and `operator`; operator allowlist is
   `NUXT_OPERATOR_USERNAMES`.
 - **BDD Wave 2:** article and episode card presentation scenarios moved into
-  `persona_active_reader_expectations.feature` (Robin). Account settings scenarios
+  `persona_robin_active_reader.feature` (Robin). Account settings scenarios
   assert sign-in name and recovery email match registration.
 - **BDD Wave 3 (partial):** Robin episode keyboard/tabs and mid-session readability;
   Shorty timeline `r` (show-read); Priya passive open and personalization signals;
@@ -49,17 +49,24 @@ new entries accrue under **Unreleased**.
   "Full inflow" action to clear the working set.
 - **Integrator ingest observability:** crawler ingest calls are recorded in an
 - **Knowledge Inbox:** Users can save articles to a personal knowledge inbox for
-  later processing. Includes UI buttons in timeline/reader, a dedicated inbox
-  view (`/knowledge/inbox`) with chronological list, metadata snapshots for
-  provenance, and API endpoints for save/list/remove. BDD scenarios and component
-  tests included.
+   later processing. Includes UI buttons in timeline/reader, a dedicated inbox
+   view (`/knowledge/inbox`) with chronological list, metadata snapshots for
+   provenance, and API endpoints for save/list/remove. BDD scenarios and component
+   tests included.
+- **Knowledge Base — Planning:** Comprehensive plan and package definitions for the Knowledge Base feature set:
+   - **Package 1 (Text Work):** Extract quotes, summaries, notes from articles; tag and view inline.
+   - **Package 1.5 (Editing):** Edit existing knowledge fragments.
+   - **Package 2 (Connections):** Visualize and manage connections between fragments.
+   - **Package 3 (Learning):** Spaced repetition and active recall for fragments.
+   - **Package 4 (Tags & Organization):** Tag suggestions, clouds, merging, organization.
+   See `docs/planned/` for detailed acceptance criteria and implementation notes.
   append-only request history. Operators can inspect recent accepted/rejected
   requests at `/operator/ingest`, including accepted article/episode/subscriber
   counts, auth/validation/unsupported-content diagnostics, and bounded payload
   previews without exposing crawler keys.
 - **BDD persona Shorty:** keyboard shortcut scenarios and rich episode card
   surface drills (chapters, shownotes, details tabs) live in
-  `persona_shorty_expectations.feature`; moved out of Robin's feature file.
+  `persona_shorty_keyboard_shortcuts.feature`; moved out of Robin's feature file.
 
 - **Reader episode cards:** inflow can render podcast episodes with dedicated
   card UI, icon registry, browser playback affordance for playable audio,

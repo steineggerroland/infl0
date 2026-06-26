@@ -1,9 +1,8 @@
 @persona @screenplay
-Feature: Operator observability expectations
+Feature: Oli operator observability
   Oli wants to keep an infl0 instance healthy without reading through user
   timelines.
 
-  @crawler
   Scenario: Oli sees an attention-first source health overview
     Given Oli is an operator
     And crawler source health has been reported for Oli
@@ -12,7 +11,6 @@ Feature: Operator observability expectations
     And sources needing attention should be listed first for Oli
     And Oli should see operator source rows
 
-  @crawler
   Scenario: Oli filters source health to the operational problem at hand
     Given Oli is reviewing operator source observability
     When Oli opens operator source observability

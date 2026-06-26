@@ -55,7 +55,7 @@ To ensure stability and provenance, a metadata snapshot is created upon saving (
 
 ## Definition of Done
 - [x] Documentation in `docs/planned/` drafted.
-- [x] Feature file created with `@planned` and Screenplay pattern.
+- [x] Feature file created with the Screenplay pattern.
 - [x] API endpoints for Save/List/Delete defined and implemented.
 - [x] UI for compact list view implemented.
 - [x] Integration of theme fonts uses the existing app surfaces.

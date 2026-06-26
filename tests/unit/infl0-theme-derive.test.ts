@@ -18,6 +18,7 @@ describe('buildThemeHtmlStyle', () => {
     expect(s.length).toBeGreaterThan(80)
     expect(s).toContain('color-scheme: light')
     expect(s).toContain('--infl0-app-bg:')
+    expect(s).toContain('--infl0-canvas-bg:')
     expect(s).toContain('--infl0-chrome-surface:')
     expect(s).toContain('--infl0-panel-bg:')
     expect(s).toContain('--color-base-100:')

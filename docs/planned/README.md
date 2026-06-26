@@ -24,8 +24,7 @@ order, acceptance criteria — separate from the larger idea pool in
 
 | Package | Summary | Status |
 |-----|-----|-----|
-| [`knowledge-base-textwork.md`](knowledge-base-textwork.md) | Extract quotes, summaries, notes from articles; tag and view inline | 🎯 Next |
-| [`knowledge-base-editing.md`](knowledge-base-editing.md) | Edit existing knowledge fragments | 📋 After textwork |
+| [`knowledge-base-editing.md`](knowledge-base-editing.md) | Edit existing reading notes | 🎯 Next |
 | [`knowledge-base-connections.md`](knowledge-base-connections.md) | Visualize and manage connections between fragments | 📋 Later |
 | [`knowledge-base-learning.md`](knowledge-base-learning.md) | Spaced repetition and active recall for fragments | 📋 Later |
 | [`knowledge-base-tags.md`](knowledge-base-tags.md) | Tag suggestions, clouds, merging, organization | 📋 Later |
@@ -36,10 +35,9 @@ order, acceptance criteria — separate from the larger idea pool in
 
 | Priority | Package | Rationale |
 |:-----:|-----|-----|
-| 1 | `knowledge-base-textwork.md` | Core workflow: extract, tag, view fragments inline. Blocking for all later features. |
-| 2 | `knowledge-base-editing.md` | Refine extracted content. High UX value, low complexity. |
-| 3 | `knowledge-base-tags.md` | Improve tag management. Improves discoverability of fragments. |
-| 4 | `knowledge-base-connections.md` | Visual graph of connections. More complex, visual. |
-| 5 | `knowledge-base-learning.md` | Spaced repetition. Depends on fragments having sufficient quality. |
+| 1 | `knowledge-base-editing.md` | Refine extracted reading notes. High UX value and the natural follow-up to text work. |
+| 2 | `knowledge-base-tags.md` | Improve tag management. Improves discoverability of reading notes. |
+| 3 | `knowledge-base-connections.md` | Visual graph of connections. More complex, visual. |
+| 4 | `knowledge-base-learning.md` | Spaced repetition. Depends on reading notes having sufficient quality. |
 
 *(Revisit after each package ships.)*

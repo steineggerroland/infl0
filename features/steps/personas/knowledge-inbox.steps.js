@@ -5,7 +5,7 @@ import { StartSignedInToInfl0 } from '../../support/screenplay/tasks/access.js'
 import { ReaderTimeline } from '../../support/reader-timeline.js'
 import { KnowledgeInboxPage } from '../../support/knowledge-inbox.js'
 import { BrowseTheWeb } from '../../support/screenplay/abilities/browse-the-web.js'
-import { ingestKnowledgeInboxArticle, ingestKnowledgeInboxEpisode } from '../../support/knowledge-inbox-fixtures.js'
+import { PrepareArticleForKnowledgeInbox, PrepareEpisodeForKnowledgeInbox } from '../../support/screenplay/tasks/knowledge-content.js'
 import { SaveToKnowledgeInbox } from '../../support/screenplay/tasks/knowledge-inbox.js'
 
 async function waitForDistinctInboxCapture(page) {
@@ -36,7 +36,9 @@ Given('{word} is on the timeline', async function (name) {
 When('{word} saves an article {string} to the knowledge inbox', async function (name, title) {
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
-  await ingestKnowledgeInboxArticle(page, this, title, { teaser: 'About the future of artificial intelligence.' })
+  await actor.attemptsTo(PrepareArticleForKnowledgeInbox(this, title, {
+    teaser: 'About the future of artificial intelligence.',
+  }))
   const timeline = new ReaderTimeline(page)
   await timeline.open()
   await timeline.waitForShell()
@@ -45,9 +47,9 @@ When('{word} saves an article {string} to the knowledge inbox', async function (
     .getByTestId('article-card')
     .filter({ hasText: title })
     .first()
-   await timeline.focusCard(card)
-   actor.remember('currentReaderArticleId', await card.getAttribute('data-article-id'))
-   await SaveToKnowledgeInbox().performAs(actor)
+  await timeline.focusCard(card)
+  actor.remember('currentReaderArticleId', await card.getAttribute('data-article-id'))
+  await actor.attemptsTo(SaveToKnowledgeInbox())
 })
 
 Then('{word} should see a calm confirmation that it was saved', async function (name) {
@@ -86,10 +88,10 @@ Given('{word} has saved articles in the following order:', async function (name,
   const page = BrowseTheWeb.as(actor)
   const rows = dataTable.hashes()
   for (const row of rows) {
-    await ingestKnowledgeInboxArticle(page, this, row.title, {
+    await actor.attemptsTo(PrepareArticleForKnowledgeInbox(this, row.title, {
       teaser: `Teaser for ${row.title}.`,
       publishedAt: new Date(row.date).toISOString(),
-    })
+    }))
   }
   const timeline = new ReaderTimeline(page)
   await timeline.open()
@@ -102,7 +104,7 @@ Given('{word} has saved articles in the following order:', async function (name,
       .first()
     await timeline.focusCard(card)
     actor.remember('currentReaderArticleId', await card.getAttribute('data-article-id'))
-    await SaveToKnowledgeInbox().performAs(actor)
+    await actor.attemptsTo(SaveToKnowledgeInbox())
     if (row !== rows.at(-1)) await waitForDistinctInboxCapture(page)
   }
 })
@@ -144,7 +146,7 @@ Then('{word} should see a teaser snippet for each entry', async function (name) 
 Given('{word} has an article {string} in the knowledge inbox', async function (name, title) {
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
-  await ingestKnowledgeInboxArticle(page, this, title, { teaser: `Teaser for ${title}.` })
+  await actor.attemptsTo(PrepareArticleForKnowledgeInbox(this, title, { teaser: `Teaser for ${title}.` }))
   const timeline = new ReaderTimeline(page)
   await timeline.open()
   await timeline.waitForShell()
@@ -153,9 +155,9 @@ Given('{word} has an article {string} in the knowledge inbox', async function (n
     .getByTestId('article-card')
     .filter({ hasText: title })
     .first()
-   await timeline.focusCard(card)
-   actor.remember('currentReaderArticleId', await card.getAttribute('data-article-id'))
-   await SaveToKnowledgeInbox().performAs(actor)
+  await timeline.focusCard(card)
+  actor.remember('currentReaderArticleId', await card.getAttribute('data-article-id'))
+  await actor.attemptsTo(SaveToKnowledgeInbox())
 })
 
 When('{word} clicks on the entry for {string}', async function (name, title) {
@@ -220,7 +222,9 @@ When('{word} removes the article {string} from the knowledge inbox on its card',
 When('{word} saves an episode {string} to the knowledge inbox', async function (name, title) {
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
-  await ingestKnowledgeInboxEpisode(page, this, title, { teaser: 'A fascinating podcast episode.' })
+  await actor.attemptsTo(PrepareEpisodeForKnowledgeInbox(this, title, {
+    teaser: 'A fascinating podcast episode.',
+  }))
   const timeline = new ReaderTimeline(page)
   await timeline.open()
   await timeline.waitForShell()
@@ -231,7 +235,7 @@ When('{word} saves an episode {string} to the knowledge inbox', async function (
     .first()
   await timeline.focusCard(card)
   actor.remember('currentReaderArticleId', await card.getAttribute('data-episode-id'))
-  await SaveToKnowledgeInbox('episode').performAs(actor)
+  await actor.attemptsTo(SaveToKnowledgeInbox('episode'))
 })
 
 Then('{word} should see the episode marked as {string} in the timeline', async function (name, status) {
@@ -261,7 +265,7 @@ Then('{word} should see the episode {string} marked as {string} in the timeline'
 Given('{word} has saved an episode {string} in the knowledge inbox', async function (name, title) {
   const actor = currentActor(this, name)
   const page = BrowseTheWeb.as(actor)
-  await ingestKnowledgeInboxEpisode(page, this, title, { teaser: `Teaser for ${title}.` })
+  await actor.attemptsTo(PrepareEpisodeForKnowledgeInbox(this, title, { teaser: `Teaser for ${title}.` }))
   const timeline = new ReaderTimeline(page)
   await timeline.open()
   await timeline.waitForShell()
@@ -272,7 +276,7 @@ Given('{word} has saved an episode {string} in the knowledge inbox', async funct
     .first()
   await timeline.focusCard(card)
   actor.remember('currentReaderArticleId', await card.getAttribute('data-episode-id'))
-  await SaveToKnowledgeInbox('episode').performAs(actor)
+  await actor.attemptsTo(SaveToKnowledgeInbox('episode'))
 })
 
 When('{word} removes the episode {string} from the knowledge inbox on its card', async function (name, title) {
@@ -302,15 +306,15 @@ Given('{word} has saved the following items in the knowledge inbox:', async func
   const rows = dataTable.hashes()
   for (const row of rows) {
     if (row.type === 'article') {
-      await ingestKnowledgeInboxArticle(page, this, row.title, {
+      await actor.attemptsTo(PrepareArticleForKnowledgeInbox(this, row.title, {
         teaser: `Teaser for ${row.title}.`,
         publishedAt: new Date(row.date).toISOString(),
-      })
+      }))
     } else {
-      await ingestKnowledgeInboxEpisode(page, this, row.title, {
+      await actor.attemptsTo(PrepareEpisodeForKnowledgeInbox(this, row.title, {
         teaser: `Teaser for ${row.title}.`,
         publishedAt: new Date(row.date).toISOString(),
-      })
+      }))
     }
   }
   const timeline = new ReaderTimeline(page)
@@ -325,7 +329,7 @@ Given('{word} has saved the following items in the knowledge inbox:', async func
         .first()
       await timeline.focusCard(card)
       actor.remember('currentReaderArticleId', await card.getAttribute('data-article-id'))
-      await SaveToKnowledgeInbox().performAs(actor)
+      await actor.attemptsTo(SaveToKnowledgeInbox())
     } else {
       const card = page
         .getByTestId('episode-card')
@@ -333,7 +337,7 @@ Given('{word} has saved the following items in the knowledge inbox:', async func
         .first()
       await timeline.focusCard(card)
       actor.remember('currentReaderArticleId', await card.getAttribute('data-episode-id'))
-      await SaveToKnowledgeInbox('episode').performAs(actor)
+      await actor.attemptsTo(SaveToKnowledgeInbox('episode'))
     }
     if (row !== rows.at(-1)) await waitForDistinctInboxCapture(page)
   }

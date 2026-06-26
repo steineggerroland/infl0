@@ -1,5 +1,5 @@
 @persona @screenplay
-Feature: Shorty keyboard shortcut expectations
+Feature: Shorty keyboard shortcuts
   Shorty loves keyboard shortcuts, flips through card surfaces, and checks that
   infl0 documents shortcuts honestly on the help page.
 

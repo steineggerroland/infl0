@@ -1,5 +1,5 @@
 @persona @screenplay
-Feature: Integrator ingest observability expectations
+Feature: Ingo integrator observability
   Ingo wants to know whether TopicKnowledgeCrawler delivery into infl0 is
   working and why individual requests failed.
 

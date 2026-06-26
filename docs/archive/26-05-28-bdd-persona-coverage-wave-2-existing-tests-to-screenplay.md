@@ -38,7 +38,7 @@ and screen-object language instead of growing parallel step implementations.
 4. Done: migrated feature wording is named-actor based and avoids new
    `I`/`they` mixes.
 5. Done: article / episode card presentation is covered in
-   `persona_active_reader_expectations.feature` via `active-reader-content.steps.js`.
+   `persona_robin_active_reader.feature` via `active-reader-content.steps.js`.
 
 ## Implementation notes
 

@@ -25,6 +25,7 @@
     "settings": "Settings",
     "privacy": "Privacy",
     "knowledgeInbox": "Knowledge Inbox",
+    "readingNotes": "Reading notes",
     "personalization": "Why at the top?",
     "help": "Help",
     "view": "View",
@@ -669,6 +670,66 @@
     "errorSave": "Could not save item to inbox",
     "openDetails": "Details",
     "openDetailsAria": "Open details for \"{title}\""
+  },
+  "readingNotes": {
+    "title": "Reading notes",
+    "intro": "Quotes, summaries, and personal thoughts created while working with texts.",
+    "sectionTitle": "Your reading notes",
+    "selectionHint": "Select text to turn it into a reading note.",
+    "toolbarLabel": "Work with the selected text",
+    "openReadingNote": "Open reading note",
+    "textRegionLabel": "Annotatable text",
+    "sourceTextLabel": "Selected text",
+    "contentLabel": "Reading note content",
+    "contextLabel": "Reading note context",
+    "tagsLabel": "Reading note tags",
+    "contextPlaceholder": "Context, chapter, or your own framing (optional)",
+    "tagsPlaceholder": "Tags, separated by commas",
+    "save": "Save reading note",
+    "delete": "Delete reading note",
+    "empty": "No reading notes yet. Open an article or episode and select an important passage.",
+    "emptyInline": "No reading notes for this text yet.",
+    "emptyType": "There are no reading notes in this section yet.",
+    "errorLoad": "Could not load reading notes",
+    "errorCreate": "Could not save reading note",
+    "errorRemove": "Could not delete reading note",
+    "createSuccess": "Reading note saved",
+    "browseTags": "Browse tags",
+    "tagsTitle": "Reading note tags",
+    "tagsIntro": "Open a tag to see the related reading notes.",
+    "noTags": "No tags yet",
+    "openSource": "Open source text",
+    "types": {
+      "quote": "Quote",
+      "summary": "Summary",
+      "note": "Personal note"
+    },
+    "sections": {
+      "quote": "Quotes",
+      "summary": "Summaries",
+      "note": "Personal notes"
+    },
+    "actions": {
+      "quote": "Keep as quote",
+      "summary": "Summarize",
+      "note": "Note a thought"
+    },
+    "editorTitle": {
+      "quote": "Keep quote",
+      "summary": "Summarize passage",
+      "note": "Capture a thought"
+    },
+    "editorHint": {
+      "quote": "Review the quote and add context or tags if useful.",
+      "summary": "Express the central idea in your own words.",
+      "note": "Capture what stands out, a remaining question, or a connection you see."
+    },
+    "learningFocus": {
+      "start": "Start learning focus",
+      "stop": "End learning focus",
+      "active": "Learning focus",
+      "status": "{count} reading notes · Select text or capture a thought."
+    }
   },
   "articleDetail": {
     "backToInbox": "Back to knowledge inbox",

@@ -35,7 +35,7 @@ a small Screenplay foundation that future persona waves can reuse.
 
 ## Implementation notes
 
-- Added `features/new_user_first_reading_session.feature` with five
+- Added `features/persona_nora_first_reading_session.feature` with five
   Screenplay-style New User scenarios.
 - Added `features/support/screenplay/*` for Actor, browser ability, Tasks, and
   Questions.
@@ -51,7 +51,7 @@ a small Screenplay foundation that future persona waves can reuse.
   skeleton scenarios without breaking CI.
 - Verification: `npm run lint -- --quiet`, `npm test -- OnboardingCardView`,
   `npm test -- onboarding-cards`, targeted
-  `features/new_user_first_reading_session.feature`, and `npm run test:bdd`
+  `features/persona_nora_first_reading_session.feature`, and `npm run test:bdd`
   (`60 scenarios / 464 steps`).
 
 ## Links

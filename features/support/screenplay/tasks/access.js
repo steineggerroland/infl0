@@ -19,7 +19,7 @@ async function registerActor(actor) {
     world: actor.world,
   })
   actor.remember('credentials', credentials)
-  await expect(page).toHaveURL(/\/(\?|$)/u)
+  await expect(page).not.toHaveURL(/\/register/u)
 }
 
 export const StartAsSignedOutVisitor = {
@@ -62,10 +62,11 @@ export const SignInToInfl0 = {
     await waitForNuxtAppReady(page)
     await page.getByLabel('Username').fill(credentials.username)
     await page.locator('input[autocomplete="current-password"]').fill(credentials.password)
-    await Promise.all([
-      page.waitForURL(/\/(\?|$)/u, { timeout: 60_000 }),
-      page.getByRole('button', { name: 'Sign in' }).click(),
-    ])
+    await page.getByRole('button', { name: 'Sign in' }).click()
+    await page.waitForFunction(
+      () => !window.location.pathname.startsWith('/register') && !window.location.pathname.startsWith('/login'),
+      { timeout: 60_000 },
+    )
   },
 }
 

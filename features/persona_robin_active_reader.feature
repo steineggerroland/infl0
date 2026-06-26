@@ -1,5 +1,5 @@
 @persona @screenplay
-Feature: Active returning reader expectations
+Feature: Robin active reader
   Robin wants to drop back into reading and work with articles or podcasts
   without losing their place.
 

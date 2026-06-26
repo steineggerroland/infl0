@@ -24,7 +24,7 @@ This folder contains executable user-facing behavior specifications using Cucumb
 - Avoid direct database access in step definitions whenever the behavior can be set up or asserted through UI flows.
 - **Allowed non-UI setup** (documented in `features/support/crawler-fixtures.js` and step comments):
   - **TopicKnowledgeCrawler** ingest and source-status posts (external system; no infl0 UI).
-  - **Reader scenario Background** (`my inflow contains reader articles`): `POST /api/feeds` plus hiding onboarding via `PATCH /api/me/ui-prefs` so the step stays within Cucumber’s step timeout; feeds UI add remains covered in `persona_timeline_curator_expectations.feature`.
+  - **Reader scenario Background** (`my inflow contains reader articles`): `POST /api/feeds` plus hiding onboarding via `PATCH /api/me/ui-prefs` so the step stays within Cucumber’s step timeout; feeds UI add remains covered in `persona_sam_timeline_curator.feature`.
   - **Backdating `lastReaderSessionStartedAt`** for the “new articles since last session” scenario (no UI to set a past session anchor).
   - **`@http-only` PWA scenarios** that read `manifest.webmanifest` without a browser session.
 - World `Before` hooks may still register accounts via API for speed; scenario steps should use the registration/login UI where the journey is under test.
@@ -34,9 +34,8 @@ This folder contains executable user-facing behavior specifications using Cucumb
 - When behavior is already covered by BDD, avoid duplicating the same feature logic in E2E specs.
 - Persona journeys may use the Screenplay support layer in `features/support/screenplay`: feature files name an actor, steps delegate to Tasks, and Questions hold user-facing assertions. Keep concrete selectors in the existing screen/page objects.
 - Tag planned but intentionally unfinished persona scenarios with `@pending`; default BDD commands exclude that tag.
-- `@pending @persona` feature files capture planned persona expectations. Treat
-  them as the red roadmap: remove `@pending` only when the behavior is ready to
-  be implemented and verified.
+- Screenplay persona feature files use `@persona @screenplay` at feature level. Avoid scenario-level tags for sub-capabilities; the persona file name and scenario title should carry that meaning. Technical infrastructure gates such as `@email` remain allowed when hooks need them.
+- Name Screenplay persona feature files as `persona_<actor>_<capability>.feature`, for example `persona_savy_reading_notes.feature`, so actor, feature, and step wording stay aligned.
 
 ## Test gaps
 
@@ -45,49 +44,56 @@ Covered in BDD today:
 - **`add_infl0_to_home_screen.feature`** — install listing (name, EN/DE description,
   standalone app window, portrait/landscape), home-screen shortcuts to timeline /
   sources / settings, install icons, in-place updates.
-- **`new_user_first_reading_session.feature`** — Screenplay-style New User persona
+- **`persona_nora_first_reading_session.feature`** — Screenplay-style New User persona
   journey from UI registration through onboarding order, intro-card learning,
   onboarding return context, finishing onboarding from a later card, first
   source, crawler content delivery, deliberate reader start, and return-context
   recovery.
-- **`persona_active_reader_expectations.feature`** — Screenplay-style active
+- **`persona_robin_active_reader.feature`** — Screenplay-style active
   returning reader checks for sign-in/sign-out, account sign-in name visibility,
   article/episode card presentation, reader start, resume, URL calm, read
   feedback, read without behaviour tracking, episode dialog keyboard/tabs,
   mid-session reading controls, and returning from Help without losing context.
-- **`persona_shorty_expectations.feature`** — Screenplay-style shortcut and card-
+- **`persona_shorty_keyboard_shortcuts.feature`** — Screenplay-style shortcut and card-
   surface checks: rich episode metadata (chapters, shownotes, details tabs), help
   reference (`/help#shortcuts-reference`), article and episode shortcuts,
   read/unread via `m`, and timeline show-read via `r`.
-- **`persona_customizer_expectations.feature`** — Screenplay-style sensory
+- **`persona_mira_display_customizer.feature`** — Screenplay-style sensory
   customizer checks for saved display preferences, custom card-front colours,
   onboarding readability shortcuts for font size and typeface, and a
   low-stimulation reading setup before entering the reader.
-- **`persona_privacy_expectations.feature`** — Screenplay-style privacy-sensitive
+- **`persona_priya_privacy.feature`** — Screenplay-style privacy-sensitive
   reader checks for the reading behaviour tracking deep link, one deliberate
   tracking toggle change, the personalization explainer, and onboarding scoring
   transparency with control links, passive open without tracking, and
   personalization signal inspection after opting in.
-- **`persona_explorer_expectations.feature`** — Screenplay-style curious explorer
+- **`persona_eli_explorer.feature`** — Screenplay-style curious explorer
   checks for deep onboarding exploration, settings deep links, wide-layout
   section navigation, and phone install affordances before sign-in.
-- **`persona_timeline_curator_expectations.feature`** — Screenplay-style timeline
+- **`persona_sam_timeline_curator.feature`** — Screenplay-style timeline
   curator checks for adding/removing sources, no-snapshot health, pause/resume,
-  and `@crawler` health/status explanations when `NUXT_CRAWLER_API_KEY` is
+  and crawler health/status explanations when `NUXT_CRAWLER_API_KEY` is
   available, plus source weighting and its effect on future reader ranking, and
   source-focused working sets with a return path to the full inflow.
-- **`persona_operator_expectations.feature`** — Screenplay-style operator checks
+- **`persona_oli_operator_observability.feature`** — Screenplay-style operator checks
   for source observability route protection, seeded operator access, summary
   visibility, attention-first row order, and blocked/quiet filtering.
-- **`persona_integrator_expectations.feature`** — Screenplay-style integrator
+- **`persona_ingo_integrator_observability.feature`** — Screenplay-style integrator
   checks for recent crawler ingest delivery, accepted article/episode/subscriber
   counts, rejected auth / invalid-structure requests, bounded payload previews,
   and unsupported section diagnostics.
-- **`persona_oblivia_expectations.feature`** — Screenplay-style forgetful-reader
+- **`persona_oblivia_recovery_email.feature`** — Screenplay-style forgetful-reader
   checks for verified recovery email (settings OTP) and password recovery after
   sign-out; requires SMTP and catch-all IMAP OTP helpers for `@email` runs (see
   [`docs/DEPLOYING.md`](../docs/DEPLOYING.md#transactional-email-recovery-otp)
   and [`docs/DEVELOPING.md`](../docs/DEVELOPING.md)).
+- **`persona_savy_knowledge_inbox.feature`** — Screenplay-style saving workflow
+  for Savy's knowledge inbox: saving, browsing, returning to detail pages,
+  removing articles/episodes, and mixed inbox ordering.
+- **`persona_savy_reading_notes.feature`** — Screenplay-style text-work workflow
+  for Savy's reading notes: quote/summary/note creation, learning focus,
+  overlapping highlights, tag filtering, episode text, and global reading-note
+  views.
 
 Still sensible follow-ups:
 
