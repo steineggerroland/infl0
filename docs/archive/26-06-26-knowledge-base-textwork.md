@@ -1,5 +1,9 @@
 # Package: Knowledge Base — Text Work (Phase 1)
 
+## Status
+
+Done — completed in PR #71 as ReadingNote-based text work for articles and episodes.
+
 ## Goal
 
 Users can create reading notes from articles/episodes, tag them, view them inline, and delete them. This is the first package in the Knowledge Base series - it establishes the core "text work" workflow.
@@ -231,4 +235,5 @@ model ReadingNote {
 
 ## Links
 
+- PR: #71
 - Precedes: `knowledge-base-editing.md` (Package 1.5), `knowledge-base-connections.md` (Package 2), `knowledge-base-learning.md` (Package 3), `knowledge-base-tags.md` (Package 4)
