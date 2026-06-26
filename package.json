@@ -81,7 +81,7 @@
     "tsx": "^4.22.3",
     "typescript": "^6.0.3",
     "unplugin-auto-import": "^21.0.0",
-    "vitest": "^4.1.7",
+    "vitest": "^4.1.9",
     "vue-tsc": "^3.3.2"
   },
   "overrides": {
