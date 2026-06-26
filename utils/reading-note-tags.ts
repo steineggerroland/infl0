@@ -5,7 +5,7 @@ export function normalizeReadingNoteTags(tags: unknown): string[] {
     new Set(
       tags
         .filter((tag): tag is string => typeof tag === 'string')
-        .map(tag => tag.trim().toLocaleLowerCase())
+        .map(tag => tag.trim().toLowerCase())
         .filter(Boolean),
     ),
   )

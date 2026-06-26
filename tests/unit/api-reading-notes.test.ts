@@ -19,6 +19,7 @@ vi.mock('../../server/utils/prisma', () => ({
       count: vi.fn(),
       create: vi.fn(),
       delete: vi.fn(),
+      deleteMany: vi.fn(),
     },
   },
 }))
@@ -168,15 +169,25 @@ describe('/api/knowledge/reading-notes', () => {
   it('prevents deleting another user reading note', async () => {
     vi.mocked(prisma.readingNote.findUnique).mockResolvedValue({ userId: 'u2' } as never)
     await expect(deleteHandler(mockEvent())).rejects.toMatchObject({ statusCode: 403 })
-    expect(prisma.readingNote.delete).not.toHaveBeenCalled()
+    expect(prisma.readingNote.deleteMany).not.toHaveBeenCalled()
   })
 
-  it('deletes an owned reading note with HTTP 204', async () => {
+  it('deletes an owned reading note with HTTP 204, scoped to the owner', async () => {
     vi.mocked(prisma.readingNote.findUnique).mockResolvedValue({ userId: 'u1' } as never)
-    vi.mocked(prisma.readingNote.delete).mockResolvedValue({ id: validUuid } as never)
+    vi.mocked(prisma.readingNote.deleteMany).mockResolvedValue({ count: 1 } as never)
 
     await expect(deleteHandler(mockEvent())).resolves.toBeNull()
-    expect(prisma.readingNote.delete).toHaveBeenCalledWith({ where: { id: validUuid } })
+    expect(prisma.readingNote.deleteMany).toHaveBeenCalledWith({ where: { id: validUuid, userId: 'u1' } })
     expect(setResponseStatus).toHaveBeenCalledWith(expect.anything(), 204)
+  })
+
+  it('rejects content that exceeds the maximum length', async () => {
+    vi.mocked(readBody).mockResolvedValueOnce({
+      articleId: 'a1',
+      type: 'note',
+      content: 'x'.repeat(10_001),
+    })
+    await expect(postHandler(mockEvent())).rejects.toMatchObject({ statusCode: 400 })
+    expect(prisma.readingNote.create).not.toHaveBeenCalled()
   })
 })

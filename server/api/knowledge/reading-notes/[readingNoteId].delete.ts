@@ -13,7 +13,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'readingNoteId required' })
   }
 
-  const readingNote = await prisma.readingNote.findUnique({ where: { id: readingNoteId } })
+  const readingNote = await prisma.readingNote.findUnique({
+    where: { id: readingNoteId },
+    select: { userId: true },
+  })
   if (!readingNote) {
     throw createError({ statusCode: 404, statusMessage: 'Reading note not found' })
   }
@@ -21,7 +24,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
   }
 
-  await prisma.readingNote.delete({ where: { id: readingNoteId } })
+  await prisma.readingNote.deleteMany({ where: { id: readingNoteId, userId } })
   setResponseStatus(event, 204)
   return null
 })

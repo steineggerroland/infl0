@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
   if (query.articleId) where.articleId = String(query.articleId)
   if (query.episodeId) where.episodeId = String(query.episodeId)
   if (query.contentSource) where.contentSource = String(query.contentSource)
-  if (query.tag) where.userTags = { has: String(query.tag).trim().toLocaleLowerCase() }
+  if (query.tag) where.userTags = { has: String(query.tag).trim().toLowerCase() }
 
   const [items, total] = await Promise.all([
     prisma.readingNote.findMany({

@@ -105,6 +105,18 @@ export async function loadAccessibleArticle(userId: string, articleId: string): 
   return { article, timelineItem, inboxItem, userFeed }
 }
 
+export async function canAccessArticle(userId: string, articleId: string): Promise<boolean> {
+  try {
+    await loadAccessibleArticle(userId, articleId)
+    return true
+  } catch (error) {
+    if (typeof error === 'object' && error != null && 'statusCode' in error && error.statusCode === 404) {
+      return false
+    }
+    throw error
+  }
+}
+
 export async function canAccessEpisode(userId: string, episodeId: string): Promise<boolean> {
   try {
     await loadAccessibleEpisode(userId, episodeId)
