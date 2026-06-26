@@ -1,4 +1,4 @@
-// @vitest-environment happy-dom
+// @vitest-environment jsdom
 import { resetNuxtTestState } from '../_helpers/nuxt-globals'
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -88,11 +88,12 @@ describe('ArticleCard reader modal + modal stack', () => {
     setReadState.mockReset()
     setReadState.mockResolvedValue({ ok: true, readAt: '2026-05-02T10:00:00.000Z' })
     document.body.innerHTML = ''
-    HTMLDialogElement.prototype.showModal = function showModal() {
+    const dialogPrototype = globalThis.HTMLDialogElement?.prototype ?? HTMLElement.prototype
+    dialogPrototype.showModal = function showModal() {
       this.open = true
       this.setAttribute('open', '')
     }
-    HTMLDialogElement.prototype.close = function close() {
+    dialogPrototype.close = function close() {
       this.open = false
       this.removeAttribute('open')
       this.dispatchEvent(new Event('close'))
