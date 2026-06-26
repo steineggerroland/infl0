@@ -9,6 +9,8 @@ const props = withDefaults(defineProps<{
   contentSource?: string
   heading?: string
 }>(), {
+  articleId: '',
+  episodeId: '',
   contentSource: 'body',
   heading: '',
 })
@@ -544,8 +546,8 @@ watch(() => props.markdown, async () => {
 
     <Teleport to="body">
       <div
-        ref="toolbarRef"
         v-if="selectionDraft"
+        ref="toolbarRef"
         class="reading-note-toolbar"
         role="toolbar"
         :aria-label="t('readingNotes.toolbarLabel')"

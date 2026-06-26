@@ -41,7 +41,7 @@ jobs:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
@@ -195,7 +195,7 @@ jobs:
     needs: deploy
     if: needs.deploy.result == 'success' && needs.deploy.outputs.url != ''
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
@@ -220,7 +220,7 @@ jobs:
     needs: [deploy, remote-smoke]
     if: github.event_name == 'pull_request' && needs.deploy.result == 'success' && needs.remote-smoke.result == 'success' && needs.deploy.outputs.url != ''
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
@@ -247,7 +247,7 @@ jobs:
     needs: [deploy, remote-smoke, remote-e2e-pr]
     if: github.event_name == 'pull_request' && needs.deploy.result == 'success' && needs.remote-smoke.result == 'success' && needs.remote-e2e-pr.result == 'success' && needs.deploy.outputs.url != ''
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
